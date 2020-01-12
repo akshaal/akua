@@ -9,8 +9,18 @@ RUN mkdir logs
 # Installing dependencies
 ADD package.json ./
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 # ... this way we keep image really small (no intermediate containers)
-RUN npm install
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends python autoconf automake libtool nasm gcc "g++" \
+    && npm install \
+    && rm -rf /var/lib/apt/lists/* /etc/cron.d/* /etc/cron.daily/* /etc/cron.hourly/* /etc/cron.monthly/* /etc/cron.weekly/* \
+    && echo "LANG=C.UTF-8" > /etc/default/locale \
+    && dpkg --purge python autoconf automake libtool nasm gcc "g++" \
+    && apt-get clean \
+    && apt-get -y autoremove \
+    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false
 
 COPY . /usr/src/app
 RUN echo "========= Prepared for build:"
