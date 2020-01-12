@@ -13,11 +13,11 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # ... this way we keep image really small (no intermediate containers)
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends python autoconf automake make libtool nasm gcc "g++" \
+    && apt-get install -y --no-install-recommends python autoconf automake make libtool nasm gcc "g++" udev \
     && npm install \
     && rm -rf /var/lib/apt/lists/* /etc/cron.d/* /etc/cron.daily/* /etc/cron.hourly/* /etc/cron.monthly/* /etc/cron.weekly/* \
     && echo "LANG=C.UTF-8" > /etc/default/locale \
-    && dpkg --purge python autoconf automake libtool make nasm gcc "g++" \
+    && dpkg --purge python autoconf automake libtool make nasm gcc "g++" udev \
     && apt-get clean \
     && apt-get -y autoremove \
     && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false
