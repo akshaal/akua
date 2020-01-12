@@ -16,12 +16,17 @@ export interface MetricsConfig {
     readonly sessionsCountingIntervalSeconds: number;
 }
 
+export interface NextionConfig {
+    readonly port: string;
+}
+
 export interface Config {
     readonly version: string;
     readonly isProd: boolean;
     readonly isDev: boolean;
     readonly bindOptions: ProtoHostPort;
     readonly metrics: MetricsConfig;
+    readonly nextion: NextionConfig;
 }
 
 // ================================================================================================
@@ -47,11 +52,15 @@ const bindOptions: ProtoHostPort = {
     proto: "http"
 };
 
-const metricsConfig: MetricsConfig = {
+const metrics: MetricsConfig = {
     eventLoopMonitoringResolutionMs: 50,
     autocleanupNotActiveForSeconds: 60 * 60 * 24 * 7, // one week
     autocleanupIntervalSeconds: 60 * 60,
     sessionsCountingIntervalSeconds: 15,
+}
+
+const nextion: NextionConfig = {
+    port: "/dev/ttyS0"
 }
 
 export const config: Config = {
@@ -59,7 +68,8 @@ export const config: Config = {
     version,
     isProd: !isDev,
     bindOptions,
-    metrics: metricsConfig,
+    metrics,
+    nextion
 };
 
 // ================================================================================================

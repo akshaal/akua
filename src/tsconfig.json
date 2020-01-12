@@ -20,15 +20,18 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "module": "commonjs",
-    "outDir": "dist",
+    "outDir": "dist/server",
     "target": "es2017",
     "isolatedModules": false,
-    "noEmit": false
+    "noEmit": false,
+    "typeRoots": [
+      "./custom-types",
+      "node_modules/@types"
+    ]
   },
   "exclude": [
     "node_modules",
     "dist",
-    ".next"
   ],
   "include": [
     "server/**/*.ts"

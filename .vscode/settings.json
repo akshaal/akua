@@ -1,13 +1,16 @@
 {
+    "typescript.tsdk": "src/node_modules/typescript/lib",
     "cSpell.words": [
         "Autocleanup",
         "Eventloop",
         "Grafana",
         "Millis",
+        "Nextion",
         "akua",
         "camelcase",
         "gargs",
         "maxsize",
-        "printf"
+        "printf",
+        "sourcecode"
     ]
 }

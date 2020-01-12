@@ -5,10 +5,14 @@ import logger from "../logger";
 import MetricsServiceImpl from "./MetricsServiceImpl";
 import MetricsService from "server/service/MetricsService";
 import ServerServices from "server/service/ServerServices";
+import DisplayService from "server/service/DisplayService";
+import DisplayServiceImpl from "./DisplayServiceImpl";
 
 function createNewContainer(): Container {
     const container = new Container();
     container.bind(MetricsService).to(MetricsServiceImpl);
+    container.bind(DisplayService).to(DisplayServiceImpl);
+    container.bind(ServerServices).toSelf();
 
     if (process.env.NODE_ENV === "development") {
         const tracer = new InversifyTracer();

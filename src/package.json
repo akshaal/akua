@@ -2,7 +2,7 @@
   "name": "akua",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server/index.js",
   "scripts": {
     "dev": "concurrently \"tsc --preserveWatchOutput -w --project tsconfig.json\" \"NODE_ENV=development NODE_PATH=./dist nodemon -w ./dist ./dist/server/index.js\"",
     "build": "NODE_ENV=production tsc --project tsconfig.json",
