@@ -11,7 +11,7 @@ services:
     networks:
       - backend_network
     volumes:
-      - /dev/ttyS0:/dev/ttyS0
+      - /dev/ttyAMA0:/dev/ttyS0
     deploy:
       replicas: 1
       update_config:
