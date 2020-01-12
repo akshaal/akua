@@ -1,0 +1,22 @@
+#!/bin/sh
+
+if test $(whoami) != "root"; then
+    echo
+    echo "${akc_bad}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!$akc_default"
+    echo "${akc_bad}! ROOT is required! Use this script in production only !$akc_default"
+    echo "${akc_bad}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!$akc_default"
+    echo
+    exit 199
+fi
+
+D=$(dirname "$0")
+cd "$D"
+
+docker stack ps akua
+
+AKUA_VERSION=$(cat .git-tag)
+echo "... about to deploy ${akc_value}$AKUA_VERSION${akc_default}"
+
+export AKUA_VERSION
+
+./build-docker && docker stack deploy --prune -c docker-compose.production.yml akua

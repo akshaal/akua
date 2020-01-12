@@ -1,0 +1,16 @@
+version: '3.7'
+
+networks:
+  backend_network:
+    driver: bridge
+    
+services:
+  node:
+    image: akshaal/akua:$AKUA_VERSION
+    restart: always
+    networks:
+      - backend_network
+    deploy:
+      replicas: 1
+      update_config:
+        order: start-first
