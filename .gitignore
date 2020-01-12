@@ -1,0 +1,7 @@
+src/node_modules/
+src/package-lock.json
+src/.next
+src/dist
+logs
+.next
+package-lock.json
