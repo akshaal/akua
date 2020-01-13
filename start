@@ -5,5 +5,6 @@
 cd `dirname "$0"`
 cd src
 
-export AKUA_VERSION=$(git describe --tags --always)
+export AKUA_VERSION=$(git describe --tags --always 2>/dev/null || cat ../.git-tag)
+npm run build
 npm run start
