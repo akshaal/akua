@@ -5,3 +5,4 @@ src/dist
 logs
 .next
 package-lock.json
+.version
