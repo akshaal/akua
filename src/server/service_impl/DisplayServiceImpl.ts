@@ -18,6 +18,10 @@ export default class DisplayServiceImpl extends DisplayService {
 
         this._nextionP.then(nextion => {
             logger.debug("Connected to nextion display", { port, nextion });
+
+            nextion.setValue("dim", 100).then(result => logger.info(result)).catch(reason => {
+                logger.error("Failed to connect to set brightness!", { port, reason });
+            })
         }).catch(reason => {
             logger.error("Failed to connect to nextion display!", { port, reason });
         });
