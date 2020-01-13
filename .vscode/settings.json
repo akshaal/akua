@@ -6,10 +6,12 @@
         "Grafana",
         "Millis",
         "Nextion",
+        "UART",
         "akua",
         "camelcase",
         "gargs",
         "maxsize",
+        "pify",
         "printf",
         "sourcecode"
     ]

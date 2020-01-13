@@ -1,0 +1,1 @@
+create dirs like "module-name/index.d.ts" with "module 'module-name' { decls }" content.

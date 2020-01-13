@@ -1,8 +1,9 @@
 import { injectable } from "inversify";
 import DisplayService from "server/service/DisplayService";
-import Nextion from 'nextion';
 import logger from "server/logger";
 import { config } from "server/config";
+import { openNextionPort } from "server/nextion";
+import type { Nextion } from "server/nextion/nextion";
 
 // ==========================================================================================
 
@@ -10,7 +11,7 @@ const port = config.nextion.port;
 
 @injectable()
 export default class DisplayServiceImpl extends DisplayService {
-    private _nextionP: Promise<Nextion> = Nextion.from(port);
+    private _nextionP: Promise<Nextion> = openNextionPort(port);
 
     constructor() {
         super();
