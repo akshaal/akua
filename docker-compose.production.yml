@@ -2,7 +2,7 @@ version: '3.7'
 
 networks:
   backend_network:
-    driver: bridge
+    driver: overlay
     
 services:
   node:
