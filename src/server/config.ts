@@ -60,7 +60,7 @@ const metrics: MetricsConfig = {
 }
 
 const nextion: NextionConfig = {
-    port: "/dev/ttyS0"
+    port: "/dev/ttyAMA0"
 }
 
 export const config: Config = {
