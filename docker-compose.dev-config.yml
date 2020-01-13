@@ -7,5 +7,3 @@ services:
     user: "${P_UID}:${P_GID}"
     environment:
       AKUA_FORCE_DEV: "true"
-    ports:
-      - 3000:3000
