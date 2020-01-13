@@ -1,0 +1,5 @@
+#!/bin/sh
+
+cd `dirname "$0"`
+
+./prepare && cp .git-tag .prepared-git-tag
