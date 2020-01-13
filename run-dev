@@ -2,6 +2,7 @@
 
 export AKUA_VERSION=$(git describe --tags --always)
 
+cd `dirname "$0"`
 cd src
 
-./prepare-dev && npm run dev
+npm run dev

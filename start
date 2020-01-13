@@ -2,4 +2,8 @@
 
 # Note that this file is copied into the container,
 
+cd `dirname "$0"`
+cd src
+
+export AKUA_VERSION=$(git describe --tags --always)
 npm run start

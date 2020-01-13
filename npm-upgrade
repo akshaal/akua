@@ -1,4 +1,6 @@
 #!/bin/sh
 
+cd `dirname "$0"`
 cd src
+
 ./node_modules/.bin/npm-upgrade "$@"
