@@ -3,7 +3,7 @@
 # Note that this file is copied into the container,
 
 cd `dirname "$0"`
-cd src
+cd src/jsclient
 
 export AKUA_VERSION=$(git describe --tags --always 2>/dev/null || cat ../.git-tag)
 npm run build

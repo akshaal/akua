@@ -1,5 +1,5 @@
 {
-    "typescript.tsdk": "src/node_modules/typescript/lib",
+    "typescript.tsdk": "src/jsclient/node_modules/typescript/lib",
     "cSpell.words": [
         "Autocleanup",
         "Eventloop",

@@ -1,7 +1,6 @@
-src/node_modules/
-src/package-lock.json
-src/.next
-src/dist
+src/jsclient/node_modules/
+src/jsclient/package-lock.json
+src/jsclient/.next
+src/jsclient/dist
 logs
-.next
 package-lock.json
