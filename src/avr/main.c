@@ -4,6 +4,8 @@
 // 16Mhz, that's external oscillator on Nano V3.
 // This doesn't configure it here, it just tells to our build system
 // what we is actually using! Configuration is done using fuses (see flash-avr-fuses).
+// Actual value might be a different one, one can actually measure it to provide
+// some kind of accuracy (calibration) if needed.
 X_CPU$(cpu_freq = 16000000);
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -51,30 +53,33 @@ X_UNUSED_PIN$(C6); // 19 ADC6
 ////////////////////////////////////////////////////////////////////////////////
 // Led pins
 
-X_GPIO_OUTPUT$(xxx_pin, B5);
-
+X_GPIO_OUTPUT$(blue_led, B5);
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-// Main
+// Activity thread
 
-FUNCTION$(void delay_approx300ms()) {
-    for (u16 i = 0; i < 10000; i++) {
-        akat_delay_us(30);
+THREAD$(activity) {
+    // We just invert this value in order to set it to blue_led on each
+    // iteration of the activity thread.
+    STATIC_VAR$(u8 state, initial = 0);
+
+    while(1) {
+        // The pattern of blinking will actually depend on other threads activity
+        blue_led.set(state);
+        state = !state;
+
+        // Give possibility for other threads to run!
+        YIELD$();
     }
 }
 
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// Main
+
 // Main
 X_MAIN$() {
+    // Enable interrupts
     sei();
-    while(1) {
-        xxx_pin.set(1);
-        delay_approx300ms();
-        delay_approx300ms();
-        delay_approx300ms();
-        xxx_pin.set(0);
-        delay_approx300ms();
-        delay_approx300ms();
-        delay_approx300ms();
-    }
 }
