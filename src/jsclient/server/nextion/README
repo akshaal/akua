@@ -1,1 +1,2 @@
-https://github.com/boneskull/nextion
+Copy of https://github.com/boneskull/nextion
+(with possibly minor modifications (like index.ts) to make it typescript-friendly while keeping what we really need)
