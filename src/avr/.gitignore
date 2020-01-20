@@ -1,0 +1,16 @@
+.classpath
+.project
+.cproject
+*.tmp.cpp
+*.tmp.c
+*.s
+*.inline
+*.o
+*.out
+*.i
+*.res
+*.ii
+*.avr
+*.bin
+*.cflags
+firmware.hex
