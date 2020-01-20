@@ -59,7 +59,7 @@ X_GPIO_OUTPUT$(blue_led, B5);
 ////////////////////////////////////////////////////////////////////////////////
 // Activity thread
 
-THREAD$(activity) {
+THREAD$(activity_thread) {
     // We just invert this value in order to set it to blue_led on each
     // iteration of the activity thread.
     STATIC_VAR$(u8 state, initial = 0);
