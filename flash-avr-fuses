@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# Fuse 0 means set, fuse 1 means unset!
+#
+# Low 0xFF all bits are unset:
+#   CKDIV8 - unset, ours CLK is not divided by 8
+#   CKOUT  - unset, we don't output CLK on pin
+#   SUT    - unset, we use maximum startup delay
+#   CKSEL  - unset, we use > 8 MHZ External oscillator
+#
+# High 0xDB all bits are unset:
+#   RSTDISBL - unset, we don't disable external reset signal
+#   WWEN     - unset, we don't enable debug wire
+#   WDTON    - unset, we don't enable watchdog using fuses (we enable it in code)
+#   EESAVE   - unset, we don't preserve EEPROM on chip-erase
+#   BOOTSZ   - whatever, we don't care, because BOOTRST is not set
+#   BOOTRST  - unset, we don't use bootloader (if unset then program starts at address 0x000...,
+#              otherwise it would start using address configured by BOOTSZ)
+
+avrdude -c usbasp -p m328p -B 2400 -U lfuse:w:0xFF:m -U hfuse:w:0xDB:m
