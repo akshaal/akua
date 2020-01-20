@@ -57,28 +57,27 @@ X_GPIO_OUTPUT$(blue_led, B5);
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-// Activity thread
+// Watchdog
 
-THREAD$(activity_thread) {
-    // We just invert this value in order to set it to blue_led on each
-    // iteration of the activity thread.
+X_WATCHDOG$(8s);
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// Activity indication
+
+// This piece of code will executed in akat event/thread loop every 1/10 second.
+// We use to turn the blue led ON and OFF
+X_EVERY_DECISECOND$(counter) {
     STATIC_VAR$(u8 state, initial = 0);
 
-    while(1) {
-        // The pattern of blinking will actually depend on other threads activity
-        blue_led.set(state);
-        state = !state;
-
-        // Give possibility for other threads to run!
-        YIELD$();
-    }
+    blue_led.set(state);
+    state = !state;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 // Main
 
-// Main
 X_MAIN$() {
     // Enable interrupts
     sei();
