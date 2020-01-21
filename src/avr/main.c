@@ -17,7 +17,7 @@ X_CPU$(cpu_freq = 16000000);
 ////////////////////////////////////////////////////////////////////////////////
 // PINS
 
-// For safety reasons we set them to read with pull up
+// For safety reasons we set unused pins to read with pull up
 
 // - left
 X_UNUSED_PIN$(D3); // 1
