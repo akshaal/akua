@@ -19,3 +19,10 @@ ATmega328 spec:
   * **8 bit timers:** 2
   * **PWM:** 6
   * **RTC:** 1
+
+How to test USB/USART/serial comminication:
+
+  # Open: LANG=C minicom -D /dev/ttyUSB0
+  # Press CTRL-a O
+  # Choose "Serial port setup"
+  # Select speed 2400

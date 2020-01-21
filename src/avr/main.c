@@ -1,6 +1,11 @@
 #include <avr/interrupt.h>
 #include <avr/io.h>
 
+// What we are going to use for communication using USB/serial port
+// Frame format is 8N1 (8 bits, no parity, 1 stop bit)
+#define AK_USART_BAUD_RATE  2400
+#define AK_USART_FRAME_FORMAT ((1 << UCSZ00) | (1 << UCSZ01))
+
 // 16Mhz, that's external oscillator on Nano V3.
 // This doesn't configure it here, it just tells to our build system
 // what we is actually using! Configuration is done using fuses (see flash-avr-fuses).
@@ -32,8 +37,8 @@ X_UNUSED_PIN$(B2); // 14
 X_UNUSED_PIN$(B3); // 15 MOSI
 X_UNUSED_PIN$(B4); // 16 MISO
 X_UNUSED_PIN$(D2); // 32
-X_UNUSED_PIN$(D1); // 31 TxD
-X_UNUSED_PIN$(D0); // 30 RxD
+// USART ......... // 31 TxD
+// USART ......... // 30 RxD
 // .................. 29 Reset
 X_UNUSED_PIN$(C5); // 28 ADC5
 X_UNUSED_PIN$(C4); // 27 ADC4
@@ -72,6 +77,44 @@ X_EVERY_DECISECOND$(counter) {
 
     blue_led.set(state);
     state = !state;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// USART
+
+X_INIT$(usart_init) {
+    // Set baudrate
+    const u16 ubrr = akat_cpu_freq_hz() / (AK_USART_BAUD_RATE * 8) - 1;
+    UBRR0H = ubrr >> 8;
+    UBRR0L = ubrr % 256;
+    UCSR0A = 1 << U2X0;
+
+    // Set frame format
+    UCSR0C = AK_USART_FRAME_FORMAT;
+
+    // Enable transmitter
+    UCSR0B = 1 << TXEN0;
+}
+
+THREAD$(usart) {
+    // Wait until USART is ready to transmit next byte
+    // from global var 'byte_to_send';
+    STATIC_VAR$(u8 byte_to_send)
+    SUB$(send_byte) {
+        WAIT_UNTIL$(UCSR0A & (1 << UDRE0));
+        UDR0 = byte_to_send;
+    }
+
+    while(1) {
+        byte_to_send = 'H'; CALL$(send_byte);
+        byte_to_send = 'E'; CALL$(send_byte);
+        byte_to_send = 'L'; CALL$(send_byte);
+        byte_to_send = 'L'; CALL$(send_byte);
+        byte_to_send = 'O'; CALL$(send_byte);
+        byte_to_send = '\r'; CALL$(send_byte);
+        byte_to_send = '\n'; CALL$(send_byte);
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

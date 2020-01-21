@@ -16,7 +16,7 @@ firmware.tmp.c: ${TUNING_SRC} ${SRCS} ${AKAT_SRCS}
 		${AKATPP} ${AKATPP_OPTS} ${TUNING_SRC} ${AKAT_SRCS} ${SRCS} > "firmware.tmp.c" || rm "firmware.tmp.c"
 
 firmware.avr: firmware.tmp.c
-	  XX=`cat firmware.cflags` && ${CC} -Os ${CFLAGS} ${PROJ_CFLAGS} $$XX "$<" -save-temps -o $@ && \
+	  XX=`cat firmware.cflags` && ${CC} -O3 ${CFLAGS} ${PROJ_CFLAGS} $$XX "$<" -save-temps -o $@ && \
 		${OBJDUMP} -d $@ > $@.s && \
 		${OBJCOPY} -j .text -j .data -O ihex firmware.avr firmware.hex && \
 		${NM} --print-size --size-sort --radix=d firmware.avr && \
