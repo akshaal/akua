@@ -98,9 +98,12 @@ X_INIT$(usart_init) {
 }
 
 THREAD$(usart) {
+    // ---- all variable in the thread must be static (green threads requirement)
     STATIC_VAR$(u8 xxxx); // TODO: REMOVE
     STATIC_VAR$(u8 byte_to_send);
     STATIC_VAR$(u8 byte_number_to_send);
+
+    // ---- subroutines has can yield unlike functions
 
     // Wait until USART is ready to transmit next byte
     // from 'byte_to_send';
@@ -125,11 +128,14 @@ THREAD$(usart) {
         byte_to_send = '0' + d; CALL$(send_byte)
     }
 
+    // Sends \r and \n
     SUB$(send_newline) {
         byte_to_send = '\r'; CALL$(send_byte);
         byte_to_send = '\n'; CALL$(send_byte);
     }
 
+    // - - - - - - - - - - -
+    // Main loop in thread (thread will yield on calls to YIELD$ or WAIT_UNTIL$)
     while(1) {
         // TODO: READ COMMANDS
         byte_to_send = 'A'; CALL$(send_byte);
