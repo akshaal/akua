@@ -70,7 +70,7 @@ X_WATCHDOG$(8s);
 ////////////////////////////////////////////////////////////////////////////////
 // Activity indication
 
-// This piece of code will executed in akat event/thread loop every 1/10 second.
+// This piece of code will be executed in akat event/thread loop every 1/10 second.
 // We use to turn the blue led ON and OFF
 X_EVERY_DECISECOND$(counter) {
     STATIC_VAR$(u8 state, initial = 0);
