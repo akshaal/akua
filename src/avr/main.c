@@ -1,7 +1,7 @@
 #include <avr/interrupt.h>
 #include <avr/io.h>
 
-// What we are going to use for communication using USB/serial port
+// Here is what we are going to use for communication using USB/serial port
 // Frame format is 8N1 (8 bits, no parity, 1 stop bit)
 #define AK_USART_BAUD_RATE  2400
 #define AK_USART_FRAME_FORMAT ((1 << UCSZ00) | (1 << UCSZ01))
