@@ -85,7 +85,7 @@ X_EVERY_DECISECOND$(counter) {
 
 X_INIT$(usart_init) {
     // Set baudrate
-    const u16 ubrr = akat_cpu_freq_hz() / (AK_USART_BAUD_RATE * 8) - 1;
+    const u16 ubrr = akat_cpu_freq_hz() / (AK_USART_BAUD_RATE * 8L) - 1;
     UBRR0H = ubrr >> 8;
     UBRR0L = ubrr % 256;
     UCSR0A = 1 << U2X0;
@@ -98,22 +98,44 @@ X_INIT$(usart_init) {
 }
 
 THREAD$(usart) {
+    STATIC_VAR$(u8 xxxx); // TODO: REMOVE
+    STATIC_VAR$(u8 byte_to_send);
+    STATIC_VAR$(u8 byte_number_to_send);
+
     // Wait until USART is ready to transmit next byte
-    // from global var 'byte_to_send';
-    STATIC_VAR$(u8 byte_to_send)
+    // from 'byte_to_send';
     SUB$(send_byte) {
         WAIT_UNTIL$(UCSR0A & (1 << UDRE0));
         UDR0 = byte_to_send;
     }
 
-    while(1) {
-        byte_to_send = 'H'; CALL$(send_byte);
-        byte_to_send = 'E'; CALL$(send_byte);
-        byte_to_send = 'L'; CALL$(send_byte);
-        byte_to_send = 'L'; CALL$(send_byte);
-        byte_to_send = 'O'; CALL$(send_byte);
+    // Send human readable presentation of byte_number_to_send
+    SUB$(send_byte_number) {
+        if (byte_number_to_send > 99) {
+            u8 d = byte_number_to_send / 100;
+            byte_to_send = '0' + d; CALL$(send_byte);
+        }
+
+        if (byte_number_to_send > 9) {
+            u8 d = (byte_number_to_send % 100) / 10;
+            byte_to_send = '0' + d; CALL$(send_byte);
+        }
+
+        u8 d = byte_number_to_send % 10;
+        byte_to_send = '0' + d; CALL$(send_byte)
+    }
+
+    SUB$(send_newline) {
         byte_to_send = '\r'; CALL$(send_byte);
         byte_to_send = '\n'; CALL$(send_byte);
+    }
+
+    while(1) {
+        // TODO: READ COMMANDS
+        byte_to_send = 'A'; CALL$(send_byte);
+        byte_number_to_send = xxxx; CALL$(send_byte_number);
+        CALL$(send_newline);
+        xxxx += 1;
     }
 }
 
