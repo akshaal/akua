@@ -106,38 +106,26 @@ X_INIT$(usart_init) {
 // ----------------------------------------------------------------
 // Interrupt handler for 'byte is received' event..
 
-// Declare as register to speed up interrupt handling
-USE_REG$(usart_rx_next_empty_idx_reg);
-USE_REG$(usart_rx_next_read_idx_reg);
-USE_REG$(usart_overflow_count_reg);
-
 GLOBAL$() {
     STATIC_VAR$(volatile u8 usart_rx_bytes_buf[AK_USART_RX_BUF_SIZE], initial = {});
-    
-     // regs can't be declared volatile
-    STATIC_VAR$(u8 usart_overflow_count_reg);
-    STATIC_VAR$(u8 usart_rx_next_empty_idx_reg);
-    STATIC_VAR$(u8 usart_rx_next_read_idx_reg);
+    STATIC_VAR$(volatile u8 usart_overflow_count);
+    STATIC_VAR$(volatile u8 usart_rx_next_empty_idx);
+    STATIC_VAR$(volatile u8 usart_rx_next_read_idx);
 }
 
 ISR(USART_RX_vect) {
-    // Tell gcc that these register-variables can be changed somehow
-    AKAT_FLUSH_REG_VAR(usart_overflow_count_reg);
-    AKAT_FLUSH_REG_VAR(usart_rx_next_empty_idx_reg);
-    AKAT_FLUSH_REG_VAR(usart_rx_next_read_idx_reg);
-    
     u8 b = UDR0; // we must read here no matter what to clear interrupt flag
 
-    u8 new_next_empty_idx = (usart_rx_next_empty_idx_reg + AKAT_ONE) & (AK_USART_RX_BUF_SIZE - 1);
-    if (new_next_empty_idx == usart_rx_next_read_idx_reg) {
-        usart_overflow_count_reg += AKAT_ONE;
+    u8 new_next_empty_idx = (usart_rx_next_empty_idx + AKAT_ONE) & (AK_USART_RX_BUF_SIZE - 1);
+    if (new_next_empty_idx == usart_rx_next_read_idx) {
+        usart_overflow_count += AKAT_ONE;
         // Don't let it overflow!
-        if (!usart_overflow_count_reg) {
-            usart_overflow_count_reg -= AKAT_ONE;
+        if (!usart_overflow_count) {
+            usart_overflow_count -= AKAT_ONE;
         }
     } else {
-        usart_rx_bytes_buf[usart_rx_next_empty_idx_reg] = b;
-        usart_rx_next_empty_idx_reg = new_next_empty_idx;
+        usart_rx_bytes_buf[usart_rx_next_empty_idx] = b;
+        usart_rx_next_empty_idx = new_next_empty_idx;
     }
 }
 
@@ -184,9 +172,8 @@ THREAD$(usart_writer) {
     // Main loop in thread (thread will yield on calls to YIELD$ or WAIT_UNTIL$)
     while(1) {
         // Usart RX overflow counter
-        AKAT_FLUSH_REG_VAR(usart_overflow_count_reg); // need to use fresh value from register
         byte_to_send = 'A'; CALL$(send_byte);
-        byte_number_to_send = usart_overflow_count_reg; CALL$(send_byte_number);
+        byte_number_to_send = usart_overflow_count; CALL$(send_byte_number);
 
         // Done writing status
         CALL$(send_newline);
@@ -196,8 +183,20 @@ THREAD$(usart_writer) {
 // ----------------------------------------------------------------
 // This thread processes input from uart_input_buffer
 
-// TODO: !!!
+THREAD$(usart_reader) {
+    while(1) {
+        // Wait until there is something to read
+        WAIT_UNTIL$(usart_rx_next_empty_idx != usart_rx_next_read_idx);
 
+        // Read byte first, then increment idx!
+        u8 b = usart_rx_bytes_buf[usart_rx_next_read_idx];
+        usart_rx_next_read_idx = (usart_rx_next_read_idx + 1) & (AK_USART_RX_BUF_SIZE - 1);
+
+        if (b == 'C') {
+            usart_overflow_count -= 10;
+        }
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
