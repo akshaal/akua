@@ -4,7 +4,7 @@
 // Here is what we are going to use for communication using USB/serial port
 // Frame format is 8N1 (8 bits, no parity, 1 stop bit)
 #define AK_USART_BAUD_RATE  2400
-#define AK_USART_FRAME_FORMAT ((1 << UCSZ00) | (1 << UCSZ01))
+#define AK_USART_FRAME_FORMAT (H(UCSZ00) | H(UCSZ01))
 
 // 16Mhz, that's external oscillator on Nano V3.
 // This doesn't configure it here, it just tells to our build system
@@ -88,13 +88,24 @@ X_INIT$(usart_init) {
     const u16 ubrr = akat_cpu_freq_hz() / (AK_USART_BAUD_RATE * 8L) - 1;
     UBRR0H = ubrr >> 8;
     UBRR0L = ubrr % 256;
-    UCSR0A = 1 << U2X0;
+    UCSR0A = H(U2X0);
 
     // Set frame format
     UCSR0C = AK_USART_FRAME_FORMAT;
 
-    // Enable transmitter
-    UCSR0B = 1 << TXEN0;
+    // Enable transmitter, receiver and interrupt for receiver (interrupt for 'byte is received')
+    UCSR0B = H(TXEN0) | H(RXEN0) | H(RXCIE0);
+}
+
+// ----------------------------------------------------------------
+// Interrupt handler for 'byte is received' event..
+
+GLOBAL$() {
+    STATIC_VAR$(volatile u8 xxxx); // TODO: REMOVE
+}
+
+ISR(USART_RX_vect) {
+    xxxx = UDR0;
 }
 
 // ----------------------------------------------------------------
@@ -102,7 +113,6 @@ X_INIT$(usart_init) {
 
 THREAD$(usart_writer) {
     // ---- all variable in the thread must be static (green threads requirement)
-    STATIC_VAR$(u8 xxxx); // TODO: REMOVE
     STATIC_VAR$(u8 byte_to_send);
     STATIC_VAR$(u8 byte_number_to_send);
 
@@ -111,7 +121,7 @@ THREAD$(usart_writer) {
     // Wait until USART is ready to transmit next byte
     // from 'byte_to_send';
     SUB$(send_byte) {
-        WAIT_UNTIL$(UCSR0A & (1 << UDRE0));
+        WAIT_UNTIL$(UCSR0A & H(UDRE0));
         UDR0 = byte_to_send;
     }
 
