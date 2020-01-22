@@ -136,6 +136,7 @@ THREAD$(usart_writer) {
     // ---- all variable in the thread must be static (green threads requirement)
     STATIC_VAR$(u8 byte_to_send);
     STATIC_VAR$(u8 byte_number_to_send);
+    STATIC_VAR$(u8 status_code);
 
     // ---- subroutines has can yield unlike functions
 
@@ -146,8 +147,10 @@ THREAD$(usart_writer) {
         UDR0 = byte_to_send;
     }
 
-    // Send human readable presentation of byte_number_to_send
-    SUB$(send_byte_number) {
+    // Send human readable presentation of byte_number_to_send together with status code (in front of the number)
+    SUB$(send_status) {
+        byte_to_send = status_code; CALL$(send_byte);
+
         if (byte_number_to_send > 99) {
             u8 d = byte_number_to_send / 100;
             byte_to_send = '0' + d; CALL$(send_byte);
@@ -158,25 +161,23 @@ THREAD$(usart_writer) {
             byte_to_send = '0' + d; CALL$(send_byte);
         }
 
-        u8 d = byte_number_to_send % 10;
-        byte_to_send = '0' + d; CALL$(send_byte)
-    }
-
-    // Sends \r and \n
-    SUB$(send_newline) {
-        byte_to_send = '\r'; CALL$(send_byte);
-        byte_to_send = '\n'; CALL$(send_byte);
+        if (byte_number_to_send) {
+            u8 d = byte_number_to_send % 10;
+            byte_to_send = '0' + d; CALL$(send_byte);
+        }
     }
 
     // - - - - - - - - - - -
     // Main loop in thread (thread will yield on calls to YIELD$ or WAIT_UNTIL$)
     while(1) {
         // Usart RX overflow counter
-        byte_to_send = 'A'; CALL$(send_byte);
-        byte_number_to_send = usart_overflow_count; CALL$(send_byte_number);
+        status_code = 'A';
+        byte_number_to_send = usart_overflow_count;
+        CALL$(send_status);
 
-        // Done writing status
-        CALL$(send_newline);
+        // Done writing status, send \r\n
+        byte_to_send = '\r'; CALL$(send_byte);
+        byte_to_send = '\n'; CALL$(send_byte);
     }
 }
 
