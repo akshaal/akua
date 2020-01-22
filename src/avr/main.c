@@ -3,8 +3,14 @@
 
 // Here is what we are going to use for communication using USB/serial port
 // Frame format is 8N1 (8 bits, no parity, 1 stop bit)
-#define AK_USART_BAUD_RATE  2400
-#define AK_USART_FRAME_FORMAT (H(UCSZ00) | H(UCSZ01))
+#define AK_USART_BAUD_RATE     2400
+#define AK_USART_FRAME_FORMAT  (H(UCSZ00) | H(UCSZ01))
+
+// Size of buffer for bytes we receive from USART/USB.
+// RX-Interrupt puts bytes into the given ring buffer if there is space in it.
+// A thread takes byte from the buffer and process it.
+// Must be power 2!
+#define AK_USART_RX_BUF_SIZE  32
 
 // 16Mhz, that's external oscillator on Nano V3.
 // This doesn't configure it here, it just tells to our build system
@@ -100,12 +106,39 @@ X_INIT$(usart_init) {
 // ----------------------------------------------------------------
 // Interrupt handler for 'byte is received' event..
 
+// Declare as register to speed up interrupt handling
+USE_REG$(usart_rx_next_empty_idx_reg);
+USE_REG$(usart_rx_next_read_idx_reg);
+USE_REG$(usart_overflow_count_reg);
+
 GLOBAL$() {
-    STATIC_VAR$(volatile u8 xxxx); // TODO: REMOVE
+    STATIC_VAR$(volatile u8 usart_rx_bytes_buf[AK_USART_RX_BUF_SIZE], initial = {});
+    
+     // regs can't be declared volatile
+    STATIC_VAR$(u8 usart_overflow_count_reg);
+    STATIC_VAR$(u8 usart_rx_next_empty_idx_reg);
+    STATIC_VAR$(u8 usart_rx_next_read_idx_reg);
 }
 
 ISR(USART_RX_vect) {
-    xxxx = UDR0;
+    // Tell gcc that these register-variables can be changed somehow
+    AKAT_FLUSH_REG_VAR(usart_overflow_count_reg);
+    AKAT_FLUSH_REG_VAR(usart_rx_next_empty_idx_reg);
+    AKAT_FLUSH_REG_VAR(usart_rx_next_read_idx_reg);
+    
+    u8 b = UDR0; // we must read here no matter what to clear interrupt flag
+
+    u8 new_next_empty_idx = (usart_rx_next_empty_idx_reg + AKAT_ONE) & (AK_USART_RX_BUF_SIZE - 1);
+    if (new_next_empty_idx == usart_rx_next_read_idx_reg) {
+        usart_overflow_count_reg += AKAT_ONE;
+        // Don't let it overflow!
+        if (!usart_overflow_count_reg) {
+            usart_overflow_count_reg -= AKAT_ONE;
+        }
+    } else {
+        usart_rx_bytes_buf[usart_rx_next_empty_idx_reg] = b;
+        usart_rx_next_empty_idx_reg = new_next_empty_idx;
+    }
 }
 
 // ----------------------------------------------------------------
@@ -150,11 +183,13 @@ THREAD$(usart_writer) {
     // - - - - - - - - - - -
     // Main loop in thread (thread will yield on calls to YIELD$ or WAIT_UNTIL$)
     while(1) {
-        // TODO: READ COMMANDS
+        // Usart RX overflow counter
+        AKAT_FLUSH_REG_VAR(usart_overflow_count_reg); // need to use fresh value from register
         byte_to_send = 'A'; CALL$(send_byte);
-        byte_number_to_send = xxxx; CALL$(send_byte_number);
+        byte_number_to_send = usart_overflow_count_reg; CALL$(send_byte_number);
+
+        // Done writing status
         CALL$(send_newline);
-        xxxx += 1;
     }
 }
 

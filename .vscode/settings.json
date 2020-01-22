@@ -1,18 +1,34 @@
 {
     "typescript.tsdk": "src/jsclient/node_modules/typescript/lib",
     "cSpell.words": [
+        "AGND",
+        "AREF",
+        "AVCC",
         "Autocleanup",
         "Eventloop",
+        "GPIO",
         "Grafana",
+        "MOSI",
         "Millis",
         "Nextion",
+        "RXCIE",
+        "RXEN",
+        "TXEN",
         "UART",
+        "UCSR",
+        "UCSZ",
+        "UDRE",
+        "USART",
+        "akat",
         "akua",
         "camelcase",
         "gargs",
         "maxsize",
         "pify",
         "printf",
-        "sourcecode"
-    ]
+        "sourcecode",
+        "ubrr",
+        "vect"
+    ],
+    "C_Cpp.errorSquiggles": "Disabled"
 }
