@@ -1,13 +1,13 @@
 AVR:
 
-ATmega328/CH340G Nano V3:
+ATmega328P/CH340G Nano V3:
   
   * USB port via CH340G connected to USART
   * ISP(6pin) header 
   * B5 is used for blue led
   * red power led
-
-ATmega328 spec:
+  
+ATmega328P spec:
 
   * **Flash:** 32K
   * **EEPROM:** 1K
