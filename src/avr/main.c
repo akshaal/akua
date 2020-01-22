@@ -181,8 +181,8 @@ THREAD$(usart_writer) {
     }
 }
 
-// ----------------------------------------------------------------
-// This thread processes input from uart_input_buffer
+// ---------------------------------------------------------------------------------
+// This thread processes input from usart_rx_bytes_buf that gets populated in ISR
 
 THREAD$(usart_reader) {
     while(1) {
