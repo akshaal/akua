@@ -192,7 +192,7 @@ THREAD$(usart_reader) {
         u8 b = usart_rx_bytes_buf[usart_rx_next_read_idx];
         usart_rx_next_read_idx = (usart_rx_next_read_idx + 1) & (AK_USART_RX_BUF_SIZE - 1);
 
-        // TODO: This just an example, that doesn't really makes sense
+        // TODO: This is just an example, that doesn't really makes sense
         if (b == 'C') {
             usart_overflow_count -= 10;
         }
