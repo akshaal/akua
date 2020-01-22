@@ -9,7 +9,7 @@
 // Size of buffer for bytes we receive from USART/USB.
 // RX-Interrupt puts bytes into the given ring buffer if there is space in it.
 // A thread takes byte from the buffer and process it.
-// Must be power 2!
+// Must be power of 2!
 #define AK_USART_RX_BUF_SIZE  32
 
 // 16Mhz, that's external oscillator on Nano V3.
