@@ -114,7 +114,7 @@ GLOBAL$() {
 }
 
 ISR(USART_RX_vect) {
-    u8 b = UDR0; // we must read here no matter what to clear interrupt flag
+    u8 b = UDR0; // we must read here, no matter what, to clear interrupt flag
 
     u8 new_next_empty_idx = (usart_rx_next_empty_idx + AKAT_ONE) & (AK_USART_RX_BUF_SIZE - 1);
     if (new_next_empty_idx == usart_rx_next_read_idx) {
