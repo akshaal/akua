@@ -97,7 +97,10 @@ X_INIT$(usart_init) {
     UCSR0B = 1 << TXEN0;
 }
 
-THREAD$(usart) {
+// ----------------------------------------------------------------
+// This thread continuously writes current status into USART
+
+THREAD$(usart_writer) {
     // ---- all variable in the thread must be static (green threads requirement)
     STATIC_VAR$(u8 xxxx); // TODO: REMOVE
     STATIC_VAR$(u8 byte_to_send);
@@ -144,6 +147,12 @@ THREAD$(usart) {
         xxxx += 1;
     }
 }
+
+// ----------------------------------------------------------------
+// This thread processes input from uart_input_buffer
+
+// TODO: !!!
+
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
