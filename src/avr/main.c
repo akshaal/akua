@@ -3,14 +3,14 @@
 
 // Here is what we are going to use for communication using USB/serial port
 // Frame format is 8N1 (8 bits, no parity, 1 stop bit)
-#define AK_USART_BAUD_RATE     2400
+#define AK_USART_BAUD_RATE     9600
 #define AK_USART_FRAME_FORMAT  (H(UCSZ00) | H(UCSZ01))
 
 // Size of buffer for bytes we receive from USART/USB.
 // RX-Interrupt puts bytes into the given ring buffer if there is space in it.
 // A thread takes byte from the buffer and process it.
 // Must be power of 2!
-#define AK_USART_RX_BUF_SIZE  32
+#define AK_USART_RX_BUF_SIZE  128
 
 // 16Mhz, that's external oscillator on Nano V3.
 // This doesn't configure it here, it just tells to our build system
@@ -148,23 +148,32 @@ THREAD$(usart_writer) {
     }
 
     // Send human readable presentation of byte_number_to_send together with status code (in front of the number)
+    // Format <$CODE$ARG$CODE$NUM>, $ARG is an optional number (byte_number_to_send, 0 is never written)
+    // we duplicate value for redundancy.
     SUB$(send_status) {
-        byte_to_send = status_code; CALL$(send_byte);
+        SUB$(send_status_copy) {
+            byte_to_send = status_code; CALL$(send_byte);
 
-        if (byte_number_to_send > 99) {
-            u8 d = byte_number_to_send / 100;
-            byte_to_send = '0' + d; CALL$(send_byte);
+            if (byte_number_to_send > 99) {
+                u8 d = byte_number_to_send / 100;
+                byte_to_send = '0' + d; CALL$(send_byte);
+            }
+
+            if (byte_number_to_send > 9) {
+                u8 d = (byte_number_to_send % 100) / 10;
+                byte_to_send = '0' + d; CALL$(send_byte);
+            }
+
+            if (byte_number_to_send) {
+                u8 d = byte_number_to_send % 10;
+                byte_to_send = '0' + d; CALL$(send_byte);
+            }
         }
 
-        if (byte_number_to_send > 9) {
-            u8 d = (byte_number_to_send % 100) / 10;
-            byte_to_send = '0' + d; CALL$(send_byte);
-        }
-
-        if (byte_number_to_send) {
-            u8 d = byte_number_to_send % 10;
-            byte_to_send = '0' + d; CALL$(send_byte);
-        }
+        byte_to_send = '<'; CALL$(send_byte);
+        CALL$(send_status_copy);
+        CALL$(send_status_copy);
+        byte_to_send = '>'; CALL$(send_byte);
     }
 
     // - - - - - - - - - - -

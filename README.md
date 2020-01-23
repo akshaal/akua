@@ -25,4 +25,4 @@ How to test USB/USART/serial comminication:
   # Open: LANG=C minicom -D /dev/ttyUSB0
   # Press CTRL-a O
   # Choose "Serial port setup"
-  # Select speed 2400
+  # Select speed 9600
