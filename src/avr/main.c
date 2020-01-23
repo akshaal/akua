@@ -194,17 +194,94 @@ THREAD$(usart_writer) {
 // This thread processes input from usart_rx_bytes_buf that gets populated in ISR
 
 THREAD$(usart_reader) {
+    // ---- all variable in the thread must be static (green threads requirement)
+    STATIC_VAR$(u8 command_code);
+    STATIC_VAR$(u8 command_arg);
+
+    // Subroutine that reads a command from the input
+    // Command is expected to be in the format as one printed out by 'send_status'
+    // Command end ups in 'command_code' variable and optional
+    // arguments end ups in 'command_arg'. If commands comes without argument, then
+    // we assume it is 0 by convention.
+    SUB$(read_command) {
+        STATIC_VAR$(u8 dequeued_byte);
+        STATIC_VAR$(u8 command_arg_copy);
+
+        // Gets byte from usart_rx_bytes_buf buffer.
+        SUB$(dequeue_byte) {
+            // Wait until there is something to read
+            WAIT_UNTIL$(usart_rx_next_empty_idx != usart_rx_next_read_idx);
+
+            // Read byte first, then increment idx!
+            dequeued_byte = usart_rx_bytes_buf[usart_rx_next_read_idx];
+            usart_rx_next_read_idx = (usart_rx_next_read_idx + 1) & (AK_USART_RX_BUF_SIZE - 1);
+        }
+
+        // Read arg into command_arg, leaves byte after arg in the dqeueued_byte variable
+        // so the caller must process it as well upon return!
+        SUB$(read_arg_and_dequeue) {
+            command_arg = 0;
+            CALL$(dequeue_byte);
+            if (dequeued_byte >= '0' && dequeued_byte <= '9') {
+                command_arg = dequeued_byte - '0';
+                CALL$(dequeue_byte);
+                if (dequeued_byte >= '0' && dequeued_byte <= '9') {
+                    command_arg = command_arg * 10 + (dequeued_byte - '0');
+                    CALL$(dequeue_byte);
+                    if (dequeued_byte >= '0' && dequeued_byte <= '9') {
+                        if (command_arg < 25 || (command_arg == 25 && dequeued_byte <= '5')) {
+                            command_arg = command_arg * 10 + (dequeued_byte - '0');
+                            CALL$(dequeue_byte);
+                        }
+                    }
+                }
+            }
+        }
+
+    command_reading_start:
+        // Read opening bracket
+        CALL$(dequeue_byte);
+        if (dequeued_byte != '<') {
+            goto command_reading_start;
+        }
+
+        // Read command code
+        // Verify that code is really a code letter
+        CALL$(dequeue_byte);
+        if (dequeued_byte < 'A' || dequeued_byte > 'Z') {
+            goto command_reading_start;
+        }
+        command_code = dequeued_byte;
+
+        // Read arg and save it as copy, note that read_arg aborts
+        // when it either read foruth character in a row or a non digit character
+        // so we have to process it (dequeued_byte) when the call to read_arg returns.
+        // Verify that stuff that comes after the arg is a command code again!
+        CALL$(read_arg_and_dequeue);
+        if (dequeued_byte != command_code) {
+            goto command_reading_start;
+        }
+        command_arg_copy = command_arg;
+
+        // Read command arg once again (it comes after a copy of command code which we already verified)
+        // We also verify that there is an > character right after the arg
+        // And of course we verify that arg matches the copy we read before.
+        CALL$(read_arg_and_dequeue);
+        if (dequeued_byte != '>' || command_arg_copy != command_arg) {
+            goto command_reading_start;
+        }
+    }
+
+    // - - - - - - - - - - -
+    // Main loop in thread (thread will yield on calls to YIELD$ or WAIT_UNTIL$)
     while(1) {
-        // Wait until there is something to read
-        WAIT_UNTIL$(usart_rx_next_empty_idx != usart_rx_next_read_idx);
+        // Read command and put results into 'command_code' and 'command_arg'.
+        CALL$(read_command);
 
-        // Read byte first, then increment idx!
-        u8 b = usart_rx_bytes_buf[usart_rx_next_read_idx];
-        usart_rx_next_read_idx = (usart_rx_next_read_idx + 1) & (AK_USART_RX_BUF_SIZE - 1);
-
-        // TODO: This is just an example, that doesn't really makes sense
-        if (b == 'C') {
-            usart_overflow_count -= 10;
+        switch(command_code) {
+        case 'C':
+            usart_overflow_count = command_arg;
+            break;
         }
     }
 }

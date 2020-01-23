@@ -4,3 +4,4 @@ src/jsclient/.next
 src/jsclient/dist
 logs
 package-lock.json
+.#*

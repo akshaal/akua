@@ -7,4 +7,4 @@ make || exit
 echo
 echo "Flashing..."
 
-avrdude -c usbasp -p m328p -B 2400 -U flash:w:firmware.hex:a
+avrdude -c usbasp -p m328p -B 9600 -U flash:w:firmware.hex:a
