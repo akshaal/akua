@@ -1,28 +1,13 @@
 AVR:
 
-ATmega328P/CH340G Nano V3:
+Using Robotdyn ATmega2560 Pro X:
   
-  * USB port via CH340G connected to USART
+  * USB port via CH340C connected to USART0
   * ISP(6pin) header 
-  * B5 is used for blue led
+  * B7 is used for blue led
   * red power led
+  * two other leds is USART0 communication
   
-ATmega328P spec:
-
-  * **Flash:** 32K
-  * **EEPROM:** 1K
-  * **SRAM:** 2K
-  * **10-ADC:** 6
-  * **CPU:** 20MHz max
-  * **IO-pins:** 23 IO pins
-  * **16 bit timer:** 1
-  * **8 bit timers:** 2
-  * **PWM:** 6
-  * **RTC:** 1
-
 How to test USB/USART/serial comminication:
 
-  # Open: LANG=C minicom -D /dev/ttyUSB0
-  # Press CTRL-a O
-  # Choose "Serial port setup"
-  # Select speed 9600
+  LANG=C minicom -D /dev/ttyUSB0 -b 9600

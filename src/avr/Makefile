@@ -2,7 +2,7 @@ AKAT_DIR=$(PWD)/$({0%/*})/../../../akatlib4
 
 include ${AKAT_DIR}/src/akat.Makefile
 
-MCU=atmega328
+MCU=atmega2560
 SRCS=main.c
 TUNING_SRC=tuning.c
 
@@ -26,4 +26,4 @@ firmware.avr: firmware.tmp.c
 		dos2unix firmware.hex
 
 clean:
-	rm -f *.ii *.o *.i *.s *.a *.avr *.tmp.c *.hex *.bin
+	rm -f *.ii *.o *.i *.s *.a *.avr *.tmp.c *.hex *.bin *.inline *.out *.cflags *.tmp.res
