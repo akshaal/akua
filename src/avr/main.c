@@ -282,6 +282,31 @@ THREAD$(usart0_writer) {
         byte_number_to_send = usart0_overflow_count;
         CALL$(send_status);
 
+        // DS18B20 Aqua: disconnects
+        status_code = 'B';
+        byte_number_to_send = ds18b20_aqua.get_disconnects();
+        CALL$(send_status);
+
+        // DS18B20 Aqua: crc_errors
+        status_code = 'C';
+        byte_number_to_send = ds18b20_aqua.get_crc_errors();
+        CALL$(send_status);
+
+        // DS18B20 Aqua: updated_deciseconds_ago
+        status_code = 'D';
+        byte_number_to_send = ds18b20_aqua.get_updated_deciseconds_ago();
+        CALL$(send_status);
+
+        // DS18B20 Aqua: temperature most significant byte
+        status_code = 'E';
+        byte_number_to_send = ds18b20_aqua.get_temperature_msb();
+        CALL$(send_status);
+
+        // DS18B20 Aqua: temperature least significant byte
+        status_code = 'F';
+        byte_number_to_send = ds18b20_aqua.get_temperature_lsb();
+        CALL$(send_status);
+
         // Done writing status, send \r\n
         byte_to_send = '\r'; CALL$(send_byte);
         byte_to_send = '\n'; CALL$(send_byte);
@@ -377,7 +402,7 @@ THREAD$(usart0_reader) {
         CALL$(read_command);
 
         switch(command_code) {
-        case 'C':
+        case 'C': // TODO: Remove this crap!
             usart0_overflow_count = command_arg;
             break;
         }
