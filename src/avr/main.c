@@ -231,17 +231,17 @@ ISR(USART0_RX_vect) {
 // USART0(USB): This thread continuously writes current status into USART0
 
 THREAD$(usart0_writer) {
-    // ---- all variable in the thread must be static (green threads requirement)
+    // ---- All variable in the thread must be static (green threads requirement)
     STATIC_VAR$(u8 byte_to_send);
     STATIC_VAR$(u8 byte_number_to_send);
     STATIC_VAR$(u8 status_code);
 
-    // ---- subroutines has can yield unlike functions
+    // ---- Subroutines can yield unlike functions
 
-    // Wait until USART0 is ready to transmit next byte
-    // from 'byte_to_send';
     SUB$(send_byte) {
-        WAIT_UNTIL$(UCSR0A & H(UDRE0));
+        // Wait until USART0 is ready to transmit next byte
+        // from 'byte_to_send';
+        WAIT_UNTIL$(UCSR0A & H(UDRE0), unlikely);
         UDR0 = byte_to_send;
     }
 
@@ -308,7 +308,7 @@ THREAD$(usart0_reader) {
         // Gets byte from usart0_rx_bytes_buf buffer.
         SUB$(dequeue_byte) {
             // Wait until there is something to read
-            WAIT_UNTIL$(usart0_rx_next_empty_idx != usart0_rx_next_read_idx);
+            WAIT_UNTIL$(usart0_rx_next_empty_idx != usart0_rx_next_read_idx, unlikely);
 
             // Read byte first, then increment idx!
             dequeued_byte = usart0_rx_bytes_buf[usart0_rx_next_read_idx];
