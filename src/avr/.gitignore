@@ -1,8 +1,6 @@
 .classpath
 .project
 .cproject
-*.tmp.cpp
-*.tmp.c
 *.s
 *.inline
 *.o

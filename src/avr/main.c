@@ -104,8 +104,8 @@ X_UNUSED_PIN$(A5); // 73   PA5 ( AD5 ) Digital pin 27
 X_UNUSED_PIN$(A4); // 74   PA4 ( AD4 ) Digital pin 26
 X_UNUSED_PIN$(A3); // 75   PA3 ( AD3 ) Digital pin 25
 X_UNUSED_PIN$(A2); // 76   PA2 ( AD2 ) Digital pin 24
-X_UNUSED_PIN$(A1); // 77   PA1 ( AD1 ) Digital pin 23
-// DS18B20 DATA PIN ..78   PA0 ( AD0 ) Digital pin 22
+// DS18B20 Case ..... 77   PA1 ( AD1 ) Digital pin 23
+// DS18B20 Aqua ..... 78   PA0 ( AD0 ) Digital pin 22
 X_UNUSED_PIN$(J7); // 79   PJ7
 // .................. 80   VCC
 // .................. 81   GND
@@ -180,6 +180,7 @@ X_EVERY_DECISECOND$(counter) {
 // DS18B20
 
 X_DS18B20$(ds18b20_aqua, A0);
+X_DS18B20$(ds18b20_case, A1);
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -282,6 +283,8 @@ THREAD$(usart0_writer) {
         byte_number_to_send = usart0_overflow_count;
         CALL$(send_status);
 
+        // ---------- Temperature: AQUA
+
         // DS18B20 Aqua: disconnects
         status_code = 'B';
         byte_number_to_send = ds18b20_aqua.get_disconnects();
@@ -305,6 +308,33 @@ THREAD$(usart0_writer) {
         // DS18B20 Aqua: temperature least significant byte
         status_code = 'F';
         byte_number_to_send = ds18b20_aqua.get_temperature_lsb();
+        CALL$(send_status);
+
+        // ---------- Temperature: CASE
+
+        // DS18B20 Case: disconnects
+        status_code = 'G';
+        byte_number_to_send = ds18b20_case.get_disconnects();
+        CALL$(send_status);
+
+        // DS18B20 Case: crc_errors
+        status_code = 'H';
+        byte_number_to_send = ds18b20_case.get_crc_errors();
+        CALL$(send_status);
+
+        // DS18B20 Case: updated_deciseconds_ago
+        status_code = 'I';
+        byte_number_to_send = ds18b20_case.get_updated_deciseconds_ago();
+        CALL$(send_status);
+
+        // DS18B20 Case: temperature most significant byte
+        status_code = 'J';
+        byte_number_to_send = ds18b20_case.get_temperature_msb();
+        CALL$(send_status);
+
+        // DS18B20 Case: temperature least significant byte
+        status_code = 'K';
+        byte_number_to_send = ds18b20_case.get_temperature_lsb();
         CALL$(send_status);
 
         // Done writing status, send \r\n
