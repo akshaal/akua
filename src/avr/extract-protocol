@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# Do in two steps to avoid overriding in case of failure
+
+cat firmware.tmp.c | grep COMMPROTO | sed 's/^\s\+\(.*\)$/\1/' | sed 's/"//g' | sed 's/()//g' > serial-protocol.txt.tmp \
+        && cat serial-protocol.txt.tmp > ../../serial-protocol.txt

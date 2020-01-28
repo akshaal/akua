@@ -231,11 +231,11 @@ ISR(USART0_RX_vect) {
 // ----------------------------------------------------------------
 // USART0(USB): This thread continuously writes current status into USART0
 
-THREAD$(usart0_writer) {
+// NOTE: Just replace state_type to u16 if we ran out of state space..
+THREAD$(usart0_writer, state_type = u8) {
     // ---- All variable in the thread must be static (green threads requirement)
     STATIC_VAR$(u8 byte_to_send);
     STATIC_VAR$(u8 byte_number_to_send);
-    STATIC_VAR$(u8 status_code);
 
     // ---- Subroutines can yield unlike functions
 
@@ -246,96 +246,59 @@ THREAD$(usart0_writer) {
         UDR0 = byte_to_send;
     }
 
-    // Send human readable presentation of byte_number_to_send together with status code (in front of the number)
-    // Format <$CODE$ARG$CODE$NUM>, $ARG is an optional number (byte_number_to_send, 0 is never written)
-    // we duplicate value for redundancy.
-    SUB$(send_status) {
-        SUB$(send_status_copy) {
-            byte_to_send = status_code; CALL$(send_byte);
-
-            if (byte_number_to_send > 99) {
-                u8 d = byte_number_to_send / 100;
-                byte_to_send = '0' + d; CALL$(send_byte);
-            }
-
-            if (byte_number_to_send > 9) {
-                u8 d = (byte_number_to_send % 100) / 10;
-                byte_to_send = '0' + d; CALL$(send_byte);
-            }
-
-            if (byte_number_to_send) {
-                u8 d = byte_number_to_send % 10;
-                byte_to_send = '0' + d; CALL$(send_byte);
-            }
+    SUB$(send_byte_number) {
+        if (byte_number_to_send > 99) {
+            u8 d = byte_number_to_send / 100;
+            byte_to_send = '0' + d; CALL$(send_byte);
         }
 
-        byte_to_send = '<'; CALL$(send_byte);
-        CALL$(send_status_copy);
-        CALL$(send_status_copy);
-        byte_to_send = '>'; CALL$(send_byte);
+        if (byte_number_to_send > 9) {
+            u8 d = (byte_number_to_send % 100) / 10;
+            byte_to_send = '0' + d; CALL$(send_byte);
+        }
+
+        if (byte_number_to_send) {
+            u8 d = byte_number_to_send % 10;
+            byte_to_send = '0' + d; CALL$(send_byte);
+        }
+    }
+
+    // ---- Macro.that writes the given status into UART
+
+    DEFINE_MACRO$(WRITE_STATUS, required_args = ["name", "id"], keep_rest_as_is = True) {
+        byte_to_send = ' '; CALL$(send_byte);
+        byte_to_send = '${id}'; CALL$(send_byte);
+        % for arg in rest:
+            /*
+              COMMPROTO: ${id}${loop.index+1}: ${name}: ${arg}
+            */
+            byte_number_to_send = ${arg}; CALL$(send_byte_number);
+            % if not loop.last:
+                byte_to_send = ','; CALL$(send_byte);
+            % endif
+        % endfor
     }
 
     // - - - - - - - - - - -
     // Main loop in thread (thread will yield on calls to YIELD$ or WAIT_UNTIL$)
     while(1) {
-        // Usart0 RX overflow counter
-        status_code = 'A';
-        byte_number_to_send = usart0_overflow_count;
-        CALL$(send_status);
+        WRITE_STATUS$(UART0, A, usart0_overflow_count);
 
-        // ---------- Temperature: AQUA
+        WRITE_STATUS$("Aquarium temperature",
+                      B,
+                      ds18b20_aqua.get_crc_errors(),
+                      ds18b20_aqua.get_disconnects(),
+                      ds18b20_aqua.get_temperature_msb(),
+                      ds18b20_aqua.get_temperature_lsb(),
+                      ds18b20_aqua.get_updated_deciseconds_ago());
 
-        // DS18B20 Aqua: disconnects
-        status_code = 'B';
-        byte_number_to_send = ds18b20_aqua.get_disconnects();
-        CALL$(send_status);
-
-        // DS18B20 Aqua: crc_errors
-        status_code = 'C';
-        byte_number_to_send = ds18b20_aqua.get_crc_errors();
-        CALL$(send_status);
-
-        // DS18B20 Aqua: updated_deciseconds_ago
-        status_code = 'D';
-        byte_number_to_send = ds18b20_aqua.get_updated_deciseconds_ago();
-        CALL$(send_status);
-
-        // DS18B20 Aqua: temperature most significant byte
-        status_code = 'E';
-        byte_number_to_send = ds18b20_aqua.get_temperature_msb();
-        CALL$(send_status);
-
-        // DS18B20 Aqua: temperature least significant byte
-        status_code = 'F';
-        byte_number_to_send = ds18b20_aqua.get_temperature_lsb();
-        CALL$(send_status);
-
-        // ---------- Temperature: CASE
-
-        // DS18B20 Case: disconnects
-        status_code = 'G';
-        byte_number_to_send = ds18b20_case.get_disconnects();
-        CALL$(send_status);
-
-        // DS18B20 Case: crc_errors
-        status_code = 'H';
-        byte_number_to_send = ds18b20_case.get_crc_errors();
-        CALL$(send_status);
-
-        // DS18B20 Case: updated_deciseconds_ago
-        status_code = 'I';
-        byte_number_to_send = ds18b20_case.get_updated_deciseconds_ago();
-        CALL$(send_status);
-
-        // DS18B20 Case: temperature most significant byte
-        status_code = 'J';
-        byte_number_to_send = ds18b20_case.get_temperature_msb();
-        CALL$(send_status);
-
-        // DS18B20 Case: temperature least significant byte
-        status_code = 'K';
-        byte_number_to_send = ds18b20_case.get_temperature_lsb();
-        CALL$(send_status);
+        WRITE_STATUS$("Case temperature",
+                      C,
+                      ds18b20_case.get_crc_errors(),
+                      ds18b20_case.get_disconnects(),
+                      ds18b20_case.get_temperature_msb(),
+                      ds18b20_case.get_temperature_lsb(),
+                      ds18b20_case.get_updated_deciseconds_ago());
 
         // Done writing status, send \r\n
         byte_to_send = '\r'; CALL$(send_byte);

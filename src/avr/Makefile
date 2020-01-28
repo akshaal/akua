@@ -8,7 +8,7 @@ TUNING_SRC=tuning.c
 
 PROJ_CFLAGS=-fdump-ipa-inline
 
-all: firmware.avr
+all: firmware.avr ../../serial-protocol.txt
 
 distclean: clean
 
@@ -25,5 +25,8 @@ firmware.avr: firmware.tmp.c
 		hex2bin firmware.hex && \
 		dos2unix firmware.hex
 
+../../serial-protocol.txt: firmware.tmp.c
+		./extract-protocol 
+
 clean:
-	rm -f *.ii *.o *.i *.s *.a *.avr *.tmp.c *.hex *.bin *.inline *.out *.cflags *.tmp.res
+	rm -f *.ii *.o *.i *.s *.a *.avr *.hex *.bin *.inline *.out *.cflags *.tmp.res
