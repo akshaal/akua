@@ -234,6 +234,7 @@ ISR(USART0_RX_vect) {
 // NOTE: Just replace state_type to u16 if we ran out of state space..
 THREAD$(usart0_writer, state_type = u8) {
     // ---- All variable in the thread must be static (green threads requirement)
+    STATIC_VAR$(u8 crc);
     STATIC_VAR$(u8 byte_to_send);
     STATIC_VAR$(u8 byte_number_to_send);
 
@@ -244,6 +245,7 @@ THREAD$(usart0_writer, state_type = u8) {
         // from 'byte_to_send';
         WAIT_UNTIL$(UCSR0A & H(UDRE0), unlikely);
         UDR0 = byte_to_send;
+        crc = akat_crc_add(crc, byte_to_send);
     }
 
     SUB$(send_byte_number) {
@@ -282,6 +284,8 @@ THREAD$(usart0_writer, state_type = u8) {
     // - - - - - - - - - - -
     // Main loop in thread (thread will yield on calls to YIELD$ or WAIT_UNTIL$)
     while(1) {
+        crc = 0;
+
         WRITE_STATUS$(UART0, A, usart0_overflow_count);
 
         WRITE_STATUS$("Aquarium temperature",
@@ -300,7 +304,9 @@ THREAD$(usart0_writer, state_type = u8) {
                       ds18b20_case.get_temperature_lsb(),
                       ds18b20_case.get_updated_deciseconds_ago());
 
-        // Done writing status, send \r\n
+        // Done writing status, send: CRC\r\n
+        byte_to_send = ' '; CALL$(send_byte);
+        byte_number_to_send = crc; CALL$(send_byte_number);
         byte_to_send = '\r'; CALL$(send_byte);
         byte_to_send = '\n'; CALL$(send_byte);
     }

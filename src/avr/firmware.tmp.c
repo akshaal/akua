@@ -116,6 +116,14 @@ static AKAT_FORCE_INLINE void akat_delay_us(uint32_t us) {
 
 ///////////////////////////////////////////////////////////////////
 // Useful functions for rapid development for AVR microcontrollers.
+// 2019 (C) Akshaal, Apache License
+///////////////////////////////////////////////////////////////////
+
+static AKAT_PURE u8 akat_crc_add(u8 const crc, u8 const byte);
+static u8 akat_crc_add_bytes(u8 const crc, u8 const *bytes, const u8 size);
+
+///////////////////////////////////////////////////////////////////
+// Useful functions for rapid development for AVR microcontrollers.
 // 2017 (C) Akshaal, Apache License
 ///////////////////////////////////////////////////////////////////
 
@@ -241,6 +249,39 @@ static AKAT_PURE AKAT_UNUSED u8 akat_bcd_dec(u8 bcd) {
 
 
 
+
+///////////////////////////////////////////////////////////////////
+// Useful functions for rapid development for AVR microcontrollers.
+// 2019 (C) Akshaal, Apache License
+///////////////////////////////////////////////////////////////////
+
+static AKAT_UNUSED AKAT_PURE u8 akat_crc_add(u8 const orig_crc, u8 const orig_byte) {
+    u8 crc = orig_crc;
+    u8 byte = orig_byte;
+
+    for (u8 j = 0; j < 8; j++) {
+        u8 m = (crc ^ byte) & AKAT_ONE;
+        crc >>= 1;
+
+        if (m) {
+            crc ^= 0x8C;
+        }
+
+        byte >>= 1;
+    }
+
+    return crc;
+}
+
+static AKAT_UNUSED u8 akat_crc_add_bytes(u8 const orig_crc, u8 const *bytes, const u8 size) {
+    u8 crc = orig_crc;
+
+    for (u8 i = 0; i < size; i++) {
+        crc = akat_crc_add(crc, bytes[i]);
+    }
+
+    return crc;
+}
 
 ///////////////////////////////////////////////////////////////////
 // Useful functions for rapid development for AVR microcontrollers.
@@ -17938,19 +17979,19 @@ static AKAT_FORCE_INLINE u8 ds18b20_aqua__pin__is_set__impl() {
 }
 static AKAT_FORCE_INLINE void ds18b20_aqua__pin__set__impl(u8 state) {
 #define is_set__impl ds18b20_aqua__pin__is_set__impl
-#define set__impl ds18b20_aqua__pin__set__impl
 #define set_input_mode__impl ds18b20_aqua__pin__set_input_mode__impl
 #define set_output_mode__impl ds18b20_aqua__pin__set_output_mode__impl
+#define set__impl ds18b20_aqua__pin__set__impl
     ds18b20_aqua__pin__port.set(state);
 #undef is_set__impl
-#undef set__impl
 #undef set_input_mode__impl
 #undef set_output_mode__impl
+#undef set__impl
 }
 #define is_set__impl ds18b20_aqua__pin__is_set__impl
-#define set__impl ds18b20_aqua__pin__set__impl
 #define set_input_mode__impl ds18b20_aqua__pin__set_input_mode__impl
 #define set_output_mode__impl ds18b20_aqua__pin__set_output_mode__impl
+#define set__impl ds18b20_aqua__pin__set__impl
 
 ds18b20_aqua__pin_t const ds18b20_aqua__pin = {.set_input_mode = &set_input_mode__impl
                                                ,
@@ -17963,21 +18004,21 @@ ds18b20_aqua__pin_t const ds18b20_aqua__pin = {.set_input_mode = &set_input_mode
 
 
 #undef is_set__impl
-#undef set__impl
 #undef set_input_mode__impl
 #undef set_output_mode__impl
+#undef set__impl
 #define is_set__impl ds18b20_aqua__pin__is_set__impl
-#define set__impl ds18b20_aqua__pin__set__impl
 #define set_input_mode__impl ds18b20_aqua__pin__set_input_mode__impl
 #define set_output_mode__impl ds18b20_aqua__pin__set_output_mode__impl
+#define set__impl ds18b20_aqua__pin__set__impl
 
 
 ;
 
 #define is_set__impl ds18b20_aqua__pin__is_set__impl
-#define set__impl ds18b20_aqua__pin__set__impl
 #define set_input_mode__impl ds18b20_aqua__pin__set_input_mode__impl
 #define set_output_mode__impl ds18b20_aqua__pin__set_output_mode__impl
+#define set__impl ds18b20_aqua__pin__set__impl
 
 
 
@@ -17986,9 +18027,9 @@ ds18b20_aqua__pin_t const ds18b20_aqua__pin = {.set_input_mode = &set_input_mode
 
 
 #undef is_set__impl
-#undef set__impl
 #undef set_input_mode__impl
 #undef set_output_mode__impl
+#undef set__impl
 ;
 
 
@@ -18075,42 +18116,42 @@ static AKAT_FORCE_INLINE u8 ds18b20_aqua__get_disconnects__impl() {
 #undef get_disconnects__impl
 }
 static AKAT_FORCE_INLINE u8 ds18b20_aqua__get_crc_errors__impl() {
-#define get_crc_errors__impl ds18b20_aqua__get_crc_errors__impl
 #define get_updated_deciseconds_ago__impl ds18b20_aqua__get_updated_deciseconds_ago__impl
+#define get_crc_errors__impl ds18b20_aqua__get_crc_errors__impl
 #define get_disconnects__impl ds18b20_aqua__get_disconnects__impl
     return ds18b20_aqua__crc_errors;
-#undef get_crc_errors__impl
 #undef get_updated_deciseconds_ago__impl
+#undef get_crc_errors__impl
 #undef get_disconnects__impl
 }
 static AKAT_FORCE_INLINE u8 ds18b20_aqua__get_temperature_lsb__impl() {
-#define get_crc_errors__impl ds18b20_aqua__get_crc_errors__impl
 #define get_temperature_lsb__impl ds18b20_aqua__get_temperature_lsb__impl
 #define get_updated_deciseconds_ago__impl ds18b20_aqua__get_updated_deciseconds_ago__impl
+#define get_crc_errors__impl ds18b20_aqua__get_crc_errors__impl
 #define get_disconnects__impl ds18b20_aqua__get_disconnects__impl
     return ds18b20_aqua__temperature_lsb;
-#undef get_crc_errors__impl
 #undef get_temperature_lsb__impl
 #undef get_updated_deciseconds_ago__impl
+#undef get_crc_errors__impl
 #undef get_disconnects__impl
 }
 static AKAT_FORCE_INLINE u8 ds18b20_aqua__get_temperature_msb__impl() {
-#define get_crc_errors__impl ds18b20_aqua__get_crc_errors__impl
-#define get_temperature_lsb__impl ds18b20_aqua__get_temperature_lsb__impl
 #define get_temperature_msb__impl ds18b20_aqua__get_temperature_msb__impl
+#define get_temperature_lsb__impl ds18b20_aqua__get_temperature_lsb__impl
 #define get_updated_deciseconds_ago__impl ds18b20_aqua__get_updated_deciseconds_ago__impl
+#define get_crc_errors__impl ds18b20_aqua__get_crc_errors__impl
 #define get_disconnects__impl ds18b20_aqua__get_disconnects__impl
     return ds18b20_aqua__temperature_msb;
-#undef get_crc_errors__impl
-#undef get_temperature_lsb__impl
 #undef get_temperature_msb__impl
+#undef get_temperature_lsb__impl
 #undef get_updated_deciseconds_ago__impl
+#undef get_crc_errors__impl
 #undef get_disconnects__impl
 }
-#define get_crc_errors__impl ds18b20_aqua__get_crc_errors__impl
-#define get_temperature_lsb__impl ds18b20_aqua__get_temperature_lsb__impl
 #define get_temperature_msb__impl ds18b20_aqua__get_temperature_msb__impl
+#define get_temperature_lsb__impl ds18b20_aqua__get_temperature_lsb__impl
 #define get_updated_deciseconds_ago__impl ds18b20_aqua__get_updated_deciseconds_ago__impl
+#define get_crc_errors__impl ds18b20_aqua__get_crc_errors__impl
 #define get_disconnects__impl ds18b20_aqua__get_disconnects__impl
 
 ds18b20_aqua_t const ds18b20_aqua = {.get_updated_deciseconds_ago = &get_updated_deciseconds_ago__impl
@@ -18125,25 +18166,25 @@ ds18b20_aqua_t const ds18b20_aqua = {.get_updated_deciseconds_ago = &get_updated
                                     };
 
 
-#undef get_crc_errors__impl
-#undef get_temperature_lsb__impl
 #undef get_temperature_msb__impl
+#undef get_temperature_lsb__impl
 #undef get_updated_deciseconds_ago__impl
+#undef get_crc_errors__impl
 #undef get_disconnects__impl
-#define get_crc_errors__impl ds18b20_aqua__get_crc_errors__impl
-#define get_temperature_lsb__impl ds18b20_aqua__get_temperature_lsb__impl
-#define get_disconnects__impl ds18b20_aqua__get_disconnects__impl
 #define get_updated_deciseconds_ago__impl ds18b20_aqua__get_updated_deciseconds_ago__impl
 #define get_temperature_msb__impl ds18b20_aqua__get_temperature_msb__impl
+#define get_temperature_lsb__impl ds18b20_aqua__get_temperature_lsb__impl
+#define get_crc_errors__impl ds18b20_aqua__get_crc_errors__impl
+#define get_disconnects__impl ds18b20_aqua__get_disconnects__impl
 
 
 ;
 
-#define get_crc_errors__impl ds18b20_aqua__get_crc_errors__impl
-#define get_temperature_lsb__impl ds18b20_aqua__get_temperature_lsb__impl
-#define get_disconnects__impl ds18b20_aqua__get_disconnects__impl
 #define get_updated_deciseconds_ago__impl ds18b20_aqua__get_updated_deciseconds_ago__impl
 #define get_temperature_msb__impl ds18b20_aqua__get_temperature_msb__impl
+#define get_temperature_lsb__impl ds18b20_aqua__get_temperature_lsb__impl
+#define get_crc_errors__impl ds18b20_aqua__get_crc_errors__impl
+#define get_disconnects__impl ds18b20_aqua__get_disconnects__impl
 
 
 
@@ -18152,11 +18193,11 @@ ds18b20_aqua_t const ds18b20_aqua = {.get_updated_deciseconds_ago = &get_updated
 
 
 
-#undef get_crc_errors__impl
-#undef get_temperature_lsb__impl
-#undef get_disconnects__impl
 #undef get_updated_deciseconds_ago__impl
 #undef get_temperature_msb__impl
+#undef get_temperature_lsb__impl
+#undef get_crc_errors__impl
+#undef get_disconnects__impl
 ;
 
 
@@ -18366,19 +18407,19 @@ static AKAT_FORCE_INLINE u8 ds18b20_case__pin__is_set__impl() {
 }
 static AKAT_FORCE_INLINE void ds18b20_case__pin__set__impl(u8 state) {
 #define is_set__impl ds18b20_case__pin__is_set__impl
-#define set__impl ds18b20_case__pin__set__impl
 #define set_input_mode__impl ds18b20_case__pin__set_input_mode__impl
 #define set_output_mode__impl ds18b20_case__pin__set_output_mode__impl
+#define set__impl ds18b20_case__pin__set__impl
     ds18b20_case__pin__port.set(state);
 #undef is_set__impl
-#undef set__impl
 #undef set_input_mode__impl
 #undef set_output_mode__impl
+#undef set__impl
 }
 #define is_set__impl ds18b20_case__pin__is_set__impl
-#define set__impl ds18b20_case__pin__set__impl
 #define set_input_mode__impl ds18b20_case__pin__set_input_mode__impl
 #define set_output_mode__impl ds18b20_case__pin__set_output_mode__impl
+#define set__impl ds18b20_case__pin__set__impl
 
 ds18b20_case__pin_t const ds18b20_case__pin = {.set_input_mode = &set_input_mode__impl
                                                ,
@@ -18391,21 +18432,21 @@ ds18b20_case__pin_t const ds18b20_case__pin = {.set_input_mode = &set_input_mode
 
 
 #undef is_set__impl
-#undef set__impl
 #undef set_input_mode__impl
 #undef set_output_mode__impl
+#undef set__impl
 #define is_set__impl ds18b20_case__pin__is_set__impl
-#define set__impl ds18b20_case__pin__set__impl
 #define set_input_mode__impl ds18b20_case__pin__set_input_mode__impl
 #define set_output_mode__impl ds18b20_case__pin__set_output_mode__impl
+#define set__impl ds18b20_case__pin__set__impl
 
 
 ;
 
 #define is_set__impl ds18b20_case__pin__is_set__impl
-#define set__impl ds18b20_case__pin__set__impl
 #define set_input_mode__impl ds18b20_case__pin__set_input_mode__impl
 #define set_output_mode__impl ds18b20_case__pin__set_output_mode__impl
+#define set__impl ds18b20_case__pin__set__impl
 
 
 
@@ -18414,9 +18455,9 @@ ds18b20_case__pin_t const ds18b20_case__pin = {.set_input_mode = &set_input_mode
 
 
 #undef is_set__impl
-#undef set__impl
 #undef set_input_mode__impl
 #undef set_output_mode__impl
+#undef set__impl
 ;
 
 
@@ -18503,42 +18544,42 @@ static AKAT_FORCE_INLINE u8 ds18b20_case__get_disconnects__impl() {
 #undef get_disconnects__impl
 }
 static AKAT_FORCE_INLINE u8 ds18b20_case__get_crc_errors__impl() {
-#define get_crc_errors__impl ds18b20_case__get_crc_errors__impl
 #define get_updated_deciseconds_ago__impl ds18b20_case__get_updated_deciseconds_ago__impl
+#define get_crc_errors__impl ds18b20_case__get_crc_errors__impl
 #define get_disconnects__impl ds18b20_case__get_disconnects__impl
     return ds18b20_case__crc_errors;
-#undef get_crc_errors__impl
 #undef get_updated_deciseconds_ago__impl
+#undef get_crc_errors__impl
 #undef get_disconnects__impl
 }
 static AKAT_FORCE_INLINE u8 ds18b20_case__get_temperature_lsb__impl() {
-#define get_crc_errors__impl ds18b20_case__get_crc_errors__impl
 #define get_temperature_lsb__impl ds18b20_case__get_temperature_lsb__impl
 #define get_updated_deciseconds_ago__impl ds18b20_case__get_updated_deciseconds_ago__impl
+#define get_crc_errors__impl ds18b20_case__get_crc_errors__impl
 #define get_disconnects__impl ds18b20_case__get_disconnects__impl
     return ds18b20_case__temperature_lsb;
-#undef get_crc_errors__impl
 #undef get_temperature_lsb__impl
 #undef get_updated_deciseconds_ago__impl
+#undef get_crc_errors__impl
 #undef get_disconnects__impl
 }
 static AKAT_FORCE_INLINE u8 ds18b20_case__get_temperature_msb__impl() {
-#define get_crc_errors__impl ds18b20_case__get_crc_errors__impl
-#define get_temperature_lsb__impl ds18b20_case__get_temperature_lsb__impl
 #define get_temperature_msb__impl ds18b20_case__get_temperature_msb__impl
+#define get_temperature_lsb__impl ds18b20_case__get_temperature_lsb__impl
 #define get_updated_deciseconds_ago__impl ds18b20_case__get_updated_deciseconds_ago__impl
+#define get_crc_errors__impl ds18b20_case__get_crc_errors__impl
 #define get_disconnects__impl ds18b20_case__get_disconnects__impl
     return ds18b20_case__temperature_msb;
-#undef get_crc_errors__impl
-#undef get_temperature_lsb__impl
 #undef get_temperature_msb__impl
+#undef get_temperature_lsb__impl
 #undef get_updated_deciseconds_ago__impl
+#undef get_crc_errors__impl
 #undef get_disconnects__impl
 }
-#define get_crc_errors__impl ds18b20_case__get_crc_errors__impl
-#define get_temperature_lsb__impl ds18b20_case__get_temperature_lsb__impl
 #define get_temperature_msb__impl ds18b20_case__get_temperature_msb__impl
+#define get_temperature_lsb__impl ds18b20_case__get_temperature_lsb__impl
 #define get_updated_deciseconds_ago__impl ds18b20_case__get_updated_deciseconds_ago__impl
+#define get_crc_errors__impl ds18b20_case__get_crc_errors__impl
 #define get_disconnects__impl ds18b20_case__get_disconnects__impl
 
 ds18b20_case_t const ds18b20_case = {.get_updated_deciseconds_ago = &get_updated_deciseconds_ago__impl
@@ -18553,25 +18594,25 @@ ds18b20_case_t const ds18b20_case = {.get_updated_deciseconds_ago = &get_updated
                                     };
 
 
-#undef get_crc_errors__impl
-#undef get_temperature_lsb__impl
 #undef get_temperature_msb__impl
+#undef get_temperature_lsb__impl
 #undef get_updated_deciseconds_ago__impl
+#undef get_crc_errors__impl
 #undef get_disconnects__impl
-#define get_crc_errors__impl ds18b20_case__get_crc_errors__impl
-#define get_temperature_lsb__impl ds18b20_case__get_temperature_lsb__impl
-#define get_disconnects__impl ds18b20_case__get_disconnects__impl
 #define get_updated_deciseconds_ago__impl ds18b20_case__get_updated_deciseconds_ago__impl
 #define get_temperature_msb__impl ds18b20_case__get_temperature_msb__impl
+#define get_temperature_lsb__impl ds18b20_case__get_temperature_lsb__impl
+#define get_crc_errors__impl ds18b20_case__get_crc_errors__impl
+#define get_disconnects__impl ds18b20_case__get_disconnects__impl
 
 
 ;
 
-#define get_crc_errors__impl ds18b20_case__get_crc_errors__impl
-#define get_temperature_lsb__impl ds18b20_case__get_temperature_lsb__impl
-#define get_disconnects__impl ds18b20_case__get_disconnects__impl
 #define get_updated_deciseconds_ago__impl ds18b20_case__get_updated_deciseconds_ago__impl
 #define get_temperature_msb__impl ds18b20_case__get_temperature_msb__impl
+#define get_temperature_lsb__impl ds18b20_case__get_temperature_lsb__impl
+#define get_crc_errors__impl ds18b20_case__get_crc_errors__impl
+#define get_disconnects__impl ds18b20_case__get_disconnects__impl
 
 
 
@@ -18580,11 +18621,11 @@ ds18b20_case_t const ds18b20_case = {.get_updated_deciseconds_ago = &get_updated
 
 
 
-#undef get_crc_errors__impl
-#undef get_temperature_lsb__impl
-#undef get_disconnects__impl
 #undef get_updated_deciseconds_ago__impl
 #undef get_temperature_msb__impl
+#undef get_temperature_lsb__impl
+#undef get_crc_errors__impl
+#undef get_disconnects__impl
 ;
 
 
@@ -18652,13 +18693,15 @@ ISR(USART0_RX_vect) {
 
 // NOTE: Just replace state_type to u16 if we ran out of state space..
 static u8 usart0_writer__akat_coroutine_state = 0;
+static u8 usart0_writer__crc = 0;
 static u8 usart0_writer__byte_to_send = 0;
 static u8 usart0_writer__byte_number_to_send = 0;
 static u8 usart0_writer__send_byte__akat_coroutine_state = 0;
 static u8 usart0_writer__send_byte() {
-#define send_byte usart0_writer__send_byte
-#define byte_to_send usart0_writer__byte_to_send
+#define crc usart0_writer__crc
 #define akat_coroutine_state usart0_writer__send_byte__akat_coroutine_state
+#define byte_to_send usart0_writer__byte_to_send
+#define send_byte usart0_writer__send_byte
 #define byte_number_to_send usart0_writer__byte_number_to_send
     ;
     AKAT_HOT_CODE;
@@ -18692,24 +18735,27 @@ akat_coroutine_l_2:
 
         ;
         UDR0 = byte_to_send;
+        crc = akat_crc_add(crc, byte_to_send);
     } while (0);
 
     AKAT_COLD_CODE;
     akat_coroutine_state = AKAT_COROUTINE_S_START;
 akat_coroutine_l_end:
     return akat_coroutine_state;
-#undef send_byte
-#undef byte_to_send
+#undef crc
 #undef akat_coroutine_state
+#undef byte_to_send
+#undef send_byte
 #undef byte_number_to_send
 }
 static u8 usart0_writer__send_byte_number__akat_coroutine_state = 0;
 static u8 usart0_writer__send_byte_number() {
-#define send_byte usart0_writer__send_byte
-#define byte_number_to_send usart0_writer__byte_number_to_send
+#define crc usart0_writer__crc
 #define akat_coroutine_state usart0_writer__send_byte_number__akat_coroutine_state
-#define send_byte_number usart0_writer__send_byte_number
 #define byte_to_send usart0_writer__byte_to_send
+#define send_byte usart0_writer__send_byte
+#define send_byte_number usart0_writer__send_byte_number
+#define byte_number_to_send usart0_writer__byte_number_to_send
     ;
     AKAT_HOT_CODE;
 
@@ -18787,17 +18833,19 @@ akat_coroutine_l_4:
     akat_coroutine_state = AKAT_COROUTINE_S_START;
 akat_coroutine_l_end:
     return akat_coroutine_state;
-#undef send_byte
-#undef byte_number_to_send
+#undef crc
 #undef akat_coroutine_state
-#undef send_byte_number
 #undef byte_to_send
+#undef send_byte
+#undef send_byte_number
+#undef byte_number_to_send
 }
 static AKAT_FORCE_INLINE void usart0_writer() {
+#define crc usart0_writer__crc
+#define akat_coroutine_state usart0_writer__akat_coroutine_state
+#define byte_to_send usart0_writer__byte_to_send
 #define send_byte usart0_writer__send_byte
 #define send_byte_number usart0_writer__send_byte_number
-#define byte_to_send usart0_writer__byte_to_send
-#define akat_coroutine_state usart0_writer__akat_coroutine_state
 #define byte_number_to_send usart0_writer__byte_number_to_send
     ;
     AKAT_HOT_CODE;
@@ -18889,6 +18937,12 @@ static AKAT_FORCE_INLINE void usart0_writer() {
 
     case 28:
         goto akat_coroutine_l_28;
+
+    case 29:
+        goto akat_coroutine_l_29;
+
+    case 30:
+        goto akat_coroutine_l_30;
     }
 
 akat_coroutine_l_start:
@@ -18896,6 +18950,7 @@ akat_coroutine_l_start:
 
     do {
         //---- All variable in the thread must be static (green threads requirement)
+        ;
         ;
         ;
 
@@ -18907,6 +18962,7 @@ akat_coroutine_l_start:
 
         //Main loop in thread (thread will yield on calls to YIELD$ or WAIT_UNTIL$)
         while (1) {
+            crc = 0;
             byte_to_send = ' ';
 
             do {
@@ -19232,8 +19288,8 @@ akat_coroutine_l_26:
 
             ;
             ;
-            //Done writing status, send \r\n
-            byte_to_send = '\r';
+            //Done writing status, send: CRC\r\n
+            byte_to_send = ' ';
 
             do {
                 akat_coroutine_state = 27;
@@ -19245,11 +19301,35 @@ akat_coroutine_l_27:
             } while (0);
 
             ;
-            byte_to_send = '\n';
+            byte_number_to_send = crc;
 
             do {
                 akat_coroutine_state = 28;
 akat_coroutine_l_28:
+
+                if (send_byte_number() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = '\r';
+
+            do {
+                akat_coroutine_state = 29;
+akat_coroutine_l_29:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = '\n';
+
+            do {
+                akat_coroutine_state = 30;
+akat_coroutine_l_30:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19264,10 +19344,11 @@ akat_coroutine_l_28:
     akat_coroutine_state = AKAT_COROUTINE_S_END;
 akat_coroutine_l_end:
     return;
+#undef crc
+#undef akat_coroutine_state
+#undef byte_to_send
 #undef send_byte
 #undef send_byte_number
-#undef byte_to_send
-#undef akat_coroutine_state
 #undef byte_number_to_send
 }
 
@@ -19289,13 +19370,13 @@ static u8 usart0_reader__read_command__dequeued_byte = 0;
 static u8 usart0_reader__read_command__command_arg_copy = 0;
 static u8 usart0_reader__read_command__dequeue_byte__akat_coroutine_state = 0;
 static u8 usart0_reader__read_command__dequeue_byte() {
-#define command_arg usart0_reader__command_arg
-#define akat_coroutine_state usart0_reader__read_command__dequeue_byte__akat_coroutine_state
 #define dequeue_byte usart0_reader__read_command__dequeue_byte
-#define dequeued_byte usart0_reader__read_command__dequeued_byte
+#define akat_coroutine_state usart0_reader__read_command__dequeue_byte__akat_coroutine_state
 #define command_arg_copy usart0_reader__read_command__command_arg_copy
-#define command_code usart0_reader__command_code
 #define read_command usart0_reader__read_command
+#define command_arg usart0_reader__command_arg
+#define dequeued_byte usart0_reader__read_command__dequeued_byte
+#define command_code usart0_reader__command_code
     ;
     AKAT_HOT_CODE;
 
@@ -19335,24 +19416,24 @@ akat_coroutine_l_2:
     akat_coroutine_state = AKAT_COROUTINE_S_START;
 akat_coroutine_l_end:
     return akat_coroutine_state;
-#undef command_arg
-#undef akat_coroutine_state
 #undef dequeue_byte
-#undef dequeued_byte
+#undef akat_coroutine_state
 #undef command_arg_copy
-#undef command_code
 #undef read_command
+#undef command_arg
+#undef dequeued_byte
+#undef command_code
 }
 static u8 usart0_reader__read_command__read_arg_and_dequeue__akat_coroutine_state = 0;
 static u8 usart0_reader__read_command__read_arg_and_dequeue() {
-#define command_arg usart0_reader__command_arg
-#define akat_coroutine_state usart0_reader__read_command__read_arg_and_dequeue__akat_coroutine_state
-#define command_code usart0_reader__command_code
-#define read_arg_and_dequeue usart0_reader__read_command__read_arg_and_dequeue
 #define dequeue_byte usart0_reader__read_command__dequeue_byte
+#define read_arg_and_dequeue usart0_reader__read_command__read_arg_and_dequeue
+#define command_arg usart0_reader__command_arg
 #define dequeued_byte usart0_reader__read_command__dequeued_byte
-#define command_arg_copy usart0_reader__read_command__command_arg_copy
+#define command_code usart0_reader__command_code
 #define read_command usart0_reader__read_command
+#define akat_coroutine_state usart0_reader__read_command__read_arg_and_dequeue__akat_coroutine_state
+#define command_arg_copy usart0_reader__read_command__command_arg_copy
     ;
     AKAT_HOT_CODE;
 
@@ -19445,24 +19526,24 @@ akat_coroutine_l_5:
     akat_coroutine_state = AKAT_COROUTINE_S_START;
 akat_coroutine_l_end:
     return akat_coroutine_state;
-#undef command_arg
-#undef akat_coroutine_state
-#undef command_code
-#undef read_arg_and_dequeue
 #undef dequeue_byte
+#undef read_arg_and_dequeue
+#undef command_arg
 #undef dequeued_byte
-#undef command_arg_copy
+#undef command_code
 #undef read_command
+#undef akat_coroutine_state
+#undef command_arg_copy
 }
 static u8 usart0_reader__read_command() {
-#define command_arg usart0_reader__command_arg
-#define akat_coroutine_state usart0_reader__read_command__akat_coroutine_state
-#define command_arg_copy usart0_reader__read_command__command_arg_copy
-#define read_arg_and_dequeue usart0_reader__read_command__read_arg_and_dequeue
 #define dequeue_byte usart0_reader__read_command__dequeue_byte
+#define read_arg_and_dequeue usart0_reader__read_command__read_arg_and_dequeue
+#define command_arg usart0_reader__command_arg
 #define dequeued_byte usart0_reader__read_command__dequeued_byte
 #define command_code usart0_reader__command_code
 #define read_command usart0_reader__read_command
+#define akat_coroutine_state usart0_reader__read_command__akat_coroutine_state
+#define command_arg_copy usart0_reader__read_command__command_arg_copy
     ;
     AKAT_HOT_CODE;
 
@@ -19575,20 +19656,20 @@ akat_coroutine_l_5:
     akat_coroutine_state = AKAT_COROUTINE_S_START;
 akat_coroutine_l_end:
     return akat_coroutine_state;
-#undef command_arg
-#undef akat_coroutine_state
-#undef command_arg_copy
-#undef read_arg_and_dequeue
 #undef dequeue_byte
+#undef read_arg_and_dequeue
+#undef command_arg
 #undef dequeued_byte
 #undef command_code
 #undef read_command
+#undef akat_coroutine_state
+#undef command_arg_copy
 }
 static AKAT_FORCE_INLINE void usart0_reader() {
-#define akat_coroutine_state usart0_reader__akat_coroutine_state
-#define command_arg usart0_reader__command_arg
-#define command_code usart0_reader__command_code
 #define read_command usart0_reader__read_command
+#define akat_coroutine_state usart0_reader__akat_coroutine_state
+#define command_code usart0_reader__command_code
+#define command_arg usart0_reader__command_arg
     ;
     AKAT_HOT_CODE;
 
@@ -19643,10 +19724,10 @@ akat_coroutine_l_2:
     akat_coroutine_state = AKAT_COROUTINE_S_END;
 akat_coroutine_l_end:
     return;
-#undef akat_coroutine_state
-#undef command_arg
-#undef command_code
 #undef read_command
+#undef akat_coroutine_state
+#undef command_code
+#undef command_arg
 }
 
 ;
@@ -19711,11 +19792,11 @@ static u8 ds18b20_thread__byte_to_send = 0;
 static u8 ds18b20_thread__command_to_send = 0;
 static u8 ds18b20_thread__receive_idx = 0;
 static AKAT_FORCE_INLINE u8 ds18b20_thread__has_connected_sensors() {
-#define command_to_send ds18b20_thread__command_to_send
-#define receive_idx ds18b20_thread__receive_idx
-#define byte_to_send ds18b20_thread__byte_to_send
 #define has_connected_sensors ds18b20_thread__has_connected_sensors
 #define akat_coroutine_state ds18b20_thread__akat_coroutine_state
+#define command_to_send ds18b20_thread__command_to_send
+#define byte_to_send ds18b20_thread__byte_to_send
+#define receive_idx ds18b20_thread__receive_idx
 
     if (ds18b20_aqua__connected) {
         return 1;
@@ -19726,19 +19807,19 @@ static AKAT_FORCE_INLINE u8 ds18b20_thread__has_connected_sensors() {
     }
 
     return 0;
-#undef command_to_send
-#undef receive_idx
-#undef byte_to_send
 #undef has_connected_sensors
 #undef akat_coroutine_state
+#undef command_to_send
+#undef byte_to_send
+#undef receive_idx
 }
 static void ds18b20_thread__write_bit(const u8 bit) {
+#define write_bit ds18b20_thread__write_bit
+#define akat_coroutine_state ds18b20_thread__akat_coroutine_state
 #define has_connected_sensors ds18b20_thread__has_connected_sensors
+#define byte_to_send ds18b20_thread__byte_to_send
 #define command_to_send ds18b20_thread__command_to_send
 #define receive_idx ds18b20_thread__receive_idx
-#define byte_to_send ds18b20_thread__byte_to_send
-#define akat_coroutine_state ds18b20_thread__akat_coroutine_state
-#define write_bit ds18b20_thread__write_bit
 
 //'bit'can be either zero or non zero. Non zero bit value is treated as 1.
 
@@ -19777,21 +19858,21 @@ static void ds18b20_thread__write_bit(const u8 bit) {
     }
 
     akat_delay_us(10);
+#undef write_bit
+#undef akat_coroutine_state
 #undef has_connected_sensors
+#undef byte_to_send
 #undef command_to_send
 #undef receive_idx
-#undef byte_to_send
-#undef akat_coroutine_state
-#undef write_bit
 }
 static void ds18b20_thread__read_bit(u8 mask) {
-#define read_bit ds18b20_thread__read_bit
+#define write_bit ds18b20_thread__write_bit
+#define akat_coroutine_state ds18b20_thread__akat_coroutine_state
 #define has_connected_sensors ds18b20_thread__has_connected_sensors
+#define byte_to_send ds18b20_thread__byte_to_send
 #define command_to_send ds18b20_thread__command_to_send
 #define receive_idx ds18b20_thread__receive_idx
-#define byte_to_send ds18b20_thread__byte_to_send
-#define akat_coroutine_state ds18b20_thread__akat_coroutine_state
-#define write_bit ds18b20_thread__write_bit
+#define read_bit ds18b20_thread__read_bit
 
 //Returns either 0 or non zero (doesn't mean '1'!)
 
@@ -19832,24 +19913,24 @@ static void ds18b20_thread__read_bit(u8 mask) {
     }//Total duration of reading slot must be at least 60
 
     akat_delay_us(55);
-#undef read_bit
+#undef write_bit
+#undef akat_coroutine_state
 #undef has_connected_sensors
+#undef byte_to_send
 #undef command_to_send
 #undef receive_idx
-#undef byte_to_send
-#undef akat_coroutine_state
-#undef write_bit
+#undef read_bit
 }
 static u8 ds18b20_thread__send_byte__akat_coroutine_state = 0;
 static u8 ds18b20_thread__send_byte() {
-#define akat_coroutine_state ds18b20_thread__send_byte__akat_coroutine_state
-#define command_to_send ds18b20_thread__command_to_send
+#define has_connected_sensors ds18b20_thread__has_connected_sensors
 #define byte_to_send ds18b20_thread__byte_to_send
 #define send_byte ds18b20_thread__send_byte
-#define read_bit ds18b20_thread__read_bit
-#define has_connected_sensors ds18b20_thread__has_connected_sensors
 #define receive_idx ds18b20_thread__receive_idx
+#define read_bit ds18b20_thread__read_bit
 #define write_bit ds18b20_thread__write_bit
+#define akat_coroutine_state ds18b20_thread__send_byte__akat_coroutine_state
+#define command_to_send ds18b20_thread__command_to_send
     ;
     AKAT_HOT_CODE;
 
@@ -19964,26 +20045,26 @@ akat_coroutine_l_8:
     akat_coroutine_state = AKAT_COROUTINE_S_START;
 akat_coroutine_l_end:
     return akat_coroutine_state;
-#undef akat_coroutine_state
-#undef command_to_send
+#undef has_connected_sensors
 #undef byte_to_send
 #undef send_byte
-#undef read_bit
-#undef has_connected_sensors
 #undef receive_idx
+#undef read_bit
 #undef write_bit
+#undef akat_coroutine_state
+#undef command_to_send
 }
 static u8 ds18b20_thread__receive_byte__akat_coroutine_state = 0;
 static u8 ds18b20_thread__receive_byte() {
-#define akat_coroutine_state ds18b20_thread__receive_byte__akat_coroutine_state
-#define command_to_send ds18b20_thread__command_to_send
-#define byte_to_send ds18b20_thread__byte_to_send
-#define receive_byte ds18b20_thread__receive_byte
-#define send_byte ds18b20_thread__send_byte
-#define read_bit ds18b20_thread__read_bit
 #define has_connected_sensors ds18b20_thread__has_connected_sensors
+#define byte_to_send ds18b20_thread__byte_to_send
+#define send_byte ds18b20_thread__send_byte
+#define receive_byte ds18b20_thread__receive_byte
 #define receive_idx ds18b20_thread__receive_idx
 #define write_bit ds18b20_thread__write_bit
+#define akat_coroutine_state ds18b20_thread__receive_byte__akat_coroutine_state
+#define read_bit ds18b20_thread__read_bit
+#define command_to_send ds18b20_thread__command_to_send
     ;
     AKAT_HOT_CODE;
 
@@ -20102,28 +20183,28 @@ akat_coroutine_l_8:
     akat_coroutine_state = AKAT_COROUTINE_S_START;
 akat_coroutine_l_end:
     return akat_coroutine_state;
-#undef akat_coroutine_state
-#undef command_to_send
-#undef byte_to_send
-#undef receive_byte
-#undef send_byte
-#undef read_bit
 #undef has_connected_sensors
+#undef byte_to_send
+#undef send_byte
+#undef receive_byte
 #undef receive_idx
 #undef write_bit
+#undef akat_coroutine_state
+#undef read_bit
+#undef command_to_send
 }
 static u8 ds18b20_thread__send_command__akat_coroutine_state = 0;
 static u8 ds18b20_thread__send_command() {
-#define akat_coroutine_state ds18b20_thread__send_command__akat_coroutine_state
-#define send_command ds18b20_thread__send_command
-#define byte_to_send ds18b20_thread__byte_to_send
-#define receive_byte ds18b20_thread__receive_byte
-#define send_byte ds18b20_thread__send_byte
-#define read_bit ds18b20_thread__read_bit
 #define has_connected_sensors ds18b20_thread__has_connected_sensors
-#define command_to_send ds18b20_thread__command_to_send
+#define byte_to_send ds18b20_thread__byte_to_send
+#define send_command ds18b20_thread__send_command
+#define send_byte ds18b20_thread__send_byte
+#define receive_byte ds18b20_thread__receive_byte
 #define receive_idx ds18b20_thread__receive_idx
 #define write_bit ds18b20_thread__write_bit
+#define akat_coroutine_state ds18b20_thread__send_command__akat_coroutine_state
+#define read_bit ds18b20_thread__read_bit
+#define command_to_send ds18b20_thread__command_to_send
     ;
     AKAT_HOT_CODE;
 
@@ -20270,28 +20351,28 @@ akat_coroutine_l_6:
     akat_coroutine_state = AKAT_COROUTINE_S_START;
 akat_coroutine_l_end:
     return akat_coroutine_state;
-#undef akat_coroutine_state
-#undef send_command
-#undef byte_to_send
-#undef receive_byte
-#undef send_byte
-#undef read_bit
 #undef has_connected_sensors
-#undef command_to_send
+#undef byte_to_send
+#undef send_command
+#undef send_byte
+#undef receive_byte
 #undef receive_idx
 #undef write_bit
+#undef akat_coroutine_state
+#undef read_bit
+#undef command_to_send
 }
 static AKAT_FORCE_INLINE void ds18b20_thread() {
-#define akat_coroutine_state ds18b20_thread__akat_coroutine_state
-#define send_command ds18b20_thread__send_command
-#define byte_to_send ds18b20_thread__byte_to_send
-#define receive_byte ds18b20_thread__receive_byte
-#define send_byte ds18b20_thread__send_byte
-#define read_bit ds18b20_thread__read_bit
 #define has_connected_sensors ds18b20_thread__has_connected_sensors
-#define command_to_send ds18b20_thread__command_to_send
+#define byte_to_send ds18b20_thread__byte_to_send
+#define send_command ds18b20_thread__send_command
+#define send_byte ds18b20_thread__send_byte
+#define receive_byte ds18b20_thread__receive_byte
 #define receive_idx ds18b20_thread__receive_idx
 #define write_bit ds18b20_thread__write_bit
+#define akat_coroutine_state ds18b20_thread__akat_coroutine_state
+#define read_bit ds18b20_thread__read_bit
+#define command_to_send ds18b20_thread__command_to_send
     ;
     AKAT_HOT_CODE;
 
@@ -20537,24 +20618,8 @@ akat_coroutine_l_14:
                         } while (0);
 
                         ;
-                        //TODO: Extract to function and move to akat_x_dx18b20.c into first_.... definition
                         //Check CRC
-                        u8 crc = 0;
-
-                        for (u8 i = 0; i < 8; i++) {
-                            u8 byte = ds18b20_aqua__scratchpad[i];
-
-                            for (u8 j = 0; j < 8; j++) {
-                                u8 m = (crc ^ byte) & AKAT_ONE;
-                                crc >>= 1;
-
-                                if (m) {
-                                    crc ^= 0x8C;
-                                }
-
-                                byte >>= 1;
-                            }
-                        }
+                        u8 crc = akat_crc_add_bytes(0, ds18b20_aqua__scratchpad, 8);
 
                         if (ds18b20_aqua__scratchpad[8] == crc) {//CRC is OK
                             ds18b20_aqua__updated_deciseconds_ago = 0;
@@ -20578,24 +20643,8 @@ akat_coroutine_l_15:
                         } while (0);
 
                         ;
-                        //TODO: Extract to function and move to akat_x_dx18b20.c into first_.... definition
                         //Check CRC
-                        u8 crc = 0;
-
-                        for (u8 i = 0; i < 8; i++) {
-                            u8 byte = ds18b20_case__scratchpad[i];
-
-                            for (u8 j = 0; j < 8; j++) {
-                                u8 m = (crc ^ byte) & AKAT_ONE;
-                                crc >>= 1;
-
-                                if (m) {
-                                    crc ^= 0x8C;
-                                }
-
-                                byte >>= 1;
-                            }
-                        }
+                        u8 crc = akat_crc_add_bytes(0, ds18b20_case__scratchpad, 8);
 
                         if (ds18b20_case__scratchpad[8] == crc) {//CRC is OK
                             ds18b20_case__updated_deciseconds_ago = 0;
@@ -20627,16 +20676,16 @@ akat_coroutine_l_16:
     akat_coroutine_state = AKAT_COROUTINE_S_END;
 akat_coroutine_l_end:
     return;
-#undef akat_coroutine_state
-#undef send_command
-#undef byte_to_send
-#undef receive_byte
-#undef send_byte
-#undef read_bit
 #undef has_connected_sensors
-#undef command_to_send
+#undef byte_to_send
+#undef send_command
+#undef send_byte
+#undef receive_byte
 #undef receive_idx
 #undef write_bit
+#undef akat_coroutine_state
+#undef read_bit
+#undef command_to_send
 }
 
 ;
