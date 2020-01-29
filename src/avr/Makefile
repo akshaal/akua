@@ -25,7 +25,7 @@ firmware.avr: firmware.tmp.c firmware.cflags Makefile
 		hex2bin firmware.hex && \
 		dos2unix firmware.hex
 
-../../serial-protocol.txt: firmware.tmp.c
+../../serial-protocol.txt: firmware.tmp.c firmware.avr Makefile
 		./extract-protocol 
 
 clean:
