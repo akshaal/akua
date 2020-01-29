@@ -218,6 +218,7 @@ ISR(USART1_RX_vect) {
     AKAT_UNUSED u8 b = UDR1; // we must read here, no matter what, to clear interrupt flag
 
     // TODO: Implement RX-buffer...
+    // TODO: See https://habr.com/en/post/401363/
     // TODO: See https://revspace.nl/MHZ19#Command_0x86_.28read_concentration.29
 }
 
