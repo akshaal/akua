@@ -218,6 +218,7 @@ ISR(USART1_RX_vect) {
     AKAT_UNUSED u8 b = UDR1; // we must read here, no matter what, to clear interrupt flag
 
     // TODO: Implement RX-buffer...
+    // TODO: Find better description of results of 0x86 command...
 }
 
 // --- - - - - - - - - - - - TX
