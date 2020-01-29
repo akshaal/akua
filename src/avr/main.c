@@ -211,10 +211,14 @@ X_INIT$(usart1_init) {
     UCSR1B = H(TXEN1) | H(RXEN1) | H(RXCIE1);
 }
 
+// --- - - - - - - - - - - - RX
+
 ISR(USART1_RX_vect) {
     // TODO: Remove unused!
     AKAT_UNUSED u8 b = UDR1; // we must read here, no matter what, to clear interrupt flag
 }
+
+// --- - - - - - - - - - - - TX
 
 GLOBAL$() {
     STATIC_VAR$(u8 co2_command_countdown);

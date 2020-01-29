@@ -11,5 +11,4 @@ serial-protocol.txt.tmp
 *.ii
 *.avr
 *.bin
-*.cflags
 firmware.hex

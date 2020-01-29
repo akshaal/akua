@@ -18245,10 +18245,14 @@ static AKAT_FORCE_INLINE void usart1_init() {
 
 
 
+// --- - - - - - - - - - - - RX
+
 ISR(USART1_RX_vect) {
     // TODO: Remove unused!
     AKAT_UNUSED u8 b = UDR1; // we must read here, no matter what, to clear interrupt flag
 }
+
+// --- - - - - - - - - - - - TX
 
 static u8 co2_command_countdown = 0;
 
