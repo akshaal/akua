@@ -370,6 +370,15 @@ static AKAT_UNUSED AKAT_PURE u8 akat_x_tm1637_encode_digit(u8 const digit, u8 co
 #define AK_USART0_BAUD_RATE     9600
 #define AK_USART0_FRAME_FORMAT  (H(UCSZ00) | H(UCSZ01))
 
+// Here is what we are going to use for communication with NH-Z19 (CO2 Sensor)
+// Frame format is 8N1 (8 bits, no parity, 1 stop bit)
+// We can't change this. This is from the specification for the sensor.
+#define AK_USART1_BAUD_RATE     9600
+#define AK_USART1_FRAME_FORMAT  (H(UCSZ10) | H(UCSZ11))
+
+// Delay in deciseconds between commands to MH-Z19 sensor
+#define AK_CO2_DECISECONDS_DELAY  3
+
 // Size of buffer for bytes we receive from USART0/USB.
 // RX-Interrupt puts bytes into the given ring buffer if there is space in it.
 // A thread takes byte from the buffer and process it.
@@ -7579,428 +7588,8 @@ D1_unused_t const D1_unused = {.is_set = &is_set__impl
 
 ;
 ; // 44   PD1 ( SDA/INT1 ) Digital pin 20 (SDA)
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} D2_unused__port_t;
-
-extern D2_unused__port_t const D2_unused__port;
-
-static AKAT_FORCE_INLINE void D2_unused__port__set__impl(u8 state) {
-#define set__impl D2_unused__port__set__impl
-
-    if (state) {
-        PORTD |= 1 << 2;  //Set PORTD of D2 to 1
-    } else {
-        PORTD &= ~(1 << 2);  //Set PORTD of D2 to 0
-    }
-
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 D2_unused__port__is_set__impl() {
-#define is_set__impl D2_unused__port__is_set__impl
-#define set__impl D2_unused__port__set__impl
-    return PORTD & (1 << 2);  //Get value of PORTD for D2
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl D2_unused__port__is_set__impl
-#define set__impl D2_unused__port__set__impl
-
-D2_unused__port_t const D2_unused__port = {.set = &set__impl
-                                           ,
-                                           .is_set = &is_set__impl
-                                          };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl D2_unused__port__is_set__impl
-#define set__impl D2_unused__port__set__impl
-
-
-;
-
-#define is_set__impl D2_unused__port__is_set__impl
-#define set__impl D2_unused__port__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} D2_unused__ddr_t;
-
-extern D2_unused__ddr_t const D2_unused__ddr;
-
-static AKAT_FORCE_INLINE void D2_unused__ddr__set__impl(u8 state) {
-#define set__impl D2_unused__ddr__set__impl
-
-    if (state) {
-        DDRD |= 1 << 2;  //Set DDRD of D2 to 1
-    } else {
-        DDRD &= ~(1 << 2);  //Set DDRD of D2 to 0
-    }
-
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 D2_unused__ddr__is_set__impl() {
-#define is_set__impl D2_unused__ddr__is_set__impl
-#define set__impl D2_unused__ddr__set__impl
-    return DDRD & (1 << 2);  //Get value of DDRD for D2
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl D2_unused__ddr__is_set__impl
-#define set__impl D2_unused__ddr__set__impl
-
-D2_unused__ddr_t const D2_unused__ddr = {.set = &set__impl
-                                         ,
-                                         .is_set = &is_set__impl
-                                        };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl D2_unused__ddr__is_set__impl
-#define set__impl D2_unused__ddr__set__impl
-
-
-;
-
-#define is_set__impl D2_unused__ddr__is_set__impl
-#define set__impl D2_unused__ddr__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} D2_unused__pin_t;
-
-extern D2_unused__pin_t const D2_unused__pin;
-
-static AKAT_FORCE_INLINE void D2_unused__pin__set__impl(u8 state) {
-#define set__impl D2_unused__pin__set__impl
-
-    if (state) {
-        PIND |= 1 << 2;  //Set PIND of D2 to 1
-    } else {
-        PIND &= ~(1 << 2);  //Set PIND of D2 to 0
-    }
-
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 D2_unused__pin__is_set__impl() {
-#define is_set__impl D2_unused__pin__is_set__impl
-#define set__impl D2_unused__pin__set__impl
-    return PIND & (1 << 2);  //Get value of PIND for D2
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl D2_unused__pin__is_set__impl
-#define set__impl D2_unused__pin__set__impl
-
-D2_unused__pin_t const D2_unused__pin = {.set = &set__impl
-                                         ,
-                                         .is_set = &is_set__impl
-                                        };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl D2_unused__pin__is_set__impl
-#define set__impl D2_unused__pin__set__impl
-
-
-;
-
-#define is_set__impl D2_unused__pin__is_set__impl
-#define set__impl D2_unused__pin__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-static AKAT_FORCE_INLINE void D2_unused__init() {
-    D2_unused__ddr.set(0);
-    D2_unused__port.set(1);
-}
-
-;
-
-
-
-
-
-typedef struct {
-    u8 (* const is_set)();
-} D2_unused_t;
-
-extern D2_unused_t const D2_unused;
-
-static AKAT_FORCE_INLINE u8 D2_unused__is_set__impl() {
-#define is_set__impl D2_unused__is_set__impl
-    return D2_unused__pin.is_set();
-#undef is_set__impl
-}
-#define is_set__impl D2_unused__is_set__impl
-
-D2_unused_t const D2_unused = {.is_set = &is_set__impl
-                              };
-
-
-#undef is_set__impl
-#define is_set__impl D2_unused__is_set__impl
-
-
-;
-
-#define is_set__impl D2_unused__is_set__impl
-
-
-
-
-#undef is_set__impl
-;
-
-
-
-;
-; // 45   PD2 ( RXDI/INT2 ) Digital pin 19 (RX1)
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} D3_unused__port_t;
-
-extern D3_unused__port_t const D3_unused__port;
-
-static AKAT_FORCE_INLINE void D3_unused__port__set__impl(u8 state) {
-#define set__impl D3_unused__port__set__impl
-
-    if (state) {
-        PORTD |= 1 << 3;  //Set PORTD of D3 to 1
-    } else {
-        PORTD &= ~(1 << 3);  //Set PORTD of D3 to 0
-    }
-
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 D3_unused__port__is_set__impl() {
-#define is_set__impl D3_unused__port__is_set__impl
-#define set__impl D3_unused__port__set__impl
-    return PORTD & (1 << 3);  //Get value of PORTD for D3
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl D3_unused__port__is_set__impl
-#define set__impl D3_unused__port__set__impl
-
-D3_unused__port_t const D3_unused__port = {.set = &set__impl
-                                           ,
-                                           .is_set = &is_set__impl
-                                          };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl D3_unused__port__is_set__impl
-#define set__impl D3_unused__port__set__impl
-
-
-;
-
-#define is_set__impl D3_unused__port__is_set__impl
-#define set__impl D3_unused__port__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} D3_unused__ddr_t;
-
-extern D3_unused__ddr_t const D3_unused__ddr;
-
-static AKAT_FORCE_INLINE void D3_unused__ddr__set__impl(u8 state) {
-#define set__impl D3_unused__ddr__set__impl
-
-    if (state) {
-        DDRD |= 1 << 3;  //Set DDRD of D3 to 1
-    } else {
-        DDRD &= ~(1 << 3);  //Set DDRD of D3 to 0
-    }
-
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 D3_unused__ddr__is_set__impl() {
-#define is_set__impl D3_unused__ddr__is_set__impl
-#define set__impl D3_unused__ddr__set__impl
-    return DDRD & (1 << 3);  //Get value of DDRD for D3
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl D3_unused__ddr__is_set__impl
-#define set__impl D3_unused__ddr__set__impl
-
-D3_unused__ddr_t const D3_unused__ddr = {.set = &set__impl
-                                         ,
-                                         .is_set = &is_set__impl
-                                        };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl D3_unused__ddr__is_set__impl
-#define set__impl D3_unused__ddr__set__impl
-
-
-;
-
-#define is_set__impl D3_unused__ddr__is_set__impl
-#define set__impl D3_unused__ddr__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} D3_unused__pin_t;
-
-extern D3_unused__pin_t const D3_unused__pin;
-
-static AKAT_FORCE_INLINE void D3_unused__pin__set__impl(u8 state) {
-#define set__impl D3_unused__pin__set__impl
-
-    if (state) {
-        PIND |= 1 << 3;  //Set PIND of D3 to 1
-    } else {
-        PIND &= ~(1 << 3);  //Set PIND of D3 to 0
-    }
-
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 D3_unused__pin__is_set__impl() {
-#define is_set__impl D3_unused__pin__is_set__impl
-#define set__impl D3_unused__pin__set__impl
-    return PIND & (1 << 3);  //Get value of PIND for D3
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl D3_unused__pin__is_set__impl
-#define set__impl D3_unused__pin__set__impl
-
-D3_unused__pin_t const D3_unused__pin = {.set = &set__impl
-                                         ,
-                                         .is_set = &is_set__impl
-                                        };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl D3_unused__pin__is_set__impl
-#define set__impl D3_unused__pin__set__impl
-
-
-;
-
-#define is_set__impl D3_unused__pin__is_set__impl
-#define set__impl D3_unused__pin__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-static AKAT_FORCE_INLINE void D3_unused__init() {
-    D3_unused__ddr.set(0);
-    D3_unused__port.set(1);
-}
-
-;
-
-
-
-
-
-typedef struct {
-    u8 (* const is_set)();
-} D3_unused_t;
-
-extern D3_unused_t const D3_unused;
-
-static AKAT_FORCE_INLINE u8 D3_unused__is_set__impl() {
-#define is_set__impl D3_unused__is_set__impl
-    return D3_unused__pin.is_set();
-#undef is_set__impl
-}
-#define is_set__impl D3_unused__is_set__impl
-
-D3_unused_t const D3_unused = {.is_set = &is_set__impl
-                              };
-
-
-#undef is_set__impl
-#define is_set__impl D3_unused__is_set__impl
-
-
-;
-
-#define is_set__impl D3_unused__is_set__impl
-
-
-
-
-#undef is_set__impl
-;
-
-
-
-;
-; // 46   PD3 ( TXD1/INT3 ) Digital pin 18 (TX1)
+// USART1 / CO2 ..... 45   PD2 ( RXDI/INT2 ) Digital pin 19 (RX1)
+// USART1 / CO2 ..... 46   PD3 ( TXD1/INT3 ) Digital pin 18 (TX1)
 typedef struct {
     void (* const set)(u8 state);
     u8 (* const is_set)();
@@ -17752,9 +17341,9 @@ ISR(TIMER1_COMPA_vect, ISR_NAKED) {
 }
 
 
-static u8 counter__state = 0;
-static AKAT_FORCE_INLINE void counter() {
-#define state counter__state
+static u8 activity_led__state = 0;
+static AKAT_FORCE_INLINE void activity_led() {
+#define state activity_led__state
     ;
     blue_led.set(state);
     state = !state;
@@ -18636,10 +18225,298 @@ ds18b20_case_t const ds18b20_case = {.get_updated_deciseconds_ago = &get_updated
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+// USART1 - MH-Z19 CO2 Module
+
+static AKAT_FORCE_INLINE void usart1_init() {
+//Set baud rate
+    const u16 ubrr = akat_cpu_freq_hz() / (AK_USART1_BAUD_RATE * 8L) - 1;
+    UBRR1H = ubrr >> 8;
+    UBRR1L = ubrr % 256;
+    UCSR1A = H(U2X1);
+    //Set frame format
+    UCSR1C = AK_USART1_FRAME_FORMAT;
+    //Enable transmitter, receiver and interrupt for receiver (interrupt for 'byte is received')
+    UCSR1B = H(TXEN1) | H(RXEN1) | H(RXCIE1);
+}
+
+;
+
+
+
+
+
+ISR(USART1_RX_vect) {
+    // TODO: Remove unused!
+    AKAT_UNUSED u8 b = UDR1; // we must read here, no matter what, to clear interrupt flag
+}
+
+static u8 co2_command_countdown = 0;
+
+;
+;
+
+
+
+static AKAT_FORCE_INLINE void co2_ticker() {
+    if (co2_command_countdown) {
+        co2_command_countdown -= 1;
+    }
+}
+
+;
+
+
+
+
+
+static u8 usart1_writer__akat_coroutine_state = 0;
+static u8 usart1_writer__byte_to_send = 0;
+static u8 usart1_writer__send_byte__akat_coroutine_state = 0;
+static u8 usart1_writer__send_byte() {
+#define akat_coroutine_state usart1_writer__send_byte__akat_coroutine_state
+#define byte_to_send usart1_writer__byte_to_send
+#define send_byte usart1_writer__send_byte
+    ;
+    AKAT_HOT_CODE;
+
+    switch (akat_coroutine_state) {
+    case AKAT_COROUTINE_S_START:
+        goto akat_coroutine_l_start;
+
+    case AKAT_COROUTINE_S_END:
+        goto akat_coroutine_l_end;
+
+    case 2:
+        goto akat_coroutine_l_2;
+    }
+
+akat_coroutine_l_start:
+    AKAT_COLD_CODE;
+
+    do {
+        //Wait until USART0 is ready to transmit next byte
+        //from 'byte_to_send';
+        do {
+            akat_coroutine_state = 2;
+akat_coroutine_l_2:
+
+            if (!(UCSR1A & H(UDRE1))) {
+                AKAT_HOT_CODE;
+                return akat_coroutine_state;
+            }
+        } while (0);
+
+        ;
+        UDR1 = byte_to_send;
+    } while (0);
+
+    AKAT_COLD_CODE;
+    akat_coroutine_state = AKAT_COROUTINE_S_START;
+akat_coroutine_l_end:
+    return akat_coroutine_state;
+#undef akat_coroutine_state
+#undef byte_to_send
+#undef send_byte
+}
+static AKAT_FORCE_INLINE void usart1_writer() {
+#define akat_coroutine_state usart1_writer__akat_coroutine_state
+#define byte_to_send usart1_writer__byte_to_send
+#define send_byte usart1_writer__send_byte
+    ;
+    AKAT_HOT_CODE;
+
+    switch (akat_coroutine_state) {
+    case AKAT_COROUTINE_S_START:
+        goto akat_coroutine_l_start;
+
+    case AKAT_COROUTINE_S_END:
+        goto akat_coroutine_l_end;
+
+    case 2:
+        goto akat_coroutine_l_2;
+
+    case 3:
+        goto akat_coroutine_l_3;
+
+    case 4:
+        goto akat_coroutine_l_4;
+
+    case 5:
+        goto akat_coroutine_l_5;
+
+    case 6:
+        goto akat_coroutine_l_6;
+
+    case 7:
+        goto akat_coroutine_l_7;
+
+    case 8:
+        goto akat_coroutine_l_8;
+
+    case 9:
+        goto akat_coroutine_l_9;
+
+    case 10:
+        goto akat_coroutine_l_10;
+
+    case 11:
+        goto akat_coroutine_l_11;
+    }
+
+akat_coroutine_l_start:
+    AKAT_COLD_CODE;
+
+    do {
+        ;
+
+        while (1) { //Wait until it's time to send the command sequence
+            //This counter will be decremented every 0.1 second in the X_EVERY_DECISECOND$ above
+            co2_command_countdown = AK_CO2_DECISECONDS_DELAY;
+
+            do {
+                akat_coroutine_state = 2;
+akat_coroutine_l_2:
+
+                if (!(co2_command_countdown == 0)) {
+                    AKAT_HOT_CODE;
+                    return ;
+                }
+            } while (0);
+
+            ;
+            //Send command sequence
+            byte_to_send = 0xFF;
+
+            do {
+                akat_coroutine_state = 3;
+akat_coroutine_l_3:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ; //Header
+            byte_to_send = 0x01;
+
+            do {
+                akat_coroutine_state = 4;
+akat_coroutine_l_4:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ; //Sensor #1
+            byte_to_send = 0x86;
+
+            do {
+                akat_coroutine_state = 5;
+akat_coroutine_l_5:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ; //Command (Read gas concentration)
+            //5 times zero
+            byte_to_send = 0x00;
+
+            do {
+                akat_coroutine_state = 6;
+akat_coroutine_l_6:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+
+            do {
+                akat_coroutine_state = 7;
+akat_coroutine_l_7:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+
+            do {
+                akat_coroutine_state = 8;
+akat_coroutine_l_8:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+
+            do {
+                akat_coroutine_state = 9;
+akat_coroutine_l_9:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+
+            do {
+                akat_coroutine_state = 10;
+akat_coroutine_l_10:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = 0x79;
+
+            do {
+                akat_coroutine_state = 11;
+akat_coroutine_l_11:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ; //CRC
+        }
+    } while (0);
+
+    AKAT_COLD_CODE;
+    akat_coroutine_state = AKAT_COROUTINE_S_END;
+akat_coroutine_l_end:
+    return;
+#undef akat_coroutine_state
+#undef byte_to_send
+#undef send_byte
+}
+
+;
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // USART0 - Serial interface over USB Connection
 
 static AKAT_FORCE_INLINE void usart0_init() {
-//Set baudrate
+//Set baud rate
     const u16 ubrr = akat_cpu_freq_hz() / (AK_USART0_BAUD_RATE * 8L) - 1;
     UBRR0H = ubrr >> 8;
     UBRR0L = ubrr % 256;
@@ -19746,10 +19623,11 @@ akat_coroutine_l_end:
 
 
 static AKAT_FORCE_INLINE void akat_on_every_decisecond() {
-    counter();
+    activity_led();
     ds18b20_ticker();
     ds18b20_aqua__ticker();
     ds18b20_case__ticker();
+    co2_ticker();
 }
 
 static AKAT_FORCE_INLINE void timer1() {
@@ -20732,8 +20610,6 @@ AKAT_NO_RETURN void main() {
     L7_unused__init();
     D0_unused__init();
     D1_unused__init();
-    D2_unused__init();
-    D3_unused__init();
     D4_unused__init();
     D5_unused__init();
     D6_unused__init();
@@ -20783,6 +20659,7 @@ AKAT_NO_RETURN void main() {
     watchdog_init();
     ds18b20_aqua__init();
     ds18b20_case__init();
+    usart1_init();
     usart0_init();
     timer1();
     //Init
@@ -20793,6 +20670,7 @@ AKAT_NO_RETURN void main() {
     while (1) {
         watchdog_reset();
         akat_on_every_decisecond_runner();
+        usart1_writer();
         usart0_writer();
         usart0_reader();
         ds18b20_thread();

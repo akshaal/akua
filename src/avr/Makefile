@@ -8,11 +8,11 @@ TUNING_SRC=tuning.c
 
 PROJ_CFLAGS=-fdump-ipa-inline
 
-all: firmware.avr ../../serial-protocol.txt
+all: firmware.avr
 
 distclean: clean
 
-firmware.tmp.c firmware.cflags: ${TUNING_SRC} ${SRCS} ${AKAT_SRCS} Makefile
+firmware.tmp.c: ${TUNING_SRC} ${SRCS} ${AKAT_SRCS} Makefile
 		${AKATPP} ${AKATPP_OPTS} ${TUNING_SRC} ${AKAT_SRCS} ${SRCS} > "firmware.tmp.c" || rm "firmware.tmp.c"
 
 firmware.avr: firmware.tmp.c firmware.cflags Makefile
@@ -23,11 +23,9 @@ firmware.avr: firmware.tmp.c firmware.cflags Makefile
 		${SIZE} $@ && \
 		${AKATV} firmware.avr.ltrans0.s && \
 		hex2bin firmware.hex && \
-		dos2unix firmware.hex
-
-../../serial-protocol.txt: firmware.tmp.c firmware.avr Makefile
-		./extract-protocol 
+		dos2unix firmware.hex && \
+		./extract-protocol
 
 clean:
-	rm -f *.ii *.o *.i *.s *.a *.avr *.hex *.bin *.inline *.out *.cflags *.tmp.res serial-protocol.txt.tmp
+	rm -f *.ii *.o *.i *.s *.a *.avr *.hex *.bin *.inline *.out *.tmp.res serial-protocol.txt.tmp
 

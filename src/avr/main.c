@@ -6,6 +6,15 @@
 #define AK_USART0_BAUD_RATE     9600
 #define AK_USART0_FRAME_FORMAT  (H(UCSZ00) | H(UCSZ01))
 
+// Here is what we are going to use for communication with NH-Z19 (CO2 Sensor)
+// Frame format is 8N1 (8 bits, no parity, 1 stop bit)
+// We can't change this. This is from the specification for the sensor.
+#define AK_USART1_BAUD_RATE     9600
+#define AK_USART1_FRAME_FORMAT  (H(UCSZ10) | H(UCSZ11))
+
+// Delay in deciseconds between commands to MH-Z19 sensor
+#define AK_CO2_DECISECONDS_DELAY  3
+
 // Size of buffer for bytes we receive from USART0/USB.
 // RX-Interrupt puts bytes into the given ring buffer if there is space in it.
 // A thread takes byte from the buffer and process it.
@@ -72,8 +81,8 @@ X_UNUSED_PIN$(L6); // 41   PL6 Digital pin 43
 X_UNUSED_PIN$(L7); // 42   PL7 Digital pin 42
 X_UNUSED_PIN$(D0); // 43   PD0 ( SCL/INT0 ) Digital pin 21 (SCL)
 X_UNUSED_PIN$(D1); // 44   PD1 ( SDA/INT1 ) Digital pin 20 (SDA)
-X_UNUSED_PIN$(D2); // 45   PD2 ( RXDI/INT2 ) Digital pin 19 (RX1)
-X_UNUSED_PIN$(D3); // 46   PD3 ( TXD1/INT3 ) Digital pin 18 (TX1)
+// USART1 / CO2 ..... 45   PD2 ( RXDI/INT2 ) Digital pin 19 (RX1)
+// USART1 / CO2 ..... 46   PD3 ( TXD1/INT3 ) Digital pin 18 (TX1)
 X_UNUSED_PIN$(D4); // 47   PD4 ( ICP1 )
 X_UNUSED_PIN$(D5); // 48   PD5 ( XCK1 )
 X_UNUSED_PIN$(D6); // 49   PD6 ( T1 )
@@ -165,7 +174,7 @@ X_WATCHDOG$(8s);
 
 // This piece of code will be executed in akat event/thread loop every 1/10 second.
 // We use to turn the blue led ON and OFF
-X_EVERY_DECISECOND$(counter) {
+X_EVERY_DECISECOND$(activity_led) {
     STATIC_VAR$(u8 state, initial = 0);
 
     blue_led.set(state);
@@ -186,10 +195,78 @@ X_DS18B20$(ds18b20_case, A1);
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+// USART1 - MH-Z19 CO2 Module
+
+X_INIT$(usart1_init) {
+    // Set baud rate
+    const u16 ubrr = akat_cpu_freq_hz() / (AK_USART1_BAUD_RATE * 8L) - 1;
+    UBRR1H = ubrr >> 8;
+    UBRR1L = ubrr % 256;
+    UCSR1A = H(U2X1);
+
+    // Set frame format
+    UCSR1C = AK_USART1_FRAME_FORMAT;
+
+    // Enable transmitter, receiver and interrupt for receiver (interrupt for 'byte is received')
+    UCSR1B = H(TXEN1) | H(RXEN1) | H(RXCIE1);
+}
+
+ISR(USART1_RX_vect) {
+    // TODO: Remove unused!
+    AKAT_UNUSED u8 b = UDR1; // we must read here, no matter what, to clear interrupt flag
+}
+
+GLOBAL$() {
+    STATIC_VAR$(u8 co2_command_countdown);
+}
+
+X_EVERY_DECISECOND$(co2_ticker) {
+    if (co2_command_countdown) {
+        co2_command_countdown -= 1;
+    }
+}
+
+THREAD$(usart1_writer) {
+    STATIC_VAR$(u8 byte_to_send);
+
+    SUB$(send_byte) {
+        // Wait until USART0 is ready to transmit next byte
+        // from 'byte_to_send';
+        WAIT_UNTIL$(UCSR1A & H(UDRE1), unlikely);
+        UDR1 = byte_to_send;
+    }
+
+    while(1) {
+        // Wait until it's time to send the command sequence
+        // This counter will be decremented every 0.1 second in the X_EVERY_DECISECOND$ above
+        co2_command_countdown = AK_CO2_DECISECONDS_DELAY;
+        WAIT_UNTIL$(co2_command_countdown == 0, unlikely);
+
+        // Send command sequence
+        byte_to_send = 0xFF; CALL$(send_byte); // Header
+        byte_to_send = 0x01; CALL$(send_byte); // Sensor #1
+        byte_to_send = 0x86; CALL$(send_byte); // Command (Read gas concentration)
+
+        // 5 times zero
+        byte_to_send = 0x00;
+        CALL$(send_byte);
+        CALL$(send_byte);
+        CALL$(send_byte);
+        CALL$(send_byte);
+        CALL$(send_byte);
+
+        byte_to_send = 0x79; CALL$(send_byte); // CRC
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // USART0 - Serial interface over USB Connection
 
 X_INIT$(usart0_init) {
-    // Set baudrate
+    // Set baud rate
     const u16 ubrr = akat_cpu_freq_hz() / (AK_USART0_BAUD_RATE * 8L) - 1;
     UBRR0H = ubrr >> 8;
     UBRR0L = ubrr % 256;
