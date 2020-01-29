@@ -12,10 +12,10 @@ all: firmware.avr ../../serial-protocol.txt
 
 distclean: clean
 
-firmware.tmp.c: ${TUNING_SRC} ${SRCS} ${AKAT_SRCS}
+firmware.tmp.c firmware.cflags: ${TUNING_SRC} ${SRCS} ${AKAT_SRCS} Makefile
 		${AKATPP} ${AKATPP_OPTS} ${TUNING_SRC} ${AKAT_SRCS} ${SRCS} > "firmware.tmp.c" || rm "firmware.tmp.c"
 
-firmware.avr: firmware.tmp.c
+firmware.avr: firmware.tmp.c firmware.cflags Makefile
 	  XX=`cat firmware.cflags` && ${CC} -O3 ${CFLAGS} ${PROJ_CFLAGS} $$XX "$<" -save-temps -o $@ && \
 		${OBJDUMP} -d $@ > $@.s && \
 		${OBJCOPY} -j .text -j .data -O ihex firmware.avr firmware.hex && \
@@ -29,4 +29,5 @@ firmware.avr: firmware.tmp.c
 		./extract-protocol 
 
 clean:
-	rm -f *.ii *.o *.i *.s *.a *.avr *.hex *.bin *.inline *.out *.cflags *.tmp.res
+	rm -f *.ii *.o *.i *.s *.a *.avr *.hex *.bin *.inline *.out *.cflags *.tmp.res serial-protocol.txt.tmp
+

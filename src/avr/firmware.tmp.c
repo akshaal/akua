@@ -414,14 +414,14 @@ static AKAT_FORCE_INLINE void G5_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 G5_unused__port__is_set__impl() {
-#define is_set__impl G5_unused__port__is_set__impl
 #define set__impl G5_unused__port__set__impl
+#define is_set__impl G5_unused__port__is_set__impl
     return PORTG & (1 << 5);  //Get value of PORTG for G5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl G5_unused__port__is_set__impl
 #define set__impl G5_unused__port__set__impl
+#define is_set__impl G5_unused__port__is_set__impl
 
 G5_unused__port_t const G5_unused__port = {.set = &set__impl
                                            ,
@@ -429,23 +429,23 @@ G5_unused__port_t const G5_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl G5_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl G5_unused__port__set__impl
+#define is_set__impl G5_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl G5_unused__port__is_set__impl
 #define set__impl G5_unused__port__set__impl
+#define is_set__impl G5_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -469,14 +469,14 @@ static AKAT_FORCE_INLINE void G5_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 G5_unused__ddr__is_set__impl() {
-#define is_set__impl G5_unused__ddr__is_set__impl
 #define set__impl G5_unused__ddr__set__impl
+#define is_set__impl G5_unused__ddr__is_set__impl
     return DDRG & (1 << 5);  //Get value of DDRG for G5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl G5_unused__ddr__is_set__impl
 #define set__impl G5_unused__ddr__set__impl
+#define is_set__impl G5_unused__ddr__is_set__impl
 
 G5_unused__ddr_t const G5_unused__ddr = {.set = &set__impl
                                          ,
@@ -484,23 +484,23 @@ G5_unused__ddr_t const G5_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl G5_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl G5_unused__ddr__set__impl
+#define is_set__impl G5_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl G5_unused__ddr__is_set__impl
 #define set__impl G5_unused__ddr__set__impl
+#define is_set__impl G5_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -524,14 +524,14 @@ static AKAT_FORCE_INLINE void G5_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 G5_unused__pin__is_set__impl() {
-#define is_set__impl G5_unused__pin__is_set__impl
 #define set__impl G5_unused__pin__set__impl
+#define is_set__impl G5_unused__pin__is_set__impl
     return PING & (1 << 5);  //Get value of PING for G5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl G5_unused__pin__is_set__impl
 #define set__impl G5_unused__pin__set__impl
+#define is_set__impl G5_unused__pin__is_set__impl
 
 G5_unused__pin_t const G5_unused__pin = {.set = &set__impl
                                          ,
@@ -539,23 +539,23 @@ G5_unused__pin_t const G5_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl G5_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl G5_unused__pin__set__impl
+#define is_set__impl G5_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl G5_unused__pin__is_set__impl
 #define set__impl G5_unused__pin__set__impl
+#define is_set__impl G5_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -627,14 +627,14 @@ static AKAT_FORCE_INLINE void E2_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 E2_unused__port__is_set__impl() {
-#define is_set__impl E2_unused__port__is_set__impl
 #define set__impl E2_unused__port__set__impl
+#define is_set__impl E2_unused__port__is_set__impl
     return PORTE & (1 << 2);  //Get value of PORTE for E2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl E2_unused__port__is_set__impl
 #define set__impl E2_unused__port__set__impl
+#define is_set__impl E2_unused__port__is_set__impl
 
 E2_unused__port_t const E2_unused__port = {.set = &set__impl
                                            ,
@@ -642,23 +642,23 @@ E2_unused__port_t const E2_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl E2_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl E2_unused__port__set__impl
+#define is_set__impl E2_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl E2_unused__port__is_set__impl
 #define set__impl E2_unused__port__set__impl
+#define is_set__impl E2_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -682,14 +682,14 @@ static AKAT_FORCE_INLINE void E2_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 E2_unused__ddr__is_set__impl() {
-#define is_set__impl E2_unused__ddr__is_set__impl
 #define set__impl E2_unused__ddr__set__impl
+#define is_set__impl E2_unused__ddr__is_set__impl
     return DDRE & (1 << 2);  //Get value of DDRE for E2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl E2_unused__ddr__is_set__impl
 #define set__impl E2_unused__ddr__set__impl
+#define is_set__impl E2_unused__ddr__is_set__impl
 
 E2_unused__ddr_t const E2_unused__ddr = {.set = &set__impl
                                          ,
@@ -697,23 +697,23 @@ E2_unused__ddr_t const E2_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl E2_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl E2_unused__ddr__set__impl
+#define is_set__impl E2_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl E2_unused__ddr__is_set__impl
 #define set__impl E2_unused__ddr__set__impl
+#define is_set__impl E2_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -737,14 +737,14 @@ static AKAT_FORCE_INLINE void E2_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 E2_unused__pin__is_set__impl() {
-#define is_set__impl E2_unused__pin__is_set__impl
 #define set__impl E2_unused__pin__set__impl
+#define is_set__impl E2_unused__pin__is_set__impl
     return PINE & (1 << 2);  //Get value of PINE for E2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl E2_unused__pin__is_set__impl
 #define set__impl E2_unused__pin__set__impl
+#define is_set__impl E2_unused__pin__is_set__impl
 
 E2_unused__pin_t const E2_unused__pin = {.set = &set__impl
                                          ,
@@ -752,23 +752,23 @@ E2_unused__pin_t const E2_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl E2_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl E2_unused__pin__set__impl
+#define is_set__impl E2_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl E2_unused__pin__is_set__impl
 #define set__impl E2_unused__pin__set__impl
+#define is_set__impl E2_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -838,14 +838,14 @@ static AKAT_FORCE_INLINE void E3_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 E3_unused__port__is_set__impl() {
-#define is_set__impl E3_unused__port__is_set__impl
 #define set__impl E3_unused__port__set__impl
+#define is_set__impl E3_unused__port__is_set__impl
     return PORTE & (1 << 3);  //Get value of PORTE for E3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl E3_unused__port__is_set__impl
 #define set__impl E3_unused__port__set__impl
+#define is_set__impl E3_unused__port__is_set__impl
 
 E3_unused__port_t const E3_unused__port = {.set = &set__impl
                                            ,
@@ -853,23 +853,23 @@ E3_unused__port_t const E3_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl E3_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl E3_unused__port__set__impl
+#define is_set__impl E3_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl E3_unused__port__is_set__impl
 #define set__impl E3_unused__port__set__impl
+#define is_set__impl E3_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -893,14 +893,14 @@ static AKAT_FORCE_INLINE void E3_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 E3_unused__ddr__is_set__impl() {
-#define is_set__impl E3_unused__ddr__is_set__impl
 #define set__impl E3_unused__ddr__set__impl
+#define is_set__impl E3_unused__ddr__is_set__impl
     return DDRE & (1 << 3);  //Get value of DDRE for E3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl E3_unused__ddr__is_set__impl
 #define set__impl E3_unused__ddr__set__impl
+#define is_set__impl E3_unused__ddr__is_set__impl
 
 E3_unused__ddr_t const E3_unused__ddr = {.set = &set__impl
                                          ,
@@ -908,23 +908,23 @@ E3_unused__ddr_t const E3_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl E3_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl E3_unused__ddr__set__impl
+#define is_set__impl E3_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl E3_unused__ddr__is_set__impl
 #define set__impl E3_unused__ddr__set__impl
+#define is_set__impl E3_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -948,14 +948,14 @@ static AKAT_FORCE_INLINE void E3_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 E3_unused__pin__is_set__impl() {
-#define is_set__impl E3_unused__pin__is_set__impl
 #define set__impl E3_unused__pin__set__impl
+#define is_set__impl E3_unused__pin__is_set__impl
     return PINE & (1 << 3);  //Get value of PINE for E3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl E3_unused__pin__is_set__impl
 #define set__impl E3_unused__pin__set__impl
+#define is_set__impl E3_unused__pin__is_set__impl
 
 E3_unused__pin_t const E3_unused__pin = {.set = &set__impl
                                          ,
@@ -963,23 +963,23 @@ E3_unused__pin_t const E3_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl E3_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl E3_unused__pin__set__impl
+#define is_set__impl E3_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl E3_unused__pin__is_set__impl
 #define set__impl E3_unused__pin__set__impl
+#define is_set__impl E3_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -1049,14 +1049,14 @@ static AKAT_FORCE_INLINE void E4_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 E4_unused__port__is_set__impl() {
-#define is_set__impl E4_unused__port__is_set__impl
 #define set__impl E4_unused__port__set__impl
+#define is_set__impl E4_unused__port__is_set__impl
     return PORTE & (1 << 4);  //Get value of PORTE for E4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl E4_unused__port__is_set__impl
 #define set__impl E4_unused__port__set__impl
+#define is_set__impl E4_unused__port__is_set__impl
 
 E4_unused__port_t const E4_unused__port = {.set = &set__impl
                                            ,
@@ -1064,23 +1064,23 @@ E4_unused__port_t const E4_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl E4_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl E4_unused__port__set__impl
+#define is_set__impl E4_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl E4_unused__port__is_set__impl
 #define set__impl E4_unused__port__set__impl
+#define is_set__impl E4_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -1104,14 +1104,14 @@ static AKAT_FORCE_INLINE void E4_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 E4_unused__ddr__is_set__impl() {
-#define is_set__impl E4_unused__ddr__is_set__impl
 #define set__impl E4_unused__ddr__set__impl
+#define is_set__impl E4_unused__ddr__is_set__impl
     return DDRE & (1 << 4);  //Get value of DDRE for E4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl E4_unused__ddr__is_set__impl
 #define set__impl E4_unused__ddr__set__impl
+#define is_set__impl E4_unused__ddr__is_set__impl
 
 E4_unused__ddr_t const E4_unused__ddr = {.set = &set__impl
                                          ,
@@ -1119,23 +1119,23 @@ E4_unused__ddr_t const E4_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl E4_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl E4_unused__ddr__set__impl
+#define is_set__impl E4_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl E4_unused__ddr__is_set__impl
 #define set__impl E4_unused__ddr__set__impl
+#define is_set__impl E4_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -1159,14 +1159,14 @@ static AKAT_FORCE_INLINE void E4_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 E4_unused__pin__is_set__impl() {
-#define is_set__impl E4_unused__pin__is_set__impl
 #define set__impl E4_unused__pin__set__impl
+#define is_set__impl E4_unused__pin__is_set__impl
     return PINE & (1 << 4);  //Get value of PINE for E4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl E4_unused__pin__is_set__impl
 #define set__impl E4_unused__pin__set__impl
+#define is_set__impl E4_unused__pin__is_set__impl
 
 E4_unused__pin_t const E4_unused__pin = {.set = &set__impl
                                          ,
@@ -1174,23 +1174,23 @@ E4_unused__pin_t const E4_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl E4_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl E4_unused__pin__set__impl
+#define is_set__impl E4_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl E4_unused__pin__is_set__impl
 #define set__impl E4_unused__pin__set__impl
+#define is_set__impl E4_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -1260,14 +1260,14 @@ static AKAT_FORCE_INLINE void E5_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 E5_unused__port__is_set__impl() {
-#define is_set__impl E5_unused__port__is_set__impl
 #define set__impl E5_unused__port__set__impl
+#define is_set__impl E5_unused__port__is_set__impl
     return PORTE & (1 << 5);  //Get value of PORTE for E5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl E5_unused__port__is_set__impl
 #define set__impl E5_unused__port__set__impl
+#define is_set__impl E5_unused__port__is_set__impl
 
 E5_unused__port_t const E5_unused__port = {.set = &set__impl
                                            ,
@@ -1275,23 +1275,23 @@ E5_unused__port_t const E5_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl E5_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl E5_unused__port__set__impl
+#define is_set__impl E5_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl E5_unused__port__is_set__impl
 #define set__impl E5_unused__port__set__impl
+#define is_set__impl E5_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -1315,14 +1315,14 @@ static AKAT_FORCE_INLINE void E5_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 E5_unused__ddr__is_set__impl() {
-#define is_set__impl E5_unused__ddr__is_set__impl
 #define set__impl E5_unused__ddr__set__impl
+#define is_set__impl E5_unused__ddr__is_set__impl
     return DDRE & (1 << 5);  //Get value of DDRE for E5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl E5_unused__ddr__is_set__impl
 #define set__impl E5_unused__ddr__set__impl
+#define is_set__impl E5_unused__ddr__is_set__impl
 
 E5_unused__ddr_t const E5_unused__ddr = {.set = &set__impl
                                          ,
@@ -1330,23 +1330,23 @@ E5_unused__ddr_t const E5_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl E5_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl E5_unused__ddr__set__impl
+#define is_set__impl E5_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl E5_unused__ddr__is_set__impl
 #define set__impl E5_unused__ddr__set__impl
+#define is_set__impl E5_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -1370,14 +1370,14 @@ static AKAT_FORCE_INLINE void E5_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 E5_unused__pin__is_set__impl() {
-#define is_set__impl E5_unused__pin__is_set__impl
 #define set__impl E5_unused__pin__set__impl
+#define is_set__impl E5_unused__pin__is_set__impl
     return PINE & (1 << 5);  //Get value of PINE for E5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl E5_unused__pin__is_set__impl
 #define set__impl E5_unused__pin__set__impl
+#define is_set__impl E5_unused__pin__is_set__impl
 
 E5_unused__pin_t const E5_unused__pin = {.set = &set__impl
                                          ,
@@ -1385,23 +1385,23 @@ E5_unused__pin_t const E5_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl E5_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl E5_unused__pin__set__impl
+#define is_set__impl E5_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl E5_unused__pin__is_set__impl
 #define set__impl E5_unused__pin__set__impl
+#define is_set__impl E5_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -1471,14 +1471,14 @@ static AKAT_FORCE_INLINE void E6_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 E6_unused__port__is_set__impl() {
-#define is_set__impl E6_unused__port__is_set__impl
 #define set__impl E6_unused__port__set__impl
+#define is_set__impl E6_unused__port__is_set__impl
     return PORTE & (1 << 6);  //Get value of PORTE for E6
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl E6_unused__port__is_set__impl
 #define set__impl E6_unused__port__set__impl
+#define is_set__impl E6_unused__port__is_set__impl
 
 E6_unused__port_t const E6_unused__port = {.set = &set__impl
                                            ,
@@ -1486,23 +1486,23 @@ E6_unused__port_t const E6_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl E6_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl E6_unused__port__set__impl
+#define is_set__impl E6_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl E6_unused__port__is_set__impl
 #define set__impl E6_unused__port__set__impl
+#define is_set__impl E6_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -1526,14 +1526,14 @@ static AKAT_FORCE_INLINE void E6_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 E6_unused__ddr__is_set__impl() {
-#define is_set__impl E6_unused__ddr__is_set__impl
 #define set__impl E6_unused__ddr__set__impl
+#define is_set__impl E6_unused__ddr__is_set__impl
     return DDRE & (1 << 6);  //Get value of DDRE for E6
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl E6_unused__ddr__is_set__impl
 #define set__impl E6_unused__ddr__set__impl
+#define is_set__impl E6_unused__ddr__is_set__impl
 
 E6_unused__ddr_t const E6_unused__ddr = {.set = &set__impl
                                          ,
@@ -1541,23 +1541,23 @@ E6_unused__ddr_t const E6_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl E6_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl E6_unused__ddr__set__impl
+#define is_set__impl E6_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl E6_unused__ddr__is_set__impl
 #define set__impl E6_unused__ddr__set__impl
+#define is_set__impl E6_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -1581,14 +1581,14 @@ static AKAT_FORCE_INLINE void E6_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 E6_unused__pin__is_set__impl() {
-#define is_set__impl E6_unused__pin__is_set__impl
 #define set__impl E6_unused__pin__set__impl
+#define is_set__impl E6_unused__pin__is_set__impl
     return PINE & (1 << 6);  //Get value of PINE for E6
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl E6_unused__pin__is_set__impl
 #define set__impl E6_unused__pin__set__impl
+#define is_set__impl E6_unused__pin__is_set__impl
 
 E6_unused__pin_t const E6_unused__pin = {.set = &set__impl
                                          ,
@@ -1596,23 +1596,23 @@ E6_unused__pin_t const E6_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl E6_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl E6_unused__pin__set__impl
+#define is_set__impl E6_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl E6_unused__pin__is_set__impl
 #define set__impl E6_unused__pin__set__impl
+#define is_set__impl E6_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -1682,14 +1682,14 @@ static AKAT_FORCE_INLINE void E7_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 E7_unused__port__is_set__impl() {
-#define is_set__impl E7_unused__port__is_set__impl
 #define set__impl E7_unused__port__set__impl
+#define is_set__impl E7_unused__port__is_set__impl
     return PORTE & (1 << 7);  //Get value of PORTE for E7
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl E7_unused__port__is_set__impl
 #define set__impl E7_unused__port__set__impl
+#define is_set__impl E7_unused__port__is_set__impl
 
 E7_unused__port_t const E7_unused__port = {.set = &set__impl
                                            ,
@@ -1697,23 +1697,23 @@ E7_unused__port_t const E7_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl E7_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl E7_unused__port__set__impl
+#define is_set__impl E7_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl E7_unused__port__is_set__impl
 #define set__impl E7_unused__port__set__impl
+#define is_set__impl E7_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -1737,14 +1737,14 @@ static AKAT_FORCE_INLINE void E7_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 E7_unused__ddr__is_set__impl() {
-#define is_set__impl E7_unused__ddr__is_set__impl
 #define set__impl E7_unused__ddr__set__impl
+#define is_set__impl E7_unused__ddr__is_set__impl
     return DDRE & (1 << 7);  //Get value of DDRE for E7
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl E7_unused__ddr__is_set__impl
 #define set__impl E7_unused__ddr__set__impl
+#define is_set__impl E7_unused__ddr__is_set__impl
 
 E7_unused__ddr_t const E7_unused__ddr = {.set = &set__impl
                                          ,
@@ -1752,23 +1752,23 @@ E7_unused__ddr_t const E7_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl E7_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl E7_unused__ddr__set__impl
+#define is_set__impl E7_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl E7_unused__ddr__is_set__impl
 #define set__impl E7_unused__ddr__set__impl
+#define is_set__impl E7_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -1792,14 +1792,14 @@ static AKAT_FORCE_INLINE void E7_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 E7_unused__pin__is_set__impl() {
-#define is_set__impl E7_unused__pin__is_set__impl
 #define set__impl E7_unused__pin__set__impl
+#define is_set__impl E7_unused__pin__is_set__impl
     return PINE & (1 << 7);  //Get value of PINE for E7
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl E7_unused__pin__is_set__impl
 #define set__impl E7_unused__pin__set__impl
+#define is_set__impl E7_unused__pin__is_set__impl
 
 E7_unused__pin_t const E7_unused__pin = {.set = &set__impl
                                          ,
@@ -1807,23 +1807,23 @@ E7_unused__pin_t const E7_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl E7_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl E7_unused__pin__set__impl
+#define is_set__impl E7_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl E7_unused__pin__is_set__impl
 #define set__impl E7_unused__pin__set__impl
+#define is_set__impl E7_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -1895,14 +1895,14 @@ static AKAT_FORCE_INLINE void H0_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 H0_unused__port__is_set__impl() {
-#define is_set__impl H0_unused__port__is_set__impl
 #define set__impl H0_unused__port__set__impl
+#define is_set__impl H0_unused__port__is_set__impl
     return PORTH & (1 << 0);  //Get value of PORTH for H0
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl H0_unused__port__is_set__impl
 #define set__impl H0_unused__port__set__impl
+#define is_set__impl H0_unused__port__is_set__impl
 
 H0_unused__port_t const H0_unused__port = {.set = &set__impl
                                            ,
@@ -1910,23 +1910,23 @@ H0_unused__port_t const H0_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl H0_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl H0_unused__port__set__impl
+#define is_set__impl H0_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl H0_unused__port__is_set__impl
 #define set__impl H0_unused__port__set__impl
+#define is_set__impl H0_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -1950,14 +1950,14 @@ static AKAT_FORCE_INLINE void H0_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 H0_unused__ddr__is_set__impl() {
-#define is_set__impl H0_unused__ddr__is_set__impl
 #define set__impl H0_unused__ddr__set__impl
+#define is_set__impl H0_unused__ddr__is_set__impl
     return DDRH & (1 << 0);  //Get value of DDRH for H0
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl H0_unused__ddr__is_set__impl
 #define set__impl H0_unused__ddr__set__impl
+#define is_set__impl H0_unused__ddr__is_set__impl
 
 H0_unused__ddr_t const H0_unused__ddr = {.set = &set__impl
                                          ,
@@ -1965,23 +1965,23 @@ H0_unused__ddr_t const H0_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl H0_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl H0_unused__ddr__set__impl
+#define is_set__impl H0_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl H0_unused__ddr__is_set__impl
 #define set__impl H0_unused__ddr__set__impl
+#define is_set__impl H0_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -2005,14 +2005,14 @@ static AKAT_FORCE_INLINE void H0_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 H0_unused__pin__is_set__impl() {
-#define is_set__impl H0_unused__pin__is_set__impl
 #define set__impl H0_unused__pin__set__impl
+#define is_set__impl H0_unused__pin__is_set__impl
     return PINH & (1 << 0);  //Get value of PINH for H0
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl H0_unused__pin__is_set__impl
 #define set__impl H0_unused__pin__set__impl
+#define is_set__impl H0_unused__pin__is_set__impl
 
 H0_unused__pin_t const H0_unused__pin = {.set = &set__impl
                                          ,
@@ -2020,23 +2020,23 @@ H0_unused__pin_t const H0_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl H0_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl H0_unused__pin__set__impl
+#define is_set__impl H0_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl H0_unused__pin__is_set__impl
 #define set__impl H0_unused__pin__set__impl
+#define is_set__impl H0_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -2106,14 +2106,14 @@ static AKAT_FORCE_INLINE void H1_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 H1_unused__port__is_set__impl() {
-#define is_set__impl H1_unused__port__is_set__impl
 #define set__impl H1_unused__port__set__impl
+#define is_set__impl H1_unused__port__is_set__impl
     return PORTH & (1 << 1);  //Get value of PORTH for H1
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl H1_unused__port__is_set__impl
 #define set__impl H1_unused__port__set__impl
+#define is_set__impl H1_unused__port__is_set__impl
 
 H1_unused__port_t const H1_unused__port = {.set = &set__impl
                                            ,
@@ -2121,23 +2121,23 @@ H1_unused__port_t const H1_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl H1_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl H1_unused__port__set__impl
+#define is_set__impl H1_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl H1_unused__port__is_set__impl
 #define set__impl H1_unused__port__set__impl
+#define is_set__impl H1_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -2161,14 +2161,14 @@ static AKAT_FORCE_INLINE void H1_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 H1_unused__ddr__is_set__impl() {
-#define is_set__impl H1_unused__ddr__is_set__impl
 #define set__impl H1_unused__ddr__set__impl
+#define is_set__impl H1_unused__ddr__is_set__impl
     return DDRH & (1 << 1);  //Get value of DDRH for H1
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl H1_unused__ddr__is_set__impl
 #define set__impl H1_unused__ddr__set__impl
+#define is_set__impl H1_unused__ddr__is_set__impl
 
 H1_unused__ddr_t const H1_unused__ddr = {.set = &set__impl
                                          ,
@@ -2176,23 +2176,23 @@ H1_unused__ddr_t const H1_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl H1_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl H1_unused__ddr__set__impl
+#define is_set__impl H1_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl H1_unused__ddr__is_set__impl
 #define set__impl H1_unused__ddr__set__impl
+#define is_set__impl H1_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -2216,14 +2216,14 @@ static AKAT_FORCE_INLINE void H1_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 H1_unused__pin__is_set__impl() {
-#define is_set__impl H1_unused__pin__is_set__impl
 #define set__impl H1_unused__pin__set__impl
+#define is_set__impl H1_unused__pin__is_set__impl
     return PINH & (1 << 1);  //Get value of PINH for H1
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl H1_unused__pin__is_set__impl
 #define set__impl H1_unused__pin__set__impl
+#define is_set__impl H1_unused__pin__is_set__impl
 
 H1_unused__pin_t const H1_unused__pin = {.set = &set__impl
                                          ,
@@ -2231,23 +2231,23 @@ H1_unused__pin_t const H1_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl H1_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl H1_unused__pin__set__impl
+#define is_set__impl H1_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl H1_unused__pin__is_set__impl
 #define set__impl H1_unused__pin__set__impl
+#define is_set__impl H1_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -2317,14 +2317,14 @@ static AKAT_FORCE_INLINE void H2_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 H2_unused__port__is_set__impl() {
-#define is_set__impl H2_unused__port__is_set__impl
 #define set__impl H2_unused__port__set__impl
+#define is_set__impl H2_unused__port__is_set__impl
     return PORTH & (1 << 2);  //Get value of PORTH for H2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl H2_unused__port__is_set__impl
 #define set__impl H2_unused__port__set__impl
+#define is_set__impl H2_unused__port__is_set__impl
 
 H2_unused__port_t const H2_unused__port = {.set = &set__impl
                                            ,
@@ -2332,23 +2332,23 @@ H2_unused__port_t const H2_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl H2_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl H2_unused__port__set__impl
+#define is_set__impl H2_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl H2_unused__port__is_set__impl
 #define set__impl H2_unused__port__set__impl
+#define is_set__impl H2_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -2372,14 +2372,14 @@ static AKAT_FORCE_INLINE void H2_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 H2_unused__ddr__is_set__impl() {
-#define is_set__impl H2_unused__ddr__is_set__impl
 #define set__impl H2_unused__ddr__set__impl
+#define is_set__impl H2_unused__ddr__is_set__impl
     return DDRH & (1 << 2);  //Get value of DDRH for H2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl H2_unused__ddr__is_set__impl
 #define set__impl H2_unused__ddr__set__impl
+#define is_set__impl H2_unused__ddr__is_set__impl
 
 H2_unused__ddr_t const H2_unused__ddr = {.set = &set__impl
                                          ,
@@ -2387,23 +2387,23 @@ H2_unused__ddr_t const H2_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl H2_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl H2_unused__ddr__set__impl
+#define is_set__impl H2_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl H2_unused__ddr__is_set__impl
 #define set__impl H2_unused__ddr__set__impl
+#define is_set__impl H2_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -2427,14 +2427,14 @@ static AKAT_FORCE_INLINE void H2_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 H2_unused__pin__is_set__impl() {
-#define is_set__impl H2_unused__pin__is_set__impl
 #define set__impl H2_unused__pin__set__impl
+#define is_set__impl H2_unused__pin__is_set__impl
     return PINH & (1 << 2);  //Get value of PINH for H2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl H2_unused__pin__is_set__impl
 #define set__impl H2_unused__pin__set__impl
+#define is_set__impl H2_unused__pin__is_set__impl
 
 H2_unused__pin_t const H2_unused__pin = {.set = &set__impl
                                          ,
@@ -2442,23 +2442,23 @@ H2_unused__pin_t const H2_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl H2_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl H2_unused__pin__set__impl
+#define is_set__impl H2_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl H2_unused__pin__is_set__impl
 #define set__impl H2_unused__pin__set__impl
+#define is_set__impl H2_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -2528,14 +2528,14 @@ static AKAT_FORCE_INLINE void H3_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 H3_unused__port__is_set__impl() {
-#define is_set__impl H3_unused__port__is_set__impl
 #define set__impl H3_unused__port__set__impl
+#define is_set__impl H3_unused__port__is_set__impl
     return PORTH & (1 << 3);  //Get value of PORTH for H3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl H3_unused__port__is_set__impl
 #define set__impl H3_unused__port__set__impl
+#define is_set__impl H3_unused__port__is_set__impl
 
 H3_unused__port_t const H3_unused__port = {.set = &set__impl
                                            ,
@@ -2543,23 +2543,23 @@ H3_unused__port_t const H3_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl H3_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl H3_unused__port__set__impl
+#define is_set__impl H3_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl H3_unused__port__is_set__impl
 #define set__impl H3_unused__port__set__impl
+#define is_set__impl H3_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -2583,14 +2583,14 @@ static AKAT_FORCE_INLINE void H3_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 H3_unused__ddr__is_set__impl() {
-#define is_set__impl H3_unused__ddr__is_set__impl
 #define set__impl H3_unused__ddr__set__impl
+#define is_set__impl H3_unused__ddr__is_set__impl
     return DDRH & (1 << 3);  //Get value of DDRH for H3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl H3_unused__ddr__is_set__impl
 #define set__impl H3_unused__ddr__set__impl
+#define is_set__impl H3_unused__ddr__is_set__impl
 
 H3_unused__ddr_t const H3_unused__ddr = {.set = &set__impl
                                          ,
@@ -2598,23 +2598,23 @@ H3_unused__ddr_t const H3_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl H3_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl H3_unused__ddr__set__impl
+#define is_set__impl H3_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl H3_unused__ddr__is_set__impl
 #define set__impl H3_unused__ddr__set__impl
+#define is_set__impl H3_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -2638,14 +2638,14 @@ static AKAT_FORCE_INLINE void H3_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 H3_unused__pin__is_set__impl() {
-#define is_set__impl H3_unused__pin__is_set__impl
 #define set__impl H3_unused__pin__set__impl
+#define is_set__impl H3_unused__pin__is_set__impl
     return PINH & (1 << 3);  //Get value of PINH for H3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl H3_unused__pin__is_set__impl
 #define set__impl H3_unused__pin__set__impl
+#define is_set__impl H3_unused__pin__is_set__impl
 
 H3_unused__pin_t const H3_unused__pin = {.set = &set__impl
                                          ,
@@ -2653,23 +2653,23 @@ H3_unused__pin_t const H3_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl H3_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl H3_unused__pin__set__impl
+#define is_set__impl H3_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl H3_unused__pin__is_set__impl
 #define set__impl H3_unused__pin__set__impl
+#define is_set__impl H3_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -2739,14 +2739,14 @@ static AKAT_FORCE_INLINE void H4_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 H4_unused__port__is_set__impl() {
-#define is_set__impl H4_unused__port__is_set__impl
 #define set__impl H4_unused__port__set__impl
+#define is_set__impl H4_unused__port__is_set__impl
     return PORTH & (1 << 4);  //Get value of PORTH for H4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl H4_unused__port__is_set__impl
 #define set__impl H4_unused__port__set__impl
+#define is_set__impl H4_unused__port__is_set__impl
 
 H4_unused__port_t const H4_unused__port = {.set = &set__impl
                                            ,
@@ -2754,23 +2754,23 @@ H4_unused__port_t const H4_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl H4_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl H4_unused__port__set__impl
+#define is_set__impl H4_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl H4_unused__port__is_set__impl
 #define set__impl H4_unused__port__set__impl
+#define is_set__impl H4_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -2794,14 +2794,14 @@ static AKAT_FORCE_INLINE void H4_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 H4_unused__ddr__is_set__impl() {
-#define is_set__impl H4_unused__ddr__is_set__impl
 #define set__impl H4_unused__ddr__set__impl
+#define is_set__impl H4_unused__ddr__is_set__impl
     return DDRH & (1 << 4);  //Get value of DDRH for H4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl H4_unused__ddr__is_set__impl
 #define set__impl H4_unused__ddr__set__impl
+#define is_set__impl H4_unused__ddr__is_set__impl
 
 H4_unused__ddr_t const H4_unused__ddr = {.set = &set__impl
                                          ,
@@ -2809,23 +2809,23 @@ H4_unused__ddr_t const H4_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl H4_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl H4_unused__ddr__set__impl
+#define is_set__impl H4_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl H4_unused__ddr__is_set__impl
 #define set__impl H4_unused__ddr__set__impl
+#define is_set__impl H4_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -2849,14 +2849,14 @@ static AKAT_FORCE_INLINE void H4_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 H4_unused__pin__is_set__impl() {
-#define is_set__impl H4_unused__pin__is_set__impl
 #define set__impl H4_unused__pin__set__impl
+#define is_set__impl H4_unused__pin__is_set__impl
     return PINH & (1 << 4);  //Get value of PINH for H4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl H4_unused__pin__is_set__impl
 #define set__impl H4_unused__pin__set__impl
+#define is_set__impl H4_unused__pin__is_set__impl
 
 H4_unused__pin_t const H4_unused__pin = {.set = &set__impl
                                          ,
@@ -2864,23 +2864,23 @@ H4_unused__pin_t const H4_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl H4_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl H4_unused__pin__set__impl
+#define is_set__impl H4_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl H4_unused__pin__is_set__impl
 #define set__impl H4_unused__pin__set__impl
+#define is_set__impl H4_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -2950,14 +2950,14 @@ static AKAT_FORCE_INLINE void H5_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 H5_unused__port__is_set__impl() {
-#define is_set__impl H5_unused__port__is_set__impl
 #define set__impl H5_unused__port__set__impl
+#define is_set__impl H5_unused__port__is_set__impl
     return PORTH & (1 << 5);  //Get value of PORTH for H5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl H5_unused__port__is_set__impl
 #define set__impl H5_unused__port__set__impl
+#define is_set__impl H5_unused__port__is_set__impl
 
 H5_unused__port_t const H5_unused__port = {.set = &set__impl
                                            ,
@@ -2965,23 +2965,23 @@ H5_unused__port_t const H5_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl H5_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl H5_unused__port__set__impl
+#define is_set__impl H5_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl H5_unused__port__is_set__impl
 #define set__impl H5_unused__port__set__impl
+#define is_set__impl H5_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -3005,14 +3005,14 @@ static AKAT_FORCE_INLINE void H5_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 H5_unused__ddr__is_set__impl() {
-#define is_set__impl H5_unused__ddr__is_set__impl
 #define set__impl H5_unused__ddr__set__impl
+#define is_set__impl H5_unused__ddr__is_set__impl
     return DDRH & (1 << 5);  //Get value of DDRH for H5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl H5_unused__ddr__is_set__impl
 #define set__impl H5_unused__ddr__set__impl
+#define is_set__impl H5_unused__ddr__is_set__impl
 
 H5_unused__ddr_t const H5_unused__ddr = {.set = &set__impl
                                          ,
@@ -3020,23 +3020,23 @@ H5_unused__ddr_t const H5_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl H5_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl H5_unused__ddr__set__impl
+#define is_set__impl H5_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl H5_unused__ddr__is_set__impl
 #define set__impl H5_unused__ddr__set__impl
+#define is_set__impl H5_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -3060,14 +3060,14 @@ static AKAT_FORCE_INLINE void H5_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 H5_unused__pin__is_set__impl() {
-#define is_set__impl H5_unused__pin__is_set__impl
 #define set__impl H5_unused__pin__set__impl
+#define is_set__impl H5_unused__pin__is_set__impl
     return PINH & (1 << 5);  //Get value of PINH for H5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl H5_unused__pin__is_set__impl
 #define set__impl H5_unused__pin__set__impl
+#define is_set__impl H5_unused__pin__is_set__impl
 
 H5_unused__pin_t const H5_unused__pin = {.set = &set__impl
                                          ,
@@ -3075,23 +3075,23 @@ H5_unused__pin_t const H5_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl H5_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl H5_unused__pin__set__impl
+#define is_set__impl H5_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl H5_unused__pin__is_set__impl
 #define set__impl H5_unused__pin__set__impl
+#define is_set__impl H5_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -3161,14 +3161,14 @@ static AKAT_FORCE_INLINE void H6_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 H6_unused__port__is_set__impl() {
-#define is_set__impl H6_unused__port__is_set__impl
 #define set__impl H6_unused__port__set__impl
+#define is_set__impl H6_unused__port__is_set__impl
     return PORTH & (1 << 6);  //Get value of PORTH for H6
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl H6_unused__port__is_set__impl
 #define set__impl H6_unused__port__set__impl
+#define is_set__impl H6_unused__port__is_set__impl
 
 H6_unused__port_t const H6_unused__port = {.set = &set__impl
                                            ,
@@ -3176,23 +3176,23 @@ H6_unused__port_t const H6_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl H6_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl H6_unused__port__set__impl
+#define is_set__impl H6_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl H6_unused__port__is_set__impl
 #define set__impl H6_unused__port__set__impl
+#define is_set__impl H6_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -3216,14 +3216,14 @@ static AKAT_FORCE_INLINE void H6_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 H6_unused__ddr__is_set__impl() {
-#define is_set__impl H6_unused__ddr__is_set__impl
 #define set__impl H6_unused__ddr__set__impl
+#define is_set__impl H6_unused__ddr__is_set__impl
     return DDRH & (1 << 6);  //Get value of DDRH for H6
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl H6_unused__ddr__is_set__impl
 #define set__impl H6_unused__ddr__set__impl
+#define is_set__impl H6_unused__ddr__is_set__impl
 
 H6_unused__ddr_t const H6_unused__ddr = {.set = &set__impl
                                          ,
@@ -3231,23 +3231,23 @@ H6_unused__ddr_t const H6_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl H6_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl H6_unused__ddr__set__impl
+#define is_set__impl H6_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl H6_unused__ddr__is_set__impl
 #define set__impl H6_unused__ddr__set__impl
+#define is_set__impl H6_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -3271,14 +3271,14 @@ static AKAT_FORCE_INLINE void H6_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 H6_unused__pin__is_set__impl() {
-#define is_set__impl H6_unused__pin__is_set__impl
 #define set__impl H6_unused__pin__set__impl
+#define is_set__impl H6_unused__pin__is_set__impl
     return PINH & (1 << 6);  //Get value of PINH for H6
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl H6_unused__pin__is_set__impl
 #define set__impl H6_unused__pin__set__impl
+#define is_set__impl H6_unused__pin__is_set__impl
 
 H6_unused__pin_t const H6_unused__pin = {.set = &set__impl
                                          ,
@@ -3286,23 +3286,23 @@ H6_unused__pin_t const H6_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl H6_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl H6_unused__pin__set__impl
+#define is_set__impl H6_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl H6_unused__pin__is_set__impl
 #define set__impl H6_unused__pin__set__impl
+#define is_set__impl H6_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -3372,14 +3372,14 @@ static AKAT_FORCE_INLINE void B0_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 B0_unused__port__is_set__impl() {
-#define is_set__impl B0_unused__port__is_set__impl
 #define set__impl B0_unused__port__set__impl
+#define is_set__impl B0_unused__port__is_set__impl
     return PORTB & (1 << 0);  //Get value of PORTB for B0
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl B0_unused__port__is_set__impl
 #define set__impl B0_unused__port__set__impl
+#define is_set__impl B0_unused__port__is_set__impl
 
 B0_unused__port_t const B0_unused__port = {.set = &set__impl
                                            ,
@@ -3387,23 +3387,23 @@ B0_unused__port_t const B0_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl B0_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl B0_unused__port__set__impl
+#define is_set__impl B0_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl B0_unused__port__is_set__impl
 #define set__impl B0_unused__port__set__impl
+#define is_set__impl B0_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -3427,14 +3427,14 @@ static AKAT_FORCE_INLINE void B0_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 B0_unused__ddr__is_set__impl() {
-#define is_set__impl B0_unused__ddr__is_set__impl
 #define set__impl B0_unused__ddr__set__impl
+#define is_set__impl B0_unused__ddr__is_set__impl
     return DDRB & (1 << 0);  //Get value of DDRB for B0
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl B0_unused__ddr__is_set__impl
 #define set__impl B0_unused__ddr__set__impl
+#define is_set__impl B0_unused__ddr__is_set__impl
 
 B0_unused__ddr_t const B0_unused__ddr = {.set = &set__impl
                                          ,
@@ -3442,23 +3442,23 @@ B0_unused__ddr_t const B0_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl B0_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl B0_unused__ddr__set__impl
+#define is_set__impl B0_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl B0_unused__ddr__is_set__impl
 #define set__impl B0_unused__ddr__set__impl
+#define is_set__impl B0_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -3482,14 +3482,14 @@ static AKAT_FORCE_INLINE void B0_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 B0_unused__pin__is_set__impl() {
-#define is_set__impl B0_unused__pin__is_set__impl
 #define set__impl B0_unused__pin__set__impl
+#define is_set__impl B0_unused__pin__is_set__impl
     return PINB & (1 << 0);  //Get value of PINB for B0
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl B0_unused__pin__is_set__impl
 #define set__impl B0_unused__pin__set__impl
+#define is_set__impl B0_unused__pin__is_set__impl
 
 B0_unused__pin_t const B0_unused__pin = {.set = &set__impl
                                          ,
@@ -3497,23 +3497,23 @@ B0_unused__pin_t const B0_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl B0_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl B0_unused__pin__set__impl
+#define is_set__impl B0_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl B0_unused__pin__is_set__impl
 #define set__impl B0_unused__pin__set__impl
+#define is_set__impl B0_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -3583,14 +3583,14 @@ static AKAT_FORCE_INLINE void B1_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 B1_unused__port__is_set__impl() {
-#define is_set__impl B1_unused__port__is_set__impl
 #define set__impl B1_unused__port__set__impl
+#define is_set__impl B1_unused__port__is_set__impl
     return PORTB & (1 << 1);  //Get value of PORTB for B1
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl B1_unused__port__is_set__impl
 #define set__impl B1_unused__port__set__impl
+#define is_set__impl B1_unused__port__is_set__impl
 
 B1_unused__port_t const B1_unused__port = {.set = &set__impl
                                            ,
@@ -3598,23 +3598,23 @@ B1_unused__port_t const B1_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl B1_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl B1_unused__port__set__impl
+#define is_set__impl B1_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl B1_unused__port__is_set__impl
 #define set__impl B1_unused__port__set__impl
+#define is_set__impl B1_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -3638,14 +3638,14 @@ static AKAT_FORCE_INLINE void B1_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 B1_unused__ddr__is_set__impl() {
-#define is_set__impl B1_unused__ddr__is_set__impl
 #define set__impl B1_unused__ddr__set__impl
+#define is_set__impl B1_unused__ddr__is_set__impl
     return DDRB & (1 << 1);  //Get value of DDRB for B1
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl B1_unused__ddr__is_set__impl
 #define set__impl B1_unused__ddr__set__impl
+#define is_set__impl B1_unused__ddr__is_set__impl
 
 B1_unused__ddr_t const B1_unused__ddr = {.set = &set__impl
                                          ,
@@ -3653,23 +3653,23 @@ B1_unused__ddr_t const B1_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl B1_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl B1_unused__ddr__set__impl
+#define is_set__impl B1_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl B1_unused__ddr__is_set__impl
 #define set__impl B1_unused__ddr__set__impl
+#define is_set__impl B1_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -3693,14 +3693,14 @@ static AKAT_FORCE_INLINE void B1_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 B1_unused__pin__is_set__impl() {
-#define is_set__impl B1_unused__pin__is_set__impl
 #define set__impl B1_unused__pin__set__impl
+#define is_set__impl B1_unused__pin__is_set__impl
     return PINB & (1 << 1);  //Get value of PINB for B1
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl B1_unused__pin__is_set__impl
 #define set__impl B1_unused__pin__set__impl
+#define is_set__impl B1_unused__pin__is_set__impl
 
 B1_unused__pin_t const B1_unused__pin = {.set = &set__impl
                                          ,
@@ -3708,23 +3708,23 @@ B1_unused__pin_t const B1_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl B1_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl B1_unused__pin__set__impl
+#define is_set__impl B1_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl B1_unused__pin__is_set__impl
 #define set__impl B1_unused__pin__set__impl
+#define is_set__impl B1_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -3794,14 +3794,14 @@ static AKAT_FORCE_INLINE void B2_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 B2_unused__port__is_set__impl() {
-#define is_set__impl B2_unused__port__is_set__impl
 #define set__impl B2_unused__port__set__impl
+#define is_set__impl B2_unused__port__is_set__impl
     return PORTB & (1 << 2);  //Get value of PORTB for B2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl B2_unused__port__is_set__impl
 #define set__impl B2_unused__port__set__impl
+#define is_set__impl B2_unused__port__is_set__impl
 
 B2_unused__port_t const B2_unused__port = {.set = &set__impl
                                            ,
@@ -3809,23 +3809,23 @@ B2_unused__port_t const B2_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl B2_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl B2_unused__port__set__impl
+#define is_set__impl B2_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl B2_unused__port__is_set__impl
 #define set__impl B2_unused__port__set__impl
+#define is_set__impl B2_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -3849,14 +3849,14 @@ static AKAT_FORCE_INLINE void B2_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 B2_unused__ddr__is_set__impl() {
-#define is_set__impl B2_unused__ddr__is_set__impl
 #define set__impl B2_unused__ddr__set__impl
+#define is_set__impl B2_unused__ddr__is_set__impl
     return DDRB & (1 << 2);  //Get value of DDRB for B2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl B2_unused__ddr__is_set__impl
 #define set__impl B2_unused__ddr__set__impl
+#define is_set__impl B2_unused__ddr__is_set__impl
 
 B2_unused__ddr_t const B2_unused__ddr = {.set = &set__impl
                                          ,
@@ -3864,23 +3864,23 @@ B2_unused__ddr_t const B2_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl B2_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl B2_unused__ddr__set__impl
+#define is_set__impl B2_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl B2_unused__ddr__is_set__impl
 #define set__impl B2_unused__ddr__set__impl
+#define is_set__impl B2_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -3904,14 +3904,14 @@ static AKAT_FORCE_INLINE void B2_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 B2_unused__pin__is_set__impl() {
-#define is_set__impl B2_unused__pin__is_set__impl
 #define set__impl B2_unused__pin__set__impl
+#define is_set__impl B2_unused__pin__is_set__impl
     return PINB & (1 << 2);  //Get value of PINB for B2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl B2_unused__pin__is_set__impl
 #define set__impl B2_unused__pin__set__impl
+#define is_set__impl B2_unused__pin__is_set__impl
 
 B2_unused__pin_t const B2_unused__pin = {.set = &set__impl
                                          ,
@@ -3919,23 +3919,23 @@ B2_unused__pin_t const B2_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl B2_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl B2_unused__pin__set__impl
+#define is_set__impl B2_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl B2_unused__pin__is_set__impl
 #define set__impl B2_unused__pin__set__impl
+#define is_set__impl B2_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -4005,14 +4005,14 @@ static AKAT_FORCE_INLINE void B3_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 B3_unused__port__is_set__impl() {
-#define is_set__impl B3_unused__port__is_set__impl
 #define set__impl B3_unused__port__set__impl
+#define is_set__impl B3_unused__port__is_set__impl
     return PORTB & (1 << 3);  //Get value of PORTB for B3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl B3_unused__port__is_set__impl
 #define set__impl B3_unused__port__set__impl
+#define is_set__impl B3_unused__port__is_set__impl
 
 B3_unused__port_t const B3_unused__port = {.set = &set__impl
                                            ,
@@ -4020,23 +4020,23 @@ B3_unused__port_t const B3_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl B3_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl B3_unused__port__set__impl
+#define is_set__impl B3_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl B3_unused__port__is_set__impl
 #define set__impl B3_unused__port__set__impl
+#define is_set__impl B3_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -4060,14 +4060,14 @@ static AKAT_FORCE_INLINE void B3_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 B3_unused__ddr__is_set__impl() {
-#define is_set__impl B3_unused__ddr__is_set__impl
 #define set__impl B3_unused__ddr__set__impl
+#define is_set__impl B3_unused__ddr__is_set__impl
     return DDRB & (1 << 3);  //Get value of DDRB for B3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl B3_unused__ddr__is_set__impl
 #define set__impl B3_unused__ddr__set__impl
+#define is_set__impl B3_unused__ddr__is_set__impl
 
 B3_unused__ddr_t const B3_unused__ddr = {.set = &set__impl
                                          ,
@@ -4075,23 +4075,23 @@ B3_unused__ddr_t const B3_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl B3_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl B3_unused__ddr__set__impl
+#define is_set__impl B3_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl B3_unused__ddr__is_set__impl
 #define set__impl B3_unused__ddr__set__impl
+#define is_set__impl B3_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -4115,14 +4115,14 @@ static AKAT_FORCE_INLINE void B3_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 B3_unused__pin__is_set__impl() {
-#define is_set__impl B3_unused__pin__is_set__impl
 #define set__impl B3_unused__pin__set__impl
+#define is_set__impl B3_unused__pin__is_set__impl
     return PINB & (1 << 3);  //Get value of PINB for B3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl B3_unused__pin__is_set__impl
 #define set__impl B3_unused__pin__set__impl
+#define is_set__impl B3_unused__pin__is_set__impl
 
 B3_unused__pin_t const B3_unused__pin = {.set = &set__impl
                                          ,
@@ -4130,23 +4130,23 @@ B3_unused__pin_t const B3_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl B3_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl B3_unused__pin__set__impl
+#define is_set__impl B3_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl B3_unused__pin__is_set__impl
 #define set__impl B3_unused__pin__set__impl
+#define is_set__impl B3_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -4216,14 +4216,14 @@ static AKAT_FORCE_INLINE void B4_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 B4_unused__port__is_set__impl() {
-#define is_set__impl B4_unused__port__is_set__impl
 #define set__impl B4_unused__port__set__impl
+#define is_set__impl B4_unused__port__is_set__impl
     return PORTB & (1 << 4);  //Get value of PORTB for B4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl B4_unused__port__is_set__impl
 #define set__impl B4_unused__port__set__impl
+#define is_set__impl B4_unused__port__is_set__impl
 
 B4_unused__port_t const B4_unused__port = {.set = &set__impl
                                            ,
@@ -4231,23 +4231,23 @@ B4_unused__port_t const B4_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl B4_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl B4_unused__port__set__impl
+#define is_set__impl B4_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl B4_unused__port__is_set__impl
 #define set__impl B4_unused__port__set__impl
+#define is_set__impl B4_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -4271,14 +4271,14 @@ static AKAT_FORCE_INLINE void B4_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 B4_unused__ddr__is_set__impl() {
-#define is_set__impl B4_unused__ddr__is_set__impl
 #define set__impl B4_unused__ddr__set__impl
+#define is_set__impl B4_unused__ddr__is_set__impl
     return DDRB & (1 << 4);  //Get value of DDRB for B4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl B4_unused__ddr__is_set__impl
 #define set__impl B4_unused__ddr__set__impl
+#define is_set__impl B4_unused__ddr__is_set__impl
 
 B4_unused__ddr_t const B4_unused__ddr = {.set = &set__impl
                                          ,
@@ -4286,23 +4286,23 @@ B4_unused__ddr_t const B4_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl B4_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl B4_unused__ddr__set__impl
+#define is_set__impl B4_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl B4_unused__ddr__is_set__impl
 #define set__impl B4_unused__ddr__set__impl
+#define is_set__impl B4_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -4326,14 +4326,14 @@ static AKAT_FORCE_INLINE void B4_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 B4_unused__pin__is_set__impl() {
-#define is_set__impl B4_unused__pin__is_set__impl
 #define set__impl B4_unused__pin__set__impl
+#define is_set__impl B4_unused__pin__is_set__impl
     return PINB & (1 << 4);  //Get value of PINB for B4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl B4_unused__pin__is_set__impl
 #define set__impl B4_unused__pin__set__impl
+#define is_set__impl B4_unused__pin__is_set__impl
 
 B4_unused__pin_t const B4_unused__pin = {.set = &set__impl
                                          ,
@@ -4341,23 +4341,23 @@ B4_unused__pin_t const B4_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl B4_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl B4_unused__pin__set__impl
+#define is_set__impl B4_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl B4_unused__pin__is_set__impl
 #define set__impl B4_unused__pin__set__impl
+#define is_set__impl B4_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -4427,14 +4427,14 @@ static AKAT_FORCE_INLINE void B5_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 B5_unused__port__is_set__impl() {
-#define is_set__impl B5_unused__port__is_set__impl
 #define set__impl B5_unused__port__set__impl
+#define is_set__impl B5_unused__port__is_set__impl
     return PORTB & (1 << 5);  //Get value of PORTB for B5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl B5_unused__port__is_set__impl
 #define set__impl B5_unused__port__set__impl
+#define is_set__impl B5_unused__port__is_set__impl
 
 B5_unused__port_t const B5_unused__port = {.set = &set__impl
                                            ,
@@ -4442,23 +4442,23 @@ B5_unused__port_t const B5_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl B5_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl B5_unused__port__set__impl
+#define is_set__impl B5_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl B5_unused__port__is_set__impl
 #define set__impl B5_unused__port__set__impl
+#define is_set__impl B5_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -4482,14 +4482,14 @@ static AKAT_FORCE_INLINE void B5_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 B5_unused__ddr__is_set__impl() {
-#define is_set__impl B5_unused__ddr__is_set__impl
 #define set__impl B5_unused__ddr__set__impl
+#define is_set__impl B5_unused__ddr__is_set__impl
     return DDRB & (1 << 5);  //Get value of DDRB for B5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl B5_unused__ddr__is_set__impl
 #define set__impl B5_unused__ddr__set__impl
+#define is_set__impl B5_unused__ddr__is_set__impl
 
 B5_unused__ddr_t const B5_unused__ddr = {.set = &set__impl
                                          ,
@@ -4497,23 +4497,23 @@ B5_unused__ddr_t const B5_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl B5_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl B5_unused__ddr__set__impl
+#define is_set__impl B5_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl B5_unused__ddr__is_set__impl
 #define set__impl B5_unused__ddr__set__impl
+#define is_set__impl B5_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -4537,14 +4537,14 @@ static AKAT_FORCE_INLINE void B5_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 B5_unused__pin__is_set__impl() {
-#define is_set__impl B5_unused__pin__is_set__impl
 #define set__impl B5_unused__pin__set__impl
+#define is_set__impl B5_unused__pin__is_set__impl
     return PINB & (1 << 5);  //Get value of PINB for B5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl B5_unused__pin__is_set__impl
 #define set__impl B5_unused__pin__set__impl
+#define is_set__impl B5_unused__pin__is_set__impl
 
 B5_unused__pin_t const B5_unused__pin = {.set = &set__impl
                                          ,
@@ -4552,23 +4552,23 @@ B5_unused__pin_t const B5_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl B5_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl B5_unused__pin__set__impl
+#define is_set__impl B5_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl B5_unused__pin__is_set__impl
 #define set__impl B5_unused__pin__set__impl
+#define is_set__impl B5_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -4638,14 +4638,14 @@ static AKAT_FORCE_INLINE void B6_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 B6_unused__port__is_set__impl() {
-#define is_set__impl B6_unused__port__is_set__impl
 #define set__impl B6_unused__port__set__impl
+#define is_set__impl B6_unused__port__is_set__impl
     return PORTB & (1 << 6);  //Get value of PORTB for B6
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl B6_unused__port__is_set__impl
 #define set__impl B6_unused__port__set__impl
+#define is_set__impl B6_unused__port__is_set__impl
 
 B6_unused__port_t const B6_unused__port = {.set = &set__impl
                                            ,
@@ -4653,23 +4653,23 @@ B6_unused__port_t const B6_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl B6_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl B6_unused__port__set__impl
+#define is_set__impl B6_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl B6_unused__port__is_set__impl
 #define set__impl B6_unused__port__set__impl
+#define is_set__impl B6_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -4693,14 +4693,14 @@ static AKAT_FORCE_INLINE void B6_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 B6_unused__ddr__is_set__impl() {
-#define is_set__impl B6_unused__ddr__is_set__impl
 #define set__impl B6_unused__ddr__set__impl
+#define is_set__impl B6_unused__ddr__is_set__impl
     return DDRB & (1 << 6);  //Get value of DDRB for B6
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl B6_unused__ddr__is_set__impl
 #define set__impl B6_unused__ddr__set__impl
+#define is_set__impl B6_unused__ddr__is_set__impl
 
 B6_unused__ddr_t const B6_unused__ddr = {.set = &set__impl
                                          ,
@@ -4708,23 +4708,23 @@ B6_unused__ddr_t const B6_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl B6_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl B6_unused__ddr__set__impl
+#define is_set__impl B6_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl B6_unused__ddr__is_set__impl
 #define set__impl B6_unused__ddr__set__impl
+#define is_set__impl B6_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -4748,14 +4748,14 @@ static AKAT_FORCE_INLINE void B6_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 B6_unused__pin__is_set__impl() {
-#define is_set__impl B6_unused__pin__is_set__impl
 #define set__impl B6_unused__pin__set__impl
+#define is_set__impl B6_unused__pin__is_set__impl
     return PINB & (1 << 6);  //Get value of PINB for B6
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl B6_unused__pin__is_set__impl
 #define set__impl B6_unused__pin__set__impl
+#define is_set__impl B6_unused__pin__is_set__impl
 
 B6_unused__pin_t const B6_unused__pin = {.set = &set__impl
                                          ,
@@ -4763,23 +4763,23 @@ B6_unused__pin_t const B6_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl B6_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl B6_unused__pin__set__impl
+#define is_set__impl B6_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl B6_unused__pin__is_set__impl
 #define set__impl B6_unused__pin__set__impl
+#define is_set__impl B6_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -4850,14 +4850,14 @@ static AKAT_FORCE_INLINE void H7_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 H7_unused__port__is_set__impl() {
-#define is_set__impl H7_unused__port__is_set__impl
 #define set__impl H7_unused__port__set__impl
+#define is_set__impl H7_unused__port__is_set__impl
     return PORTH & (1 << 7);  //Get value of PORTH for H7
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl H7_unused__port__is_set__impl
 #define set__impl H7_unused__port__set__impl
+#define is_set__impl H7_unused__port__is_set__impl
 
 H7_unused__port_t const H7_unused__port = {.set = &set__impl
                                            ,
@@ -4865,23 +4865,23 @@ H7_unused__port_t const H7_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl H7_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl H7_unused__port__set__impl
+#define is_set__impl H7_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl H7_unused__port__is_set__impl
 #define set__impl H7_unused__port__set__impl
+#define is_set__impl H7_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -4905,14 +4905,14 @@ static AKAT_FORCE_INLINE void H7_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 H7_unused__ddr__is_set__impl() {
-#define is_set__impl H7_unused__ddr__is_set__impl
 #define set__impl H7_unused__ddr__set__impl
+#define is_set__impl H7_unused__ddr__is_set__impl
     return DDRH & (1 << 7);  //Get value of DDRH for H7
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl H7_unused__ddr__is_set__impl
 #define set__impl H7_unused__ddr__set__impl
+#define is_set__impl H7_unused__ddr__is_set__impl
 
 H7_unused__ddr_t const H7_unused__ddr = {.set = &set__impl
                                          ,
@@ -4920,23 +4920,23 @@ H7_unused__ddr_t const H7_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl H7_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl H7_unused__ddr__set__impl
+#define is_set__impl H7_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl H7_unused__ddr__is_set__impl
 #define set__impl H7_unused__ddr__set__impl
+#define is_set__impl H7_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -4960,14 +4960,14 @@ static AKAT_FORCE_INLINE void H7_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 H7_unused__pin__is_set__impl() {
-#define is_set__impl H7_unused__pin__is_set__impl
 #define set__impl H7_unused__pin__set__impl
+#define is_set__impl H7_unused__pin__is_set__impl
     return PINH & (1 << 7);  //Get value of PINH for H7
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl H7_unused__pin__is_set__impl
 #define set__impl H7_unused__pin__set__impl
+#define is_set__impl H7_unused__pin__is_set__impl
 
 H7_unused__pin_t const H7_unused__pin = {.set = &set__impl
                                          ,
@@ -4975,23 +4975,23 @@ H7_unused__pin_t const H7_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl H7_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl H7_unused__pin__set__impl
+#define is_set__impl H7_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl H7_unused__pin__is_set__impl
 #define set__impl H7_unused__pin__set__impl
+#define is_set__impl H7_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -5061,14 +5061,14 @@ static AKAT_FORCE_INLINE void G3_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 G3_unused__port__is_set__impl() {
-#define is_set__impl G3_unused__port__is_set__impl
 #define set__impl G3_unused__port__set__impl
+#define is_set__impl G3_unused__port__is_set__impl
     return PORTG & (1 << 3);  //Get value of PORTG for G3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl G3_unused__port__is_set__impl
 #define set__impl G3_unused__port__set__impl
+#define is_set__impl G3_unused__port__is_set__impl
 
 G3_unused__port_t const G3_unused__port = {.set = &set__impl
                                            ,
@@ -5076,23 +5076,23 @@ G3_unused__port_t const G3_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl G3_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl G3_unused__port__set__impl
+#define is_set__impl G3_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl G3_unused__port__is_set__impl
 #define set__impl G3_unused__port__set__impl
+#define is_set__impl G3_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -5116,14 +5116,14 @@ static AKAT_FORCE_INLINE void G3_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 G3_unused__ddr__is_set__impl() {
-#define is_set__impl G3_unused__ddr__is_set__impl
 #define set__impl G3_unused__ddr__set__impl
+#define is_set__impl G3_unused__ddr__is_set__impl
     return DDRG & (1 << 3);  //Get value of DDRG for G3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl G3_unused__ddr__is_set__impl
 #define set__impl G3_unused__ddr__set__impl
+#define is_set__impl G3_unused__ddr__is_set__impl
 
 G3_unused__ddr_t const G3_unused__ddr = {.set = &set__impl
                                          ,
@@ -5131,23 +5131,23 @@ G3_unused__ddr_t const G3_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl G3_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl G3_unused__ddr__set__impl
+#define is_set__impl G3_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl G3_unused__ddr__is_set__impl
 #define set__impl G3_unused__ddr__set__impl
+#define is_set__impl G3_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -5171,14 +5171,14 @@ static AKAT_FORCE_INLINE void G3_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 G3_unused__pin__is_set__impl() {
-#define is_set__impl G3_unused__pin__is_set__impl
 #define set__impl G3_unused__pin__set__impl
+#define is_set__impl G3_unused__pin__is_set__impl
     return PING & (1 << 3);  //Get value of PING for G3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl G3_unused__pin__is_set__impl
 #define set__impl G3_unused__pin__set__impl
+#define is_set__impl G3_unused__pin__is_set__impl
 
 G3_unused__pin_t const G3_unused__pin = {.set = &set__impl
                                          ,
@@ -5186,23 +5186,23 @@ G3_unused__pin_t const G3_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl G3_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl G3_unused__pin__set__impl
+#define is_set__impl G3_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl G3_unused__pin__is_set__impl
 #define set__impl G3_unused__pin__set__impl
+#define is_set__impl G3_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -5272,14 +5272,14 @@ static AKAT_FORCE_INLINE void G4_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 G4_unused__port__is_set__impl() {
-#define is_set__impl G4_unused__port__is_set__impl
 #define set__impl G4_unused__port__set__impl
+#define is_set__impl G4_unused__port__is_set__impl
     return PORTG & (1 << 4);  //Get value of PORTG for G4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl G4_unused__port__is_set__impl
 #define set__impl G4_unused__port__set__impl
+#define is_set__impl G4_unused__port__is_set__impl
 
 G4_unused__port_t const G4_unused__port = {.set = &set__impl
                                            ,
@@ -5287,23 +5287,23 @@ G4_unused__port_t const G4_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl G4_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl G4_unused__port__set__impl
+#define is_set__impl G4_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl G4_unused__port__is_set__impl
 #define set__impl G4_unused__port__set__impl
+#define is_set__impl G4_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -5327,14 +5327,14 @@ static AKAT_FORCE_INLINE void G4_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 G4_unused__ddr__is_set__impl() {
-#define is_set__impl G4_unused__ddr__is_set__impl
 #define set__impl G4_unused__ddr__set__impl
+#define is_set__impl G4_unused__ddr__is_set__impl
     return DDRG & (1 << 4);  //Get value of DDRG for G4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl G4_unused__ddr__is_set__impl
 #define set__impl G4_unused__ddr__set__impl
+#define is_set__impl G4_unused__ddr__is_set__impl
 
 G4_unused__ddr_t const G4_unused__ddr = {.set = &set__impl
                                          ,
@@ -5342,23 +5342,23 @@ G4_unused__ddr_t const G4_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl G4_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl G4_unused__ddr__set__impl
+#define is_set__impl G4_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl G4_unused__ddr__is_set__impl
 #define set__impl G4_unused__ddr__set__impl
+#define is_set__impl G4_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -5382,14 +5382,14 @@ static AKAT_FORCE_INLINE void G4_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 G4_unused__pin__is_set__impl() {
-#define is_set__impl G4_unused__pin__is_set__impl
 #define set__impl G4_unused__pin__set__impl
+#define is_set__impl G4_unused__pin__is_set__impl
     return PING & (1 << 4);  //Get value of PING for G4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl G4_unused__pin__is_set__impl
 #define set__impl G4_unused__pin__set__impl
+#define is_set__impl G4_unused__pin__is_set__impl
 
 G4_unused__pin_t const G4_unused__pin = {.set = &set__impl
                                          ,
@@ -5397,23 +5397,23 @@ G4_unused__pin_t const G4_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl G4_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl G4_unused__pin__set__impl
+#define is_set__impl G4_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl G4_unused__pin__is_set__impl
 #define set__impl G4_unused__pin__set__impl
+#define is_set__impl G4_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -5488,14 +5488,14 @@ static AKAT_FORCE_INLINE void L0_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 L0_unused__port__is_set__impl() {
-#define is_set__impl L0_unused__port__is_set__impl
 #define set__impl L0_unused__port__set__impl
+#define is_set__impl L0_unused__port__is_set__impl
     return PORTL & (1 << 0);  //Get value of PORTL for L0
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl L0_unused__port__is_set__impl
 #define set__impl L0_unused__port__set__impl
+#define is_set__impl L0_unused__port__is_set__impl
 
 L0_unused__port_t const L0_unused__port = {.set = &set__impl
                                            ,
@@ -5503,23 +5503,23 @@ L0_unused__port_t const L0_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl L0_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl L0_unused__port__set__impl
+#define is_set__impl L0_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl L0_unused__port__is_set__impl
 #define set__impl L0_unused__port__set__impl
+#define is_set__impl L0_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -5543,14 +5543,14 @@ static AKAT_FORCE_INLINE void L0_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 L0_unused__ddr__is_set__impl() {
-#define is_set__impl L0_unused__ddr__is_set__impl
 #define set__impl L0_unused__ddr__set__impl
+#define is_set__impl L0_unused__ddr__is_set__impl
     return DDRL & (1 << 0);  //Get value of DDRL for L0
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl L0_unused__ddr__is_set__impl
 #define set__impl L0_unused__ddr__set__impl
+#define is_set__impl L0_unused__ddr__is_set__impl
 
 L0_unused__ddr_t const L0_unused__ddr = {.set = &set__impl
                                          ,
@@ -5558,23 +5558,23 @@ L0_unused__ddr_t const L0_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl L0_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl L0_unused__ddr__set__impl
+#define is_set__impl L0_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl L0_unused__ddr__is_set__impl
 #define set__impl L0_unused__ddr__set__impl
+#define is_set__impl L0_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -5598,14 +5598,14 @@ static AKAT_FORCE_INLINE void L0_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 L0_unused__pin__is_set__impl() {
-#define is_set__impl L0_unused__pin__is_set__impl
 #define set__impl L0_unused__pin__set__impl
+#define is_set__impl L0_unused__pin__is_set__impl
     return PINL & (1 << 0);  //Get value of PINL for L0
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl L0_unused__pin__is_set__impl
 #define set__impl L0_unused__pin__set__impl
+#define is_set__impl L0_unused__pin__is_set__impl
 
 L0_unused__pin_t const L0_unused__pin = {.set = &set__impl
                                          ,
@@ -5613,23 +5613,23 @@ L0_unused__pin_t const L0_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl L0_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl L0_unused__pin__set__impl
+#define is_set__impl L0_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl L0_unused__pin__is_set__impl
 #define set__impl L0_unused__pin__set__impl
+#define is_set__impl L0_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -5699,14 +5699,14 @@ static AKAT_FORCE_INLINE void L1_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 L1_unused__port__is_set__impl() {
-#define is_set__impl L1_unused__port__is_set__impl
 #define set__impl L1_unused__port__set__impl
+#define is_set__impl L1_unused__port__is_set__impl
     return PORTL & (1 << 1);  //Get value of PORTL for L1
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl L1_unused__port__is_set__impl
 #define set__impl L1_unused__port__set__impl
+#define is_set__impl L1_unused__port__is_set__impl
 
 L1_unused__port_t const L1_unused__port = {.set = &set__impl
                                            ,
@@ -5714,23 +5714,23 @@ L1_unused__port_t const L1_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl L1_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl L1_unused__port__set__impl
+#define is_set__impl L1_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl L1_unused__port__is_set__impl
 #define set__impl L1_unused__port__set__impl
+#define is_set__impl L1_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -5754,14 +5754,14 @@ static AKAT_FORCE_INLINE void L1_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 L1_unused__ddr__is_set__impl() {
-#define is_set__impl L1_unused__ddr__is_set__impl
 #define set__impl L1_unused__ddr__set__impl
+#define is_set__impl L1_unused__ddr__is_set__impl
     return DDRL & (1 << 1);  //Get value of DDRL for L1
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl L1_unused__ddr__is_set__impl
 #define set__impl L1_unused__ddr__set__impl
+#define is_set__impl L1_unused__ddr__is_set__impl
 
 L1_unused__ddr_t const L1_unused__ddr = {.set = &set__impl
                                          ,
@@ -5769,23 +5769,23 @@ L1_unused__ddr_t const L1_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl L1_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl L1_unused__ddr__set__impl
+#define is_set__impl L1_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl L1_unused__ddr__is_set__impl
 #define set__impl L1_unused__ddr__set__impl
+#define is_set__impl L1_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -5809,14 +5809,14 @@ static AKAT_FORCE_INLINE void L1_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 L1_unused__pin__is_set__impl() {
-#define is_set__impl L1_unused__pin__is_set__impl
 #define set__impl L1_unused__pin__set__impl
+#define is_set__impl L1_unused__pin__is_set__impl
     return PINL & (1 << 1);  //Get value of PINL for L1
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl L1_unused__pin__is_set__impl
 #define set__impl L1_unused__pin__set__impl
+#define is_set__impl L1_unused__pin__is_set__impl
 
 L1_unused__pin_t const L1_unused__pin = {.set = &set__impl
                                          ,
@@ -5824,23 +5824,23 @@ L1_unused__pin_t const L1_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl L1_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl L1_unused__pin__set__impl
+#define is_set__impl L1_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl L1_unused__pin__is_set__impl
 #define set__impl L1_unused__pin__set__impl
+#define is_set__impl L1_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -5910,14 +5910,14 @@ static AKAT_FORCE_INLINE void L2_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 L2_unused__port__is_set__impl() {
-#define is_set__impl L2_unused__port__is_set__impl
 #define set__impl L2_unused__port__set__impl
+#define is_set__impl L2_unused__port__is_set__impl
     return PORTL & (1 << 2);  //Get value of PORTL for L2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl L2_unused__port__is_set__impl
 #define set__impl L2_unused__port__set__impl
+#define is_set__impl L2_unused__port__is_set__impl
 
 L2_unused__port_t const L2_unused__port = {.set = &set__impl
                                            ,
@@ -5925,23 +5925,23 @@ L2_unused__port_t const L2_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl L2_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl L2_unused__port__set__impl
+#define is_set__impl L2_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl L2_unused__port__is_set__impl
 #define set__impl L2_unused__port__set__impl
+#define is_set__impl L2_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -5965,14 +5965,14 @@ static AKAT_FORCE_INLINE void L2_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 L2_unused__ddr__is_set__impl() {
-#define is_set__impl L2_unused__ddr__is_set__impl
 #define set__impl L2_unused__ddr__set__impl
+#define is_set__impl L2_unused__ddr__is_set__impl
     return DDRL & (1 << 2);  //Get value of DDRL for L2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl L2_unused__ddr__is_set__impl
 #define set__impl L2_unused__ddr__set__impl
+#define is_set__impl L2_unused__ddr__is_set__impl
 
 L2_unused__ddr_t const L2_unused__ddr = {.set = &set__impl
                                          ,
@@ -5980,23 +5980,23 @@ L2_unused__ddr_t const L2_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl L2_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl L2_unused__ddr__set__impl
+#define is_set__impl L2_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl L2_unused__ddr__is_set__impl
 #define set__impl L2_unused__ddr__set__impl
+#define is_set__impl L2_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -6020,14 +6020,14 @@ static AKAT_FORCE_INLINE void L2_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 L2_unused__pin__is_set__impl() {
-#define is_set__impl L2_unused__pin__is_set__impl
 #define set__impl L2_unused__pin__set__impl
+#define is_set__impl L2_unused__pin__is_set__impl
     return PINL & (1 << 2);  //Get value of PINL for L2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl L2_unused__pin__is_set__impl
 #define set__impl L2_unused__pin__set__impl
+#define is_set__impl L2_unused__pin__is_set__impl
 
 L2_unused__pin_t const L2_unused__pin = {.set = &set__impl
                                          ,
@@ -6035,23 +6035,23 @@ L2_unused__pin_t const L2_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl L2_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl L2_unused__pin__set__impl
+#define is_set__impl L2_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl L2_unused__pin__is_set__impl
 #define set__impl L2_unused__pin__set__impl
+#define is_set__impl L2_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -6121,14 +6121,14 @@ static AKAT_FORCE_INLINE void L3_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 L3_unused__port__is_set__impl() {
-#define is_set__impl L3_unused__port__is_set__impl
 #define set__impl L3_unused__port__set__impl
+#define is_set__impl L3_unused__port__is_set__impl
     return PORTL & (1 << 3);  //Get value of PORTL for L3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl L3_unused__port__is_set__impl
 #define set__impl L3_unused__port__set__impl
+#define is_set__impl L3_unused__port__is_set__impl
 
 L3_unused__port_t const L3_unused__port = {.set = &set__impl
                                            ,
@@ -6136,23 +6136,23 @@ L3_unused__port_t const L3_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl L3_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl L3_unused__port__set__impl
+#define is_set__impl L3_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl L3_unused__port__is_set__impl
 #define set__impl L3_unused__port__set__impl
+#define is_set__impl L3_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -6176,14 +6176,14 @@ static AKAT_FORCE_INLINE void L3_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 L3_unused__ddr__is_set__impl() {
-#define is_set__impl L3_unused__ddr__is_set__impl
 #define set__impl L3_unused__ddr__set__impl
+#define is_set__impl L3_unused__ddr__is_set__impl
     return DDRL & (1 << 3);  //Get value of DDRL for L3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl L3_unused__ddr__is_set__impl
 #define set__impl L3_unused__ddr__set__impl
+#define is_set__impl L3_unused__ddr__is_set__impl
 
 L3_unused__ddr_t const L3_unused__ddr = {.set = &set__impl
                                          ,
@@ -6191,23 +6191,23 @@ L3_unused__ddr_t const L3_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl L3_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl L3_unused__ddr__set__impl
+#define is_set__impl L3_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl L3_unused__ddr__is_set__impl
 #define set__impl L3_unused__ddr__set__impl
+#define is_set__impl L3_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -6231,14 +6231,14 @@ static AKAT_FORCE_INLINE void L3_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 L3_unused__pin__is_set__impl() {
-#define is_set__impl L3_unused__pin__is_set__impl
 #define set__impl L3_unused__pin__set__impl
+#define is_set__impl L3_unused__pin__is_set__impl
     return PINL & (1 << 3);  //Get value of PINL for L3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl L3_unused__pin__is_set__impl
 #define set__impl L3_unused__pin__set__impl
+#define is_set__impl L3_unused__pin__is_set__impl
 
 L3_unused__pin_t const L3_unused__pin = {.set = &set__impl
                                          ,
@@ -6246,23 +6246,23 @@ L3_unused__pin_t const L3_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl L3_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl L3_unused__pin__set__impl
+#define is_set__impl L3_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl L3_unused__pin__is_set__impl
 #define set__impl L3_unused__pin__set__impl
+#define is_set__impl L3_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -6332,14 +6332,14 @@ static AKAT_FORCE_INLINE void L4_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 L4_unused__port__is_set__impl() {
-#define is_set__impl L4_unused__port__is_set__impl
 #define set__impl L4_unused__port__set__impl
+#define is_set__impl L4_unused__port__is_set__impl
     return PORTL & (1 << 4);  //Get value of PORTL for L4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl L4_unused__port__is_set__impl
 #define set__impl L4_unused__port__set__impl
+#define is_set__impl L4_unused__port__is_set__impl
 
 L4_unused__port_t const L4_unused__port = {.set = &set__impl
                                            ,
@@ -6347,23 +6347,23 @@ L4_unused__port_t const L4_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl L4_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl L4_unused__port__set__impl
+#define is_set__impl L4_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl L4_unused__port__is_set__impl
 #define set__impl L4_unused__port__set__impl
+#define is_set__impl L4_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -6387,14 +6387,14 @@ static AKAT_FORCE_INLINE void L4_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 L4_unused__ddr__is_set__impl() {
-#define is_set__impl L4_unused__ddr__is_set__impl
 #define set__impl L4_unused__ddr__set__impl
+#define is_set__impl L4_unused__ddr__is_set__impl
     return DDRL & (1 << 4);  //Get value of DDRL for L4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl L4_unused__ddr__is_set__impl
 #define set__impl L4_unused__ddr__set__impl
+#define is_set__impl L4_unused__ddr__is_set__impl
 
 L4_unused__ddr_t const L4_unused__ddr = {.set = &set__impl
                                          ,
@@ -6402,23 +6402,23 @@ L4_unused__ddr_t const L4_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl L4_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl L4_unused__ddr__set__impl
+#define is_set__impl L4_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl L4_unused__ddr__is_set__impl
 #define set__impl L4_unused__ddr__set__impl
+#define is_set__impl L4_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -6442,14 +6442,14 @@ static AKAT_FORCE_INLINE void L4_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 L4_unused__pin__is_set__impl() {
-#define is_set__impl L4_unused__pin__is_set__impl
 #define set__impl L4_unused__pin__set__impl
+#define is_set__impl L4_unused__pin__is_set__impl
     return PINL & (1 << 4);  //Get value of PINL for L4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl L4_unused__pin__is_set__impl
 #define set__impl L4_unused__pin__set__impl
+#define is_set__impl L4_unused__pin__is_set__impl
 
 L4_unused__pin_t const L4_unused__pin = {.set = &set__impl
                                          ,
@@ -6457,23 +6457,23 @@ L4_unused__pin_t const L4_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl L4_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl L4_unused__pin__set__impl
+#define is_set__impl L4_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl L4_unused__pin__is_set__impl
 #define set__impl L4_unused__pin__set__impl
+#define is_set__impl L4_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -6543,14 +6543,14 @@ static AKAT_FORCE_INLINE void L5_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 L5_unused__port__is_set__impl() {
-#define is_set__impl L5_unused__port__is_set__impl
 #define set__impl L5_unused__port__set__impl
+#define is_set__impl L5_unused__port__is_set__impl
     return PORTL & (1 << 5);  //Get value of PORTL for L5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl L5_unused__port__is_set__impl
 #define set__impl L5_unused__port__set__impl
+#define is_set__impl L5_unused__port__is_set__impl
 
 L5_unused__port_t const L5_unused__port = {.set = &set__impl
                                            ,
@@ -6558,23 +6558,23 @@ L5_unused__port_t const L5_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl L5_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl L5_unused__port__set__impl
+#define is_set__impl L5_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl L5_unused__port__is_set__impl
 #define set__impl L5_unused__port__set__impl
+#define is_set__impl L5_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -6598,14 +6598,14 @@ static AKAT_FORCE_INLINE void L5_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 L5_unused__ddr__is_set__impl() {
-#define is_set__impl L5_unused__ddr__is_set__impl
 #define set__impl L5_unused__ddr__set__impl
+#define is_set__impl L5_unused__ddr__is_set__impl
     return DDRL & (1 << 5);  //Get value of DDRL for L5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl L5_unused__ddr__is_set__impl
 #define set__impl L5_unused__ddr__set__impl
+#define is_set__impl L5_unused__ddr__is_set__impl
 
 L5_unused__ddr_t const L5_unused__ddr = {.set = &set__impl
                                          ,
@@ -6613,23 +6613,23 @@ L5_unused__ddr_t const L5_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl L5_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl L5_unused__ddr__set__impl
+#define is_set__impl L5_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl L5_unused__ddr__is_set__impl
 #define set__impl L5_unused__ddr__set__impl
+#define is_set__impl L5_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -6653,14 +6653,14 @@ static AKAT_FORCE_INLINE void L5_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 L5_unused__pin__is_set__impl() {
-#define is_set__impl L5_unused__pin__is_set__impl
 #define set__impl L5_unused__pin__set__impl
+#define is_set__impl L5_unused__pin__is_set__impl
     return PINL & (1 << 5);  //Get value of PINL for L5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl L5_unused__pin__is_set__impl
 #define set__impl L5_unused__pin__set__impl
+#define is_set__impl L5_unused__pin__is_set__impl
 
 L5_unused__pin_t const L5_unused__pin = {.set = &set__impl
                                          ,
@@ -6668,23 +6668,23 @@ L5_unused__pin_t const L5_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl L5_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl L5_unused__pin__set__impl
+#define is_set__impl L5_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl L5_unused__pin__is_set__impl
 #define set__impl L5_unused__pin__set__impl
+#define is_set__impl L5_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -6754,14 +6754,14 @@ static AKAT_FORCE_INLINE void L6_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 L6_unused__port__is_set__impl() {
-#define is_set__impl L6_unused__port__is_set__impl
 #define set__impl L6_unused__port__set__impl
+#define is_set__impl L6_unused__port__is_set__impl
     return PORTL & (1 << 6);  //Get value of PORTL for L6
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl L6_unused__port__is_set__impl
 #define set__impl L6_unused__port__set__impl
+#define is_set__impl L6_unused__port__is_set__impl
 
 L6_unused__port_t const L6_unused__port = {.set = &set__impl
                                            ,
@@ -6769,23 +6769,23 @@ L6_unused__port_t const L6_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl L6_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl L6_unused__port__set__impl
+#define is_set__impl L6_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl L6_unused__port__is_set__impl
 #define set__impl L6_unused__port__set__impl
+#define is_set__impl L6_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -6809,14 +6809,14 @@ static AKAT_FORCE_INLINE void L6_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 L6_unused__ddr__is_set__impl() {
-#define is_set__impl L6_unused__ddr__is_set__impl
 #define set__impl L6_unused__ddr__set__impl
+#define is_set__impl L6_unused__ddr__is_set__impl
     return DDRL & (1 << 6);  //Get value of DDRL for L6
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl L6_unused__ddr__is_set__impl
 #define set__impl L6_unused__ddr__set__impl
+#define is_set__impl L6_unused__ddr__is_set__impl
 
 L6_unused__ddr_t const L6_unused__ddr = {.set = &set__impl
                                          ,
@@ -6824,23 +6824,23 @@ L6_unused__ddr_t const L6_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl L6_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl L6_unused__ddr__set__impl
+#define is_set__impl L6_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl L6_unused__ddr__is_set__impl
 #define set__impl L6_unused__ddr__set__impl
+#define is_set__impl L6_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -6864,14 +6864,14 @@ static AKAT_FORCE_INLINE void L6_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 L6_unused__pin__is_set__impl() {
-#define is_set__impl L6_unused__pin__is_set__impl
 #define set__impl L6_unused__pin__set__impl
+#define is_set__impl L6_unused__pin__is_set__impl
     return PINL & (1 << 6);  //Get value of PINL for L6
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl L6_unused__pin__is_set__impl
 #define set__impl L6_unused__pin__set__impl
+#define is_set__impl L6_unused__pin__is_set__impl
 
 L6_unused__pin_t const L6_unused__pin = {.set = &set__impl
                                          ,
@@ -6879,23 +6879,23 @@ L6_unused__pin_t const L6_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl L6_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl L6_unused__pin__set__impl
+#define is_set__impl L6_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl L6_unused__pin__is_set__impl
 #define set__impl L6_unused__pin__set__impl
+#define is_set__impl L6_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -6965,14 +6965,14 @@ static AKAT_FORCE_INLINE void L7_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 L7_unused__port__is_set__impl() {
-#define is_set__impl L7_unused__port__is_set__impl
 #define set__impl L7_unused__port__set__impl
+#define is_set__impl L7_unused__port__is_set__impl
     return PORTL & (1 << 7);  //Get value of PORTL for L7
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl L7_unused__port__is_set__impl
 #define set__impl L7_unused__port__set__impl
+#define is_set__impl L7_unused__port__is_set__impl
 
 L7_unused__port_t const L7_unused__port = {.set = &set__impl
                                            ,
@@ -6980,23 +6980,23 @@ L7_unused__port_t const L7_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl L7_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl L7_unused__port__set__impl
+#define is_set__impl L7_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl L7_unused__port__is_set__impl
 #define set__impl L7_unused__port__set__impl
+#define is_set__impl L7_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -7020,14 +7020,14 @@ static AKAT_FORCE_INLINE void L7_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 L7_unused__ddr__is_set__impl() {
-#define is_set__impl L7_unused__ddr__is_set__impl
 #define set__impl L7_unused__ddr__set__impl
+#define is_set__impl L7_unused__ddr__is_set__impl
     return DDRL & (1 << 7);  //Get value of DDRL for L7
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl L7_unused__ddr__is_set__impl
 #define set__impl L7_unused__ddr__set__impl
+#define is_set__impl L7_unused__ddr__is_set__impl
 
 L7_unused__ddr_t const L7_unused__ddr = {.set = &set__impl
                                          ,
@@ -7035,23 +7035,23 @@ L7_unused__ddr_t const L7_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl L7_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl L7_unused__ddr__set__impl
+#define is_set__impl L7_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl L7_unused__ddr__is_set__impl
 #define set__impl L7_unused__ddr__set__impl
+#define is_set__impl L7_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -7075,14 +7075,14 @@ static AKAT_FORCE_INLINE void L7_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 L7_unused__pin__is_set__impl() {
-#define is_set__impl L7_unused__pin__is_set__impl
 #define set__impl L7_unused__pin__set__impl
+#define is_set__impl L7_unused__pin__is_set__impl
     return PINL & (1 << 7);  //Get value of PINL for L7
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl L7_unused__pin__is_set__impl
 #define set__impl L7_unused__pin__set__impl
+#define is_set__impl L7_unused__pin__is_set__impl
 
 L7_unused__pin_t const L7_unused__pin = {.set = &set__impl
                                          ,
@@ -7090,23 +7090,23 @@ L7_unused__pin_t const L7_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl L7_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl L7_unused__pin__set__impl
+#define is_set__impl L7_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl L7_unused__pin__is_set__impl
 #define set__impl L7_unused__pin__set__impl
+#define is_set__impl L7_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -7176,14 +7176,14 @@ static AKAT_FORCE_INLINE void D0_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 D0_unused__port__is_set__impl() {
-#define is_set__impl D0_unused__port__is_set__impl
 #define set__impl D0_unused__port__set__impl
+#define is_set__impl D0_unused__port__is_set__impl
     return PORTD & (1 << 0);  //Get value of PORTD for D0
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl D0_unused__port__is_set__impl
 #define set__impl D0_unused__port__set__impl
+#define is_set__impl D0_unused__port__is_set__impl
 
 D0_unused__port_t const D0_unused__port = {.set = &set__impl
                                            ,
@@ -7191,23 +7191,23 @@ D0_unused__port_t const D0_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl D0_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl D0_unused__port__set__impl
+#define is_set__impl D0_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl D0_unused__port__is_set__impl
 #define set__impl D0_unused__port__set__impl
+#define is_set__impl D0_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -7231,14 +7231,14 @@ static AKAT_FORCE_INLINE void D0_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 D0_unused__ddr__is_set__impl() {
-#define is_set__impl D0_unused__ddr__is_set__impl
 #define set__impl D0_unused__ddr__set__impl
+#define is_set__impl D0_unused__ddr__is_set__impl
     return DDRD & (1 << 0);  //Get value of DDRD for D0
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl D0_unused__ddr__is_set__impl
 #define set__impl D0_unused__ddr__set__impl
+#define is_set__impl D0_unused__ddr__is_set__impl
 
 D0_unused__ddr_t const D0_unused__ddr = {.set = &set__impl
                                          ,
@@ -7246,23 +7246,23 @@ D0_unused__ddr_t const D0_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl D0_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl D0_unused__ddr__set__impl
+#define is_set__impl D0_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl D0_unused__ddr__is_set__impl
 #define set__impl D0_unused__ddr__set__impl
+#define is_set__impl D0_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -7286,14 +7286,14 @@ static AKAT_FORCE_INLINE void D0_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 D0_unused__pin__is_set__impl() {
-#define is_set__impl D0_unused__pin__is_set__impl
 #define set__impl D0_unused__pin__set__impl
+#define is_set__impl D0_unused__pin__is_set__impl
     return PIND & (1 << 0);  //Get value of PIND for D0
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl D0_unused__pin__is_set__impl
 #define set__impl D0_unused__pin__set__impl
+#define is_set__impl D0_unused__pin__is_set__impl
 
 D0_unused__pin_t const D0_unused__pin = {.set = &set__impl
                                          ,
@@ -7301,23 +7301,23 @@ D0_unused__pin_t const D0_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl D0_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl D0_unused__pin__set__impl
+#define is_set__impl D0_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl D0_unused__pin__is_set__impl
 #define set__impl D0_unused__pin__set__impl
+#define is_set__impl D0_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -7387,14 +7387,14 @@ static AKAT_FORCE_INLINE void D1_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 D1_unused__port__is_set__impl() {
-#define is_set__impl D1_unused__port__is_set__impl
 #define set__impl D1_unused__port__set__impl
+#define is_set__impl D1_unused__port__is_set__impl
     return PORTD & (1 << 1);  //Get value of PORTD for D1
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl D1_unused__port__is_set__impl
 #define set__impl D1_unused__port__set__impl
+#define is_set__impl D1_unused__port__is_set__impl
 
 D1_unused__port_t const D1_unused__port = {.set = &set__impl
                                            ,
@@ -7402,23 +7402,23 @@ D1_unused__port_t const D1_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl D1_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl D1_unused__port__set__impl
+#define is_set__impl D1_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl D1_unused__port__is_set__impl
 #define set__impl D1_unused__port__set__impl
+#define is_set__impl D1_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -7442,14 +7442,14 @@ static AKAT_FORCE_INLINE void D1_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 D1_unused__ddr__is_set__impl() {
-#define is_set__impl D1_unused__ddr__is_set__impl
 #define set__impl D1_unused__ddr__set__impl
+#define is_set__impl D1_unused__ddr__is_set__impl
     return DDRD & (1 << 1);  //Get value of DDRD for D1
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl D1_unused__ddr__is_set__impl
 #define set__impl D1_unused__ddr__set__impl
+#define is_set__impl D1_unused__ddr__is_set__impl
 
 D1_unused__ddr_t const D1_unused__ddr = {.set = &set__impl
                                          ,
@@ -7457,23 +7457,23 @@ D1_unused__ddr_t const D1_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl D1_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl D1_unused__ddr__set__impl
+#define is_set__impl D1_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl D1_unused__ddr__is_set__impl
 #define set__impl D1_unused__ddr__set__impl
+#define is_set__impl D1_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -7497,14 +7497,14 @@ static AKAT_FORCE_INLINE void D1_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 D1_unused__pin__is_set__impl() {
-#define is_set__impl D1_unused__pin__is_set__impl
 #define set__impl D1_unused__pin__set__impl
+#define is_set__impl D1_unused__pin__is_set__impl
     return PIND & (1 << 1);  //Get value of PIND for D1
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl D1_unused__pin__is_set__impl
 #define set__impl D1_unused__pin__set__impl
+#define is_set__impl D1_unused__pin__is_set__impl
 
 D1_unused__pin_t const D1_unused__pin = {.set = &set__impl
                                          ,
@@ -7512,23 +7512,23 @@ D1_unused__pin_t const D1_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl D1_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl D1_unused__pin__set__impl
+#define is_set__impl D1_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl D1_unused__pin__is_set__impl
 #define set__impl D1_unused__pin__set__impl
+#define is_set__impl D1_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -7598,14 +7598,14 @@ static AKAT_FORCE_INLINE void D2_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 D2_unused__port__is_set__impl() {
-#define is_set__impl D2_unused__port__is_set__impl
 #define set__impl D2_unused__port__set__impl
+#define is_set__impl D2_unused__port__is_set__impl
     return PORTD & (1 << 2);  //Get value of PORTD for D2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl D2_unused__port__is_set__impl
 #define set__impl D2_unused__port__set__impl
+#define is_set__impl D2_unused__port__is_set__impl
 
 D2_unused__port_t const D2_unused__port = {.set = &set__impl
                                            ,
@@ -7613,23 +7613,23 @@ D2_unused__port_t const D2_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl D2_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl D2_unused__port__set__impl
+#define is_set__impl D2_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl D2_unused__port__is_set__impl
 #define set__impl D2_unused__port__set__impl
+#define is_set__impl D2_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -7653,14 +7653,14 @@ static AKAT_FORCE_INLINE void D2_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 D2_unused__ddr__is_set__impl() {
-#define is_set__impl D2_unused__ddr__is_set__impl
 #define set__impl D2_unused__ddr__set__impl
+#define is_set__impl D2_unused__ddr__is_set__impl
     return DDRD & (1 << 2);  //Get value of DDRD for D2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl D2_unused__ddr__is_set__impl
 #define set__impl D2_unused__ddr__set__impl
+#define is_set__impl D2_unused__ddr__is_set__impl
 
 D2_unused__ddr_t const D2_unused__ddr = {.set = &set__impl
                                          ,
@@ -7668,23 +7668,23 @@ D2_unused__ddr_t const D2_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl D2_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl D2_unused__ddr__set__impl
+#define is_set__impl D2_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl D2_unused__ddr__is_set__impl
 #define set__impl D2_unused__ddr__set__impl
+#define is_set__impl D2_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -7708,14 +7708,14 @@ static AKAT_FORCE_INLINE void D2_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 D2_unused__pin__is_set__impl() {
-#define is_set__impl D2_unused__pin__is_set__impl
 #define set__impl D2_unused__pin__set__impl
+#define is_set__impl D2_unused__pin__is_set__impl
     return PIND & (1 << 2);  //Get value of PIND for D2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl D2_unused__pin__is_set__impl
 #define set__impl D2_unused__pin__set__impl
+#define is_set__impl D2_unused__pin__is_set__impl
 
 D2_unused__pin_t const D2_unused__pin = {.set = &set__impl
                                          ,
@@ -7723,23 +7723,23 @@ D2_unused__pin_t const D2_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl D2_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl D2_unused__pin__set__impl
+#define is_set__impl D2_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl D2_unused__pin__is_set__impl
 #define set__impl D2_unused__pin__set__impl
+#define is_set__impl D2_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -7809,14 +7809,14 @@ static AKAT_FORCE_INLINE void D3_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 D3_unused__port__is_set__impl() {
-#define is_set__impl D3_unused__port__is_set__impl
 #define set__impl D3_unused__port__set__impl
+#define is_set__impl D3_unused__port__is_set__impl
     return PORTD & (1 << 3);  //Get value of PORTD for D3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl D3_unused__port__is_set__impl
 #define set__impl D3_unused__port__set__impl
+#define is_set__impl D3_unused__port__is_set__impl
 
 D3_unused__port_t const D3_unused__port = {.set = &set__impl
                                            ,
@@ -7824,23 +7824,23 @@ D3_unused__port_t const D3_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl D3_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl D3_unused__port__set__impl
+#define is_set__impl D3_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl D3_unused__port__is_set__impl
 #define set__impl D3_unused__port__set__impl
+#define is_set__impl D3_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -7864,14 +7864,14 @@ static AKAT_FORCE_INLINE void D3_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 D3_unused__ddr__is_set__impl() {
-#define is_set__impl D3_unused__ddr__is_set__impl
 #define set__impl D3_unused__ddr__set__impl
+#define is_set__impl D3_unused__ddr__is_set__impl
     return DDRD & (1 << 3);  //Get value of DDRD for D3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl D3_unused__ddr__is_set__impl
 #define set__impl D3_unused__ddr__set__impl
+#define is_set__impl D3_unused__ddr__is_set__impl
 
 D3_unused__ddr_t const D3_unused__ddr = {.set = &set__impl
                                          ,
@@ -7879,23 +7879,23 @@ D3_unused__ddr_t const D3_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl D3_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl D3_unused__ddr__set__impl
+#define is_set__impl D3_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl D3_unused__ddr__is_set__impl
 #define set__impl D3_unused__ddr__set__impl
+#define is_set__impl D3_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -7919,14 +7919,14 @@ static AKAT_FORCE_INLINE void D3_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 D3_unused__pin__is_set__impl() {
-#define is_set__impl D3_unused__pin__is_set__impl
 #define set__impl D3_unused__pin__set__impl
+#define is_set__impl D3_unused__pin__is_set__impl
     return PIND & (1 << 3);  //Get value of PIND for D3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl D3_unused__pin__is_set__impl
 #define set__impl D3_unused__pin__set__impl
+#define is_set__impl D3_unused__pin__is_set__impl
 
 D3_unused__pin_t const D3_unused__pin = {.set = &set__impl
                                          ,
@@ -7934,23 +7934,23 @@ D3_unused__pin_t const D3_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl D3_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl D3_unused__pin__set__impl
+#define is_set__impl D3_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl D3_unused__pin__is_set__impl
 #define set__impl D3_unused__pin__set__impl
+#define is_set__impl D3_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -8020,14 +8020,14 @@ static AKAT_FORCE_INLINE void D4_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 D4_unused__port__is_set__impl() {
-#define is_set__impl D4_unused__port__is_set__impl
 #define set__impl D4_unused__port__set__impl
+#define is_set__impl D4_unused__port__is_set__impl
     return PORTD & (1 << 4);  //Get value of PORTD for D4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl D4_unused__port__is_set__impl
 #define set__impl D4_unused__port__set__impl
+#define is_set__impl D4_unused__port__is_set__impl
 
 D4_unused__port_t const D4_unused__port = {.set = &set__impl
                                            ,
@@ -8035,23 +8035,23 @@ D4_unused__port_t const D4_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl D4_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl D4_unused__port__set__impl
+#define is_set__impl D4_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl D4_unused__port__is_set__impl
 #define set__impl D4_unused__port__set__impl
+#define is_set__impl D4_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -8075,14 +8075,14 @@ static AKAT_FORCE_INLINE void D4_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 D4_unused__ddr__is_set__impl() {
-#define is_set__impl D4_unused__ddr__is_set__impl
 #define set__impl D4_unused__ddr__set__impl
+#define is_set__impl D4_unused__ddr__is_set__impl
     return DDRD & (1 << 4);  //Get value of DDRD for D4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl D4_unused__ddr__is_set__impl
 #define set__impl D4_unused__ddr__set__impl
+#define is_set__impl D4_unused__ddr__is_set__impl
 
 D4_unused__ddr_t const D4_unused__ddr = {.set = &set__impl
                                          ,
@@ -8090,23 +8090,23 @@ D4_unused__ddr_t const D4_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl D4_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl D4_unused__ddr__set__impl
+#define is_set__impl D4_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl D4_unused__ddr__is_set__impl
 #define set__impl D4_unused__ddr__set__impl
+#define is_set__impl D4_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -8130,14 +8130,14 @@ static AKAT_FORCE_INLINE void D4_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 D4_unused__pin__is_set__impl() {
-#define is_set__impl D4_unused__pin__is_set__impl
 #define set__impl D4_unused__pin__set__impl
+#define is_set__impl D4_unused__pin__is_set__impl
     return PIND & (1 << 4);  //Get value of PIND for D4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl D4_unused__pin__is_set__impl
 #define set__impl D4_unused__pin__set__impl
+#define is_set__impl D4_unused__pin__is_set__impl
 
 D4_unused__pin_t const D4_unused__pin = {.set = &set__impl
                                          ,
@@ -8145,23 +8145,23 @@ D4_unused__pin_t const D4_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl D4_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl D4_unused__pin__set__impl
+#define is_set__impl D4_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl D4_unused__pin__is_set__impl
 #define set__impl D4_unused__pin__set__impl
+#define is_set__impl D4_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -8231,14 +8231,14 @@ static AKAT_FORCE_INLINE void D5_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 D5_unused__port__is_set__impl() {
-#define is_set__impl D5_unused__port__is_set__impl
 #define set__impl D5_unused__port__set__impl
+#define is_set__impl D5_unused__port__is_set__impl
     return PORTD & (1 << 5);  //Get value of PORTD for D5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl D5_unused__port__is_set__impl
 #define set__impl D5_unused__port__set__impl
+#define is_set__impl D5_unused__port__is_set__impl
 
 D5_unused__port_t const D5_unused__port = {.set = &set__impl
                                            ,
@@ -8246,23 +8246,23 @@ D5_unused__port_t const D5_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl D5_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl D5_unused__port__set__impl
+#define is_set__impl D5_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl D5_unused__port__is_set__impl
 #define set__impl D5_unused__port__set__impl
+#define is_set__impl D5_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -8286,14 +8286,14 @@ static AKAT_FORCE_INLINE void D5_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 D5_unused__ddr__is_set__impl() {
-#define is_set__impl D5_unused__ddr__is_set__impl
 #define set__impl D5_unused__ddr__set__impl
+#define is_set__impl D5_unused__ddr__is_set__impl
     return DDRD & (1 << 5);  //Get value of DDRD for D5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl D5_unused__ddr__is_set__impl
 #define set__impl D5_unused__ddr__set__impl
+#define is_set__impl D5_unused__ddr__is_set__impl
 
 D5_unused__ddr_t const D5_unused__ddr = {.set = &set__impl
                                          ,
@@ -8301,23 +8301,23 @@ D5_unused__ddr_t const D5_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl D5_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl D5_unused__ddr__set__impl
+#define is_set__impl D5_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl D5_unused__ddr__is_set__impl
 #define set__impl D5_unused__ddr__set__impl
+#define is_set__impl D5_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -8341,14 +8341,14 @@ static AKAT_FORCE_INLINE void D5_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 D5_unused__pin__is_set__impl() {
-#define is_set__impl D5_unused__pin__is_set__impl
 #define set__impl D5_unused__pin__set__impl
+#define is_set__impl D5_unused__pin__is_set__impl
     return PIND & (1 << 5);  //Get value of PIND for D5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl D5_unused__pin__is_set__impl
 #define set__impl D5_unused__pin__set__impl
+#define is_set__impl D5_unused__pin__is_set__impl
 
 D5_unused__pin_t const D5_unused__pin = {.set = &set__impl
                                          ,
@@ -8356,23 +8356,23 @@ D5_unused__pin_t const D5_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl D5_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl D5_unused__pin__set__impl
+#define is_set__impl D5_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl D5_unused__pin__is_set__impl
 #define set__impl D5_unused__pin__set__impl
+#define is_set__impl D5_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -8442,14 +8442,14 @@ static AKAT_FORCE_INLINE void D6_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 D6_unused__port__is_set__impl() {
-#define is_set__impl D6_unused__port__is_set__impl
 #define set__impl D6_unused__port__set__impl
+#define is_set__impl D6_unused__port__is_set__impl
     return PORTD & (1 << 6);  //Get value of PORTD for D6
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl D6_unused__port__is_set__impl
 #define set__impl D6_unused__port__set__impl
+#define is_set__impl D6_unused__port__is_set__impl
 
 D6_unused__port_t const D6_unused__port = {.set = &set__impl
                                            ,
@@ -8457,23 +8457,23 @@ D6_unused__port_t const D6_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl D6_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl D6_unused__port__set__impl
+#define is_set__impl D6_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl D6_unused__port__is_set__impl
 #define set__impl D6_unused__port__set__impl
+#define is_set__impl D6_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -8497,14 +8497,14 @@ static AKAT_FORCE_INLINE void D6_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 D6_unused__ddr__is_set__impl() {
-#define is_set__impl D6_unused__ddr__is_set__impl
 #define set__impl D6_unused__ddr__set__impl
+#define is_set__impl D6_unused__ddr__is_set__impl
     return DDRD & (1 << 6);  //Get value of DDRD for D6
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl D6_unused__ddr__is_set__impl
 #define set__impl D6_unused__ddr__set__impl
+#define is_set__impl D6_unused__ddr__is_set__impl
 
 D6_unused__ddr_t const D6_unused__ddr = {.set = &set__impl
                                          ,
@@ -8512,23 +8512,23 @@ D6_unused__ddr_t const D6_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl D6_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl D6_unused__ddr__set__impl
+#define is_set__impl D6_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl D6_unused__ddr__is_set__impl
 #define set__impl D6_unused__ddr__set__impl
+#define is_set__impl D6_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -8552,14 +8552,14 @@ static AKAT_FORCE_INLINE void D6_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 D6_unused__pin__is_set__impl() {
-#define is_set__impl D6_unused__pin__is_set__impl
 #define set__impl D6_unused__pin__set__impl
+#define is_set__impl D6_unused__pin__is_set__impl
     return PIND & (1 << 6);  //Get value of PIND for D6
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl D6_unused__pin__is_set__impl
 #define set__impl D6_unused__pin__set__impl
+#define is_set__impl D6_unused__pin__is_set__impl
 
 D6_unused__pin_t const D6_unused__pin = {.set = &set__impl
                                          ,
@@ -8567,23 +8567,23 @@ D6_unused__pin_t const D6_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl D6_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl D6_unused__pin__set__impl
+#define is_set__impl D6_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl D6_unused__pin__is_set__impl
 #define set__impl D6_unused__pin__set__impl
+#define is_set__impl D6_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -8653,14 +8653,14 @@ static AKAT_FORCE_INLINE void D7_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 D7_unused__port__is_set__impl() {
-#define is_set__impl D7_unused__port__is_set__impl
 #define set__impl D7_unused__port__set__impl
+#define is_set__impl D7_unused__port__is_set__impl
     return PORTD & (1 << 7);  //Get value of PORTD for D7
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl D7_unused__port__is_set__impl
 #define set__impl D7_unused__port__set__impl
+#define is_set__impl D7_unused__port__is_set__impl
 
 D7_unused__port_t const D7_unused__port = {.set = &set__impl
                                            ,
@@ -8668,23 +8668,23 @@ D7_unused__port_t const D7_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl D7_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl D7_unused__port__set__impl
+#define is_set__impl D7_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl D7_unused__port__is_set__impl
 #define set__impl D7_unused__port__set__impl
+#define is_set__impl D7_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -8708,14 +8708,14 @@ static AKAT_FORCE_INLINE void D7_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 D7_unused__ddr__is_set__impl() {
-#define is_set__impl D7_unused__ddr__is_set__impl
 #define set__impl D7_unused__ddr__set__impl
+#define is_set__impl D7_unused__ddr__is_set__impl
     return DDRD & (1 << 7);  //Get value of DDRD for D7
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl D7_unused__ddr__is_set__impl
 #define set__impl D7_unused__ddr__set__impl
+#define is_set__impl D7_unused__ddr__is_set__impl
 
 D7_unused__ddr_t const D7_unused__ddr = {.set = &set__impl
                                          ,
@@ -8723,23 +8723,23 @@ D7_unused__ddr_t const D7_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl D7_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl D7_unused__ddr__set__impl
+#define is_set__impl D7_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl D7_unused__ddr__is_set__impl
 #define set__impl D7_unused__ddr__set__impl
+#define is_set__impl D7_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -8763,14 +8763,14 @@ static AKAT_FORCE_INLINE void D7_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 D7_unused__pin__is_set__impl() {
-#define is_set__impl D7_unused__pin__is_set__impl
 #define set__impl D7_unused__pin__set__impl
+#define is_set__impl D7_unused__pin__is_set__impl
     return PIND & (1 << 7);  //Get value of PIND for D7
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl D7_unused__pin__is_set__impl
 #define set__impl D7_unused__pin__set__impl
+#define is_set__impl D7_unused__pin__is_set__impl
 
 D7_unused__pin_t const D7_unused__pin = {.set = &set__impl
                                          ,
@@ -8778,23 +8778,23 @@ D7_unused__pin_t const D7_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl D7_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl D7_unused__pin__set__impl
+#define is_set__impl D7_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl D7_unused__pin__is_set__impl
 #define set__impl D7_unused__pin__set__impl
+#define is_set__impl D7_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -8864,14 +8864,14 @@ static AKAT_FORCE_INLINE void G0_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 G0_unused__port__is_set__impl() {
-#define is_set__impl G0_unused__port__is_set__impl
 #define set__impl G0_unused__port__set__impl
+#define is_set__impl G0_unused__port__is_set__impl
     return PORTG & (1 << 0);  //Get value of PORTG for G0
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl G0_unused__port__is_set__impl
 #define set__impl G0_unused__port__set__impl
+#define is_set__impl G0_unused__port__is_set__impl
 
 G0_unused__port_t const G0_unused__port = {.set = &set__impl
                                            ,
@@ -8879,23 +8879,23 @@ G0_unused__port_t const G0_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl G0_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl G0_unused__port__set__impl
+#define is_set__impl G0_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl G0_unused__port__is_set__impl
 #define set__impl G0_unused__port__set__impl
+#define is_set__impl G0_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -8919,14 +8919,14 @@ static AKAT_FORCE_INLINE void G0_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 G0_unused__ddr__is_set__impl() {
-#define is_set__impl G0_unused__ddr__is_set__impl
 #define set__impl G0_unused__ddr__set__impl
+#define is_set__impl G0_unused__ddr__is_set__impl
     return DDRG & (1 << 0);  //Get value of DDRG for G0
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl G0_unused__ddr__is_set__impl
 #define set__impl G0_unused__ddr__set__impl
+#define is_set__impl G0_unused__ddr__is_set__impl
 
 G0_unused__ddr_t const G0_unused__ddr = {.set = &set__impl
                                          ,
@@ -8934,23 +8934,23 @@ G0_unused__ddr_t const G0_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl G0_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl G0_unused__ddr__set__impl
+#define is_set__impl G0_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl G0_unused__ddr__is_set__impl
 #define set__impl G0_unused__ddr__set__impl
+#define is_set__impl G0_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -8974,14 +8974,14 @@ static AKAT_FORCE_INLINE void G0_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 G0_unused__pin__is_set__impl() {
-#define is_set__impl G0_unused__pin__is_set__impl
 #define set__impl G0_unused__pin__set__impl
+#define is_set__impl G0_unused__pin__is_set__impl
     return PING & (1 << 0);  //Get value of PING for G0
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl G0_unused__pin__is_set__impl
 #define set__impl G0_unused__pin__set__impl
+#define is_set__impl G0_unused__pin__is_set__impl
 
 G0_unused__pin_t const G0_unused__pin = {.set = &set__impl
                                          ,
@@ -8989,23 +8989,23 @@ G0_unused__pin_t const G0_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl G0_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl G0_unused__pin__set__impl
+#define is_set__impl G0_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl G0_unused__pin__is_set__impl
 #define set__impl G0_unused__pin__set__impl
+#define is_set__impl G0_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -9075,14 +9075,14 @@ static AKAT_FORCE_INLINE void G1_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 G1_unused__port__is_set__impl() {
-#define is_set__impl G1_unused__port__is_set__impl
 #define set__impl G1_unused__port__set__impl
+#define is_set__impl G1_unused__port__is_set__impl
     return PORTG & (1 << 1);  //Get value of PORTG for G1
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl G1_unused__port__is_set__impl
 #define set__impl G1_unused__port__set__impl
+#define is_set__impl G1_unused__port__is_set__impl
 
 G1_unused__port_t const G1_unused__port = {.set = &set__impl
                                            ,
@@ -9090,23 +9090,23 @@ G1_unused__port_t const G1_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl G1_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl G1_unused__port__set__impl
+#define is_set__impl G1_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl G1_unused__port__is_set__impl
 #define set__impl G1_unused__port__set__impl
+#define is_set__impl G1_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -9130,14 +9130,14 @@ static AKAT_FORCE_INLINE void G1_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 G1_unused__ddr__is_set__impl() {
-#define is_set__impl G1_unused__ddr__is_set__impl
 #define set__impl G1_unused__ddr__set__impl
+#define is_set__impl G1_unused__ddr__is_set__impl
     return DDRG & (1 << 1);  //Get value of DDRG for G1
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl G1_unused__ddr__is_set__impl
 #define set__impl G1_unused__ddr__set__impl
+#define is_set__impl G1_unused__ddr__is_set__impl
 
 G1_unused__ddr_t const G1_unused__ddr = {.set = &set__impl
                                          ,
@@ -9145,23 +9145,23 @@ G1_unused__ddr_t const G1_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl G1_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl G1_unused__ddr__set__impl
+#define is_set__impl G1_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl G1_unused__ddr__is_set__impl
 #define set__impl G1_unused__ddr__set__impl
+#define is_set__impl G1_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -9185,14 +9185,14 @@ static AKAT_FORCE_INLINE void G1_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 G1_unused__pin__is_set__impl() {
-#define is_set__impl G1_unused__pin__is_set__impl
 #define set__impl G1_unused__pin__set__impl
+#define is_set__impl G1_unused__pin__is_set__impl
     return PING & (1 << 1);  //Get value of PING for G1
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl G1_unused__pin__is_set__impl
 #define set__impl G1_unused__pin__set__impl
+#define is_set__impl G1_unused__pin__is_set__impl
 
 G1_unused__pin_t const G1_unused__pin = {.set = &set__impl
                                          ,
@@ -9200,23 +9200,23 @@ G1_unused__pin_t const G1_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl G1_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl G1_unused__pin__set__impl
+#define is_set__impl G1_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl G1_unused__pin__is_set__impl
 #define set__impl G1_unused__pin__set__impl
+#define is_set__impl G1_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -9286,14 +9286,14 @@ static AKAT_FORCE_INLINE void C0_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 C0_unused__port__is_set__impl() {
-#define is_set__impl C0_unused__port__is_set__impl
 #define set__impl C0_unused__port__set__impl
+#define is_set__impl C0_unused__port__is_set__impl
     return PORTC & (1 << 0);  //Get value of PORTC for C0
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl C0_unused__port__is_set__impl
 #define set__impl C0_unused__port__set__impl
+#define is_set__impl C0_unused__port__is_set__impl
 
 C0_unused__port_t const C0_unused__port = {.set = &set__impl
                                            ,
@@ -9301,23 +9301,23 @@ C0_unused__port_t const C0_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl C0_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl C0_unused__port__set__impl
+#define is_set__impl C0_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl C0_unused__port__is_set__impl
 #define set__impl C0_unused__port__set__impl
+#define is_set__impl C0_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -9341,14 +9341,14 @@ static AKAT_FORCE_INLINE void C0_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 C0_unused__ddr__is_set__impl() {
-#define is_set__impl C0_unused__ddr__is_set__impl
 #define set__impl C0_unused__ddr__set__impl
+#define is_set__impl C0_unused__ddr__is_set__impl
     return DDRC & (1 << 0);  //Get value of DDRC for C0
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl C0_unused__ddr__is_set__impl
 #define set__impl C0_unused__ddr__set__impl
+#define is_set__impl C0_unused__ddr__is_set__impl
 
 C0_unused__ddr_t const C0_unused__ddr = {.set = &set__impl
                                          ,
@@ -9356,23 +9356,23 @@ C0_unused__ddr_t const C0_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl C0_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl C0_unused__ddr__set__impl
+#define is_set__impl C0_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl C0_unused__ddr__is_set__impl
 #define set__impl C0_unused__ddr__set__impl
+#define is_set__impl C0_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -9396,14 +9396,14 @@ static AKAT_FORCE_INLINE void C0_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 C0_unused__pin__is_set__impl() {
-#define is_set__impl C0_unused__pin__is_set__impl
 #define set__impl C0_unused__pin__set__impl
+#define is_set__impl C0_unused__pin__is_set__impl
     return PINC & (1 << 0);  //Get value of PINC for C0
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl C0_unused__pin__is_set__impl
 #define set__impl C0_unused__pin__set__impl
+#define is_set__impl C0_unused__pin__is_set__impl
 
 C0_unused__pin_t const C0_unused__pin = {.set = &set__impl
                                          ,
@@ -9411,23 +9411,23 @@ C0_unused__pin_t const C0_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl C0_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl C0_unused__pin__set__impl
+#define is_set__impl C0_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl C0_unused__pin__is_set__impl
 #define set__impl C0_unused__pin__set__impl
+#define is_set__impl C0_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -9497,14 +9497,14 @@ static AKAT_FORCE_INLINE void C1_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 C1_unused__port__is_set__impl() {
-#define is_set__impl C1_unused__port__is_set__impl
 #define set__impl C1_unused__port__set__impl
+#define is_set__impl C1_unused__port__is_set__impl
     return PORTC & (1 << 1);  //Get value of PORTC for C1
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl C1_unused__port__is_set__impl
 #define set__impl C1_unused__port__set__impl
+#define is_set__impl C1_unused__port__is_set__impl
 
 C1_unused__port_t const C1_unused__port = {.set = &set__impl
                                            ,
@@ -9512,23 +9512,23 @@ C1_unused__port_t const C1_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl C1_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl C1_unused__port__set__impl
+#define is_set__impl C1_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl C1_unused__port__is_set__impl
 #define set__impl C1_unused__port__set__impl
+#define is_set__impl C1_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -9552,14 +9552,14 @@ static AKAT_FORCE_INLINE void C1_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 C1_unused__ddr__is_set__impl() {
-#define is_set__impl C1_unused__ddr__is_set__impl
 #define set__impl C1_unused__ddr__set__impl
+#define is_set__impl C1_unused__ddr__is_set__impl
     return DDRC & (1 << 1);  //Get value of DDRC for C1
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl C1_unused__ddr__is_set__impl
 #define set__impl C1_unused__ddr__set__impl
+#define is_set__impl C1_unused__ddr__is_set__impl
 
 C1_unused__ddr_t const C1_unused__ddr = {.set = &set__impl
                                          ,
@@ -9567,23 +9567,23 @@ C1_unused__ddr_t const C1_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl C1_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl C1_unused__ddr__set__impl
+#define is_set__impl C1_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl C1_unused__ddr__is_set__impl
 #define set__impl C1_unused__ddr__set__impl
+#define is_set__impl C1_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -9607,14 +9607,14 @@ static AKAT_FORCE_INLINE void C1_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 C1_unused__pin__is_set__impl() {
-#define is_set__impl C1_unused__pin__is_set__impl
 #define set__impl C1_unused__pin__set__impl
+#define is_set__impl C1_unused__pin__is_set__impl
     return PINC & (1 << 1);  //Get value of PINC for C1
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl C1_unused__pin__is_set__impl
 #define set__impl C1_unused__pin__set__impl
+#define is_set__impl C1_unused__pin__is_set__impl
 
 C1_unused__pin_t const C1_unused__pin = {.set = &set__impl
                                          ,
@@ -9622,23 +9622,23 @@ C1_unused__pin_t const C1_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl C1_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl C1_unused__pin__set__impl
+#define is_set__impl C1_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl C1_unused__pin__is_set__impl
 #define set__impl C1_unused__pin__set__impl
+#define is_set__impl C1_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -9708,14 +9708,14 @@ static AKAT_FORCE_INLINE void C2_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 C2_unused__port__is_set__impl() {
-#define is_set__impl C2_unused__port__is_set__impl
 #define set__impl C2_unused__port__set__impl
+#define is_set__impl C2_unused__port__is_set__impl
     return PORTC & (1 << 2);  //Get value of PORTC for C2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl C2_unused__port__is_set__impl
 #define set__impl C2_unused__port__set__impl
+#define is_set__impl C2_unused__port__is_set__impl
 
 C2_unused__port_t const C2_unused__port = {.set = &set__impl
                                            ,
@@ -9723,23 +9723,23 @@ C2_unused__port_t const C2_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl C2_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl C2_unused__port__set__impl
+#define is_set__impl C2_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl C2_unused__port__is_set__impl
 #define set__impl C2_unused__port__set__impl
+#define is_set__impl C2_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -9763,14 +9763,14 @@ static AKAT_FORCE_INLINE void C2_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 C2_unused__ddr__is_set__impl() {
-#define is_set__impl C2_unused__ddr__is_set__impl
 #define set__impl C2_unused__ddr__set__impl
+#define is_set__impl C2_unused__ddr__is_set__impl
     return DDRC & (1 << 2);  //Get value of DDRC for C2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl C2_unused__ddr__is_set__impl
 #define set__impl C2_unused__ddr__set__impl
+#define is_set__impl C2_unused__ddr__is_set__impl
 
 C2_unused__ddr_t const C2_unused__ddr = {.set = &set__impl
                                          ,
@@ -9778,23 +9778,23 @@ C2_unused__ddr_t const C2_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl C2_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl C2_unused__ddr__set__impl
+#define is_set__impl C2_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl C2_unused__ddr__is_set__impl
 #define set__impl C2_unused__ddr__set__impl
+#define is_set__impl C2_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -9818,14 +9818,14 @@ static AKAT_FORCE_INLINE void C2_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 C2_unused__pin__is_set__impl() {
-#define is_set__impl C2_unused__pin__is_set__impl
 #define set__impl C2_unused__pin__set__impl
+#define is_set__impl C2_unused__pin__is_set__impl
     return PINC & (1 << 2);  //Get value of PINC for C2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl C2_unused__pin__is_set__impl
 #define set__impl C2_unused__pin__set__impl
+#define is_set__impl C2_unused__pin__is_set__impl
 
 C2_unused__pin_t const C2_unused__pin = {.set = &set__impl
                                          ,
@@ -9833,23 +9833,23 @@ C2_unused__pin_t const C2_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl C2_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl C2_unused__pin__set__impl
+#define is_set__impl C2_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl C2_unused__pin__is_set__impl
 #define set__impl C2_unused__pin__set__impl
+#define is_set__impl C2_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -9919,14 +9919,14 @@ static AKAT_FORCE_INLINE void C3_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 C3_unused__port__is_set__impl() {
-#define is_set__impl C3_unused__port__is_set__impl
 #define set__impl C3_unused__port__set__impl
+#define is_set__impl C3_unused__port__is_set__impl
     return PORTC & (1 << 3);  //Get value of PORTC for C3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl C3_unused__port__is_set__impl
 #define set__impl C3_unused__port__set__impl
+#define is_set__impl C3_unused__port__is_set__impl
 
 C3_unused__port_t const C3_unused__port = {.set = &set__impl
                                            ,
@@ -9934,23 +9934,23 @@ C3_unused__port_t const C3_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl C3_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl C3_unused__port__set__impl
+#define is_set__impl C3_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl C3_unused__port__is_set__impl
 #define set__impl C3_unused__port__set__impl
+#define is_set__impl C3_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -9974,14 +9974,14 @@ static AKAT_FORCE_INLINE void C3_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 C3_unused__ddr__is_set__impl() {
-#define is_set__impl C3_unused__ddr__is_set__impl
 #define set__impl C3_unused__ddr__set__impl
+#define is_set__impl C3_unused__ddr__is_set__impl
     return DDRC & (1 << 3);  //Get value of DDRC for C3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl C3_unused__ddr__is_set__impl
 #define set__impl C3_unused__ddr__set__impl
+#define is_set__impl C3_unused__ddr__is_set__impl
 
 C3_unused__ddr_t const C3_unused__ddr = {.set = &set__impl
                                          ,
@@ -9989,23 +9989,23 @@ C3_unused__ddr_t const C3_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl C3_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl C3_unused__ddr__set__impl
+#define is_set__impl C3_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl C3_unused__ddr__is_set__impl
 #define set__impl C3_unused__ddr__set__impl
+#define is_set__impl C3_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -10029,14 +10029,14 @@ static AKAT_FORCE_INLINE void C3_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 C3_unused__pin__is_set__impl() {
-#define is_set__impl C3_unused__pin__is_set__impl
 #define set__impl C3_unused__pin__set__impl
+#define is_set__impl C3_unused__pin__is_set__impl
     return PINC & (1 << 3);  //Get value of PINC for C3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl C3_unused__pin__is_set__impl
 #define set__impl C3_unused__pin__set__impl
+#define is_set__impl C3_unused__pin__is_set__impl
 
 C3_unused__pin_t const C3_unused__pin = {.set = &set__impl
                                          ,
@@ -10044,23 +10044,23 @@ C3_unused__pin_t const C3_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl C3_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl C3_unused__pin__set__impl
+#define is_set__impl C3_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl C3_unused__pin__is_set__impl
 #define set__impl C3_unused__pin__set__impl
+#define is_set__impl C3_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -10130,14 +10130,14 @@ static AKAT_FORCE_INLINE void C4_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 C4_unused__port__is_set__impl() {
-#define is_set__impl C4_unused__port__is_set__impl
 #define set__impl C4_unused__port__set__impl
+#define is_set__impl C4_unused__port__is_set__impl
     return PORTC & (1 << 4);  //Get value of PORTC for C4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl C4_unused__port__is_set__impl
 #define set__impl C4_unused__port__set__impl
+#define is_set__impl C4_unused__port__is_set__impl
 
 C4_unused__port_t const C4_unused__port = {.set = &set__impl
                                            ,
@@ -10145,23 +10145,23 @@ C4_unused__port_t const C4_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl C4_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl C4_unused__port__set__impl
+#define is_set__impl C4_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl C4_unused__port__is_set__impl
 #define set__impl C4_unused__port__set__impl
+#define is_set__impl C4_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -10185,14 +10185,14 @@ static AKAT_FORCE_INLINE void C4_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 C4_unused__ddr__is_set__impl() {
-#define is_set__impl C4_unused__ddr__is_set__impl
 #define set__impl C4_unused__ddr__set__impl
+#define is_set__impl C4_unused__ddr__is_set__impl
     return DDRC & (1 << 4);  //Get value of DDRC for C4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl C4_unused__ddr__is_set__impl
 #define set__impl C4_unused__ddr__set__impl
+#define is_set__impl C4_unused__ddr__is_set__impl
 
 C4_unused__ddr_t const C4_unused__ddr = {.set = &set__impl
                                          ,
@@ -10200,23 +10200,23 @@ C4_unused__ddr_t const C4_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl C4_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl C4_unused__ddr__set__impl
+#define is_set__impl C4_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl C4_unused__ddr__is_set__impl
 #define set__impl C4_unused__ddr__set__impl
+#define is_set__impl C4_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -10240,14 +10240,14 @@ static AKAT_FORCE_INLINE void C4_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 C4_unused__pin__is_set__impl() {
-#define is_set__impl C4_unused__pin__is_set__impl
 #define set__impl C4_unused__pin__set__impl
+#define is_set__impl C4_unused__pin__is_set__impl
     return PINC & (1 << 4);  //Get value of PINC for C4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl C4_unused__pin__is_set__impl
 #define set__impl C4_unused__pin__set__impl
+#define is_set__impl C4_unused__pin__is_set__impl
 
 C4_unused__pin_t const C4_unused__pin = {.set = &set__impl
                                          ,
@@ -10255,23 +10255,23 @@ C4_unused__pin_t const C4_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl C4_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl C4_unused__pin__set__impl
+#define is_set__impl C4_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl C4_unused__pin__is_set__impl
 #define set__impl C4_unused__pin__set__impl
+#define is_set__impl C4_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -10341,14 +10341,14 @@ static AKAT_FORCE_INLINE void C5_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 C5_unused__port__is_set__impl() {
-#define is_set__impl C5_unused__port__is_set__impl
 #define set__impl C5_unused__port__set__impl
+#define is_set__impl C5_unused__port__is_set__impl
     return PORTC & (1 << 5);  //Get value of PORTC for C5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl C5_unused__port__is_set__impl
 #define set__impl C5_unused__port__set__impl
+#define is_set__impl C5_unused__port__is_set__impl
 
 C5_unused__port_t const C5_unused__port = {.set = &set__impl
                                            ,
@@ -10356,23 +10356,23 @@ C5_unused__port_t const C5_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl C5_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl C5_unused__port__set__impl
+#define is_set__impl C5_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl C5_unused__port__is_set__impl
 #define set__impl C5_unused__port__set__impl
+#define is_set__impl C5_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -10396,14 +10396,14 @@ static AKAT_FORCE_INLINE void C5_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 C5_unused__ddr__is_set__impl() {
-#define is_set__impl C5_unused__ddr__is_set__impl
 #define set__impl C5_unused__ddr__set__impl
+#define is_set__impl C5_unused__ddr__is_set__impl
     return DDRC & (1 << 5);  //Get value of DDRC for C5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl C5_unused__ddr__is_set__impl
 #define set__impl C5_unused__ddr__set__impl
+#define is_set__impl C5_unused__ddr__is_set__impl
 
 C5_unused__ddr_t const C5_unused__ddr = {.set = &set__impl
                                          ,
@@ -10411,23 +10411,23 @@ C5_unused__ddr_t const C5_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl C5_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl C5_unused__ddr__set__impl
+#define is_set__impl C5_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl C5_unused__ddr__is_set__impl
 #define set__impl C5_unused__ddr__set__impl
+#define is_set__impl C5_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -10451,14 +10451,14 @@ static AKAT_FORCE_INLINE void C5_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 C5_unused__pin__is_set__impl() {
-#define is_set__impl C5_unused__pin__is_set__impl
 #define set__impl C5_unused__pin__set__impl
+#define is_set__impl C5_unused__pin__is_set__impl
     return PINC & (1 << 5);  //Get value of PINC for C5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl C5_unused__pin__is_set__impl
 #define set__impl C5_unused__pin__set__impl
+#define is_set__impl C5_unused__pin__is_set__impl
 
 C5_unused__pin_t const C5_unused__pin = {.set = &set__impl
                                          ,
@@ -10466,23 +10466,23 @@ C5_unused__pin_t const C5_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl C5_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl C5_unused__pin__set__impl
+#define is_set__impl C5_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl C5_unused__pin__is_set__impl
 #define set__impl C5_unused__pin__set__impl
+#define is_set__impl C5_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -10552,14 +10552,14 @@ static AKAT_FORCE_INLINE void C6_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 C6_unused__port__is_set__impl() {
-#define is_set__impl C6_unused__port__is_set__impl
 #define set__impl C6_unused__port__set__impl
+#define is_set__impl C6_unused__port__is_set__impl
     return PORTC & (1 << 6);  //Get value of PORTC for C6
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl C6_unused__port__is_set__impl
 #define set__impl C6_unused__port__set__impl
+#define is_set__impl C6_unused__port__is_set__impl
 
 C6_unused__port_t const C6_unused__port = {.set = &set__impl
                                            ,
@@ -10567,23 +10567,23 @@ C6_unused__port_t const C6_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl C6_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl C6_unused__port__set__impl
+#define is_set__impl C6_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl C6_unused__port__is_set__impl
 #define set__impl C6_unused__port__set__impl
+#define is_set__impl C6_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -10607,14 +10607,14 @@ static AKAT_FORCE_INLINE void C6_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 C6_unused__ddr__is_set__impl() {
-#define is_set__impl C6_unused__ddr__is_set__impl
 #define set__impl C6_unused__ddr__set__impl
+#define is_set__impl C6_unused__ddr__is_set__impl
     return DDRC & (1 << 6);  //Get value of DDRC for C6
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl C6_unused__ddr__is_set__impl
 #define set__impl C6_unused__ddr__set__impl
+#define is_set__impl C6_unused__ddr__is_set__impl
 
 C6_unused__ddr_t const C6_unused__ddr = {.set = &set__impl
                                          ,
@@ -10622,23 +10622,23 @@ C6_unused__ddr_t const C6_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl C6_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl C6_unused__ddr__set__impl
+#define is_set__impl C6_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl C6_unused__ddr__is_set__impl
 #define set__impl C6_unused__ddr__set__impl
+#define is_set__impl C6_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -10662,14 +10662,14 @@ static AKAT_FORCE_INLINE void C6_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 C6_unused__pin__is_set__impl() {
-#define is_set__impl C6_unused__pin__is_set__impl
 #define set__impl C6_unused__pin__set__impl
+#define is_set__impl C6_unused__pin__is_set__impl
     return PINC & (1 << 6);  //Get value of PINC for C6
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl C6_unused__pin__is_set__impl
 #define set__impl C6_unused__pin__set__impl
+#define is_set__impl C6_unused__pin__is_set__impl
 
 C6_unused__pin_t const C6_unused__pin = {.set = &set__impl
                                          ,
@@ -10677,23 +10677,23 @@ C6_unused__pin_t const C6_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl C6_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl C6_unused__pin__set__impl
+#define is_set__impl C6_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl C6_unused__pin__is_set__impl
 #define set__impl C6_unused__pin__set__impl
+#define is_set__impl C6_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -10763,14 +10763,14 @@ static AKAT_FORCE_INLINE void C7_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 C7_unused__port__is_set__impl() {
-#define is_set__impl C7_unused__port__is_set__impl
 #define set__impl C7_unused__port__set__impl
+#define is_set__impl C7_unused__port__is_set__impl
     return PORTC & (1 << 7);  //Get value of PORTC for C7
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl C7_unused__port__is_set__impl
 #define set__impl C7_unused__port__set__impl
+#define is_set__impl C7_unused__port__is_set__impl
 
 C7_unused__port_t const C7_unused__port = {.set = &set__impl
                                            ,
@@ -10778,23 +10778,23 @@ C7_unused__port_t const C7_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl C7_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl C7_unused__port__set__impl
+#define is_set__impl C7_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl C7_unused__port__is_set__impl
 #define set__impl C7_unused__port__set__impl
+#define is_set__impl C7_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -10818,14 +10818,14 @@ static AKAT_FORCE_INLINE void C7_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 C7_unused__ddr__is_set__impl() {
-#define is_set__impl C7_unused__ddr__is_set__impl
 #define set__impl C7_unused__ddr__set__impl
+#define is_set__impl C7_unused__ddr__is_set__impl
     return DDRC & (1 << 7);  //Get value of DDRC for C7
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl C7_unused__ddr__is_set__impl
 #define set__impl C7_unused__ddr__set__impl
+#define is_set__impl C7_unused__ddr__is_set__impl
 
 C7_unused__ddr_t const C7_unused__ddr = {.set = &set__impl
                                          ,
@@ -10833,23 +10833,23 @@ C7_unused__ddr_t const C7_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl C7_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl C7_unused__ddr__set__impl
+#define is_set__impl C7_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl C7_unused__ddr__is_set__impl
 #define set__impl C7_unused__ddr__set__impl
+#define is_set__impl C7_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -10873,14 +10873,14 @@ static AKAT_FORCE_INLINE void C7_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 C7_unused__pin__is_set__impl() {
-#define is_set__impl C7_unused__pin__is_set__impl
 #define set__impl C7_unused__pin__set__impl
+#define is_set__impl C7_unused__pin__is_set__impl
     return PINC & (1 << 7);  //Get value of PINC for C7
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl C7_unused__pin__is_set__impl
 #define set__impl C7_unused__pin__set__impl
+#define is_set__impl C7_unused__pin__is_set__impl
 
 C7_unused__pin_t const C7_unused__pin = {.set = &set__impl
                                          ,
@@ -10888,23 +10888,23 @@ C7_unused__pin_t const C7_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl C7_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl C7_unused__pin__set__impl
+#define is_set__impl C7_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl C7_unused__pin__is_set__impl
 #define set__impl C7_unused__pin__set__impl
+#define is_set__impl C7_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -10976,14 +10976,14 @@ static AKAT_FORCE_INLINE void J0_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 J0_unused__port__is_set__impl() {
-#define is_set__impl J0_unused__port__is_set__impl
 #define set__impl J0_unused__port__set__impl
+#define is_set__impl J0_unused__port__is_set__impl
     return PORTJ & (1 << 0);  //Get value of PORTJ for J0
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl J0_unused__port__is_set__impl
 #define set__impl J0_unused__port__set__impl
+#define is_set__impl J0_unused__port__is_set__impl
 
 J0_unused__port_t const J0_unused__port = {.set = &set__impl
                                            ,
@@ -10991,23 +10991,23 @@ J0_unused__port_t const J0_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl J0_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl J0_unused__port__set__impl
+#define is_set__impl J0_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl J0_unused__port__is_set__impl
 #define set__impl J0_unused__port__set__impl
+#define is_set__impl J0_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -11031,14 +11031,14 @@ static AKAT_FORCE_INLINE void J0_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 J0_unused__ddr__is_set__impl() {
-#define is_set__impl J0_unused__ddr__is_set__impl
 #define set__impl J0_unused__ddr__set__impl
+#define is_set__impl J0_unused__ddr__is_set__impl
     return DDRJ & (1 << 0);  //Get value of DDRJ for J0
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl J0_unused__ddr__is_set__impl
 #define set__impl J0_unused__ddr__set__impl
+#define is_set__impl J0_unused__ddr__is_set__impl
 
 J0_unused__ddr_t const J0_unused__ddr = {.set = &set__impl
                                          ,
@@ -11046,23 +11046,23 @@ J0_unused__ddr_t const J0_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl J0_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl J0_unused__ddr__set__impl
+#define is_set__impl J0_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl J0_unused__ddr__is_set__impl
 #define set__impl J0_unused__ddr__set__impl
+#define is_set__impl J0_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -11086,14 +11086,14 @@ static AKAT_FORCE_INLINE void J0_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 J0_unused__pin__is_set__impl() {
-#define is_set__impl J0_unused__pin__is_set__impl
 #define set__impl J0_unused__pin__set__impl
+#define is_set__impl J0_unused__pin__is_set__impl
     return PINJ & (1 << 0);  //Get value of PINJ for J0
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl J0_unused__pin__is_set__impl
 #define set__impl J0_unused__pin__set__impl
+#define is_set__impl J0_unused__pin__is_set__impl
 
 J0_unused__pin_t const J0_unused__pin = {.set = &set__impl
                                          ,
@@ -11101,23 +11101,23 @@ J0_unused__pin_t const J0_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl J0_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl J0_unused__pin__set__impl
+#define is_set__impl J0_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl J0_unused__pin__is_set__impl
 #define set__impl J0_unused__pin__set__impl
+#define is_set__impl J0_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -11187,14 +11187,14 @@ static AKAT_FORCE_INLINE void J1_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 J1_unused__port__is_set__impl() {
-#define is_set__impl J1_unused__port__is_set__impl
 #define set__impl J1_unused__port__set__impl
+#define is_set__impl J1_unused__port__is_set__impl
     return PORTJ & (1 << 1);  //Get value of PORTJ for J1
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl J1_unused__port__is_set__impl
 #define set__impl J1_unused__port__set__impl
+#define is_set__impl J1_unused__port__is_set__impl
 
 J1_unused__port_t const J1_unused__port = {.set = &set__impl
                                            ,
@@ -11202,23 +11202,23 @@ J1_unused__port_t const J1_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl J1_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl J1_unused__port__set__impl
+#define is_set__impl J1_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl J1_unused__port__is_set__impl
 #define set__impl J1_unused__port__set__impl
+#define is_set__impl J1_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -11242,14 +11242,14 @@ static AKAT_FORCE_INLINE void J1_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 J1_unused__ddr__is_set__impl() {
-#define is_set__impl J1_unused__ddr__is_set__impl
 #define set__impl J1_unused__ddr__set__impl
+#define is_set__impl J1_unused__ddr__is_set__impl
     return DDRJ & (1 << 1);  //Get value of DDRJ for J1
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl J1_unused__ddr__is_set__impl
 #define set__impl J1_unused__ddr__set__impl
+#define is_set__impl J1_unused__ddr__is_set__impl
 
 J1_unused__ddr_t const J1_unused__ddr = {.set = &set__impl
                                          ,
@@ -11257,23 +11257,23 @@ J1_unused__ddr_t const J1_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl J1_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl J1_unused__ddr__set__impl
+#define is_set__impl J1_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl J1_unused__ddr__is_set__impl
 #define set__impl J1_unused__ddr__set__impl
+#define is_set__impl J1_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -11297,14 +11297,14 @@ static AKAT_FORCE_INLINE void J1_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 J1_unused__pin__is_set__impl() {
-#define is_set__impl J1_unused__pin__is_set__impl
 #define set__impl J1_unused__pin__set__impl
+#define is_set__impl J1_unused__pin__is_set__impl
     return PINJ & (1 << 1);  //Get value of PINJ for J1
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl J1_unused__pin__is_set__impl
 #define set__impl J1_unused__pin__set__impl
+#define is_set__impl J1_unused__pin__is_set__impl
 
 J1_unused__pin_t const J1_unused__pin = {.set = &set__impl
                                          ,
@@ -11312,23 +11312,23 @@ J1_unused__pin_t const J1_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl J1_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl J1_unused__pin__set__impl
+#define is_set__impl J1_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl J1_unused__pin__is_set__impl
 #define set__impl J1_unused__pin__set__impl
+#define is_set__impl J1_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -11398,14 +11398,14 @@ static AKAT_FORCE_INLINE void J2_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 J2_unused__port__is_set__impl() {
-#define is_set__impl J2_unused__port__is_set__impl
 #define set__impl J2_unused__port__set__impl
+#define is_set__impl J2_unused__port__is_set__impl
     return PORTJ & (1 << 2);  //Get value of PORTJ for J2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl J2_unused__port__is_set__impl
 #define set__impl J2_unused__port__set__impl
+#define is_set__impl J2_unused__port__is_set__impl
 
 J2_unused__port_t const J2_unused__port = {.set = &set__impl
                                            ,
@@ -11413,23 +11413,23 @@ J2_unused__port_t const J2_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl J2_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl J2_unused__port__set__impl
+#define is_set__impl J2_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl J2_unused__port__is_set__impl
 #define set__impl J2_unused__port__set__impl
+#define is_set__impl J2_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -11453,14 +11453,14 @@ static AKAT_FORCE_INLINE void J2_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 J2_unused__ddr__is_set__impl() {
-#define is_set__impl J2_unused__ddr__is_set__impl
 #define set__impl J2_unused__ddr__set__impl
+#define is_set__impl J2_unused__ddr__is_set__impl
     return DDRJ & (1 << 2);  //Get value of DDRJ for J2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl J2_unused__ddr__is_set__impl
 #define set__impl J2_unused__ddr__set__impl
+#define is_set__impl J2_unused__ddr__is_set__impl
 
 J2_unused__ddr_t const J2_unused__ddr = {.set = &set__impl
                                          ,
@@ -11468,23 +11468,23 @@ J2_unused__ddr_t const J2_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl J2_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl J2_unused__ddr__set__impl
+#define is_set__impl J2_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl J2_unused__ddr__is_set__impl
 #define set__impl J2_unused__ddr__set__impl
+#define is_set__impl J2_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -11508,14 +11508,14 @@ static AKAT_FORCE_INLINE void J2_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 J2_unused__pin__is_set__impl() {
-#define is_set__impl J2_unused__pin__is_set__impl
 #define set__impl J2_unused__pin__set__impl
+#define is_set__impl J2_unused__pin__is_set__impl
     return PINJ & (1 << 2);  //Get value of PINJ for J2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl J2_unused__pin__is_set__impl
 #define set__impl J2_unused__pin__set__impl
+#define is_set__impl J2_unused__pin__is_set__impl
 
 J2_unused__pin_t const J2_unused__pin = {.set = &set__impl
                                          ,
@@ -11523,23 +11523,23 @@ J2_unused__pin_t const J2_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl J2_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl J2_unused__pin__set__impl
+#define is_set__impl J2_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl J2_unused__pin__is_set__impl
 #define set__impl J2_unused__pin__set__impl
+#define is_set__impl J2_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -11609,14 +11609,14 @@ static AKAT_FORCE_INLINE void J3_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 J3_unused__port__is_set__impl() {
-#define is_set__impl J3_unused__port__is_set__impl
 #define set__impl J3_unused__port__set__impl
+#define is_set__impl J3_unused__port__is_set__impl
     return PORTJ & (1 << 3);  //Get value of PORTJ for J3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl J3_unused__port__is_set__impl
 #define set__impl J3_unused__port__set__impl
+#define is_set__impl J3_unused__port__is_set__impl
 
 J3_unused__port_t const J3_unused__port = {.set = &set__impl
                                            ,
@@ -11624,23 +11624,23 @@ J3_unused__port_t const J3_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl J3_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl J3_unused__port__set__impl
+#define is_set__impl J3_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl J3_unused__port__is_set__impl
 #define set__impl J3_unused__port__set__impl
+#define is_set__impl J3_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -11664,14 +11664,14 @@ static AKAT_FORCE_INLINE void J3_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 J3_unused__ddr__is_set__impl() {
-#define is_set__impl J3_unused__ddr__is_set__impl
 #define set__impl J3_unused__ddr__set__impl
+#define is_set__impl J3_unused__ddr__is_set__impl
     return DDRJ & (1 << 3);  //Get value of DDRJ for J3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl J3_unused__ddr__is_set__impl
 #define set__impl J3_unused__ddr__set__impl
+#define is_set__impl J3_unused__ddr__is_set__impl
 
 J3_unused__ddr_t const J3_unused__ddr = {.set = &set__impl
                                          ,
@@ -11679,23 +11679,23 @@ J3_unused__ddr_t const J3_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl J3_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl J3_unused__ddr__set__impl
+#define is_set__impl J3_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl J3_unused__ddr__is_set__impl
 #define set__impl J3_unused__ddr__set__impl
+#define is_set__impl J3_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -11719,14 +11719,14 @@ static AKAT_FORCE_INLINE void J3_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 J3_unused__pin__is_set__impl() {
-#define is_set__impl J3_unused__pin__is_set__impl
 #define set__impl J3_unused__pin__set__impl
+#define is_set__impl J3_unused__pin__is_set__impl
     return PINJ & (1 << 3);  //Get value of PINJ for J3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl J3_unused__pin__is_set__impl
 #define set__impl J3_unused__pin__set__impl
+#define is_set__impl J3_unused__pin__is_set__impl
 
 J3_unused__pin_t const J3_unused__pin = {.set = &set__impl
                                          ,
@@ -11734,23 +11734,23 @@ J3_unused__pin_t const J3_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl J3_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl J3_unused__pin__set__impl
+#define is_set__impl J3_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl J3_unused__pin__is_set__impl
 #define set__impl J3_unused__pin__set__impl
+#define is_set__impl J3_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -11820,14 +11820,14 @@ static AKAT_FORCE_INLINE void J4_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 J4_unused__port__is_set__impl() {
-#define is_set__impl J4_unused__port__is_set__impl
 #define set__impl J4_unused__port__set__impl
+#define is_set__impl J4_unused__port__is_set__impl
     return PORTJ & (1 << 4);  //Get value of PORTJ for J4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl J4_unused__port__is_set__impl
 #define set__impl J4_unused__port__set__impl
+#define is_set__impl J4_unused__port__is_set__impl
 
 J4_unused__port_t const J4_unused__port = {.set = &set__impl
                                            ,
@@ -11835,23 +11835,23 @@ J4_unused__port_t const J4_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl J4_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl J4_unused__port__set__impl
+#define is_set__impl J4_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl J4_unused__port__is_set__impl
 #define set__impl J4_unused__port__set__impl
+#define is_set__impl J4_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -11875,14 +11875,14 @@ static AKAT_FORCE_INLINE void J4_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 J4_unused__ddr__is_set__impl() {
-#define is_set__impl J4_unused__ddr__is_set__impl
 #define set__impl J4_unused__ddr__set__impl
+#define is_set__impl J4_unused__ddr__is_set__impl
     return DDRJ & (1 << 4);  //Get value of DDRJ for J4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl J4_unused__ddr__is_set__impl
 #define set__impl J4_unused__ddr__set__impl
+#define is_set__impl J4_unused__ddr__is_set__impl
 
 J4_unused__ddr_t const J4_unused__ddr = {.set = &set__impl
                                          ,
@@ -11890,23 +11890,23 @@ J4_unused__ddr_t const J4_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl J4_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl J4_unused__ddr__set__impl
+#define is_set__impl J4_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl J4_unused__ddr__is_set__impl
 #define set__impl J4_unused__ddr__set__impl
+#define is_set__impl J4_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -11930,14 +11930,14 @@ static AKAT_FORCE_INLINE void J4_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 J4_unused__pin__is_set__impl() {
-#define is_set__impl J4_unused__pin__is_set__impl
 #define set__impl J4_unused__pin__set__impl
+#define is_set__impl J4_unused__pin__is_set__impl
     return PINJ & (1 << 4);  //Get value of PINJ for J4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl J4_unused__pin__is_set__impl
 #define set__impl J4_unused__pin__set__impl
+#define is_set__impl J4_unused__pin__is_set__impl
 
 J4_unused__pin_t const J4_unused__pin = {.set = &set__impl
                                          ,
@@ -11945,23 +11945,23 @@ J4_unused__pin_t const J4_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl J4_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl J4_unused__pin__set__impl
+#define is_set__impl J4_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl J4_unused__pin__is_set__impl
 #define set__impl J4_unused__pin__set__impl
+#define is_set__impl J4_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -12031,14 +12031,14 @@ static AKAT_FORCE_INLINE void J5_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 J5_unused__port__is_set__impl() {
-#define is_set__impl J5_unused__port__is_set__impl
 #define set__impl J5_unused__port__set__impl
+#define is_set__impl J5_unused__port__is_set__impl
     return PORTJ & (1 << 5);  //Get value of PORTJ for J5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl J5_unused__port__is_set__impl
 #define set__impl J5_unused__port__set__impl
+#define is_set__impl J5_unused__port__is_set__impl
 
 J5_unused__port_t const J5_unused__port = {.set = &set__impl
                                            ,
@@ -12046,23 +12046,23 @@ J5_unused__port_t const J5_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl J5_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl J5_unused__port__set__impl
+#define is_set__impl J5_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl J5_unused__port__is_set__impl
 #define set__impl J5_unused__port__set__impl
+#define is_set__impl J5_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -12086,14 +12086,14 @@ static AKAT_FORCE_INLINE void J5_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 J5_unused__ddr__is_set__impl() {
-#define is_set__impl J5_unused__ddr__is_set__impl
 #define set__impl J5_unused__ddr__set__impl
+#define is_set__impl J5_unused__ddr__is_set__impl
     return DDRJ & (1 << 5);  //Get value of DDRJ for J5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl J5_unused__ddr__is_set__impl
 #define set__impl J5_unused__ddr__set__impl
+#define is_set__impl J5_unused__ddr__is_set__impl
 
 J5_unused__ddr_t const J5_unused__ddr = {.set = &set__impl
                                          ,
@@ -12101,23 +12101,23 @@ J5_unused__ddr_t const J5_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl J5_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl J5_unused__ddr__set__impl
+#define is_set__impl J5_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl J5_unused__ddr__is_set__impl
 #define set__impl J5_unused__ddr__set__impl
+#define is_set__impl J5_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -12141,14 +12141,14 @@ static AKAT_FORCE_INLINE void J5_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 J5_unused__pin__is_set__impl() {
-#define is_set__impl J5_unused__pin__is_set__impl
 #define set__impl J5_unused__pin__set__impl
+#define is_set__impl J5_unused__pin__is_set__impl
     return PINJ & (1 << 5);  //Get value of PINJ for J5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl J5_unused__pin__is_set__impl
 #define set__impl J5_unused__pin__set__impl
+#define is_set__impl J5_unused__pin__is_set__impl
 
 J5_unused__pin_t const J5_unused__pin = {.set = &set__impl
                                          ,
@@ -12156,23 +12156,23 @@ J5_unused__pin_t const J5_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl J5_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl J5_unused__pin__set__impl
+#define is_set__impl J5_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl J5_unused__pin__is_set__impl
 #define set__impl J5_unused__pin__set__impl
+#define is_set__impl J5_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -12242,14 +12242,14 @@ static AKAT_FORCE_INLINE void J6_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 J6_unused__port__is_set__impl() {
-#define is_set__impl J6_unused__port__is_set__impl
 #define set__impl J6_unused__port__set__impl
+#define is_set__impl J6_unused__port__is_set__impl
     return PORTJ & (1 << 6);  //Get value of PORTJ for J6
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl J6_unused__port__is_set__impl
 #define set__impl J6_unused__port__set__impl
+#define is_set__impl J6_unused__port__is_set__impl
 
 J6_unused__port_t const J6_unused__port = {.set = &set__impl
                                            ,
@@ -12257,23 +12257,23 @@ J6_unused__port_t const J6_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl J6_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl J6_unused__port__set__impl
+#define is_set__impl J6_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl J6_unused__port__is_set__impl
 #define set__impl J6_unused__port__set__impl
+#define is_set__impl J6_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -12297,14 +12297,14 @@ static AKAT_FORCE_INLINE void J6_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 J6_unused__ddr__is_set__impl() {
-#define is_set__impl J6_unused__ddr__is_set__impl
 #define set__impl J6_unused__ddr__set__impl
+#define is_set__impl J6_unused__ddr__is_set__impl
     return DDRJ & (1 << 6);  //Get value of DDRJ for J6
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl J6_unused__ddr__is_set__impl
 #define set__impl J6_unused__ddr__set__impl
+#define is_set__impl J6_unused__ddr__is_set__impl
 
 J6_unused__ddr_t const J6_unused__ddr = {.set = &set__impl
                                          ,
@@ -12312,23 +12312,23 @@ J6_unused__ddr_t const J6_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl J6_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl J6_unused__ddr__set__impl
+#define is_set__impl J6_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl J6_unused__ddr__is_set__impl
 #define set__impl J6_unused__ddr__set__impl
+#define is_set__impl J6_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -12352,14 +12352,14 @@ static AKAT_FORCE_INLINE void J6_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 J6_unused__pin__is_set__impl() {
-#define is_set__impl J6_unused__pin__is_set__impl
 #define set__impl J6_unused__pin__set__impl
+#define is_set__impl J6_unused__pin__is_set__impl
     return PINJ & (1 << 6);  //Get value of PINJ for J6
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl J6_unused__pin__is_set__impl
 #define set__impl J6_unused__pin__set__impl
+#define is_set__impl J6_unused__pin__is_set__impl
 
 J6_unused__pin_t const J6_unused__pin = {.set = &set__impl
                                          ,
@@ -12367,23 +12367,23 @@ J6_unused__pin_t const J6_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl J6_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl J6_unused__pin__set__impl
+#define is_set__impl J6_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl J6_unused__pin__is_set__impl
 #define set__impl J6_unused__pin__set__impl
+#define is_set__impl J6_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -12453,14 +12453,14 @@ static AKAT_FORCE_INLINE void G2_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 G2_unused__port__is_set__impl() {
-#define is_set__impl G2_unused__port__is_set__impl
 #define set__impl G2_unused__port__set__impl
+#define is_set__impl G2_unused__port__is_set__impl
     return PORTG & (1 << 2);  //Get value of PORTG for G2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl G2_unused__port__is_set__impl
 #define set__impl G2_unused__port__set__impl
+#define is_set__impl G2_unused__port__is_set__impl
 
 G2_unused__port_t const G2_unused__port = {.set = &set__impl
                                            ,
@@ -12468,23 +12468,23 @@ G2_unused__port_t const G2_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl G2_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl G2_unused__port__set__impl
+#define is_set__impl G2_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl G2_unused__port__is_set__impl
 #define set__impl G2_unused__port__set__impl
+#define is_set__impl G2_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -12508,14 +12508,14 @@ static AKAT_FORCE_INLINE void G2_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 G2_unused__ddr__is_set__impl() {
-#define is_set__impl G2_unused__ddr__is_set__impl
 #define set__impl G2_unused__ddr__set__impl
+#define is_set__impl G2_unused__ddr__is_set__impl
     return DDRG & (1 << 2);  //Get value of DDRG for G2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl G2_unused__ddr__is_set__impl
 #define set__impl G2_unused__ddr__set__impl
+#define is_set__impl G2_unused__ddr__is_set__impl
 
 G2_unused__ddr_t const G2_unused__ddr = {.set = &set__impl
                                          ,
@@ -12523,23 +12523,23 @@ G2_unused__ddr_t const G2_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl G2_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl G2_unused__ddr__set__impl
+#define is_set__impl G2_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl G2_unused__ddr__is_set__impl
 #define set__impl G2_unused__ddr__set__impl
+#define is_set__impl G2_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -12563,14 +12563,14 @@ static AKAT_FORCE_INLINE void G2_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 G2_unused__pin__is_set__impl() {
-#define is_set__impl G2_unused__pin__is_set__impl
 #define set__impl G2_unused__pin__set__impl
+#define is_set__impl G2_unused__pin__is_set__impl
     return PING & (1 << 2);  //Get value of PING for G2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl G2_unused__pin__is_set__impl
 #define set__impl G2_unused__pin__set__impl
+#define is_set__impl G2_unused__pin__is_set__impl
 
 G2_unused__pin_t const G2_unused__pin = {.set = &set__impl
                                          ,
@@ -12578,23 +12578,23 @@ G2_unused__pin_t const G2_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl G2_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl G2_unused__pin__set__impl
+#define is_set__impl G2_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl G2_unused__pin__is_set__impl
 #define set__impl G2_unused__pin__set__impl
+#define is_set__impl G2_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -12664,14 +12664,14 @@ static AKAT_FORCE_INLINE void A7_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 A7_unused__port__is_set__impl() {
-#define is_set__impl A7_unused__port__is_set__impl
 #define set__impl A7_unused__port__set__impl
+#define is_set__impl A7_unused__port__is_set__impl
     return PORTA & (1 << 7);  //Get value of PORTA for A7
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl A7_unused__port__is_set__impl
 #define set__impl A7_unused__port__set__impl
+#define is_set__impl A7_unused__port__is_set__impl
 
 A7_unused__port_t const A7_unused__port = {.set = &set__impl
                                            ,
@@ -12679,23 +12679,23 @@ A7_unused__port_t const A7_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl A7_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl A7_unused__port__set__impl
+#define is_set__impl A7_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl A7_unused__port__is_set__impl
 #define set__impl A7_unused__port__set__impl
+#define is_set__impl A7_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -12719,14 +12719,14 @@ static AKAT_FORCE_INLINE void A7_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 A7_unused__ddr__is_set__impl() {
-#define is_set__impl A7_unused__ddr__is_set__impl
 #define set__impl A7_unused__ddr__set__impl
+#define is_set__impl A7_unused__ddr__is_set__impl
     return DDRA & (1 << 7);  //Get value of DDRA for A7
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl A7_unused__ddr__is_set__impl
 #define set__impl A7_unused__ddr__set__impl
+#define is_set__impl A7_unused__ddr__is_set__impl
 
 A7_unused__ddr_t const A7_unused__ddr = {.set = &set__impl
                                          ,
@@ -12734,23 +12734,23 @@ A7_unused__ddr_t const A7_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl A7_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl A7_unused__ddr__set__impl
+#define is_set__impl A7_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl A7_unused__ddr__is_set__impl
 #define set__impl A7_unused__ddr__set__impl
+#define is_set__impl A7_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -12774,14 +12774,14 @@ static AKAT_FORCE_INLINE void A7_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 A7_unused__pin__is_set__impl() {
-#define is_set__impl A7_unused__pin__is_set__impl
 #define set__impl A7_unused__pin__set__impl
+#define is_set__impl A7_unused__pin__is_set__impl
     return PINA & (1 << 7);  //Get value of PINA for A7
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl A7_unused__pin__is_set__impl
 #define set__impl A7_unused__pin__set__impl
+#define is_set__impl A7_unused__pin__is_set__impl
 
 A7_unused__pin_t const A7_unused__pin = {.set = &set__impl
                                          ,
@@ -12789,23 +12789,23 @@ A7_unused__pin_t const A7_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl A7_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl A7_unused__pin__set__impl
+#define is_set__impl A7_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl A7_unused__pin__is_set__impl
 #define set__impl A7_unused__pin__set__impl
+#define is_set__impl A7_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -12875,14 +12875,14 @@ static AKAT_FORCE_INLINE void A6_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 A6_unused__port__is_set__impl() {
-#define is_set__impl A6_unused__port__is_set__impl
 #define set__impl A6_unused__port__set__impl
+#define is_set__impl A6_unused__port__is_set__impl
     return PORTA & (1 << 6);  //Get value of PORTA for A6
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl A6_unused__port__is_set__impl
 #define set__impl A6_unused__port__set__impl
+#define is_set__impl A6_unused__port__is_set__impl
 
 A6_unused__port_t const A6_unused__port = {.set = &set__impl
                                            ,
@@ -12890,23 +12890,23 @@ A6_unused__port_t const A6_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl A6_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl A6_unused__port__set__impl
+#define is_set__impl A6_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl A6_unused__port__is_set__impl
 #define set__impl A6_unused__port__set__impl
+#define is_set__impl A6_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -12930,14 +12930,14 @@ static AKAT_FORCE_INLINE void A6_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 A6_unused__ddr__is_set__impl() {
-#define is_set__impl A6_unused__ddr__is_set__impl
 #define set__impl A6_unused__ddr__set__impl
+#define is_set__impl A6_unused__ddr__is_set__impl
     return DDRA & (1 << 6);  //Get value of DDRA for A6
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl A6_unused__ddr__is_set__impl
 #define set__impl A6_unused__ddr__set__impl
+#define is_set__impl A6_unused__ddr__is_set__impl
 
 A6_unused__ddr_t const A6_unused__ddr = {.set = &set__impl
                                          ,
@@ -12945,23 +12945,23 @@ A6_unused__ddr_t const A6_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl A6_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl A6_unused__ddr__set__impl
+#define is_set__impl A6_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl A6_unused__ddr__is_set__impl
 #define set__impl A6_unused__ddr__set__impl
+#define is_set__impl A6_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -12985,14 +12985,14 @@ static AKAT_FORCE_INLINE void A6_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 A6_unused__pin__is_set__impl() {
-#define is_set__impl A6_unused__pin__is_set__impl
 #define set__impl A6_unused__pin__set__impl
+#define is_set__impl A6_unused__pin__is_set__impl
     return PINA & (1 << 6);  //Get value of PINA for A6
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl A6_unused__pin__is_set__impl
 #define set__impl A6_unused__pin__set__impl
+#define is_set__impl A6_unused__pin__is_set__impl
 
 A6_unused__pin_t const A6_unused__pin = {.set = &set__impl
                                          ,
@@ -13000,23 +13000,23 @@ A6_unused__pin_t const A6_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl A6_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl A6_unused__pin__set__impl
+#define is_set__impl A6_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl A6_unused__pin__is_set__impl
 #define set__impl A6_unused__pin__set__impl
+#define is_set__impl A6_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -13086,14 +13086,14 @@ static AKAT_FORCE_INLINE void A5_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 A5_unused__port__is_set__impl() {
-#define is_set__impl A5_unused__port__is_set__impl
 #define set__impl A5_unused__port__set__impl
+#define is_set__impl A5_unused__port__is_set__impl
     return PORTA & (1 << 5);  //Get value of PORTA for A5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl A5_unused__port__is_set__impl
 #define set__impl A5_unused__port__set__impl
+#define is_set__impl A5_unused__port__is_set__impl
 
 A5_unused__port_t const A5_unused__port = {.set = &set__impl
                                            ,
@@ -13101,23 +13101,23 @@ A5_unused__port_t const A5_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl A5_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl A5_unused__port__set__impl
+#define is_set__impl A5_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl A5_unused__port__is_set__impl
 #define set__impl A5_unused__port__set__impl
+#define is_set__impl A5_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -13141,14 +13141,14 @@ static AKAT_FORCE_INLINE void A5_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 A5_unused__ddr__is_set__impl() {
-#define is_set__impl A5_unused__ddr__is_set__impl
 #define set__impl A5_unused__ddr__set__impl
+#define is_set__impl A5_unused__ddr__is_set__impl
     return DDRA & (1 << 5);  //Get value of DDRA for A5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl A5_unused__ddr__is_set__impl
 #define set__impl A5_unused__ddr__set__impl
+#define is_set__impl A5_unused__ddr__is_set__impl
 
 A5_unused__ddr_t const A5_unused__ddr = {.set = &set__impl
                                          ,
@@ -13156,23 +13156,23 @@ A5_unused__ddr_t const A5_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl A5_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl A5_unused__ddr__set__impl
+#define is_set__impl A5_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl A5_unused__ddr__is_set__impl
 #define set__impl A5_unused__ddr__set__impl
+#define is_set__impl A5_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -13196,14 +13196,14 @@ static AKAT_FORCE_INLINE void A5_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 A5_unused__pin__is_set__impl() {
-#define is_set__impl A5_unused__pin__is_set__impl
 #define set__impl A5_unused__pin__set__impl
+#define is_set__impl A5_unused__pin__is_set__impl
     return PINA & (1 << 5);  //Get value of PINA for A5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl A5_unused__pin__is_set__impl
 #define set__impl A5_unused__pin__set__impl
+#define is_set__impl A5_unused__pin__is_set__impl
 
 A5_unused__pin_t const A5_unused__pin = {.set = &set__impl
                                          ,
@@ -13211,23 +13211,23 @@ A5_unused__pin_t const A5_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl A5_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl A5_unused__pin__set__impl
+#define is_set__impl A5_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl A5_unused__pin__is_set__impl
 #define set__impl A5_unused__pin__set__impl
+#define is_set__impl A5_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -13297,14 +13297,14 @@ static AKAT_FORCE_INLINE void A4_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 A4_unused__port__is_set__impl() {
-#define is_set__impl A4_unused__port__is_set__impl
 #define set__impl A4_unused__port__set__impl
+#define is_set__impl A4_unused__port__is_set__impl
     return PORTA & (1 << 4);  //Get value of PORTA for A4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl A4_unused__port__is_set__impl
 #define set__impl A4_unused__port__set__impl
+#define is_set__impl A4_unused__port__is_set__impl
 
 A4_unused__port_t const A4_unused__port = {.set = &set__impl
                                            ,
@@ -13312,23 +13312,23 @@ A4_unused__port_t const A4_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl A4_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl A4_unused__port__set__impl
+#define is_set__impl A4_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl A4_unused__port__is_set__impl
 #define set__impl A4_unused__port__set__impl
+#define is_set__impl A4_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -13352,14 +13352,14 @@ static AKAT_FORCE_INLINE void A4_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 A4_unused__ddr__is_set__impl() {
-#define is_set__impl A4_unused__ddr__is_set__impl
 #define set__impl A4_unused__ddr__set__impl
+#define is_set__impl A4_unused__ddr__is_set__impl
     return DDRA & (1 << 4);  //Get value of DDRA for A4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl A4_unused__ddr__is_set__impl
 #define set__impl A4_unused__ddr__set__impl
+#define is_set__impl A4_unused__ddr__is_set__impl
 
 A4_unused__ddr_t const A4_unused__ddr = {.set = &set__impl
                                          ,
@@ -13367,23 +13367,23 @@ A4_unused__ddr_t const A4_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl A4_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl A4_unused__ddr__set__impl
+#define is_set__impl A4_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl A4_unused__ddr__is_set__impl
 #define set__impl A4_unused__ddr__set__impl
+#define is_set__impl A4_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -13407,14 +13407,14 @@ static AKAT_FORCE_INLINE void A4_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 A4_unused__pin__is_set__impl() {
-#define is_set__impl A4_unused__pin__is_set__impl
 #define set__impl A4_unused__pin__set__impl
+#define is_set__impl A4_unused__pin__is_set__impl
     return PINA & (1 << 4);  //Get value of PINA for A4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl A4_unused__pin__is_set__impl
 #define set__impl A4_unused__pin__set__impl
+#define is_set__impl A4_unused__pin__is_set__impl
 
 A4_unused__pin_t const A4_unused__pin = {.set = &set__impl
                                          ,
@@ -13422,23 +13422,23 @@ A4_unused__pin_t const A4_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl A4_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl A4_unused__pin__set__impl
+#define is_set__impl A4_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl A4_unused__pin__is_set__impl
 #define set__impl A4_unused__pin__set__impl
+#define is_set__impl A4_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -13508,14 +13508,14 @@ static AKAT_FORCE_INLINE void A3_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 A3_unused__port__is_set__impl() {
-#define is_set__impl A3_unused__port__is_set__impl
 #define set__impl A3_unused__port__set__impl
+#define is_set__impl A3_unused__port__is_set__impl
     return PORTA & (1 << 3);  //Get value of PORTA for A3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl A3_unused__port__is_set__impl
 #define set__impl A3_unused__port__set__impl
+#define is_set__impl A3_unused__port__is_set__impl
 
 A3_unused__port_t const A3_unused__port = {.set = &set__impl
                                            ,
@@ -13523,23 +13523,23 @@ A3_unused__port_t const A3_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl A3_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl A3_unused__port__set__impl
+#define is_set__impl A3_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl A3_unused__port__is_set__impl
 #define set__impl A3_unused__port__set__impl
+#define is_set__impl A3_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -13563,14 +13563,14 @@ static AKAT_FORCE_INLINE void A3_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 A3_unused__ddr__is_set__impl() {
-#define is_set__impl A3_unused__ddr__is_set__impl
 #define set__impl A3_unused__ddr__set__impl
+#define is_set__impl A3_unused__ddr__is_set__impl
     return DDRA & (1 << 3);  //Get value of DDRA for A3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl A3_unused__ddr__is_set__impl
 #define set__impl A3_unused__ddr__set__impl
+#define is_set__impl A3_unused__ddr__is_set__impl
 
 A3_unused__ddr_t const A3_unused__ddr = {.set = &set__impl
                                          ,
@@ -13578,23 +13578,23 @@ A3_unused__ddr_t const A3_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl A3_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl A3_unused__ddr__set__impl
+#define is_set__impl A3_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl A3_unused__ddr__is_set__impl
 #define set__impl A3_unused__ddr__set__impl
+#define is_set__impl A3_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -13618,14 +13618,14 @@ static AKAT_FORCE_INLINE void A3_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 A3_unused__pin__is_set__impl() {
-#define is_set__impl A3_unused__pin__is_set__impl
 #define set__impl A3_unused__pin__set__impl
+#define is_set__impl A3_unused__pin__is_set__impl
     return PINA & (1 << 3);  //Get value of PINA for A3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl A3_unused__pin__is_set__impl
 #define set__impl A3_unused__pin__set__impl
+#define is_set__impl A3_unused__pin__is_set__impl
 
 A3_unused__pin_t const A3_unused__pin = {.set = &set__impl
                                          ,
@@ -13633,23 +13633,23 @@ A3_unused__pin_t const A3_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl A3_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl A3_unused__pin__set__impl
+#define is_set__impl A3_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl A3_unused__pin__is_set__impl
 #define set__impl A3_unused__pin__set__impl
+#define is_set__impl A3_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -13719,14 +13719,14 @@ static AKAT_FORCE_INLINE void A2_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 A2_unused__port__is_set__impl() {
-#define is_set__impl A2_unused__port__is_set__impl
 #define set__impl A2_unused__port__set__impl
+#define is_set__impl A2_unused__port__is_set__impl
     return PORTA & (1 << 2);  //Get value of PORTA for A2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl A2_unused__port__is_set__impl
 #define set__impl A2_unused__port__set__impl
+#define is_set__impl A2_unused__port__is_set__impl
 
 A2_unused__port_t const A2_unused__port = {.set = &set__impl
                                            ,
@@ -13734,23 +13734,23 @@ A2_unused__port_t const A2_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl A2_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl A2_unused__port__set__impl
+#define is_set__impl A2_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl A2_unused__port__is_set__impl
 #define set__impl A2_unused__port__set__impl
+#define is_set__impl A2_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -13774,14 +13774,14 @@ static AKAT_FORCE_INLINE void A2_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 A2_unused__ddr__is_set__impl() {
-#define is_set__impl A2_unused__ddr__is_set__impl
 #define set__impl A2_unused__ddr__set__impl
+#define is_set__impl A2_unused__ddr__is_set__impl
     return DDRA & (1 << 2);  //Get value of DDRA for A2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl A2_unused__ddr__is_set__impl
 #define set__impl A2_unused__ddr__set__impl
+#define is_set__impl A2_unused__ddr__is_set__impl
 
 A2_unused__ddr_t const A2_unused__ddr = {.set = &set__impl
                                          ,
@@ -13789,23 +13789,23 @@ A2_unused__ddr_t const A2_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl A2_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl A2_unused__ddr__set__impl
+#define is_set__impl A2_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl A2_unused__ddr__is_set__impl
 #define set__impl A2_unused__ddr__set__impl
+#define is_set__impl A2_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -13829,14 +13829,14 @@ static AKAT_FORCE_INLINE void A2_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 A2_unused__pin__is_set__impl() {
-#define is_set__impl A2_unused__pin__is_set__impl
 #define set__impl A2_unused__pin__set__impl
+#define is_set__impl A2_unused__pin__is_set__impl
     return PINA & (1 << 2);  //Get value of PINA for A2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl A2_unused__pin__is_set__impl
 #define set__impl A2_unused__pin__set__impl
+#define is_set__impl A2_unused__pin__is_set__impl
 
 A2_unused__pin_t const A2_unused__pin = {.set = &set__impl
                                          ,
@@ -13844,23 +13844,23 @@ A2_unused__pin_t const A2_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl A2_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl A2_unused__pin__set__impl
+#define is_set__impl A2_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl A2_unused__pin__is_set__impl
 #define set__impl A2_unused__pin__set__impl
+#define is_set__impl A2_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -13932,14 +13932,14 @@ static AKAT_FORCE_INLINE void J7_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 J7_unused__port__is_set__impl() {
-#define is_set__impl J7_unused__port__is_set__impl
 #define set__impl J7_unused__port__set__impl
+#define is_set__impl J7_unused__port__is_set__impl
     return PORTJ & (1 << 7);  //Get value of PORTJ for J7
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl J7_unused__port__is_set__impl
 #define set__impl J7_unused__port__set__impl
+#define is_set__impl J7_unused__port__is_set__impl
 
 J7_unused__port_t const J7_unused__port = {.set = &set__impl
                                            ,
@@ -13947,23 +13947,23 @@ J7_unused__port_t const J7_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl J7_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl J7_unused__port__set__impl
+#define is_set__impl J7_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl J7_unused__port__is_set__impl
 #define set__impl J7_unused__port__set__impl
+#define is_set__impl J7_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -13987,14 +13987,14 @@ static AKAT_FORCE_INLINE void J7_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 J7_unused__ddr__is_set__impl() {
-#define is_set__impl J7_unused__ddr__is_set__impl
 #define set__impl J7_unused__ddr__set__impl
+#define is_set__impl J7_unused__ddr__is_set__impl
     return DDRJ & (1 << 7);  //Get value of DDRJ for J7
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl J7_unused__ddr__is_set__impl
 #define set__impl J7_unused__ddr__set__impl
+#define is_set__impl J7_unused__ddr__is_set__impl
 
 J7_unused__ddr_t const J7_unused__ddr = {.set = &set__impl
                                          ,
@@ -14002,23 +14002,23 @@ J7_unused__ddr_t const J7_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl J7_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl J7_unused__ddr__set__impl
+#define is_set__impl J7_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl J7_unused__ddr__is_set__impl
 #define set__impl J7_unused__ddr__set__impl
+#define is_set__impl J7_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -14042,14 +14042,14 @@ static AKAT_FORCE_INLINE void J7_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 J7_unused__pin__is_set__impl() {
-#define is_set__impl J7_unused__pin__is_set__impl
 #define set__impl J7_unused__pin__set__impl
+#define is_set__impl J7_unused__pin__is_set__impl
     return PINJ & (1 << 7);  //Get value of PINJ for J7
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl J7_unused__pin__is_set__impl
 #define set__impl J7_unused__pin__set__impl
+#define is_set__impl J7_unused__pin__is_set__impl
 
 J7_unused__pin_t const J7_unused__pin = {.set = &set__impl
                                          ,
@@ -14057,23 +14057,23 @@ J7_unused__pin_t const J7_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl J7_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl J7_unused__pin__set__impl
+#define is_set__impl J7_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl J7_unused__pin__is_set__impl
 #define set__impl J7_unused__pin__set__impl
+#define is_set__impl J7_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -14145,14 +14145,14 @@ static AKAT_FORCE_INLINE void K7_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 K7_unused__port__is_set__impl() {
-#define is_set__impl K7_unused__port__is_set__impl
 #define set__impl K7_unused__port__set__impl
+#define is_set__impl K7_unused__port__is_set__impl
     return PORTK & (1 << 7);  //Get value of PORTK for K7
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl K7_unused__port__is_set__impl
 #define set__impl K7_unused__port__set__impl
+#define is_set__impl K7_unused__port__is_set__impl
 
 K7_unused__port_t const K7_unused__port = {.set = &set__impl
                                            ,
@@ -14160,23 +14160,23 @@ K7_unused__port_t const K7_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl K7_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl K7_unused__port__set__impl
+#define is_set__impl K7_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl K7_unused__port__is_set__impl
 #define set__impl K7_unused__port__set__impl
+#define is_set__impl K7_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -14200,14 +14200,14 @@ static AKAT_FORCE_INLINE void K7_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 K7_unused__ddr__is_set__impl() {
-#define is_set__impl K7_unused__ddr__is_set__impl
 #define set__impl K7_unused__ddr__set__impl
+#define is_set__impl K7_unused__ddr__is_set__impl
     return DDRK & (1 << 7);  //Get value of DDRK for K7
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl K7_unused__ddr__is_set__impl
 #define set__impl K7_unused__ddr__set__impl
+#define is_set__impl K7_unused__ddr__is_set__impl
 
 K7_unused__ddr_t const K7_unused__ddr = {.set = &set__impl
                                          ,
@@ -14215,23 +14215,23 @@ K7_unused__ddr_t const K7_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl K7_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl K7_unused__ddr__set__impl
+#define is_set__impl K7_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl K7_unused__ddr__is_set__impl
 #define set__impl K7_unused__ddr__set__impl
+#define is_set__impl K7_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -14255,14 +14255,14 @@ static AKAT_FORCE_INLINE void K7_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 K7_unused__pin__is_set__impl() {
-#define is_set__impl K7_unused__pin__is_set__impl
 #define set__impl K7_unused__pin__set__impl
+#define is_set__impl K7_unused__pin__is_set__impl
     return PINK & (1 << 7);  //Get value of PINK for K7
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl K7_unused__pin__is_set__impl
 #define set__impl K7_unused__pin__set__impl
+#define is_set__impl K7_unused__pin__is_set__impl
 
 K7_unused__pin_t const K7_unused__pin = {.set = &set__impl
                                          ,
@@ -14270,23 +14270,23 @@ K7_unused__pin_t const K7_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl K7_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl K7_unused__pin__set__impl
+#define is_set__impl K7_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl K7_unused__pin__is_set__impl
 #define set__impl K7_unused__pin__set__impl
+#define is_set__impl K7_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -14356,14 +14356,14 @@ static AKAT_FORCE_INLINE void K6_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 K6_unused__port__is_set__impl() {
-#define is_set__impl K6_unused__port__is_set__impl
 #define set__impl K6_unused__port__set__impl
+#define is_set__impl K6_unused__port__is_set__impl
     return PORTK & (1 << 6);  //Get value of PORTK for K6
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl K6_unused__port__is_set__impl
 #define set__impl K6_unused__port__set__impl
+#define is_set__impl K6_unused__port__is_set__impl
 
 K6_unused__port_t const K6_unused__port = {.set = &set__impl
                                            ,
@@ -14371,23 +14371,23 @@ K6_unused__port_t const K6_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl K6_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl K6_unused__port__set__impl
+#define is_set__impl K6_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl K6_unused__port__is_set__impl
 #define set__impl K6_unused__port__set__impl
+#define is_set__impl K6_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -14411,14 +14411,14 @@ static AKAT_FORCE_INLINE void K6_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 K6_unused__ddr__is_set__impl() {
-#define is_set__impl K6_unused__ddr__is_set__impl
 #define set__impl K6_unused__ddr__set__impl
+#define is_set__impl K6_unused__ddr__is_set__impl
     return DDRK & (1 << 6);  //Get value of DDRK for K6
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl K6_unused__ddr__is_set__impl
 #define set__impl K6_unused__ddr__set__impl
+#define is_set__impl K6_unused__ddr__is_set__impl
 
 K6_unused__ddr_t const K6_unused__ddr = {.set = &set__impl
                                          ,
@@ -14426,23 +14426,23 @@ K6_unused__ddr_t const K6_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl K6_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl K6_unused__ddr__set__impl
+#define is_set__impl K6_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl K6_unused__ddr__is_set__impl
 #define set__impl K6_unused__ddr__set__impl
+#define is_set__impl K6_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -14466,14 +14466,14 @@ static AKAT_FORCE_INLINE void K6_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 K6_unused__pin__is_set__impl() {
-#define is_set__impl K6_unused__pin__is_set__impl
 #define set__impl K6_unused__pin__set__impl
+#define is_set__impl K6_unused__pin__is_set__impl
     return PINK & (1 << 6);  //Get value of PINK for K6
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl K6_unused__pin__is_set__impl
 #define set__impl K6_unused__pin__set__impl
+#define is_set__impl K6_unused__pin__is_set__impl
 
 K6_unused__pin_t const K6_unused__pin = {.set = &set__impl
                                          ,
@@ -14481,23 +14481,23 @@ K6_unused__pin_t const K6_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl K6_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl K6_unused__pin__set__impl
+#define is_set__impl K6_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl K6_unused__pin__is_set__impl
 #define set__impl K6_unused__pin__set__impl
+#define is_set__impl K6_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -14567,14 +14567,14 @@ static AKAT_FORCE_INLINE void K5_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 K5_unused__port__is_set__impl() {
-#define is_set__impl K5_unused__port__is_set__impl
 #define set__impl K5_unused__port__set__impl
+#define is_set__impl K5_unused__port__is_set__impl
     return PORTK & (1 << 5);  //Get value of PORTK for K5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl K5_unused__port__is_set__impl
 #define set__impl K5_unused__port__set__impl
+#define is_set__impl K5_unused__port__is_set__impl
 
 K5_unused__port_t const K5_unused__port = {.set = &set__impl
                                            ,
@@ -14582,23 +14582,23 @@ K5_unused__port_t const K5_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl K5_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl K5_unused__port__set__impl
+#define is_set__impl K5_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl K5_unused__port__is_set__impl
 #define set__impl K5_unused__port__set__impl
+#define is_set__impl K5_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -14622,14 +14622,14 @@ static AKAT_FORCE_INLINE void K5_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 K5_unused__ddr__is_set__impl() {
-#define is_set__impl K5_unused__ddr__is_set__impl
 #define set__impl K5_unused__ddr__set__impl
+#define is_set__impl K5_unused__ddr__is_set__impl
     return DDRK & (1 << 5);  //Get value of DDRK for K5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl K5_unused__ddr__is_set__impl
 #define set__impl K5_unused__ddr__set__impl
+#define is_set__impl K5_unused__ddr__is_set__impl
 
 K5_unused__ddr_t const K5_unused__ddr = {.set = &set__impl
                                          ,
@@ -14637,23 +14637,23 @@ K5_unused__ddr_t const K5_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl K5_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl K5_unused__ddr__set__impl
+#define is_set__impl K5_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl K5_unused__ddr__is_set__impl
 #define set__impl K5_unused__ddr__set__impl
+#define is_set__impl K5_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -14677,14 +14677,14 @@ static AKAT_FORCE_INLINE void K5_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 K5_unused__pin__is_set__impl() {
-#define is_set__impl K5_unused__pin__is_set__impl
 #define set__impl K5_unused__pin__set__impl
+#define is_set__impl K5_unused__pin__is_set__impl
     return PINK & (1 << 5);  //Get value of PINK for K5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl K5_unused__pin__is_set__impl
 #define set__impl K5_unused__pin__set__impl
+#define is_set__impl K5_unused__pin__is_set__impl
 
 K5_unused__pin_t const K5_unused__pin = {.set = &set__impl
                                          ,
@@ -14692,23 +14692,23 @@ K5_unused__pin_t const K5_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl K5_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl K5_unused__pin__set__impl
+#define is_set__impl K5_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl K5_unused__pin__is_set__impl
 #define set__impl K5_unused__pin__set__impl
+#define is_set__impl K5_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -14778,14 +14778,14 @@ static AKAT_FORCE_INLINE void K4_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 K4_unused__port__is_set__impl() {
-#define is_set__impl K4_unused__port__is_set__impl
 #define set__impl K4_unused__port__set__impl
+#define is_set__impl K4_unused__port__is_set__impl
     return PORTK & (1 << 4);  //Get value of PORTK for K4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl K4_unused__port__is_set__impl
 #define set__impl K4_unused__port__set__impl
+#define is_set__impl K4_unused__port__is_set__impl
 
 K4_unused__port_t const K4_unused__port = {.set = &set__impl
                                            ,
@@ -14793,23 +14793,23 @@ K4_unused__port_t const K4_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl K4_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl K4_unused__port__set__impl
+#define is_set__impl K4_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl K4_unused__port__is_set__impl
 #define set__impl K4_unused__port__set__impl
+#define is_set__impl K4_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -14833,14 +14833,14 @@ static AKAT_FORCE_INLINE void K4_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 K4_unused__ddr__is_set__impl() {
-#define is_set__impl K4_unused__ddr__is_set__impl
 #define set__impl K4_unused__ddr__set__impl
+#define is_set__impl K4_unused__ddr__is_set__impl
     return DDRK & (1 << 4);  //Get value of DDRK for K4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl K4_unused__ddr__is_set__impl
 #define set__impl K4_unused__ddr__set__impl
+#define is_set__impl K4_unused__ddr__is_set__impl
 
 K4_unused__ddr_t const K4_unused__ddr = {.set = &set__impl
                                          ,
@@ -14848,23 +14848,23 @@ K4_unused__ddr_t const K4_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl K4_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl K4_unused__ddr__set__impl
+#define is_set__impl K4_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl K4_unused__ddr__is_set__impl
 #define set__impl K4_unused__ddr__set__impl
+#define is_set__impl K4_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -14888,14 +14888,14 @@ static AKAT_FORCE_INLINE void K4_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 K4_unused__pin__is_set__impl() {
-#define is_set__impl K4_unused__pin__is_set__impl
 #define set__impl K4_unused__pin__set__impl
+#define is_set__impl K4_unused__pin__is_set__impl
     return PINK & (1 << 4);  //Get value of PINK for K4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl K4_unused__pin__is_set__impl
 #define set__impl K4_unused__pin__set__impl
+#define is_set__impl K4_unused__pin__is_set__impl
 
 K4_unused__pin_t const K4_unused__pin = {.set = &set__impl
                                          ,
@@ -14903,23 +14903,23 @@ K4_unused__pin_t const K4_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl K4_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl K4_unused__pin__set__impl
+#define is_set__impl K4_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl K4_unused__pin__is_set__impl
 #define set__impl K4_unused__pin__set__impl
+#define is_set__impl K4_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -14989,14 +14989,14 @@ static AKAT_FORCE_INLINE void K3_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 K3_unused__port__is_set__impl() {
-#define is_set__impl K3_unused__port__is_set__impl
 #define set__impl K3_unused__port__set__impl
+#define is_set__impl K3_unused__port__is_set__impl
     return PORTK & (1 << 3);  //Get value of PORTK for K3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl K3_unused__port__is_set__impl
 #define set__impl K3_unused__port__set__impl
+#define is_set__impl K3_unused__port__is_set__impl
 
 K3_unused__port_t const K3_unused__port = {.set = &set__impl
                                            ,
@@ -15004,23 +15004,23 @@ K3_unused__port_t const K3_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl K3_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl K3_unused__port__set__impl
+#define is_set__impl K3_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl K3_unused__port__is_set__impl
 #define set__impl K3_unused__port__set__impl
+#define is_set__impl K3_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -15044,14 +15044,14 @@ static AKAT_FORCE_INLINE void K3_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 K3_unused__ddr__is_set__impl() {
-#define is_set__impl K3_unused__ddr__is_set__impl
 #define set__impl K3_unused__ddr__set__impl
+#define is_set__impl K3_unused__ddr__is_set__impl
     return DDRK & (1 << 3);  //Get value of DDRK for K3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl K3_unused__ddr__is_set__impl
 #define set__impl K3_unused__ddr__set__impl
+#define is_set__impl K3_unused__ddr__is_set__impl
 
 K3_unused__ddr_t const K3_unused__ddr = {.set = &set__impl
                                          ,
@@ -15059,23 +15059,23 @@ K3_unused__ddr_t const K3_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl K3_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl K3_unused__ddr__set__impl
+#define is_set__impl K3_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl K3_unused__ddr__is_set__impl
 #define set__impl K3_unused__ddr__set__impl
+#define is_set__impl K3_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -15099,14 +15099,14 @@ static AKAT_FORCE_INLINE void K3_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 K3_unused__pin__is_set__impl() {
-#define is_set__impl K3_unused__pin__is_set__impl
 #define set__impl K3_unused__pin__set__impl
+#define is_set__impl K3_unused__pin__is_set__impl
     return PINK & (1 << 3);  //Get value of PINK for K3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl K3_unused__pin__is_set__impl
 #define set__impl K3_unused__pin__set__impl
+#define is_set__impl K3_unused__pin__is_set__impl
 
 K3_unused__pin_t const K3_unused__pin = {.set = &set__impl
                                          ,
@@ -15114,23 +15114,23 @@ K3_unused__pin_t const K3_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl K3_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl K3_unused__pin__set__impl
+#define is_set__impl K3_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl K3_unused__pin__is_set__impl
 #define set__impl K3_unused__pin__set__impl
+#define is_set__impl K3_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -15200,14 +15200,14 @@ static AKAT_FORCE_INLINE void K2_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 K2_unused__port__is_set__impl() {
-#define is_set__impl K2_unused__port__is_set__impl
 #define set__impl K2_unused__port__set__impl
+#define is_set__impl K2_unused__port__is_set__impl
     return PORTK & (1 << 2);  //Get value of PORTK for K2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl K2_unused__port__is_set__impl
 #define set__impl K2_unused__port__set__impl
+#define is_set__impl K2_unused__port__is_set__impl
 
 K2_unused__port_t const K2_unused__port = {.set = &set__impl
                                            ,
@@ -15215,23 +15215,23 @@ K2_unused__port_t const K2_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl K2_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl K2_unused__port__set__impl
+#define is_set__impl K2_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl K2_unused__port__is_set__impl
 #define set__impl K2_unused__port__set__impl
+#define is_set__impl K2_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -15255,14 +15255,14 @@ static AKAT_FORCE_INLINE void K2_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 K2_unused__ddr__is_set__impl() {
-#define is_set__impl K2_unused__ddr__is_set__impl
 #define set__impl K2_unused__ddr__set__impl
+#define is_set__impl K2_unused__ddr__is_set__impl
     return DDRK & (1 << 2);  //Get value of DDRK for K2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl K2_unused__ddr__is_set__impl
 #define set__impl K2_unused__ddr__set__impl
+#define is_set__impl K2_unused__ddr__is_set__impl
 
 K2_unused__ddr_t const K2_unused__ddr = {.set = &set__impl
                                          ,
@@ -15270,23 +15270,23 @@ K2_unused__ddr_t const K2_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl K2_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl K2_unused__ddr__set__impl
+#define is_set__impl K2_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl K2_unused__ddr__is_set__impl
 #define set__impl K2_unused__ddr__set__impl
+#define is_set__impl K2_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -15310,14 +15310,14 @@ static AKAT_FORCE_INLINE void K2_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 K2_unused__pin__is_set__impl() {
-#define is_set__impl K2_unused__pin__is_set__impl
 #define set__impl K2_unused__pin__set__impl
+#define is_set__impl K2_unused__pin__is_set__impl
     return PINK & (1 << 2);  //Get value of PINK for K2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl K2_unused__pin__is_set__impl
 #define set__impl K2_unused__pin__set__impl
+#define is_set__impl K2_unused__pin__is_set__impl
 
 K2_unused__pin_t const K2_unused__pin = {.set = &set__impl
                                          ,
@@ -15325,23 +15325,23 @@ K2_unused__pin_t const K2_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl K2_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl K2_unused__pin__set__impl
+#define is_set__impl K2_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl K2_unused__pin__is_set__impl
 #define set__impl K2_unused__pin__set__impl
+#define is_set__impl K2_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -15411,14 +15411,14 @@ static AKAT_FORCE_INLINE void K1_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 K1_unused__port__is_set__impl() {
-#define is_set__impl K1_unused__port__is_set__impl
 #define set__impl K1_unused__port__set__impl
+#define is_set__impl K1_unused__port__is_set__impl
     return PORTK & (1 << 1);  //Get value of PORTK for K1
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl K1_unused__port__is_set__impl
 #define set__impl K1_unused__port__set__impl
+#define is_set__impl K1_unused__port__is_set__impl
 
 K1_unused__port_t const K1_unused__port = {.set = &set__impl
                                            ,
@@ -15426,23 +15426,23 @@ K1_unused__port_t const K1_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl K1_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl K1_unused__port__set__impl
+#define is_set__impl K1_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl K1_unused__port__is_set__impl
 #define set__impl K1_unused__port__set__impl
+#define is_set__impl K1_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -15466,14 +15466,14 @@ static AKAT_FORCE_INLINE void K1_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 K1_unused__ddr__is_set__impl() {
-#define is_set__impl K1_unused__ddr__is_set__impl
 #define set__impl K1_unused__ddr__set__impl
+#define is_set__impl K1_unused__ddr__is_set__impl
     return DDRK & (1 << 1);  //Get value of DDRK for K1
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl K1_unused__ddr__is_set__impl
 #define set__impl K1_unused__ddr__set__impl
+#define is_set__impl K1_unused__ddr__is_set__impl
 
 K1_unused__ddr_t const K1_unused__ddr = {.set = &set__impl
                                          ,
@@ -15481,23 +15481,23 @@ K1_unused__ddr_t const K1_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl K1_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl K1_unused__ddr__set__impl
+#define is_set__impl K1_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl K1_unused__ddr__is_set__impl
 #define set__impl K1_unused__ddr__set__impl
+#define is_set__impl K1_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -15521,14 +15521,14 @@ static AKAT_FORCE_INLINE void K1_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 K1_unused__pin__is_set__impl() {
-#define is_set__impl K1_unused__pin__is_set__impl
 #define set__impl K1_unused__pin__set__impl
+#define is_set__impl K1_unused__pin__is_set__impl
     return PINK & (1 << 1);  //Get value of PINK for K1
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl K1_unused__pin__is_set__impl
 #define set__impl K1_unused__pin__set__impl
+#define is_set__impl K1_unused__pin__is_set__impl
 
 K1_unused__pin_t const K1_unused__pin = {.set = &set__impl
                                          ,
@@ -15536,23 +15536,23 @@ K1_unused__pin_t const K1_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl K1_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl K1_unused__pin__set__impl
+#define is_set__impl K1_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl K1_unused__pin__is_set__impl
 #define set__impl K1_unused__pin__set__impl
+#define is_set__impl K1_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -15622,14 +15622,14 @@ static AKAT_FORCE_INLINE void K0_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 K0_unused__port__is_set__impl() {
-#define is_set__impl K0_unused__port__is_set__impl
 #define set__impl K0_unused__port__set__impl
+#define is_set__impl K0_unused__port__is_set__impl
     return PORTK & (1 << 0);  //Get value of PORTK for K0
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl K0_unused__port__is_set__impl
 #define set__impl K0_unused__port__set__impl
+#define is_set__impl K0_unused__port__is_set__impl
 
 K0_unused__port_t const K0_unused__port = {.set = &set__impl
                                            ,
@@ -15637,23 +15637,23 @@ K0_unused__port_t const K0_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl K0_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl K0_unused__port__set__impl
+#define is_set__impl K0_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl K0_unused__port__is_set__impl
 #define set__impl K0_unused__port__set__impl
+#define is_set__impl K0_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -15677,14 +15677,14 @@ static AKAT_FORCE_INLINE void K0_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 K0_unused__ddr__is_set__impl() {
-#define is_set__impl K0_unused__ddr__is_set__impl
 #define set__impl K0_unused__ddr__set__impl
+#define is_set__impl K0_unused__ddr__is_set__impl
     return DDRK & (1 << 0);  //Get value of DDRK for K0
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl K0_unused__ddr__is_set__impl
 #define set__impl K0_unused__ddr__set__impl
+#define is_set__impl K0_unused__ddr__is_set__impl
 
 K0_unused__ddr_t const K0_unused__ddr = {.set = &set__impl
                                          ,
@@ -15692,23 +15692,23 @@ K0_unused__ddr_t const K0_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl K0_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl K0_unused__ddr__set__impl
+#define is_set__impl K0_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl K0_unused__ddr__is_set__impl
 #define set__impl K0_unused__ddr__set__impl
+#define is_set__impl K0_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -15732,14 +15732,14 @@ static AKAT_FORCE_INLINE void K0_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 K0_unused__pin__is_set__impl() {
-#define is_set__impl K0_unused__pin__is_set__impl
 #define set__impl K0_unused__pin__set__impl
+#define is_set__impl K0_unused__pin__is_set__impl
     return PINK & (1 << 0);  //Get value of PINK for K0
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl K0_unused__pin__is_set__impl
 #define set__impl K0_unused__pin__set__impl
+#define is_set__impl K0_unused__pin__is_set__impl
 
 K0_unused__pin_t const K0_unused__pin = {.set = &set__impl
                                          ,
@@ -15747,23 +15747,23 @@ K0_unused__pin_t const K0_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl K0_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl K0_unused__pin__set__impl
+#define is_set__impl K0_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl K0_unused__pin__is_set__impl
 #define set__impl K0_unused__pin__set__impl
+#define is_set__impl K0_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -15833,14 +15833,14 @@ static AKAT_FORCE_INLINE void F7_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 F7_unused__port__is_set__impl() {
-#define is_set__impl F7_unused__port__is_set__impl
 #define set__impl F7_unused__port__set__impl
+#define is_set__impl F7_unused__port__is_set__impl
     return PORTF & (1 << 7);  //Get value of PORTF for F7
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl F7_unused__port__is_set__impl
 #define set__impl F7_unused__port__set__impl
+#define is_set__impl F7_unused__port__is_set__impl
 
 F7_unused__port_t const F7_unused__port = {.set = &set__impl
                                            ,
@@ -15848,23 +15848,23 @@ F7_unused__port_t const F7_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl F7_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl F7_unused__port__set__impl
+#define is_set__impl F7_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl F7_unused__port__is_set__impl
 #define set__impl F7_unused__port__set__impl
+#define is_set__impl F7_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -15888,14 +15888,14 @@ static AKAT_FORCE_INLINE void F7_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 F7_unused__ddr__is_set__impl() {
-#define is_set__impl F7_unused__ddr__is_set__impl
 #define set__impl F7_unused__ddr__set__impl
+#define is_set__impl F7_unused__ddr__is_set__impl
     return DDRF & (1 << 7);  //Get value of DDRF for F7
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl F7_unused__ddr__is_set__impl
 #define set__impl F7_unused__ddr__set__impl
+#define is_set__impl F7_unused__ddr__is_set__impl
 
 F7_unused__ddr_t const F7_unused__ddr = {.set = &set__impl
                                          ,
@@ -15903,23 +15903,23 @@ F7_unused__ddr_t const F7_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl F7_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl F7_unused__ddr__set__impl
+#define is_set__impl F7_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl F7_unused__ddr__is_set__impl
 #define set__impl F7_unused__ddr__set__impl
+#define is_set__impl F7_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -15943,14 +15943,14 @@ static AKAT_FORCE_INLINE void F7_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 F7_unused__pin__is_set__impl() {
-#define is_set__impl F7_unused__pin__is_set__impl
 #define set__impl F7_unused__pin__set__impl
+#define is_set__impl F7_unused__pin__is_set__impl
     return PINF & (1 << 7);  //Get value of PINF for F7
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl F7_unused__pin__is_set__impl
 #define set__impl F7_unused__pin__set__impl
+#define is_set__impl F7_unused__pin__is_set__impl
 
 F7_unused__pin_t const F7_unused__pin = {.set = &set__impl
                                          ,
@@ -15958,23 +15958,23 @@ F7_unused__pin_t const F7_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl F7_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl F7_unused__pin__set__impl
+#define is_set__impl F7_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl F7_unused__pin__is_set__impl
 #define set__impl F7_unused__pin__set__impl
+#define is_set__impl F7_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -16044,14 +16044,14 @@ static AKAT_FORCE_INLINE void F6_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 F6_unused__port__is_set__impl() {
-#define is_set__impl F6_unused__port__is_set__impl
 #define set__impl F6_unused__port__set__impl
+#define is_set__impl F6_unused__port__is_set__impl
     return PORTF & (1 << 6);  //Get value of PORTF for F6
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl F6_unused__port__is_set__impl
 #define set__impl F6_unused__port__set__impl
+#define is_set__impl F6_unused__port__is_set__impl
 
 F6_unused__port_t const F6_unused__port = {.set = &set__impl
                                            ,
@@ -16059,23 +16059,23 @@ F6_unused__port_t const F6_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl F6_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl F6_unused__port__set__impl
+#define is_set__impl F6_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl F6_unused__port__is_set__impl
 #define set__impl F6_unused__port__set__impl
+#define is_set__impl F6_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -16099,14 +16099,14 @@ static AKAT_FORCE_INLINE void F6_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 F6_unused__ddr__is_set__impl() {
-#define is_set__impl F6_unused__ddr__is_set__impl
 #define set__impl F6_unused__ddr__set__impl
+#define is_set__impl F6_unused__ddr__is_set__impl
     return DDRF & (1 << 6);  //Get value of DDRF for F6
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl F6_unused__ddr__is_set__impl
 #define set__impl F6_unused__ddr__set__impl
+#define is_set__impl F6_unused__ddr__is_set__impl
 
 F6_unused__ddr_t const F6_unused__ddr = {.set = &set__impl
                                          ,
@@ -16114,23 +16114,23 @@ F6_unused__ddr_t const F6_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl F6_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl F6_unused__ddr__set__impl
+#define is_set__impl F6_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl F6_unused__ddr__is_set__impl
 #define set__impl F6_unused__ddr__set__impl
+#define is_set__impl F6_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -16154,14 +16154,14 @@ static AKAT_FORCE_INLINE void F6_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 F6_unused__pin__is_set__impl() {
-#define is_set__impl F6_unused__pin__is_set__impl
 #define set__impl F6_unused__pin__set__impl
+#define is_set__impl F6_unused__pin__is_set__impl
     return PINF & (1 << 6);  //Get value of PINF for F6
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl F6_unused__pin__is_set__impl
 #define set__impl F6_unused__pin__set__impl
+#define is_set__impl F6_unused__pin__is_set__impl
 
 F6_unused__pin_t const F6_unused__pin = {.set = &set__impl
                                          ,
@@ -16169,23 +16169,23 @@ F6_unused__pin_t const F6_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl F6_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl F6_unused__pin__set__impl
+#define is_set__impl F6_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl F6_unused__pin__is_set__impl
 #define set__impl F6_unused__pin__set__impl
+#define is_set__impl F6_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -16255,14 +16255,14 @@ static AKAT_FORCE_INLINE void F5_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 F5_unused__port__is_set__impl() {
-#define is_set__impl F5_unused__port__is_set__impl
 #define set__impl F5_unused__port__set__impl
+#define is_set__impl F5_unused__port__is_set__impl
     return PORTF & (1 << 5);  //Get value of PORTF for F5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl F5_unused__port__is_set__impl
 #define set__impl F5_unused__port__set__impl
+#define is_set__impl F5_unused__port__is_set__impl
 
 F5_unused__port_t const F5_unused__port = {.set = &set__impl
                                            ,
@@ -16270,23 +16270,23 @@ F5_unused__port_t const F5_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl F5_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl F5_unused__port__set__impl
+#define is_set__impl F5_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl F5_unused__port__is_set__impl
 #define set__impl F5_unused__port__set__impl
+#define is_set__impl F5_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -16310,14 +16310,14 @@ static AKAT_FORCE_INLINE void F5_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 F5_unused__ddr__is_set__impl() {
-#define is_set__impl F5_unused__ddr__is_set__impl
 #define set__impl F5_unused__ddr__set__impl
+#define is_set__impl F5_unused__ddr__is_set__impl
     return DDRF & (1 << 5);  //Get value of DDRF for F5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl F5_unused__ddr__is_set__impl
 #define set__impl F5_unused__ddr__set__impl
+#define is_set__impl F5_unused__ddr__is_set__impl
 
 F5_unused__ddr_t const F5_unused__ddr = {.set = &set__impl
                                          ,
@@ -16325,23 +16325,23 @@ F5_unused__ddr_t const F5_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl F5_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl F5_unused__ddr__set__impl
+#define is_set__impl F5_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl F5_unused__ddr__is_set__impl
 #define set__impl F5_unused__ddr__set__impl
+#define is_set__impl F5_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -16365,14 +16365,14 @@ static AKAT_FORCE_INLINE void F5_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 F5_unused__pin__is_set__impl() {
-#define is_set__impl F5_unused__pin__is_set__impl
 #define set__impl F5_unused__pin__set__impl
+#define is_set__impl F5_unused__pin__is_set__impl
     return PINF & (1 << 5);  //Get value of PINF for F5
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl F5_unused__pin__is_set__impl
 #define set__impl F5_unused__pin__set__impl
+#define is_set__impl F5_unused__pin__is_set__impl
 
 F5_unused__pin_t const F5_unused__pin = {.set = &set__impl
                                          ,
@@ -16380,23 +16380,23 @@ F5_unused__pin_t const F5_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl F5_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl F5_unused__pin__set__impl
+#define is_set__impl F5_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl F5_unused__pin__is_set__impl
 #define set__impl F5_unused__pin__set__impl
+#define is_set__impl F5_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -16466,14 +16466,14 @@ static AKAT_FORCE_INLINE void F4_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 F4_unused__port__is_set__impl() {
-#define is_set__impl F4_unused__port__is_set__impl
 #define set__impl F4_unused__port__set__impl
+#define is_set__impl F4_unused__port__is_set__impl
     return PORTF & (1 << 4);  //Get value of PORTF for F4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl F4_unused__port__is_set__impl
 #define set__impl F4_unused__port__set__impl
+#define is_set__impl F4_unused__port__is_set__impl
 
 F4_unused__port_t const F4_unused__port = {.set = &set__impl
                                            ,
@@ -16481,23 +16481,23 @@ F4_unused__port_t const F4_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl F4_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl F4_unused__port__set__impl
+#define is_set__impl F4_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl F4_unused__port__is_set__impl
 #define set__impl F4_unused__port__set__impl
+#define is_set__impl F4_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -16521,14 +16521,14 @@ static AKAT_FORCE_INLINE void F4_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 F4_unused__ddr__is_set__impl() {
-#define is_set__impl F4_unused__ddr__is_set__impl
 #define set__impl F4_unused__ddr__set__impl
+#define is_set__impl F4_unused__ddr__is_set__impl
     return DDRF & (1 << 4);  //Get value of DDRF for F4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl F4_unused__ddr__is_set__impl
 #define set__impl F4_unused__ddr__set__impl
+#define is_set__impl F4_unused__ddr__is_set__impl
 
 F4_unused__ddr_t const F4_unused__ddr = {.set = &set__impl
                                          ,
@@ -16536,23 +16536,23 @@ F4_unused__ddr_t const F4_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl F4_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl F4_unused__ddr__set__impl
+#define is_set__impl F4_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl F4_unused__ddr__is_set__impl
 #define set__impl F4_unused__ddr__set__impl
+#define is_set__impl F4_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -16576,14 +16576,14 @@ static AKAT_FORCE_INLINE void F4_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 F4_unused__pin__is_set__impl() {
-#define is_set__impl F4_unused__pin__is_set__impl
 #define set__impl F4_unused__pin__set__impl
+#define is_set__impl F4_unused__pin__is_set__impl
     return PINF & (1 << 4);  //Get value of PINF for F4
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl F4_unused__pin__is_set__impl
 #define set__impl F4_unused__pin__set__impl
+#define is_set__impl F4_unused__pin__is_set__impl
 
 F4_unused__pin_t const F4_unused__pin = {.set = &set__impl
                                          ,
@@ -16591,23 +16591,23 @@ F4_unused__pin_t const F4_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl F4_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl F4_unused__pin__set__impl
+#define is_set__impl F4_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl F4_unused__pin__is_set__impl
 #define set__impl F4_unused__pin__set__impl
+#define is_set__impl F4_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -16677,14 +16677,14 @@ static AKAT_FORCE_INLINE void F3_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 F3_unused__port__is_set__impl() {
-#define is_set__impl F3_unused__port__is_set__impl
 #define set__impl F3_unused__port__set__impl
+#define is_set__impl F3_unused__port__is_set__impl
     return PORTF & (1 << 3);  //Get value of PORTF for F3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl F3_unused__port__is_set__impl
 #define set__impl F3_unused__port__set__impl
+#define is_set__impl F3_unused__port__is_set__impl
 
 F3_unused__port_t const F3_unused__port = {.set = &set__impl
                                            ,
@@ -16692,23 +16692,23 @@ F3_unused__port_t const F3_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl F3_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl F3_unused__port__set__impl
+#define is_set__impl F3_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl F3_unused__port__is_set__impl
 #define set__impl F3_unused__port__set__impl
+#define is_set__impl F3_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -16732,14 +16732,14 @@ static AKAT_FORCE_INLINE void F3_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 F3_unused__ddr__is_set__impl() {
-#define is_set__impl F3_unused__ddr__is_set__impl
 #define set__impl F3_unused__ddr__set__impl
+#define is_set__impl F3_unused__ddr__is_set__impl
     return DDRF & (1 << 3);  //Get value of DDRF for F3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl F3_unused__ddr__is_set__impl
 #define set__impl F3_unused__ddr__set__impl
+#define is_set__impl F3_unused__ddr__is_set__impl
 
 F3_unused__ddr_t const F3_unused__ddr = {.set = &set__impl
                                          ,
@@ -16747,23 +16747,23 @@ F3_unused__ddr_t const F3_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl F3_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl F3_unused__ddr__set__impl
+#define is_set__impl F3_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl F3_unused__ddr__is_set__impl
 #define set__impl F3_unused__ddr__set__impl
+#define is_set__impl F3_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -16787,14 +16787,14 @@ static AKAT_FORCE_INLINE void F3_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 F3_unused__pin__is_set__impl() {
-#define is_set__impl F3_unused__pin__is_set__impl
 #define set__impl F3_unused__pin__set__impl
+#define is_set__impl F3_unused__pin__is_set__impl
     return PINF & (1 << 3);  //Get value of PINF for F3
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl F3_unused__pin__is_set__impl
 #define set__impl F3_unused__pin__set__impl
+#define is_set__impl F3_unused__pin__is_set__impl
 
 F3_unused__pin_t const F3_unused__pin = {.set = &set__impl
                                          ,
@@ -16802,23 +16802,23 @@ F3_unused__pin_t const F3_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl F3_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl F3_unused__pin__set__impl
+#define is_set__impl F3_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl F3_unused__pin__is_set__impl
 #define set__impl F3_unused__pin__set__impl
+#define is_set__impl F3_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -16888,14 +16888,14 @@ static AKAT_FORCE_INLINE void F2_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 F2_unused__port__is_set__impl() {
-#define is_set__impl F2_unused__port__is_set__impl
 #define set__impl F2_unused__port__set__impl
+#define is_set__impl F2_unused__port__is_set__impl
     return PORTF & (1 << 2);  //Get value of PORTF for F2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl F2_unused__port__is_set__impl
 #define set__impl F2_unused__port__set__impl
+#define is_set__impl F2_unused__port__is_set__impl
 
 F2_unused__port_t const F2_unused__port = {.set = &set__impl
                                            ,
@@ -16903,23 +16903,23 @@ F2_unused__port_t const F2_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl F2_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl F2_unused__port__set__impl
+#define is_set__impl F2_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl F2_unused__port__is_set__impl
 #define set__impl F2_unused__port__set__impl
+#define is_set__impl F2_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -16943,14 +16943,14 @@ static AKAT_FORCE_INLINE void F2_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 F2_unused__ddr__is_set__impl() {
-#define is_set__impl F2_unused__ddr__is_set__impl
 #define set__impl F2_unused__ddr__set__impl
+#define is_set__impl F2_unused__ddr__is_set__impl
     return DDRF & (1 << 2);  //Get value of DDRF for F2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl F2_unused__ddr__is_set__impl
 #define set__impl F2_unused__ddr__set__impl
+#define is_set__impl F2_unused__ddr__is_set__impl
 
 F2_unused__ddr_t const F2_unused__ddr = {.set = &set__impl
                                          ,
@@ -16958,23 +16958,23 @@ F2_unused__ddr_t const F2_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl F2_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl F2_unused__ddr__set__impl
+#define is_set__impl F2_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl F2_unused__ddr__is_set__impl
 #define set__impl F2_unused__ddr__set__impl
+#define is_set__impl F2_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -16998,14 +16998,14 @@ static AKAT_FORCE_INLINE void F2_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 F2_unused__pin__is_set__impl() {
-#define is_set__impl F2_unused__pin__is_set__impl
 #define set__impl F2_unused__pin__set__impl
+#define is_set__impl F2_unused__pin__is_set__impl
     return PINF & (1 << 2);  //Get value of PINF for F2
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl F2_unused__pin__is_set__impl
 #define set__impl F2_unused__pin__set__impl
+#define is_set__impl F2_unused__pin__is_set__impl
 
 F2_unused__pin_t const F2_unused__pin = {.set = &set__impl
                                          ,
@@ -17013,23 +17013,23 @@ F2_unused__pin_t const F2_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl F2_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl F2_unused__pin__set__impl
+#define is_set__impl F2_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl F2_unused__pin__is_set__impl
 #define set__impl F2_unused__pin__set__impl
+#define is_set__impl F2_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -17099,14 +17099,14 @@ static AKAT_FORCE_INLINE void F1_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 F1_unused__port__is_set__impl() {
-#define is_set__impl F1_unused__port__is_set__impl
 #define set__impl F1_unused__port__set__impl
+#define is_set__impl F1_unused__port__is_set__impl
     return PORTF & (1 << 1);  //Get value of PORTF for F1
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl F1_unused__port__is_set__impl
 #define set__impl F1_unused__port__set__impl
+#define is_set__impl F1_unused__port__is_set__impl
 
 F1_unused__port_t const F1_unused__port = {.set = &set__impl
                                            ,
@@ -17114,23 +17114,23 @@ F1_unused__port_t const F1_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl F1_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl F1_unused__port__set__impl
+#define is_set__impl F1_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl F1_unused__port__is_set__impl
 #define set__impl F1_unused__port__set__impl
+#define is_set__impl F1_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -17154,14 +17154,14 @@ static AKAT_FORCE_INLINE void F1_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 F1_unused__ddr__is_set__impl() {
-#define is_set__impl F1_unused__ddr__is_set__impl
 #define set__impl F1_unused__ddr__set__impl
+#define is_set__impl F1_unused__ddr__is_set__impl
     return DDRF & (1 << 1);  //Get value of DDRF for F1
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl F1_unused__ddr__is_set__impl
 #define set__impl F1_unused__ddr__set__impl
+#define is_set__impl F1_unused__ddr__is_set__impl
 
 F1_unused__ddr_t const F1_unused__ddr = {.set = &set__impl
                                          ,
@@ -17169,23 +17169,23 @@ F1_unused__ddr_t const F1_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl F1_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl F1_unused__ddr__set__impl
+#define is_set__impl F1_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl F1_unused__ddr__is_set__impl
 #define set__impl F1_unused__ddr__set__impl
+#define is_set__impl F1_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -17209,14 +17209,14 @@ static AKAT_FORCE_INLINE void F1_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 F1_unused__pin__is_set__impl() {
-#define is_set__impl F1_unused__pin__is_set__impl
 #define set__impl F1_unused__pin__set__impl
+#define is_set__impl F1_unused__pin__is_set__impl
     return PINF & (1 << 1);  //Get value of PINF for F1
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl F1_unused__pin__is_set__impl
 #define set__impl F1_unused__pin__set__impl
+#define is_set__impl F1_unused__pin__is_set__impl
 
 F1_unused__pin_t const F1_unused__pin = {.set = &set__impl
                                          ,
@@ -17224,23 +17224,23 @@ F1_unused__pin_t const F1_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl F1_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl F1_unused__pin__set__impl
+#define is_set__impl F1_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl F1_unused__pin__is_set__impl
 #define set__impl F1_unused__pin__set__impl
+#define is_set__impl F1_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -17310,14 +17310,14 @@ static AKAT_FORCE_INLINE void F0_unused__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 F0_unused__port__is_set__impl() {
-#define is_set__impl F0_unused__port__is_set__impl
 #define set__impl F0_unused__port__set__impl
+#define is_set__impl F0_unused__port__is_set__impl
     return PORTF & (1 << 0);  //Get value of PORTF for F0
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl F0_unused__port__is_set__impl
 #define set__impl F0_unused__port__set__impl
+#define is_set__impl F0_unused__port__is_set__impl
 
 F0_unused__port_t const F0_unused__port = {.set = &set__impl
                                            ,
@@ -17325,23 +17325,23 @@ F0_unused__port_t const F0_unused__port = {.set = &set__impl
                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl F0_unused__port__is_set__impl
+#undef is_set__impl
 #define set__impl F0_unused__port__set__impl
+#define is_set__impl F0_unused__port__is_set__impl
 
 
 ;
 
-#define is_set__impl F0_unused__port__is_set__impl
 #define set__impl F0_unused__port__set__impl
+#define is_set__impl F0_unused__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -17365,14 +17365,14 @@ static AKAT_FORCE_INLINE void F0_unused__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 F0_unused__ddr__is_set__impl() {
-#define is_set__impl F0_unused__ddr__is_set__impl
 #define set__impl F0_unused__ddr__set__impl
+#define is_set__impl F0_unused__ddr__is_set__impl
     return DDRF & (1 << 0);  //Get value of DDRF for F0
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl F0_unused__ddr__is_set__impl
 #define set__impl F0_unused__ddr__set__impl
+#define is_set__impl F0_unused__ddr__is_set__impl
 
 F0_unused__ddr_t const F0_unused__ddr = {.set = &set__impl
                                          ,
@@ -17380,23 +17380,23 @@ F0_unused__ddr_t const F0_unused__ddr = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl F0_unused__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl F0_unused__ddr__set__impl
+#define is_set__impl F0_unused__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl F0_unused__ddr__is_set__impl
 #define set__impl F0_unused__ddr__set__impl
+#define is_set__impl F0_unused__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -17420,14 +17420,14 @@ static AKAT_FORCE_INLINE void F0_unused__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 F0_unused__pin__is_set__impl() {
-#define is_set__impl F0_unused__pin__is_set__impl
 #define set__impl F0_unused__pin__set__impl
+#define is_set__impl F0_unused__pin__is_set__impl
     return PINF & (1 << 0);  //Get value of PINF for F0
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl F0_unused__pin__is_set__impl
 #define set__impl F0_unused__pin__set__impl
+#define is_set__impl F0_unused__pin__is_set__impl
 
 F0_unused__pin_t const F0_unused__pin = {.set = &set__impl
                                          ,
@@ -17435,23 +17435,23 @@ F0_unused__pin_t const F0_unused__pin = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl F0_unused__pin__is_set__impl
+#undef is_set__impl
 #define set__impl F0_unused__pin__set__impl
+#define is_set__impl F0_unused__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl F0_unused__pin__is_set__impl
 #define set__impl F0_unused__pin__set__impl
+#define is_set__impl F0_unused__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -17541,14 +17541,14 @@ static AKAT_FORCE_INLINE void blue_led__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 blue_led__port__is_set__impl() {
-#define is_set__impl blue_led__port__is_set__impl
 #define set__impl blue_led__port__set__impl
+#define is_set__impl blue_led__port__is_set__impl
     return PORTB & (1 << 7);  //Get value of PORTB for B7
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl blue_led__port__is_set__impl
 #define set__impl blue_led__port__set__impl
+#define is_set__impl blue_led__port__is_set__impl
 
 blue_led__port_t const blue_led__port = {.set = &set__impl
                                          ,
@@ -17556,23 +17556,23 @@ blue_led__port_t const blue_led__port = {.set = &set__impl
                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl blue_led__port__is_set__impl
+#undef is_set__impl
 #define set__impl blue_led__port__set__impl
+#define is_set__impl blue_led__port__is_set__impl
 
 
 ;
 
-#define is_set__impl blue_led__port__is_set__impl
 #define set__impl blue_led__port__set__impl
+#define is_set__impl blue_led__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -17596,14 +17596,14 @@ static AKAT_FORCE_INLINE void blue_led__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 blue_led__ddr__is_set__impl() {
-#define is_set__impl blue_led__ddr__is_set__impl
 #define set__impl blue_led__ddr__set__impl
+#define is_set__impl blue_led__ddr__is_set__impl
     return DDRB & (1 << 7);  //Get value of DDRB for B7
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl blue_led__ddr__is_set__impl
 #define set__impl blue_led__ddr__set__impl
+#define is_set__impl blue_led__ddr__is_set__impl
 
 blue_led__ddr_t const blue_led__ddr = {.set = &set__impl
                                        ,
@@ -17611,23 +17611,23 @@ blue_led__ddr_t const blue_led__ddr = {.set = &set__impl
                                       };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl blue_led__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl blue_led__ddr__set__impl
+#define is_set__impl blue_led__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl blue_led__ddr__is_set__impl
 #define set__impl blue_led__ddr__set__impl
+#define is_set__impl blue_led__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -17800,14 +17800,14 @@ static AKAT_FORCE_INLINE void ds18b20_aqua__pin__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 ds18b20_aqua__pin__port__is_set__impl() {
-#define is_set__impl ds18b20_aqua__pin__port__is_set__impl
 #define set__impl ds18b20_aqua__pin__port__set__impl
+#define is_set__impl ds18b20_aqua__pin__port__is_set__impl
     return PORTA & (1 << 0);  //Get value of PORTA for A0
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl ds18b20_aqua__pin__port__is_set__impl
 #define set__impl ds18b20_aqua__pin__port__set__impl
+#define is_set__impl ds18b20_aqua__pin__port__is_set__impl
 
 ds18b20_aqua__pin__port_t const ds18b20_aqua__pin__port = {.set = &set__impl
                                                            ,
@@ -17815,23 +17815,23 @@ ds18b20_aqua__pin__port_t const ds18b20_aqua__pin__port = {.set = &set__impl
                                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl ds18b20_aqua__pin__port__is_set__impl
+#undef is_set__impl
 #define set__impl ds18b20_aqua__pin__port__set__impl
+#define is_set__impl ds18b20_aqua__pin__port__is_set__impl
 
 
 ;
 
-#define is_set__impl ds18b20_aqua__pin__port__is_set__impl
 #define set__impl ds18b20_aqua__pin__port__set__impl
+#define is_set__impl ds18b20_aqua__pin__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -17855,14 +17855,14 @@ static AKAT_FORCE_INLINE void ds18b20_aqua__pin__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 ds18b20_aqua__pin__ddr__is_set__impl() {
-#define is_set__impl ds18b20_aqua__pin__ddr__is_set__impl
 #define set__impl ds18b20_aqua__pin__ddr__set__impl
+#define is_set__impl ds18b20_aqua__pin__ddr__is_set__impl
     return DDRA & (1 << 0);  //Get value of DDRA for A0
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl ds18b20_aqua__pin__ddr__is_set__impl
 #define set__impl ds18b20_aqua__pin__ddr__set__impl
+#define is_set__impl ds18b20_aqua__pin__ddr__is_set__impl
 
 ds18b20_aqua__pin__ddr_t const ds18b20_aqua__pin__ddr = {.set = &set__impl
                                                          ,
@@ -17870,23 +17870,23 @@ ds18b20_aqua__pin__ddr_t const ds18b20_aqua__pin__ddr = {.set = &set__impl
                                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl ds18b20_aqua__pin__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl ds18b20_aqua__pin__ddr__set__impl
+#define is_set__impl ds18b20_aqua__pin__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl ds18b20_aqua__pin__ddr__is_set__impl
 #define set__impl ds18b20_aqua__pin__ddr__set__impl
+#define is_set__impl ds18b20_aqua__pin__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -17910,14 +17910,14 @@ static AKAT_FORCE_INLINE void ds18b20_aqua__pin__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 ds18b20_aqua__pin__pin__is_set__impl() {
-#define is_set__impl ds18b20_aqua__pin__pin__is_set__impl
 #define set__impl ds18b20_aqua__pin__pin__set__impl
+#define is_set__impl ds18b20_aqua__pin__pin__is_set__impl
     return PINA & (1 << 0);  //Get value of PINA for A0
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl ds18b20_aqua__pin__pin__is_set__impl
 #define set__impl ds18b20_aqua__pin__pin__set__impl
+#define is_set__impl ds18b20_aqua__pin__pin__is_set__impl
 
 ds18b20_aqua__pin__pin_t const ds18b20_aqua__pin__pin = {.set = &set__impl
                                                          ,
@@ -17925,23 +17925,23 @@ ds18b20_aqua__pin__pin_t const ds18b20_aqua__pin__pin = {.set = &set__impl
                                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl ds18b20_aqua__pin__pin__is_set__impl
+#undef is_set__impl
 #define set__impl ds18b20_aqua__pin__pin__set__impl
+#define is_set__impl ds18b20_aqua__pin__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl ds18b20_aqua__pin__pin__is_set__impl
 #define set__impl ds18b20_aqua__pin__pin__set__impl
+#define is_set__impl ds18b20_aqua__pin__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -17962,36 +17962,36 @@ static AKAT_FORCE_INLINE void ds18b20_aqua__pin__set_input_mode__impl() {
 #undef set_input_mode__impl
 }
 static AKAT_FORCE_INLINE void ds18b20_aqua__pin__set_output_mode__impl() {
-#define set_input_mode__impl ds18b20_aqua__pin__set_input_mode__impl
 #define set_output_mode__impl ds18b20_aqua__pin__set_output_mode__impl
+#define set_input_mode__impl ds18b20_aqua__pin__set_input_mode__impl
     ds18b20_aqua__pin__ddr.set(1);
-#undef set_input_mode__impl
 #undef set_output_mode__impl
+#undef set_input_mode__impl
 }
 static AKAT_FORCE_INLINE u8 ds18b20_aqua__pin__is_set__impl() {
-#define is_set__impl ds18b20_aqua__pin__is_set__impl
-#define set_input_mode__impl ds18b20_aqua__pin__set_input_mode__impl
 #define set_output_mode__impl ds18b20_aqua__pin__set_output_mode__impl
+#define set_input_mode__impl ds18b20_aqua__pin__set_input_mode__impl
+#define is_set__impl ds18b20_aqua__pin__is_set__impl
     return ds18b20_aqua__pin__pin.is_set();
-#undef is_set__impl
-#undef set_input_mode__impl
 #undef set_output_mode__impl
+#undef set_input_mode__impl
+#undef is_set__impl
 }
 static AKAT_FORCE_INLINE void ds18b20_aqua__pin__set__impl(u8 state) {
-#define is_set__impl ds18b20_aqua__pin__is_set__impl
-#define set_input_mode__impl ds18b20_aqua__pin__set_input_mode__impl
 #define set_output_mode__impl ds18b20_aqua__pin__set_output_mode__impl
 #define set__impl ds18b20_aqua__pin__set__impl
+#define set_input_mode__impl ds18b20_aqua__pin__set_input_mode__impl
+#define is_set__impl ds18b20_aqua__pin__is_set__impl
     ds18b20_aqua__pin__port.set(state);
-#undef is_set__impl
-#undef set_input_mode__impl
 #undef set_output_mode__impl
 #undef set__impl
+#undef set_input_mode__impl
+#undef is_set__impl
 }
-#define is_set__impl ds18b20_aqua__pin__is_set__impl
-#define set_input_mode__impl ds18b20_aqua__pin__set_input_mode__impl
 #define set_output_mode__impl ds18b20_aqua__pin__set_output_mode__impl
 #define set__impl ds18b20_aqua__pin__set__impl
+#define set_input_mode__impl ds18b20_aqua__pin__set_input_mode__impl
+#define is_set__impl ds18b20_aqua__pin__is_set__impl
 
 ds18b20_aqua__pin_t const ds18b20_aqua__pin = {.set_input_mode = &set_input_mode__impl
                                                ,
@@ -18003,22 +18003,22 @@ ds18b20_aqua__pin_t const ds18b20_aqua__pin = {.set_input_mode = &set_input_mode
                                               };
 
 
-#undef is_set__impl
-#undef set_input_mode__impl
 #undef set_output_mode__impl
 #undef set__impl
-#define is_set__impl ds18b20_aqua__pin__is_set__impl
-#define set_input_mode__impl ds18b20_aqua__pin__set_input_mode__impl
+#undef set_input_mode__impl
+#undef is_set__impl
 #define set_output_mode__impl ds18b20_aqua__pin__set_output_mode__impl
 #define set__impl ds18b20_aqua__pin__set__impl
+#define set_input_mode__impl ds18b20_aqua__pin__set_input_mode__impl
+#define is_set__impl ds18b20_aqua__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl ds18b20_aqua__pin__is_set__impl
-#define set_input_mode__impl ds18b20_aqua__pin__set_input_mode__impl
 #define set_output_mode__impl ds18b20_aqua__pin__set_output_mode__impl
 #define set__impl ds18b20_aqua__pin__set__impl
+#define set_input_mode__impl ds18b20_aqua__pin__set_input_mode__impl
+#define is_set__impl ds18b20_aqua__pin__is_set__impl
 
 
 
@@ -18026,10 +18026,10 @@ ds18b20_aqua__pin_t const ds18b20_aqua__pin = {.set_input_mode = &set_input_mode
 
 
 
-#undef is_set__impl
-#undef set_input_mode__impl
 #undef set_output_mode__impl
 #undef set__impl
+#undef set_input_mode__impl
+#undef is_set__impl
 ;
 
 
@@ -18125,33 +18125,33 @@ static AKAT_FORCE_INLINE u8 ds18b20_aqua__get_crc_errors__impl() {
 #undef get_disconnects__impl
 }
 static AKAT_FORCE_INLINE u8 ds18b20_aqua__get_temperature_lsb__impl() {
-#define get_temperature_lsb__impl ds18b20_aqua__get_temperature_lsb__impl
 #define get_updated_deciseconds_ago__impl ds18b20_aqua__get_updated_deciseconds_ago__impl
+#define get_temperature_lsb__impl ds18b20_aqua__get_temperature_lsb__impl
 #define get_crc_errors__impl ds18b20_aqua__get_crc_errors__impl
 #define get_disconnects__impl ds18b20_aqua__get_disconnects__impl
     return ds18b20_aqua__temperature_lsb;
-#undef get_temperature_lsb__impl
 #undef get_updated_deciseconds_ago__impl
+#undef get_temperature_lsb__impl
 #undef get_crc_errors__impl
 #undef get_disconnects__impl
 }
 static AKAT_FORCE_INLINE u8 ds18b20_aqua__get_temperature_msb__impl() {
-#define get_temperature_msb__impl ds18b20_aqua__get_temperature_msb__impl
-#define get_temperature_lsb__impl ds18b20_aqua__get_temperature_lsb__impl
-#define get_updated_deciseconds_ago__impl ds18b20_aqua__get_updated_deciseconds_ago__impl
 #define get_crc_errors__impl ds18b20_aqua__get_crc_errors__impl
+#define get_updated_deciseconds_ago__impl ds18b20_aqua__get_updated_deciseconds_ago__impl
+#define get_temperature_lsb__impl ds18b20_aqua__get_temperature_lsb__impl
+#define get_temperature_msb__impl ds18b20_aqua__get_temperature_msb__impl
 #define get_disconnects__impl ds18b20_aqua__get_disconnects__impl
     return ds18b20_aqua__temperature_msb;
-#undef get_temperature_msb__impl
-#undef get_temperature_lsb__impl
-#undef get_updated_deciseconds_ago__impl
 #undef get_crc_errors__impl
+#undef get_updated_deciseconds_ago__impl
+#undef get_temperature_lsb__impl
+#undef get_temperature_msb__impl
 #undef get_disconnects__impl
 }
-#define get_temperature_msb__impl ds18b20_aqua__get_temperature_msb__impl
-#define get_temperature_lsb__impl ds18b20_aqua__get_temperature_lsb__impl
-#define get_updated_deciseconds_ago__impl ds18b20_aqua__get_updated_deciseconds_ago__impl
 #define get_crc_errors__impl ds18b20_aqua__get_crc_errors__impl
+#define get_updated_deciseconds_ago__impl ds18b20_aqua__get_updated_deciseconds_ago__impl
+#define get_temperature_lsb__impl ds18b20_aqua__get_temperature_lsb__impl
+#define get_temperature_msb__impl ds18b20_aqua__get_temperature_msb__impl
 #define get_disconnects__impl ds18b20_aqua__get_disconnects__impl
 
 ds18b20_aqua_t const ds18b20_aqua = {.get_updated_deciseconds_ago = &get_updated_deciseconds_ago__impl
@@ -18166,25 +18166,25 @@ ds18b20_aqua_t const ds18b20_aqua = {.get_updated_deciseconds_ago = &get_updated
                                     };
 
 
-#undef get_temperature_msb__impl
-#undef get_temperature_lsb__impl
-#undef get_updated_deciseconds_ago__impl
 #undef get_crc_errors__impl
+#undef get_updated_deciseconds_ago__impl
+#undef get_temperature_lsb__impl
+#undef get_temperature_msb__impl
 #undef get_disconnects__impl
 #define get_updated_deciseconds_ago__impl ds18b20_aqua__get_updated_deciseconds_ago__impl
-#define get_temperature_msb__impl ds18b20_aqua__get_temperature_msb__impl
 #define get_temperature_lsb__impl ds18b20_aqua__get_temperature_lsb__impl
-#define get_crc_errors__impl ds18b20_aqua__get_crc_errors__impl
+#define get_temperature_msb__impl ds18b20_aqua__get_temperature_msb__impl
 #define get_disconnects__impl ds18b20_aqua__get_disconnects__impl
+#define get_crc_errors__impl ds18b20_aqua__get_crc_errors__impl
 
 
 ;
 
 #define get_updated_deciseconds_ago__impl ds18b20_aqua__get_updated_deciseconds_ago__impl
-#define get_temperature_msb__impl ds18b20_aqua__get_temperature_msb__impl
 #define get_temperature_lsb__impl ds18b20_aqua__get_temperature_lsb__impl
-#define get_crc_errors__impl ds18b20_aqua__get_crc_errors__impl
+#define get_temperature_msb__impl ds18b20_aqua__get_temperature_msb__impl
 #define get_disconnects__impl ds18b20_aqua__get_disconnects__impl
+#define get_crc_errors__impl ds18b20_aqua__get_crc_errors__impl
 
 
 
@@ -18194,10 +18194,10 @@ ds18b20_aqua_t const ds18b20_aqua = {.get_updated_deciseconds_ago = &get_updated
 
 
 #undef get_updated_deciseconds_ago__impl
-#undef get_temperature_msb__impl
 #undef get_temperature_lsb__impl
-#undef get_crc_errors__impl
+#undef get_temperature_msb__impl
 #undef get_disconnects__impl
+#undef get_crc_errors__impl
 ;
 
 
@@ -18228,14 +18228,14 @@ static AKAT_FORCE_INLINE void ds18b20_case__pin__port__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 ds18b20_case__pin__port__is_set__impl() {
-#define is_set__impl ds18b20_case__pin__port__is_set__impl
 #define set__impl ds18b20_case__pin__port__set__impl
+#define is_set__impl ds18b20_case__pin__port__is_set__impl
     return PORTA & (1 << 1);  //Get value of PORTA for A1
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl ds18b20_case__pin__port__is_set__impl
 #define set__impl ds18b20_case__pin__port__set__impl
+#define is_set__impl ds18b20_case__pin__port__is_set__impl
 
 ds18b20_case__pin__port_t const ds18b20_case__pin__port = {.set = &set__impl
                                                            ,
@@ -18243,23 +18243,23 @@ ds18b20_case__pin__port_t const ds18b20_case__pin__port = {.set = &set__impl
                                                           };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl ds18b20_case__pin__port__is_set__impl
+#undef is_set__impl
 #define set__impl ds18b20_case__pin__port__set__impl
+#define is_set__impl ds18b20_case__pin__port__is_set__impl
 
 
 ;
 
-#define is_set__impl ds18b20_case__pin__port__is_set__impl
 #define set__impl ds18b20_case__pin__port__set__impl
+#define is_set__impl ds18b20_case__pin__port__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -18283,14 +18283,14 @@ static AKAT_FORCE_INLINE void ds18b20_case__pin__ddr__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 ds18b20_case__pin__ddr__is_set__impl() {
-#define is_set__impl ds18b20_case__pin__ddr__is_set__impl
 #define set__impl ds18b20_case__pin__ddr__set__impl
+#define is_set__impl ds18b20_case__pin__ddr__is_set__impl
     return DDRA & (1 << 1);  //Get value of DDRA for A1
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl ds18b20_case__pin__ddr__is_set__impl
 #define set__impl ds18b20_case__pin__ddr__set__impl
+#define is_set__impl ds18b20_case__pin__ddr__is_set__impl
 
 ds18b20_case__pin__ddr_t const ds18b20_case__pin__ddr = {.set = &set__impl
                                                          ,
@@ -18298,23 +18298,23 @@ ds18b20_case__pin__ddr_t const ds18b20_case__pin__ddr = {.set = &set__impl
                                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl ds18b20_case__pin__ddr__is_set__impl
+#undef is_set__impl
 #define set__impl ds18b20_case__pin__ddr__set__impl
+#define is_set__impl ds18b20_case__pin__ddr__is_set__impl
 
 
 ;
 
-#define is_set__impl ds18b20_case__pin__ddr__is_set__impl
 #define set__impl ds18b20_case__pin__ddr__set__impl
+#define is_set__impl ds18b20_case__pin__ddr__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -18338,14 +18338,14 @@ static AKAT_FORCE_INLINE void ds18b20_case__pin__pin__set__impl(u8 state) {
 #undef set__impl
 }
 static AKAT_FORCE_INLINE u8 ds18b20_case__pin__pin__is_set__impl() {
-#define is_set__impl ds18b20_case__pin__pin__is_set__impl
 #define set__impl ds18b20_case__pin__pin__set__impl
+#define is_set__impl ds18b20_case__pin__pin__is_set__impl
     return PINA & (1 << 1);  //Get value of PINA for A1
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 }
-#define is_set__impl ds18b20_case__pin__pin__is_set__impl
 #define set__impl ds18b20_case__pin__pin__set__impl
+#define is_set__impl ds18b20_case__pin__pin__is_set__impl
 
 ds18b20_case__pin__pin_t const ds18b20_case__pin__pin = {.set = &set__impl
                                                          ,
@@ -18353,23 +18353,23 @@ ds18b20_case__pin__pin_t const ds18b20_case__pin__pin = {.set = &set__impl
                                                         };
 
 
-#undef is_set__impl
 #undef set__impl
-#define is_set__impl ds18b20_case__pin__pin__is_set__impl
+#undef is_set__impl
 #define set__impl ds18b20_case__pin__pin__set__impl
+#define is_set__impl ds18b20_case__pin__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl ds18b20_case__pin__pin__is_set__impl
 #define set__impl ds18b20_case__pin__pin__set__impl
+#define is_set__impl ds18b20_case__pin__pin__is_set__impl
 
 
 
 
 
-#undef is_set__impl
 #undef set__impl
+#undef is_set__impl
 ;
 
 
@@ -18390,36 +18390,36 @@ static AKAT_FORCE_INLINE void ds18b20_case__pin__set_input_mode__impl() {
 #undef set_input_mode__impl
 }
 static AKAT_FORCE_INLINE void ds18b20_case__pin__set_output_mode__impl() {
-#define set_input_mode__impl ds18b20_case__pin__set_input_mode__impl
 #define set_output_mode__impl ds18b20_case__pin__set_output_mode__impl
+#define set_input_mode__impl ds18b20_case__pin__set_input_mode__impl
     ds18b20_case__pin__ddr.set(1);
-#undef set_input_mode__impl
 #undef set_output_mode__impl
+#undef set_input_mode__impl
 }
 static AKAT_FORCE_INLINE u8 ds18b20_case__pin__is_set__impl() {
-#define is_set__impl ds18b20_case__pin__is_set__impl
-#define set_input_mode__impl ds18b20_case__pin__set_input_mode__impl
 #define set_output_mode__impl ds18b20_case__pin__set_output_mode__impl
+#define set_input_mode__impl ds18b20_case__pin__set_input_mode__impl
+#define is_set__impl ds18b20_case__pin__is_set__impl
     return ds18b20_case__pin__pin.is_set();
-#undef is_set__impl
-#undef set_input_mode__impl
 #undef set_output_mode__impl
+#undef set_input_mode__impl
+#undef is_set__impl
 }
 static AKAT_FORCE_INLINE void ds18b20_case__pin__set__impl(u8 state) {
-#define is_set__impl ds18b20_case__pin__is_set__impl
-#define set_input_mode__impl ds18b20_case__pin__set_input_mode__impl
 #define set_output_mode__impl ds18b20_case__pin__set_output_mode__impl
 #define set__impl ds18b20_case__pin__set__impl
+#define set_input_mode__impl ds18b20_case__pin__set_input_mode__impl
+#define is_set__impl ds18b20_case__pin__is_set__impl
     ds18b20_case__pin__port.set(state);
-#undef is_set__impl
-#undef set_input_mode__impl
 #undef set_output_mode__impl
 #undef set__impl
+#undef set_input_mode__impl
+#undef is_set__impl
 }
-#define is_set__impl ds18b20_case__pin__is_set__impl
-#define set_input_mode__impl ds18b20_case__pin__set_input_mode__impl
 #define set_output_mode__impl ds18b20_case__pin__set_output_mode__impl
 #define set__impl ds18b20_case__pin__set__impl
+#define set_input_mode__impl ds18b20_case__pin__set_input_mode__impl
+#define is_set__impl ds18b20_case__pin__is_set__impl
 
 ds18b20_case__pin_t const ds18b20_case__pin = {.set_input_mode = &set_input_mode__impl
                                                ,
@@ -18431,22 +18431,22 @@ ds18b20_case__pin_t const ds18b20_case__pin = {.set_input_mode = &set_input_mode
                                               };
 
 
-#undef is_set__impl
-#undef set_input_mode__impl
 #undef set_output_mode__impl
 #undef set__impl
-#define is_set__impl ds18b20_case__pin__is_set__impl
-#define set_input_mode__impl ds18b20_case__pin__set_input_mode__impl
+#undef set_input_mode__impl
+#undef is_set__impl
 #define set_output_mode__impl ds18b20_case__pin__set_output_mode__impl
 #define set__impl ds18b20_case__pin__set__impl
+#define set_input_mode__impl ds18b20_case__pin__set_input_mode__impl
+#define is_set__impl ds18b20_case__pin__is_set__impl
 
 
 ;
 
-#define is_set__impl ds18b20_case__pin__is_set__impl
-#define set_input_mode__impl ds18b20_case__pin__set_input_mode__impl
 #define set_output_mode__impl ds18b20_case__pin__set_output_mode__impl
 #define set__impl ds18b20_case__pin__set__impl
+#define set_input_mode__impl ds18b20_case__pin__set_input_mode__impl
+#define is_set__impl ds18b20_case__pin__is_set__impl
 
 
 
@@ -18454,10 +18454,10 @@ ds18b20_case__pin_t const ds18b20_case__pin = {.set_input_mode = &set_input_mode
 
 
 
-#undef is_set__impl
-#undef set_input_mode__impl
 #undef set_output_mode__impl
 #undef set__impl
+#undef set_input_mode__impl
+#undef is_set__impl
 ;
 
 
@@ -18553,33 +18553,33 @@ static AKAT_FORCE_INLINE u8 ds18b20_case__get_crc_errors__impl() {
 #undef get_disconnects__impl
 }
 static AKAT_FORCE_INLINE u8 ds18b20_case__get_temperature_lsb__impl() {
-#define get_temperature_lsb__impl ds18b20_case__get_temperature_lsb__impl
 #define get_updated_deciseconds_ago__impl ds18b20_case__get_updated_deciseconds_ago__impl
+#define get_temperature_lsb__impl ds18b20_case__get_temperature_lsb__impl
 #define get_crc_errors__impl ds18b20_case__get_crc_errors__impl
 #define get_disconnects__impl ds18b20_case__get_disconnects__impl
     return ds18b20_case__temperature_lsb;
-#undef get_temperature_lsb__impl
 #undef get_updated_deciseconds_ago__impl
+#undef get_temperature_lsb__impl
 #undef get_crc_errors__impl
 #undef get_disconnects__impl
 }
 static AKAT_FORCE_INLINE u8 ds18b20_case__get_temperature_msb__impl() {
-#define get_temperature_msb__impl ds18b20_case__get_temperature_msb__impl
-#define get_temperature_lsb__impl ds18b20_case__get_temperature_lsb__impl
-#define get_updated_deciseconds_ago__impl ds18b20_case__get_updated_deciseconds_ago__impl
 #define get_crc_errors__impl ds18b20_case__get_crc_errors__impl
+#define get_updated_deciseconds_ago__impl ds18b20_case__get_updated_deciseconds_ago__impl
+#define get_temperature_lsb__impl ds18b20_case__get_temperature_lsb__impl
+#define get_temperature_msb__impl ds18b20_case__get_temperature_msb__impl
 #define get_disconnects__impl ds18b20_case__get_disconnects__impl
     return ds18b20_case__temperature_msb;
-#undef get_temperature_msb__impl
-#undef get_temperature_lsb__impl
-#undef get_updated_deciseconds_ago__impl
 #undef get_crc_errors__impl
+#undef get_updated_deciseconds_ago__impl
+#undef get_temperature_lsb__impl
+#undef get_temperature_msb__impl
 #undef get_disconnects__impl
 }
-#define get_temperature_msb__impl ds18b20_case__get_temperature_msb__impl
-#define get_temperature_lsb__impl ds18b20_case__get_temperature_lsb__impl
-#define get_updated_deciseconds_ago__impl ds18b20_case__get_updated_deciseconds_ago__impl
 #define get_crc_errors__impl ds18b20_case__get_crc_errors__impl
+#define get_updated_deciseconds_ago__impl ds18b20_case__get_updated_deciseconds_ago__impl
+#define get_temperature_lsb__impl ds18b20_case__get_temperature_lsb__impl
+#define get_temperature_msb__impl ds18b20_case__get_temperature_msb__impl
 #define get_disconnects__impl ds18b20_case__get_disconnects__impl
 
 ds18b20_case_t const ds18b20_case = {.get_updated_deciseconds_ago = &get_updated_deciseconds_ago__impl
@@ -18594,25 +18594,25 @@ ds18b20_case_t const ds18b20_case = {.get_updated_deciseconds_ago = &get_updated
                                     };
 
 
-#undef get_temperature_msb__impl
-#undef get_temperature_lsb__impl
-#undef get_updated_deciseconds_ago__impl
 #undef get_crc_errors__impl
+#undef get_updated_deciseconds_ago__impl
+#undef get_temperature_lsb__impl
+#undef get_temperature_msb__impl
 #undef get_disconnects__impl
 #define get_updated_deciseconds_ago__impl ds18b20_case__get_updated_deciseconds_ago__impl
-#define get_temperature_msb__impl ds18b20_case__get_temperature_msb__impl
 #define get_temperature_lsb__impl ds18b20_case__get_temperature_lsb__impl
-#define get_crc_errors__impl ds18b20_case__get_crc_errors__impl
+#define get_temperature_msb__impl ds18b20_case__get_temperature_msb__impl
 #define get_disconnects__impl ds18b20_case__get_disconnects__impl
+#define get_crc_errors__impl ds18b20_case__get_crc_errors__impl
 
 
 ;
 
 #define get_updated_deciseconds_ago__impl ds18b20_case__get_updated_deciseconds_ago__impl
-#define get_temperature_msb__impl ds18b20_case__get_temperature_msb__impl
 #define get_temperature_lsb__impl ds18b20_case__get_temperature_lsb__impl
-#define get_crc_errors__impl ds18b20_case__get_crc_errors__impl
+#define get_temperature_msb__impl ds18b20_case__get_temperature_msb__impl
 #define get_disconnects__impl ds18b20_case__get_disconnects__impl
+#define get_crc_errors__impl ds18b20_case__get_crc_errors__impl
 
 
 
@@ -18622,10 +18622,10 @@ ds18b20_case_t const ds18b20_case = {.get_updated_deciseconds_ago = &get_updated
 
 
 #undef get_updated_deciseconds_ago__impl
-#undef get_temperature_msb__impl
 #undef get_temperature_lsb__impl
-#undef get_crc_errors__impl
+#undef get_temperature_msb__impl
 #undef get_disconnects__impl
+#undef get_crc_errors__impl
 ;
 
 
@@ -18699,10 +18699,10 @@ static u8 usart0_writer__byte_number_to_send = 0;
 static u8 usart0_writer__send_byte__akat_coroutine_state = 0;
 static u8 usart0_writer__send_byte() {
 #define crc usart0_writer__crc
-#define akat_coroutine_state usart0_writer__send_byte__akat_coroutine_state
 #define byte_to_send usart0_writer__byte_to_send
-#define send_byte usart0_writer__send_byte
 #define byte_number_to_send usart0_writer__byte_number_to_send
+#define send_byte usart0_writer__send_byte
+#define akat_coroutine_state usart0_writer__send_byte__akat_coroutine_state
     ;
     AKAT_HOT_CODE;
 
@@ -18743,19 +18743,19 @@ akat_coroutine_l_2:
 akat_coroutine_l_end:
     return akat_coroutine_state;
 #undef crc
-#undef akat_coroutine_state
 #undef byte_to_send
-#undef send_byte
 #undef byte_number_to_send
+#undef send_byte
+#undef akat_coroutine_state
 }
 static u8 usart0_writer__send_byte_number__akat_coroutine_state = 0;
 static u8 usart0_writer__send_byte_number() {
-#define crc usart0_writer__crc
-#define akat_coroutine_state usart0_writer__send_byte_number__akat_coroutine_state
+#define byte_number_to_send usart0_writer__byte_number_to_send
 #define byte_to_send usart0_writer__byte_to_send
 #define send_byte usart0_writer__send_byte
 #define send_byte_number usart0_writer__send_byte_number
-#define byte_number_to_send usart0_writer__byte_number_to_send
+#define akat_coroutine_state usart0_writer__send_byte_number__akat_coroutine_state
+#define crc usart0_writer__crc
     ;
     AKAT_HOT_CODE;
 
@@ -18833,20 +18833,20 @@ akat_coroutine_l_4:
     akat_coroutine_state = AKAT_COROUTINE_S_START;
 akat_coroutine_l_end:
     return akat_coroutine_state;
-#undef crc
-#undef akat_coroutine_state
+#undef byte_number_to_send
 #undef byte_to_send
 #undef send_byte
 #undef send_byte_number
-#undef byte_number_to_send
+#undef akat_coroutine_state
+#undef crc
 }
 static AKAT_FORCE_INLINE void usart0_writer() {
-#define crc usart0_writer__crc
-#define akat_coroutine_state usart0_writer__akat_coroutine_state
-#define byte_to_send usart0_writer__byte_to_send
 #define send_byte usart0_writer__send_byte
-#define send_byte_number usart0_writer__send_byte_number
+#define byte_to_send usart0_writer__byte_to_send
 #define byte_number_to_send usart0_writer__byte_number_to_send
+#define send_byte_number usart0_writer__send_byte_number
+#define akat_coroutine_state usart0_writer__akat_coroutine_state
+#define crc usart0_writer__crc
     ;
     AKAT_HOT_CODE;
 
@@ -19344,12 +19344,12 @@ akat_coroutine_l_30:
     akat_coroutine_state = AKAT_COROUTINE_S_END;
 akat_coroutine_l_end:
     return;
-#undef crc
-#undef akat_coroutine_state
-#undef byte_to_send
 #undef send_byte
-#undef send_byte_number
+#undef byte_to_send
 #undef byte_number_to_send
+#undef send_byte_number
+#undef akat_coroutine_state
+#undef crc
 }
 
 ;
@@ -19370,13 +19370,13 @@ static u8 usart0_reader__read_command__dequeued_byte = 0;
 static u8 usart0_reader__read_command__command_arg_copy = 0;
 static u8 usart0_reader__read_command__dequeue_byte__akat_coroutine_state = 0;
 static u8 usart0_reader__read_command__dequeue_byte() {
-#define dequeue_byte usart0_reader__read_command__dequeue_byte
-#define akat_coroutine_state usart0_reader__read_command__dequeue_byte__akat_coroutine_state
+#define command_code usart0_reader__command_code
 #define command_arg_copy usart0_reader__read_command__command_arg_copy
 #define read_command usart0_reader__read_command
+#define dequeue_byte usart0_reader__read_command__dequeue_byte
 #define command_arg usart0_reader__command_arg
+#define akat_coroutine_state usart0_reader__read_command__dequeue_byte__akat_coroutine_state
 #define dequeued_byte usart0_reader__read_command__dequeued_byte
-#define command_code usart0_reader__command_code
     ;
     AKAT_HOT_CODE;
 
@@ -19416,24 +19416,24 @@ akat_coroutine_l_2:
     akat_coroutine_state = AKAT_COROUTINE_S_START;
 akat_coroutine_l_end:
     return akat_coroutine_state;
-#undef dequeue_byte
-#undef akat_coroutine_state
+#undef command_code
 #undef command_arg_copy
 #undef read_command
+#undef dequeue_byte
 #undef command_arg
+#undef akat_coroutine_state
 #undef dequeued_byte
-#undef command_code
 }
 static u8 usart0_reader__read_command__read_arg_and_dequeue__akat_coroutine_state = 0;
 static u8 usart0_reader__read_command__read_arg_and_dequeue() {
-#define dequeue_byte usart0_reader__read_command__dequeue_byte
-#define read_arg_and_dequeue usart0_reader__read_command__read_arg_and_dequeue
-#define command_arg usart0_reader__command_arg
-#define dequeued_byte usart0_reader__read_command__dequeued_byte
 #define command_code usart0_reader__command_code
-#define read_command usart0_reader__read_command
-#define akat_coroutine_state usart0_reader__read_command__read_arg_and_dequeue__akat_coroutine_state
 #define command_arg_copy usart0_reader__read_command__command_arg_copy
+#define command_arg usart0_reader__command_arg
+#define read_arg_and_dequeue usart0_reader__read_command__read_arg_and_dequeue
+#define read_command usart0_reader__read_command
+#define dequeue_byte usart0_reader__read_command__dequeue_byte
+#define akat_coroutine_state usart0_reader__read_command__read_arg_and_dequeue__akat_coroutine_state
+#define dequeued_byte usart0_reader__read_command__dequeued_byte
     ;
     AKAT_HOT_CODE;
 
@@ -19526,24 +19526,24 @@ akat_coroutine_l_5:
     akat_coroutine_state = AKAT_COROUTINE_S_START;
 akat_coroutine_l_end:
     return akat_coroutine_state;
-#undef dequeue_byte
-#undef read_arg_and_dequeue
-#undef command_arg
-#undef dequeued_byte
 #undef command_code
-#undef read_command
-#undef akat_coroutine_state
 #undef command_arg_copy
+#undef command_arg
+#undef read_arg_and_dequeue
+#undef read_command
+#undef dequeue_byte
+#undef akat_coroutine_state
+#undef dequeued_byte
 }
 static u8 usart0_reader__read_command() {
-#define dequeue_byte usart0_reader__read_command__dequeue_byte
-#define read_arg_and_dequeue usart0_reader__read_command__read_arg_and_dequeue
-#define command_arg usart0_reader__command_arg
-#define dequeued_byte usart0_reader__read_command__dequeued_byte
 #define command_code usart0_reader__command_code
-#define read_command usart0_reader__read_command
-#define akat_coroutine_state usart0_reader__read_command__akat_coroutine_state
 #define command_arg_copy usart0_reader__read_command__command_arg_copy
+#define command_arg usart0_reader__command_arg
+#define read_arg_and_dequeue usart0_reader__read_command__read_arg_and_dequeue
+#define read_command usart0_reader__read_command
+#define dequeue_byte usart0_reader__read_command__dequeue_byte
+#define akat_coroutine_state usart0_reader__read_command__akat_coroutine_state
+#define dequeued_byte usart0_reader__read_command__dequeued_byte
     ;
     AKAT_HOT_CODE;
 
@@ -19656,20 +19656,20 @@ akat_coroutine_l_5:
     akat_coroutine_state = AKAT_COROUTINE_S_START;
 akat_coroutine_l_end:
     return akat_coroutine_state;
-#undef dequeue_byte
-#undef read_arg_and_dequeue
-#undef command_arg
-#undef dequeued_byte
 #undef command_code
-#undef read_command
-#undef akat_coroutine_state
 #undef command_arg_copy
+#undef command_arg
+#undef read_arg_and_dequeue
+#undef read_command
+#undef dequeue_byte
+#undef akat_coroutine_state
+#undef dequeued_byte
 }
 static AKAT_FORCE_INLINE void usart0_reader() {
-#define read_command usart0_reader__read_command
-#define akat_coroutine_state usart0_reader__akat_coroutine_state
 #define command_code usart0_reader__command_code
 #define command_arg usart0_reader__command_arg
+#define akat_coroutine_state usart0_reader__akat_coroutine_state
+#define read_command usart0_reader__read_command
     ;
     AKAT_HOT_CODE;
 
@@ -19724,10 +19724,10 @@ akat_coroutine_l_2:
     akat_coroutine_state = AKAT_COROUTINE_S_END;
 akat_coroutine_l_end:
     return;
-#undef read_command
-#undef akat_coroutine_state
 #undef command_code
 #undef command_arg
+#undef akat_coroutine_state
+#undef read_command
 }
 
 ;
@@ -19793,10 +19793,10 @@ static u8 ds18b20_thread__command_to_send = 0;
 static u8 ds18b20_thread__receive_idx = 0;
 static AKAT_FORCE_INLINE u8 ds18b20_thread__has_connected_sensors() {
 #define has_connected_sensors ds18b20_thread__has_connected_sensors
-#define akat_coroutine_state ds18b20_thread__akat_coroutine_state
 #define command_to_send ds18b20_thread__command_to_send
-#define byte_to_send ds18b20_thread__byte_to_send
+#define akat_coroutine_state ds18b20_thread__akat_coroutine_state
 #define receive_idx ds18b20_thread__receive_idx
+#define byte_to_send ds18b20_thread__byte_to_send
 
     if (ds18b20_aqua__connected) {
         return 1;
@@ -19808,18 +19808,18 @@ static AKAT_FORCE_INLINE u8 ds18b20_thread__has_connected_sensors() {
 
     return 0;
 #undef has_connected_sensors
-#undef akat_coroutine_state
 #undef command_to_send
-#undef byte_to_send
+#undef akat_coroutine_state
 #undef receive_idx
+#undef byte_to_send
 }
 static void ds18b20_thread__write_bit(const u8 bit) {
-#define write_bit ds18b20_thread__write_bit
-#define akat_coroutine_state ds18b20_thread__akat_coroutine_state
 #define has_connected_sensors ds18b20_thread__has_connected_sensors
-#define byte_to_send ds18b20_thread__byte_to_send
 #define command_to_send ds18b20_thread__command_to_send
 #define receive_idx ds18b20_thread__receive_idx
+#define byte_to_send ds18b20_thread__byte_to_send
+#define akat_coroutine_state ds18b20_thread__akat_coroutine_state
+#define write_bit ds18b20_thread__write_bit
 
 //'bit'can be either zero or non zero. Non zero bit value is treated as 1.
 
@@ -19858,21 +19858,21 @@ static void ds18b20_thread__write_bit(const u8 bit) {
     }
 
     akat_delay_us(10);
-#undef write_bit
-#undef akat_coroutine_state
 #undef has_connected_sensors
-#undef byte_to_send
 #undef command_to_send
 #undef receive_idx
+#undef byte_to_send
+#undef akat_coroutine_state
+#undef write_bit
 }
 static void ds18b20_thread__read_bit(u8 mask) {
-#define write_bit ds18b20_thread__write_bit
-#define akat_coroutine_state ds18b20_thread__akat_coroutine_state
 #define has_connected_sensors ds18b20_thread__has_connected_sensors
-#define byte_to_send ds18b20_thread__byte_to_send
 #define command_to_send ds18b20_thread__command_to_send
 #define receive_idx ds18b20_thread__receive_idx
+#define byte_to_send ds18b20_thread__byte_to_send
+#define akat_coroutine_state ds18b20_thread__akat_coroutine_state
 #define read_bit ds18b20_thread__read_bit
+#define write_bit ds18b20_thread__write_bit
 
 //Returns either 0 or non zero (doesn't mean '1'!)
 
@@ -19913,24 +19913,24 @@ static void ds18b20_thread__read_bit(u8 mask) {
     }//Total duration of reading slot must be at least 60
 
     akat_delay_us(55);
-#undef write_bit
-#undef akat_coroutine_state
 #undef has_connected_sensors
-#undef byte_to_send
 #undef command_to_send
 #undef receive_idx
+#undef byte_to_send
+#undef akat_coroutine_state
 #undef read_bit
+#undef write_bit
 }
 static u8 ds18b20_thread__send_byte__akat_coroutine_state = 0;
 static u8 ds18b20_thread__send_byte() {
-#define has_connected_sensors ds18b20_thread__has_connected_sensors
-#define byte_to_send ds18b20_thread__byte_to_send
-#define send_byte ds18b20_thread__send_byte
+#define command_to_send ds18b20_thread__command_to_send
 #define receive_idx ds18b20_thread__receive_idx
 #define read_bit ds18b20_thread__read_bit
 #define write_bit ds18b20_thread__write_bit
+#define has_connected_sensors ds18b20_thread__has_connected_sensors
+#define byte_to_send ds18b20_thread__byte_to_send
+#define send_byte ds18b20_thread__send_byte
 #define akat_coroutine_state ds18b20_thread__send_byte__akat_coroutine_state
-#define command_to_send ds18b20_thread__command_to_send
     ;
     AKAT_HOT_CODE;
 
@@ -20045,26 +20045,26 @@ akat_coroutine_l_8:
     akat_coroutine_state = AKAT_COROUTINE_S_START;
 akat_coroutine_l_end:
     return akat_coroutine_state;
-#undef has_connected_sensors
-#undef byte_to_send
-#undef send_byte
+#undef command_to_send
 #undef receive_idx
 #undef read_bit
 #undef write_bit
+#undef has_connected_sensors
+#undef byte_to_send
+#undef send_byte
 #undef akat_coroutine_state
-#undef command_to_send
 }
 static u8 ds18b20_thread__receive_byte__akat_coroutine_state = 0;
 static u8 ds18b20_thread__receive_byte() {
+#define command_to_send ds18b20_thread__command_to_send
+#define receive_byte ds18b20_thread__receive_byte
+#define receive_idx ds18b20_thread__receive_idx
+#define read_bit ds18b20_thread__read_bit
+#define write_bit ds18b20_thread__write_bit
 #define has_connected_sensors ds18b20_thread__has_connected_sensors
 #define byte_to_send ds18b20_thread__byte_to_send
 #define send_byte ds18b20_thread__send_byte
-#define receive_byte ds18b20_thread__receive_byte
-#define receive_idx ds18b20_thread__receive_idx
-#define write_bit ds18b20_thread__write_bit
 #define akat_coroutine_state ds18b20_thread__receive_byte__akat_coroutine_state
-#define read_bit ds18b20_thread__read_bit
-#define command_to_send ds18b20_thread__command_to_send
     ;
     AKAT_HOT_CODE;
 
@@ -20183,28 +20183,28 @@ akat_coroutine_l_8:
     akat_coroutine_state = AKAT_COROUTINE_S_START;
 akat_coroutine_l_end:
     return akat_coroutine_state;
+#undef command_to_send
+#undef receive_byte
+#undef receive_idx
+#undef read_bit
+#undef write_bit
 #undef has_connected_sensors
 #undef byte_to_send
 #undef send_byte
-#undef receive_byte
-#undef receive_idx
-#undef write_bit
 #undef akat_coroutine_state
-#undef read_bit
-#undef command_to_send
 }
 static u8 ds18b20_thread__send_command__akat_coroutine_state = 0;
 static u8 ds18b20_thread__send_command() {
-#define has_connected_sensors ds18b20_thread__has_connected_sensors
-#define byte_to_send ds18b20_thread__byte_to_send
-#define send_command ds18b20_thread__send_command
-#define send_byte ds18b20_thread__send_byte
+#define command_to_send ds18b20_thread__command_to_send
 #define receive_byte ds18b20_thread__receive_byte
 #define receive_idx ds18b20_thread__receive_idx
-#define write_bit ds18b20_thread__write_bit
-#define akat_coroutine_state ds18b20_thread__send_command__akat_coroutine_state
+#define send_command ds18b20_thread__send_command
 #define read_bit ds18b20_thread__read_bit
-#define command_to_send ds18b20_thread__command_to_send
+#define write_bit ds18b20_thread__write_bit
+#define has_connected_sensors ds18b20_thread__has_connected_sensors
+#define byte_to_send ds18b20_thread__byte_to_send
+#define send_byte ds18b20_thread__send_byte
+#define akat_coroutine_state ds18b20_thread__send_command__akat_coroutine_state
     ;
     AKAT_HOT_CODE;
 
@@ -20351,28 +20351,28 @@ akat_coroutine_l_6:
     akat_coroutine_state = AKAT_COROUTINE_S_START;
 akat_coroutine_l_end:
     return akat_coroutine_state;
-#undef has_connected_sensors
-#undef byte_to_send
-#undef send_command
-#undef send_byte
+#undef command_to_send
 #undef receive_byte
 #undef receive_idx
-#undef write_bit
-#undef akat_coroutine_state
+#undef send_command
 #undef read_bit
-#undef command_to_send
+#undef write_bit
+#undef has_connected_sensors
+#undef byte_to_send
+#undef send_byte
+#undef akat_coroutine_state
 }
 static AKAT_FORCE_INLINE void ds18b20_thread() {
-#define has_connected_sensors ds18b20_thread__has_connected_sensors
-#define byte_to_send ds18b20_thread__byte_to_send
-#define send_command ds18b20_thread__send_command
-#define send_byte ds18b20_thread__send_byte
+#define command_to_send ds18b20_thread__command_to_send
 #define receive_byte ds18b20_thread__receive_byte
 #define receive_idx ds18b20_thread__receive_idx
-#define write_bit ds18b20_thread__write_bit
-#define akat_coroutine_state ds18b20_thread__akat_coroutine_state
+#define send_command ds18b20_thread__send_command
 #define read_bit ds18b20_thread__read_bit
-#define command_to_send ds18b20_thread__command_to_send
+#define write_bit ds18b20_thread__write_bit
+#define has_connected_sensors ds18b20_thread__has_connected_sensors
+#define byte_to_send ds18b20_thread__byte_to_send
+#define send_byte ds18b20_thread__send_byte
+#define akat_coroutine_state ds18b20_thread__akat_coroutine_state
     ;
     AKAT_HOT_CODE;
 
@@ -20676,16 +20676,16 @@ akat_coroutine_l_16:
     akat_coroutine_state = AKAT_COROUTINE_S_END;
 akat_coroutine_l_end:
     return;
-#undef has_connected_sensors
-#undef byte_to_send
-#undef send_command
-#undef send_byte
+#undef command_to_send
 #undef receive_byte
 #undef receive_idx
-#undef write_bit
-#undef akat_coroutine_state
+#undef send_command
 #undef read_bit
-#undef command_to_send
+#undef write_bit
+#undef has_connected_sensors
+#undef byte_to_send
+#undef send_byte
+#undef akat_coroutine_state
 }
 
 ;
