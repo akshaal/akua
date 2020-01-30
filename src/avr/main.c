@@ -21,6 +21,12 @@
 // Must be power of 2!
 #define AK_USART0_RX_BUF_SIZE  128
 
+// Size of buffer for bytes we receive from USART1/CO (MH-Z19).
+// RX-Interrupt puts bytes into the given ring buffer if there is space in it.
+// A thread takes byte from the buffer and process it.
+// Must be power of 2!
+#define AK_USART1_RX_BUF_SIZE  32
+
 // 16Mhz, that's external oscillator on Mega 2560.
 // This doesn't configure it here, it just tells to our build system
 // what we is actually using! Configuration is done using fuses (see flash-avr-fuses).
@@ -214,19 +220,33 @@ X_INIT$(usart1_init) {
     UCSR1B = H(TXEN1) | H(RXEN1) | H(RXCIE1);
 }
 
-// --- - - - - - - - - - - - RX
+// --- - - - - - - - - - - - RX - - - - - - - -  - - - - - - - --
+// USART1(CO2): Interrupt handler for 'byte is received' event..
 
-ISR(USART1_RX_vect) {
-    // TODO: Remove unused!
-    AKAT_UNUSED u8 b = UDR1; // we must read here, no matter what, to clear interrupt flag
-
-    // TODO: Implement RX-buffer...
-    // TODO: See https://habr.com/en/post/401363/
-    // TODO: See https://revspace.nl/MHZ19#Command_0x86_.28read_concentration.29
-    // TODO: Disable ABC, see all the comments here https://github.com/letscontrolit/ESPEasy/issues/466
+GLOBAL$() {
+    STATIC_VAR$(volatile u8 usart1_rx_bytes_buf[AK_USART1_RX_BUF_SIZE], initial = {});
+    STATIC_VAR$(volatile u8 usart1_overflow_count);
+    STATIC_VAR$(volatile u8 usart1_rx_next_empty_idx);
+    STATIC_VAR$(volatile u8 usart1_rx_next_read_idx);
 }
 
-// --- - - - - - - - - - - - TX
+ISR(USART1_RX_vect) {
+    u8 b = UDR1; // we must read here, no matter what, to clear interrupt flag
+
+    u8 new_next_empty_idx = (usart1_rx_next_empty_idx + AKAT_ONE) & (AK_USART1_RX_BUF_SIZE - 1);
+    if (new_next_empty_idx == usart1_rx_next_read_idx) {
+        usart1_overflow_count += AKAT_ONE;
+        // Don't let it overflow!
+        if (!usart1_overflow_count) {
+            usart1_overflow_count -= AKAT_ONE;
+        }
+    } else {
+        usart1_rx_bytes_buf[usart1_rx_next_empty_idx] = b;
+        usart1_rx_next_empty_idx = new_next_empty_idx;
+    }
+}
+
+// --- - - - - - - - - - - - TX - - - - - - - - - - - - - - -
 
 GLOBAL$() {
     STATIC_VAR$(u8 co2_command_countdown);
@@ -249,6 +269,8 @@ THREAD$(usart1_writer) {
     }
 
     while(1) {
+        // TODO: Disable ABC, see all the comments here https://github.com/letscontrolit/ESPEasy/issues/466
+
         // Wait until it's time to send the command sequence
         // This counter will be decremented every 0.1 second in the X_EVERY_DECISECOND$ above
         co2_command_countdown = AK_CO2_DECISECONDS_DELAY;
@@ -364,7 +386,7 @@ THREAD$(usart0_writer, state_type = u8) {
         }
     }
 
-    // ---- Macro.that writes the given status into UART
+    // ---- Macro that writes the given status into UART
 
     DEFINE_MACRO$(WRITE_STATUS, required_args = ["name", "id"], keep_rest_as_is = True) {
         byte_to_send = ' '; CALL$(send_byte);
@@ -388,7 +410,7 @@ THREAD$(usart0_writer, state_type = u8) {
 
         // WRITE_STATUS(name for documentation, 1-character id for protocol, type1 val1, type2 val2, ...)
 
-        WRITE_STATUS$(UART0, A, u8 usart0_overflow_count);
+        WRITE_STATUS$(UART0, A, u8 usart0_overflow_count, u8 usart1_overflow_count);
 
         WRITE_STATUS$("Aquarium temperature",
                       B,

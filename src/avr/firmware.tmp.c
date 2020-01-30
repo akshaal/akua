@@ -385,6 +385,12 @@ static AKAT_UNUSED AKAT_PURE u8 akat_x_tm1637_encode_digit(u8 const digit, u8 co
 // Must be power of 2!
 #define AK_USART0_RX_BUF_SIZE  128
 
+// Size of buffer for bytes we receive from USART1/CO (MH-Z19).
+// RX-Interrupt puts bytes into the given ring buffer if there is space in it.
+// A thread takes byte from the buffer and process it.
+// Must be power of 2!
+#define AK_USART1_RX_BUF_SIZE  32
+
 // 16Mhz, that's external oscillator on Mega 2560.
 // This doesn't configure it here, it just tells to our build system
 // what we is actually using! Configuration is done using fuses (see flash-avr-fuses).
@@ -18200,18 +18206,39 @@ static AKAT_FORCE_INLINE void usart1_init() {
 
 
 
-// --- - - - - - - - - - - - RX
+// --- - - - - - - - - - - - RX - - - - - - - -  - - - - - - - --
+// USART1(CO2): Interrupt handler for 'byte is received' event..
+
+static volatile u8 usart1_rx_bytes_buf[AK_USART1_RX_BUF_SIZE] = {};
+static volatile u8 usart1_overflow_count = 0;
+static volatile u8 usart1_rx_next_empty_idx = 0;
+static volatile u8 usart1_rx_next_read_idx = 0;
+
+;
+;
+;
+;
+;
+
 
 ISR(USART1_RX_vect) {
-    // TODO: Remove unused!
-    AKAT_UNUSED u8 b = UDR1; // we must read here, no matter what, to clear interrupt flag
-    // TODO: Implement RX-buffer...
-    // TODO: See https://habr.com/en/post/401363/
-    // TODO: See https://revspace.nl/MHZ19#Command_0x86_.28read_concentration.29
-    // TODO: Disable ABC, see all the comments here https://github.com/letscontrolit/ESPEasy/issues/466
+    u8 b = UDR1; // we must read here, no matter what, to clear interrupt flag
+    u8 new_next_empty_idx = (usart1_rx_next_empty_idx + AKAT_ONE) & (AK_USART1_RX_BUF_SIZE - 1);
+
+    if (new_next_empty_idx == usart1_rx_next_read_idx) {
+        usart1_overflow_count += AKAT_ONE;
+
+        // Don't let it overflow!
+        if (!usart1_overflow_count) {
+            usart1_overflow_count -= AKAT_ONE;
+        }
+    } else {
+        usart1_rx_bytes_buf[usart1_rx_next_empty_idx] = b;
+        usart1_rx_next_empty_idx = new_next_empty_idx;
+    }
 }
 
-// --- - - - - - - - - - - - TX
+// --- - - - - - - - - - - - TX - - - - - - - - - - - - - - -
 
 static u8 co2_command_countdown = 0;
 
@@ -18332,7 +18359,8 @@ akat_coroutine_l_start:
     do {
         ;
 
-        while (1) { //Wait until it's time to send the command sequence
+        while (1) { //TODO: Disable ABC, see all the comments here https://github.com/letscontrolit/ESPEasy/issues/466
+            //Wait until it's time to send the command sequence
             //This counter will be decremented every 0.1 second in the X_EVERY_DECISECOND$ above
             co2_command_countdown = AK_CO2_DECISECONDS_DELAY;
 
@@ -18864,6 +18892,12 @@ static AKAT_FORCE_INLINE void usart0_writer() {
 
     case 26:
         goto akat_coroutine_l_26;
+
+    case 27:
+        goto akat_coroutine_l_27;
+
+    case 28:
+        goto akat_coroutine_l_28;
     }
 
 akat_coroutine_l_start:
@@ -18878,7 +18912,7 @@ akat_coroutine_l_start:
 
         //---- Subroutines can yield unlike functions
 
-//---- Macro.that writes the given status into UART
+//---- Macro that writes the given status into UART
 
         /* Defined new macro with name WRITE_STATUS  *///- - - - - - - - - - -
 
@@ -18925,8 +18959,7 @@ akat_coroutine_l_4:
             } while (0);
 
             ;
-            ;
-            byte_to_send = ' ';
+            byte_to_send = ',';
 
             do {
                 akat_coroutine_state = 5;
@@ -18938,26 +18971,14 @@ akat_coroutine_l_5:
             } while (0);
 
             ;
-            byte_to_send = 'B';
+            /*
+              COMMPROTO: A2: UART0: u8 usart1_overflow_count
+            */
+            u8_to_format_and_send = usart1_overflow_count;
 
             do {
                 akat_coroutine_state = 6;
 akat_coroutine_l_6:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            /*
-              COMMPROTO: B1: "Aquarium temperature": u8 ds18b20_aqua.get_crc_errors()
-            */
-            u8_to_format_and_send = ds18b20_aqua.get_crc_errors();
-
-            do {
-                akat_coroutine_state = 7;
-akat_coroutine_l_7:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -18965,7 +18986,20 @@ akat_coroutine_l_7:
             } while (0);
 
             ;
-            byte_to_send = ',';
+            ;
+            byte_to_send = ' ';
+
+            do {
+                akat_coroutine_state = 7;
+akat_coroutine_l_7:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = 'B';
 
             do {
                 akat_coroutine_state = 8;
@@ -18978,9 +19012,9 @@ akat_coroutine_l_8:
 
             ;
             /*
-              COMMPROTO: B2: "Aquarium temperature": u8 ds18b20_aqua.get_disconnects()
+              COMMPROTO: B1: "Aquarium temperature": u8 ds18b20_aqua.get_crc_errors()
             */
-            u8_to_format_and_send = ds18b20_aqua.get_disconnects();
+            u8_to_format_and_send = ds18b20_aqua.get_crc_errors();
 
             do {
                 akat_coroutine_state = 9;
@@ -19005,15 +19039,15 @@ akat_coroutine_l_10:
 
             ;
             /*
-              COMMPROTO: B3: "Aquarium temperature": u16 ds18b20_aqua.get_temperatureX16()
+              COMMPROTO: B2: "Aquarium temperature": u8 ds18b20_aqua.get_disconnects()
             */
-            u16_to_format_and_send = ds18b20_aqua.get_temperatureX16();
+            u8_to_format_and_send = ds18b20_aqua.get_disconnects();
 
             do {
                 akat_coroutine_state = 11;
 akat_coroutine_l_11:
 
-                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
@@ -19032,22 +19066,21 @@ akat_coroutine_l_12:
 
             ;
             /*
-              COMMPROTO: B4: "Aquarium temperature": u8 ds18b20_aqua.get_updated_deciseconds_ago()
+              COMMPROTO: B3: "Aquarium temperature": u16 ds18b20_aqua.get_temperatureX16()
             */
-            u8_to_format_and_send = ds18b20_aqua.get_updated_deciseconds_ago();
+            u16_to_format_and_send = ds18b20_aqua.get_temperatureX16();
 
             do {
                 akat_coroutine_state = 13;
 akat_coroutine_l_13:
 
-                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
 
             ;
-            ;
-            byte_to_send = ' ';
+            byte_to_send = ',';
 
             do {
                 akat_coroutine_state = 14;
@@ -19059,26 +19092,14 @@ akat_coroutine_l_14:
             } while (0);
 
             ;
-            byte_to_send = 'C';
+            /*
+              COMMPROTO: B4: "Aquarium temperature": u8 ds18b20_aqua.get_updated_deciseconds_ago()
+            */
+            u8_to_format_and_send = ds18b20_aqua.get_updated_deciseconds_ago();
 
             do {
                 akat_coroutine_state = 15;
 akat_coroutine_l_15:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            /*
-              COMMPROTO: C1: "Case temperature": u8 ds18b20_case.get_crc_errors()
-            */
-            u8_to_format_and_send = ds18b20_case.get_crc_errors();
-
-            do {
-                akat_coroutine_state = 16;
-akat_coroutine_l_16:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19086,7 +19107,20 @@ akat_coroutine_l_16:
             } while (0);
 
             ;
-            byte_to_send = ',';
+            ;
+            byte_to_send = ' ';
+
+            do {
+                akat_coroutine_state = 16;
+akat_coroutine_l_16:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = 'C';
 
             do {
                 akat_coroutine_state = 17;
@@ -19099,9 +19133,9 @@ akat_coroutine_l_17:
 
             ;
             /*
-              COMMPROTO: C2: "Case temperature": u8 ds18b20_case.get_disconnects()
+              COMMPROTO: C1: "Case temperature": u8 ds18b20_case.get_crc_errors()
             */
-            u8_to_format_and_send = ds18b20_case.get_disconnects();
+            u8_to_format_and_send = ds18b20_case.get_crc_errors();
 
             do {
                 akat_coroutine_state = 18;
@@ -19126,15 +19160,15 @@ akat_coroutine_l_19:
 
             ;
             /*
-              COMMPROTO: C3: "Case temperature": u16 ds18b20_case.get_temperatureX16()
+              COMMPROTO: C2: "Case temperature": u8 ds18b20_case.get_disconnects()
             */
-            u16_to_format_and_send = ds18b20_case.get_temperatureX16();
+            u8_to_format_and_send = ds18b20_case.get_disconnects();
 
             do {
                 akat_coroutine_state = 20;
 akat_coroutine_l_20:
 
-                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
@@ -19153,13 +19187,40 @@ akat_coroutine_l_21:
 
             ;
             /*
+              COMMPROTO: C3: "Case temperature": u16 ds18b20_case.get_temperatureX16()
+            */
+            u16_to_format_and_send = ds18b20_case.get_temperatureX16();
+
+            do {
+                akat_coroutine_state = 22;
+akat_coroutine_l_22:
+
+                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 23;
+akat_coroutine_l_23:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
               COMMPROTO: C4: "Case temperature": u8 ds18b20_case.get_updated_deciseconds_ago()
             */
             u8_to_format_and_send = ds18b20_case.get_updated_deciseconds_ago();
 
             do {
-                akat_coroutine_state = 22;
-akat_coroutine_l_22:
+                akat_coroutine_state = 24;
+akat_coroutine_l_24:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19172,8 +19233,8 @@ akat_coroutine_l_22:
             byte_to_send = ' ';
 
             do {
-                akat_coroutine_state = 23;
-akat_coroutine_l_23:
+                akat_coroutine_state = 25;
+akat_coroutine_l_25:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19184,8 +19245,8 @@ akat_coroutine_l_23:
             u8_to_format_and_send = crc;
 
             do {
-                akat_coroutine_state = 24;
-akat_coroutine_l_24:
+                akat_coroutine_state = 26;
+akat_coroutine_l_26:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19196,8 +19257,8 @@ akat_coroutine_l_24:
             byte_to_send = '\r';
 
             do {
-                akat_coroutine_state = 25;
-akat_coroutine_l_25:
+                akat_coroutine_state = 27;
+akat_coroutine_l_27:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19208,8 +19269,8 @@ akat_coroutine_l_25:
             byte_to_send = '\n';
 
             do {
-                akat_coroutine_state = 26;
-akat_coroutine_l_26:
+                akat_coroutine_state = 28;
+akat_coroutine_l_28:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
