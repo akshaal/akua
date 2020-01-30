@@ -396,6 +396,9 @@ static AKAT_FORCE_INLINE AKAT_CONST uint32_t akat_cpu_freq_hz() {
 ;
 
 
+static const char HEX[] = "0123456789ABCDEF";
+
+
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -17643,8 +17646,7 @@ static u8 ds18b20_aqua__scratchpad[9] = {};
 static u8 ds18b20_aqua__updated_deciseconds_ago = 255;
 static u8 ds18b20_aqua__crc_errors = 0;
 static u8 ds18b20_aqua__disconnects = 0;
-static u8 ds18b20_aqua__temperature_lsb = 0;
-static u8 ds18b20_aqua__temperature_msb = 0;
+static u16 ds18b20_aqua__temperatureX16 = 0;
 
 //Whether reset procedure detect presence pulse or not
 ;
@@ -17660,8 +17662,7 @@ static u8 ds18b20_aqua__temperature_msb = 0;
 ;
 ;
 
-//Temperature
-;
+//Temperature (must be divided by 16 to convert to degrees)
 ;
 ;
 
@@ -17686,8 +17687,7 @@ typedef struct {
     u8 (* const get_updated_deciseconds_ago)();
     u8 (* const get_disconnects)();
     u8 (* const get_crc_errors)();
-    u8 (* const get_temperature_lsb)();
-    u8 (* const get_temperature_msb)();
+    u16 (* const get_temperatureX16)();
 } ds18b20_aqua_t;
 
 extern ds18b20_aqua_t const ds18b20_aqua;
@@ -17713,34 +17713,20 @@ static AKAT_FORCE_INLINE u8 ds18b20_aqua__get_crc_errors__impl() {
 #undef get_disconnects__impl
 #undef get_updated_deciseconds_ago__impl
 }
-static AKAT_FORCE_INLINE u8 ds18b20_aqua__get_temperature_lsb__impl() {
+static AKAT_FORCE_INLINE u16 ds18b20_aqua__get_temperatureX16__impl() {
 #define get_crc_errors__impl ds18b20_aqua__get_crc_errors__impl
 #define get_disconnects__impl ds18b20_aqua__get_disconnects__impl
-#define get_temperature_lsb__impl ds18b20_aqua__get_temperature_lsb__impl
+#define get_temperatureX16__impl ds18b20_aqua__get_temperatureX16__impl
 #define get_updated_deciseconds_ago__impl ds18b20_aqua__get_updated_deciseconds_ago__impl
-    return ds18b20_aqua__temperature_lsb;
+    return ds18b20_aqua__temperatureX16;
 #undef get_crc_errors__impl
 #undef get_disconnects__impl
-#undef get_temperature_lsb__impl
-#undef get_updated_deciseconds_ago__impl
-}
-static AKAT_FORCE_INLINE u8 ds18b20_aqua__get_temperature_msb__impl() {
-#define get_crc_errors__impl ds18b20_aqua__get_crc_errors__impl
-#define get_disconnects__impl ds18b20_aqua__get_disconnects__impl
-#define get_temperature_lsb__impl ds18b20_aqua__get_temperature_lsb__impl
-#define get_temperature_msb__impl ds18b20_aqua__get_temperature_msb__impl
-#define get_updated_deciseconds_ago__impl ds18b20_aqua__get_updated_deciseconds_ago__impl
-    return ds18b20_aqua__temperature_msb;
-#undef get_crc_errors__impl
-#undef get_disconnects__impl
-#undef get_temperature_lsb__impl
-#undef get_temperature_msb__impl
+#undef get_temperatureX16__impl
 #undef get_updated_deciseconds_ago__impl
 }
 #define get_crc_errors__impl ds18b20_aqua__get_crc_errors__impl
 #define get_disconnects__impl ds18b20_aqua__get_disconnects__impl
-#define get_temperature_lsb__impl ds18b20_aqua__get_temperature_lsb__impl
-#define get_temperature_msb__impl ds18b20_aqua__get_temperature_msb__impl
+#define get_temperatureX16__impl ds18b20_aqua__get_temperatureX16__impl
 #define get_updated_deciseconds_ago__impl ds18b20_aqua__get_updated_deciseconds_ago__impl
 
 ds18b20_aqua_t const ds18b20_aqua = {.get_updated_deciseconds_ago = &get_updated_deciseconds_ago__impl
@@ -17749,21 +17735,17 @@ ds18b20_aqua_t const ds18b20_aqua = {.get_updated_deciseconds_ago = &get_updated
                                              ,
                                      .get_crc_errors = &get_crc_errors__impl
                                              ,
-                                     .get_temperature_lsb = &get_temperature_lsb__impl
-                                             ,
-                                     .get_temperature_msb = &get_temperature_msb__impl
+                                     .get_temperatureX16 = &get_temperatureX16__impl
                                     };
 
 
 #undef get_crc_errors__impl
 #undef get_disconnects__impl
-#undef get_temperature_lsb__impl
-#undef get_temperature_msb__impl
+#undef get_temperatureX16__impl
 #undef get_updated_deciseconds_ago__impl
 #define get_crc_errors__impl ds18b20_aqua__get_crc_errors__impl
 #define get_disconnects__impl ds18b20_aqua__get_disconnects__impl
-#define get_temperature_lsb__impl ds18b20_aqua__get_temperature_lsb__impl
-#define get_temperature_msb__impl ds18b20_aqua__get_temperature_msb__impl
+#define get_temperatureX16__impl ds18b20_aqua__get_temperatureX16__impl
 #define get_updated_deciseconds_ago__impl ds18b20_aqua__get_updated_deciseconds_ago__impl
 
 
@@ -17771,10 +17753,8 @@ ds18b20_aqua_t const ds18b20_aqua = {.get_updated_deciseconds_ago = &get_updated
 
 #define get_crc_errors__impl ds18b20_aqua__get_crc_errors__impl
 #define get_disconnects__impl ds18b20_aqua__get_disconnects__impl
-#define get_temperature_lsb__impl ds18b20_aqua__get_temperature_lsb__impl
-#define get_temperature_msb__impl ds18b20_aqua__get_temperature_msb__impl
+#define get_temperatureX16__impl ds18b20_aqua__get_temperatureX16__impl
 #define get_updated_deciseconds_ago__impl ds18b20_aqua__get_updated_deciseconds_ago__impl
-
 
 
 
@@ -17784,8 +17764,7 @@ ds18b20_aqua_t const ds18b20_aqua = {.get_updated_deciseconds_ago = &get_updated
 
 #undef get_crc_errors__impl
 #undef get_disconnects__impl
-#undef get_temperature_lsb__impl
-#undef get_temperature_msb__impl
+#undef get_temperatureX16__impl
 #undef get_updated_deciseconds_ago__impl
 ;
 
@@ -18071,8 +18050,7 @@ static u8 ds18b20_case__scratchpad[9] = {};
 static u8 ds18b20_case__updated_deciseconds_ago = 255;
 static u8 ds18b20_case__crc_errors = 0;
 static u8 ds18b20_case__disconnects = 0;
-static u8 ds18b20_case__temperature_lsb = 0;
-static u8 ds18b20_case__temperature_msb = 0;
+static u16 ds18b20_case__temperatureX16 = 0;
 
 //Whether reset procedure detect presence pulse or not
 ;
@@ -18088,8 +18066,7 @@ static u8 ds18b20_case__temperature_msb = 0;
 ;
 ;
 
-//Temperature
-;
+//Temperature (must be divided by 16 to convert to degrees)
 ;
 ;
 
@@ -18114,8 +18091,7 @@ typedef struct {
     u8 (* const get_updated_deciseconds_ago)();
     u8 (* const get_disconnects)();
     u8 (* const get_crc_errors)();
-    u8 (* const get_temperature_lsb)();
-    u8 (* const get_temperature_msb)();
+    u16 (* const get_temperatureX16)();
 } ds18b20_case_t;
 
 extern ds18b20_case_t const ds18b20_case;
@@ -18141,34 +18117,20 @@ static AKAT_FORCE_INLINE u8 ds18b20_case__get_crc_errors__impl() {
 #undef get_disconnects__impl
 #undef get_updated_deciseconds_ago__impl
 }
-static AKAT_FORCE_INLINE u8 ds18b20_case__get_temperature_lsb__impl() {
+static AKAT_FORCE_INLINE u16 ds18b20_case__get_temperatureX16__impl() {
 #define get_crc_errors__impl ds18b20_case__get_crc_errors__impl
 #define get_disconnects__impl ds18b20_case__get_disconnects__impl
-#define get_temperature_lsb__impl ds18b20_case__get_temperature_lsb__impl
+#define get_temperatureX16__impl ds18b20_case__get_temperatureX16__impl
 #define get_updated_deciseconds_ago__impl ds18b20_case__get_updated_deciseconds_ago__impl
-    return ds18b20_case__temperature_lsb;
+    return ds18b20_case__temperatureX16;
 #undef get_crc_errors__impl
 #undef get_disconnects__impl
-#undef get_temperature_lsb__impl
-#undef get_updated_deciseconds_ago__impl
-}
-static AKAT_FORCE_INLINE u8 ds18b20_case__get_temperature_msb__impl() {
-#define get_crc_errors__impl ds18b20_case__get_crc_errors__impl
-#define get_disconnects__impl ds18b20_case__get_disconnects__impl
-#define get_temperature_lsb__impl ds18b20_case__get_temperature_lsb__impl
-#define get_temperature_msb__impl ds18b20_case__get_temperature_msb__impl
-#define get_updated_deciseconds_ago__impl ds18b20_case__get_updated_deciseconds_ago__impl
-    return ds18b20_case__temperature_msb;
-#undef get_crc_errors__impl
-#undef get_disconnects__impl
-#undef get_temperature_lsb__impl
-#undef get_temperature_msb__impl
+#undef get_temperatureX16__impl
 #undef get_updated_deciseconds_ago__impl
 }
 #define get_crc_errors__impl ds18b20_case__get_crc_errors__impl
 #define get_disconnects__impl ds18b20_case__get_disconnects__impl
-#define get_temperature_lsb__impl ds18b20_case__get_temperature_lsb__impl
-#define get_temperature_msb__impl ds18b20_case__get_temperature_msb__impl
+#define get_temperatureX16__impl ds18b20_case__get_temperatureX16__impl
 #define get_updated_deciseconds_ago__impl ds18b20_case__get_updated_deciseconds_ago__impl
 
 ds18b20_case_t const ds18b20_case = {.get_updated_deciseconds_ago = &get_updated_deciseconds_ago__impl
@@ -18177,21 +18139,17 @@ ds18b20_case_t const ds18b20_case = {.get_updated_deciseconds_ago = &get_updated
                                              ,
                                      .get_crc_errors = &get_crc_errors__impl
                                              ,
-                                     .get_temperature_lsb = &get_temperature_lsb__impl
-                                             ,
-                                     .get_temperature_msb = &get_temperature_msb__impl
+                                     .get_temperatureX16 = &get_temperatureX16__impl
                                     };
 
 
 #undef get_crc_errors__impl
 #undef get_disconnects__impl
-#undef get_temperature_lsb__impl
-#undef get_temperature_msb__impl
+#undef get_temperatureX16__impl
 #undef get_updated_deciseconds_ago__impl
 #define get_crc_errors__impl ds18b20_case__get_crc_errors__impl
 #define get_disconnects__impl ds18b20_case__get_disconnects__impl
-#define get_temperature_lsb__impl ds18b20_case__get_temperature_lsb__impl
-#define get_temperature_msb__impl ds18b20_case__get_temperature_msb__impl
+#define get_temperatureX16__impl ds18b20_case__get_temperatureX16__impl
 #define get_updated_deciseconds_ago__impl ds18b20_case__get_updated_deciseconds_ago__impl
 
 
@@ -18199,10 +18157,8 @@ ds18b20_case_t const ds18b20_case = {.get_updated_deciseconds_ago = &get_updated
 
 #define get_crc_errors__impl ds18b20_case__get_crc_errors__impl
 #define get_disconnects__impl ds18b20_case__get_disconnects__impl
-#define get_temperature_lsb__impl ds18b20_case__get_temperature_lsb__impl
-#define get_temperature_msb__impl ds18b20_case__get_temperature_msb__impl
+#define get_temperatureX16__impl ds18b20_case__get_temperatureX16__impl
 #define get_updated_deciseconds_ago__impl ds18b20_case__get_updated_deciseconds_ago__impl
-
 
 
 
@@ -18212,8 +18168,7 @@ ds18b20_case_t const ds18b20_case = {.get_updated_deciseconds_ago = &get_updated
 
 #undef get_crc_errors__impl
 #undef get_disconnects__impl
-#undef get_temperature_lsb__impl
-#undef get_temperature_msb__impl
+#undef get_temperatureX16__impl
 #undef get_updated_deciseconds_ago__impl
 ;
 
@@ -18250,6 +18205,10 @@ static AKAT_FORCE_INLINE void usart1_init() {
 ISR(USART1_RX_vect) {
     // TODO: Remove unused!
     AKAT_UNUSED u8 b = UDR1; // we must read here, no matter what, to clear interrupt flag
+    // TODO: Implement RX-buffer...
+    // TODO: See https://habr.com/en/post/401363/
+    // TODO: See https://revspace.nl/MHZ19#Command_0x86_.28read_concentration.29
+    // TODO: Disable ABC, see all the comments here https://github.com/letscontrolit/ESPEasy/issues/466
 }
 
 // --- - - - - - - - - - - - TX
@@ -18576,14 +18535,16 @@ ISR(USART0_RX_vect) {
 static u8 usart0_writer__akat_coroutine_state = 0;
 static u8 usart0_writer__crc = 0;
 static u8 usart0_writer__byte_to_send = 0;
-static u8 usart0_writer__byte_number_to_send = 0;
+static u8 usart0_writer__u8_to_format_and_send = 0;
+static u16 usart0_writer__u16_to_format_and_send = 0;
 static u8 usart0_writer__send_byte__akat_coroutine_state = 0;
 static u8 usart0_writer__send_byte() {
 #define akat_coroutine_state usart0_writer__send_byte__akat_coroutine_state
-#define byte_number_to_send usart0_writer__byte_number_to_send
 #define byte_to_send usart0_writer__byte_to_send
 #define crc usart0_writer__crc
 #define send_byte usart0_writer__send_byte
+#define u16_to_format_and_send usart0_writer__u16_to_format_and_send
+#define u8_to_format_and_send usart0_writer__u8_to_format_and_send
     ;
     AKAT_HOT_CODE;
 
@@ -18624,19 +18585,98 @@ akat_coroutine_l_2:
 akat_coroutine_l_end:
     return akat_coroutine_state;
 #undef akat_coroutine_state
-#undef byte_number_to_send
 #undef byte_to_send
 #undef crc
 #undef send_byte
+#undef u16_to_format_and_send
+#undef u8_to_format_and_send
 }
-static u8 usart0_writer__send_byte_number__akat_coroutine_state = 0;
-static u8 usart0_writer__send_byte_number() {
-#define akat_coroutine_state usart0_writer__send_byte_number__akat_coroutine_state
-#define byte_number_to_send usart0_writer__byte_number_to_send
+static u8 usart0_writer__format_and_send_u8__akat_coroutine_state = 0;
+static u8 usart0_writer__format_and_send_u8() {
+#define akat_coroutine_state usart0_writer__format_and_send_u8__akat_coroutine_state
 #define byte_to_send usart0_writer__byte_to_send
 #define crc usart0_writer__crc
+#define format_and_send_u8 usart0_writer__format_and_send_u8
 #define send_byte usart0_writer__send_byte
-#define send_byte_number usart0_writer__send_byte_number
+#define u16_to_format_and_send usart0_writer__u16_to_format_and_send
+#define u8_to_format_and_send usart0_writer__u8_to_format_and_send
+    ;
+    AKAT_HOT_CODE;
+
+    switch (akat_coroutine_state) {
+    case AKAT_COROUTINE_S_START:
+        goto akat_coroutine_l_start;
+
+    case AKAT_COROUTINE_S_END:
+        goto akat_coroutine_l_end;
+
+    case 2:
+        goto akat_coroutine_l_2;
+
+    case 3:
+        goto akat_coroutine_l_3;
+    }
+
+akat_coroutine_l_start:
+    AKAT_COLD_CODE;
+
+    do {
+        if (u8_to_format_and_send) {
+            u8 h = u8_to_format_and_send / 16;
+
+            if (h) {
+                byte_to_send = HEX[h];
+
+                do {
+                    akat_coroutine_state = 2;
+akat_coroutine_l_2:
+
+                    if (send_byte() != AKAT_COROUTINE_S_START) {
+                        return akat_coroutine_state;
+                    }
+                } while (0);
+
+                ;
+            }
+
+            u8 i = u8_to_format_and_send & 15;
+            byte_to_send = HEX[i];
+
+            do {
+                akat_coroutine_state = 3;
+akat_coroutine_l_3:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return akat_coroutine_state;
+                }
+            } while (0);
+
+            ;
+        }
+    } while (0);
+
+    AKAT_COLD_CODE;
+    akat_coroutine_state = AKAT_COROUTINE_S_START;
+akat_coroutine_l_end:
+    return akat_coroutine_state;
+#undef akat_coroutine_state
+#undef byte_to_send
+#undef crc
+#undef format_and_send_u8
+#undef send_byte
+#undef u16_to_format_and_send
+#undef u8_to_format_and_send
+}
+static u8 usart0_writer__format_and_send_u16__akat_coroutine_state = 0;
+static u8 usart0_writer__format_and_send_u16() {
+#define akat_coroutine_state usart0_writer__format_and_send_u16__akat_coroutine_state
+#define byte_to_send usart0_writer__byte_to_send
+#define crc usart0_writer__crc
+#define format_and_send_u16 usart0_writer__format_and_send_u16
+#define format_and_send_u8 usart0_writer__format_and_send_u8
+#define send_byte usart0_writer__send_byte
+#define u16_to_format_and_send usart0_writer__u16_to_format_and_send
+#define u8_to_format_and_send usart0_writer__u8_to_format_and_send
     ;
     AKAT_HOT_CODE;
 
@@ -18655,31 +18695,30 @@ static u8 usart0_writer__send_byte_number() {
 
     case 4:
         goto akat_coroutine_l_4;
+
+    case 5:
+        goto akat_coroutine_l_5;
     }
 
 akat_coroutine_l_start:
     AKAT_COLD_CODE;
 
     do {
-        if (byte_number_to_send > 99) {
-            u8 d = byte_number_to_send / 100;
-            byte_to_send = '0' + d;
+        u8_to_format_and_send = (u8)(u16_to_format_and_send / 256);
 
+        if (u8_to_format_and_send) {
             do {
                 akat_coroutine_state = 2;
 akat_coroutine_l_2:
 
-                if (send_byte() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return akat_coroutine_state;
                 }
             } while (0);
 
             ;
-        }
-
-        if (byte_number_to_send > 9) {
-            u8 d = (byte_number_to_send % 100) / 10;
-            byte_to_send = '0' + d;
+            u8_to_format_and_send = (u8)u16_to_format_and_send;
+            byte_to_send = HEX[u8_to_format_and_send / 16];
 
             do {
                 akat_coroutine_state = 3;
@@ -18691,17 +18730,26 @@ akat_coroutine_l_3:
             } while (0);
 
             ;
-        }
-
-        if (byte_number_to_send) {
-            u8 d = byte_number_to_send % 10;
-            byte_to_send = '0' + d;
+            byte_to_send = HEX[u8_to_format_and_send & 15];
 
             do {
                 akat_coroutine_state = 4;
 akat_coroutine_l_4:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return akat_coroutine_state;
+                }
+            } while (0);
+
+            ;
+        } else {
+            u8_to_format_and_send = (u8)u16_to_format_and_send;
+
+            do {
+                akat_coroutine_state = 5;
+akat_coroutine_l_5:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return akat_coroutine_state;
                 }
             } while (0);
@@ -18715,19 +18763,23 @@ akat_coroutine_l_4:
 akat_coroutine_l_end:
     return akat_coroutine_state;
 #undef akat_coroutine_state
-#undef byte_number_to_send
 #undef byte_to_send
 #undef crc
+#undef format_and_send_u16
+#undef format_and_send_u8
 #undef send_byte
-#undef send_byte_number
+#undef u16_to_format_and_send
+#undef u8_to_format_and_send
 }
 static AKAT_FORCE_INLINE void usart0_writer() {
 #define akat_coroutine_state usart0_writer__akat_coroutine_state
-#define byte_number_to_send usart0_writer__byte_number_to_send
 #define byte_to_send usart0_writer__byte_to_send
 #define crc usart0_writer__crc
+#define format_and_send_u16 usart0_writer__format_and_send_u16
+#define format_and_send_u8 usart0_writer__format_and_send_u8
 #define send_byte usart0_writer__send_byte
-#define send_byte_number usart0_writer__send_byte_number
+#define u16_to_format_and_send usart0_writer__u16_to_format_and_send
+#define u8_to_format_and_send usart0_writer__u8_to_format_and_send
     ;
     AKAT_HOT_CODE;
 
@@ -18812,18 +18864,6 @@ static AKAT_FORCE_INLINE void usart0_writer() {
 
     case 26:
         goto akat_coroutine_l_26;
-
-    case 27:
-        goto akat_coroutine_l_27;
-
-    case 28:
-        goto akat_coroutine_l_28;
-
-    case 29:
-        goto akat_coroutine_l_29;
-
-    case 30:
-        goto akat_coroutine_l_30;
     }
 
 akat_coroutine_l_start:
@@ -18831,6 +18871,7 @@ akat_coroutine_l_start:
 
     do {
         //---- All variable in the thread must be static (green threads requirement)
+        ;
         ;
         ;
         ;
@@ -18844,6 +18885,7 @@ akat_coroutine_l_start:
         //Main loop in thread (thread will yield on calls to YIELD$ or WAIT_UNTIL$)
         while (1) {
             crc = 0;
+            //WRITE_STATUS(name for documentation, 1-character id for protocol, type1 val1, type2 val2, ...)
             byte_to_send = ' ';
 
             do {
@@ -18869,14 +18911,15 @@ akat_coroutine_l_3:
 
             ;
             /*
-              COMMPROTO: A1: UART0: usart0_overflow_count
-            */byte_number_to_send = usart0_overflow_count;
+              COMMPROTO: A1: UART0: u8 usart0_overflow_count
+            */
+            u8_to_format_and_send = usart0_overflow_count;
 
             do {
                 akat_coroutine_state = 4;
 akat_coroutine_l_4:
 
-                if (send_byte_number() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
@@ -18908,14 +18951,15 @@ akat_coroutine_l_6:
 
             ;
             /*
-              COMMPROTO: B1: "Aquarium temperature": ds18b20_aqua.get_crc_errors()
-            */byte_number_to_send = ds18b20_aqua.get_crc_errors();
+              COMMPROTO: B1: "Aquarium temperature": u8 ds18b20_aqua.get_crc_errors()
+            */
+            u8_to_format_and_send = ds18b20_aqua.get_crc_errors();
 
             do {
                 akat_coroutine_state = 7;
 akat_coroutine_l_7:
 
-                if (send_byte_number() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
@@ -18934,14 +18978,15 @@ akat_coroutine_l_8:
 
             ;
             /*
-              COMMPROTO: B2: "Aquarium temperature": ds18b20_aqua.get_disconnects()
-            */byte_number_to_send = ds18b20_aqua.get_disconnects();
+              COMMPROTO: B2: "Aquarium temperature": u8 ds18b20_aqua.get_disconnects()
+            */
+            u8_to_format_and_send = ds18b20_aqua.get_disconnects();
 
             do {
                 akat_coroutine_state = 9;
 akat_coroutine_l_9:
 
-                if (send_byte_number() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
@@ -18960,14 +19005,15 @@ akat_coroutine_l_10:
 
             ;
             /*
-              COMMPROTO: B3: "Aquarium temperature": ds18b20_aqua.get_temperature_msb()
-            */byte_number_to_send = ds18b20_aqua.get_temperature_msb();
+              COMMPROTO: B3: "Aquarium temperature": u16 ds18b20_aqua.get_temperatureX16()
+            */
+            u16_to_format_and_send = ds18b20_aqua.get_temperatureX16();
 
             do {
                 akat_coroutine_state = 11;
 akat_coroutine_l_11:
 
-                if (send_byte_number() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
@@ -18986,20 +19032,22 @@ akat_coroutine_l_12:
 
             ;
             /*
-              COMMPROTO: B4: "Aquarium temperature": ds18b20_aqua.get_temperature_lsb()
-            */byte_number_to_send = ds18b20_aqua.get_temperature_lsb();
+              COMMPROTO: B4: "Aquarium temperature": u8 ds18b20_aqua.get_updated_deciseconds_ago()
+            */
+            u8_to_format_and_send = ds18b20_aqua.get_updated_deciseconds_ago();
 
             do {
                 akat_coroutine_state = 13;
 akat_coroutine_l_13:
 
-                if (send_byte_number() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
 
             ;
-            byte_to_send = ',';
+            ;
+            byte_to_send = ' ';
 
             do {
                 akat_coroutine_state = 14;
@@ -19011,26 +19059,11 @@ akat_coroutine_l_14:
             } while (0);
 
             ;
-            /*
-              COMMPROTO: B5: "Aquarium temperature": ds18b20_aqua.get_updated_deciseconds_ago()
-            */byte_number_to_send = ds18b20_aqua.get_updated_deciseconds_ago();
+            byte_to_send = 'C';
 
             do {
                 akat_coroutine_state = 15;
 akat_coroutine_l_15:
-
-                if (send_byte_number() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            ;
-            byte_to_send = ' ';
-
-            do {
-                akat_coroutine_state = 16;
-akat_coroutine_l_16:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19038,7 +19071,22 @@ akat_coroutine_l_16:
             } while (0);
 
             ;
-            byte_to_send = 'C';
+            /*
+              COMMPROTO: C1: "Case temperature": u8 ds18b20_case.get_crc_errors()
+            */
+            u8_to_format_and_send = ds18b20_case.get_crc_errors();
+
+            do {
+                akat_coroutine_state = 16;
+akat_coroutine_l_16:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
 
             do {
                 akat_coroutine_state = 17;
@@ -19051,14 +19099,15 @@ akat_coroutine_l_17:
 
             ;
             /*
-              COMMPROTO: C1: "Case temperature": ds18b20_case.get_crc_errors()
-            */byte_number_to_send = ds18b20_case.get_crc_errors();
+              COMMPROTO: C2: "Case temperature": u8 ds18b20_case.get_disconnects()
+            */
+            u8_to_format_and_send = ds18b20_case.get_disconnects();
 
             do {
                 akat_coroutine_state = 18;
 akat_coroutine_l_18:
 
-                if (send_byte_number() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
@@ -19077,14 +19126,15 @@ akat_coroutine_l_19:
 
             ;
             /*
-              COMMPROTO: C2: "Case temperature": ds18b20_case.get_disconnects()
-            */byte_number_to_send = ds18b20_case.get_disconnects();
+              COMMPROTO: C3: "Case temperature": u16 ds18b20_case.get_temperatureX16()
+            */
+            u16_to_format_and_send = ds18b20_case.get_temperatureX16();
 
             do {
                 akat_coroutine_state = 20;
 akat_coroutine_l_20:
 
-                if (send_byte_number() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
@@ -19103,20 +19153,23 @@ akat_coroutine_l_21:
 
             ;
             /*
-              COMMPROTO: C3: "Case temperature": ds18b20_case.get_temperature_msb()
-            */byte_number_to_send = ds18b20_case.get_temperature_msb();
+              COMMPROTO: C4: "Case temperature": u8 ds18b20_case.get_updated_deciseconds_ago()
+            */
+            u8_to_format_and_send = ds18b20_case.get_updated_deciseconds_ago();
 
             do {
                 akat_coroutine_state = 22;
 akat_coroutine_l_22:
 
-                if (send_byte_number() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
 
             ;
-            byte_to_send = ',';
+            ;
+            //Done writing status, send: CRC\r\n
+            byte_to_send = ' ';
 
             do {
                 akat_coroutine_state = 23;
@@ -19128,21 +19181,19 @@ akat_coroutine_l_23:
             } while (0);
 
             ;
-            /*
-              COMMPROTO: C4: "Case temperature": ds18b20_case.get_temperature_lsb()
-            */byte_number_to_send = ds18b20_case.get_temperature_lsb();
+            u8_to_format_and_send = crc;
 
             do {
                 akat_coroutine_state = 24;
 akat_coroutine_l_24:
 
-                if (send_byte_number() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
 
             ;
-            byte_to_send = ',';
+            byte_to_send = '\r';
 
             do {
                 akat_coroutine_state = 25;
@@ -19154,63 +19205,11 @@ akat_coroutine_l_25:
             } while (0);
 
             ;
-            /*
-              COMMPROTO: C5: "Case temperature": ds18b20_case.get_updated_deciseconds_ago()
-            */byte_number_to_send = ds18b20_case.get_updated_deciseconds_ago();
+            byte_to_send = '\n';
 
             do {
                 akat_coroutine_state = 26;
 akat_coroutine_l_26:
-
-                if (send_byte_number() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            ;
-            //Done writing status, send: CRC\r\n
-            byte_to_send = ' ';
-
-            do {
-                akat_coroutine_state = 27;
-akat_coroutine_l_27:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            byte_number_to_send = crc;
-
-            do {
-                akat_coroutine_state = 28;
-akat_coroutine_l_28:
-
-                if (send_byte_number() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            byte_to_send = '\r';
-
-            do {
-                akat_coroutine_state = 29;
-akat_coroutine_l_29:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            byte_to_send = '\n';
-
-            do {
-                akat_coroutine_state = 30;
-akat_coroutine_l_30:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19226,11 +19225,13 @@ akat_coroutine_l_30:
 akat_coroutine_l_end:
     return;
 #undef akat_coroutine_state
-#undef byte_number_to_send
 #undef byte_to_send
 #undef crc
+#undef format_and_send_u16
+#undef format_and_send_u8
 #undef send_byte
-#undef send_byte_number
+#undef u16_to_format_and_send
+#undef u8_to_format_and_send
 }
 
 ;
@@ -20505,8 +20506,7 @@ akat_coroutine_l_14:
 
                         if (ds18b20_aqua__scratchpad[8] == crc) {//CRC is OK
                             ds18b20_aqua__updated_deciseconds_ago = 0;
-                            ds18b20_aqua__temperature_lsb = ds18b20_aqua__scratchpad[0];
-                            ds18b20_aqua__temperature_msb = ds18b20_aqua__scratchpad[1];
+                            ds18b20_aqua__temperatureX16 = ((u16)ds18b20_aqua__scratchpad[1]) * 256 + ds18b20_aqua__scratchpad[0];
                         } else {//CRC is incorrect
                             ds18b20_aqua__crc_errors += AKAT_ONE;
 
@@ -20530,8 +20530,7 @@ akat_coroutine_l_15:
 
                         if (ds18b20_case__scratchpad[8] == crc) {//CRC is OK
                             ds18b20_case__updated_deciseconds_ago = 0;
-                            ds18b20_case__temperature_lsb = ds18b20_case__scratchpad[0];
-                            ds18b20_case__temperature_msb = ds18b20_case__scratchpad[1];
+                            ds18b20_case__temperatureX16 = ((u16)ds18b20_case__scratchpad[1]) * 256 + ds18b20_case__scratchpad[0];
                         } else {//CRC is incorrect
                             ds18b20_case__crc_errors += AKAT_ONE;
 

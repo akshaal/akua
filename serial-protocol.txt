@@ -1,11 +1,9 @@
-COMMPROTO: A1: UART0: usart0_overflow_count
-COMMPROTO: B1: Aquarium temperature: ds18b20_aqua.get_crc_errors
-COMMPROTO: B2: Aquarium temperature: ds18b20_aqua.get_disconnects
-COMMPROTO: B3: Aquarium temperature: ds18b20_aqua.get_temperature_msb
-COMMPROTO: B4: Aquarium temperature: ds18b20_aqua.get_temperature_lsb
-COMMPROTO: B5: Aquarium temperature: ds18b20_aqua.get_updated_deciseconds_ago
-COMMPROTO: C1: Case temperature: ds18b20_case.get_crc_errors
-COMMPROTO: C2: Case temperature: ds18b20_case.get_disconnects
-COMMPROTO: C3: Case temperature: ds18b20_case.get_temperature_msb
-COMMPROTO: C4: Case temperature: ds18b20_case.get_temperature_lsb
-COMMPROTO: C5: Case temperature: ds18b20_case.get_updated_deciseconds_ago
+COMMPROTO: A1: UART0: u8 usart0_overflow_count
+COMMPROTO: B1: Aquarium temperature: u8 ds18b20_aqua.get_crc_errors
+COMMPROTO: B2: Aquarium temperature: u8 ds18b20_aqua.get_disconnects
+COMMPROTO: B3: Aquarium temperature: u16 ds18b20_aqua.get_temperatureX16
+COMMPROTO: B4: Aquarium temperature: u8 ds18b20_aqua.get_updated_deciseconds_ago
+COMMPROTO: C1: Case temperature: u8 ds18b20_case.get_crc_errors
+COMMPROTO: C2: Case temperature: u8 ds18b20_case.get_disconnects
+COMMPROTO: C3: Case temperature: u16 ds18b20_case.get_temperatureX16
+COMMPROTO: C4: Case temperature: u8 ds18b20_case.get_updated_deciseconds_ago

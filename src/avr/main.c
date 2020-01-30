@@ -29,6 +29,9 @@
 X_CPU$(cpu_freq = 16000000);
 
 
+static const char HEX[] = "0123456789ABCDEF";
+
+
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -322,7 +325,8 @@ THREAD$(usart0_writer, state_type = u8) {
     // ---- All variable in the thread must be static (green threads requirement)
     STATIC_VAR$(u8 crc);
     STATIC_VAR$(u8 byte_to_send);
-    STATIC_VAR$(u8 byte_number_to_send);
+    STATIC_VAR$(u8 u8_to_format_and_send);
+    STATIC_VAR$(u16 u16_to_format_and_send);
 
     // ---- Subroutines can yield unlike functions
 
@@ -334,20 +338,29 @@ THREAD$(usart0_writer, state_type = u8) {
         crc = akat_crc_add(crc, byte_to_send);
     }
 
-    SUB$(send_byte_number) {
-        if (byte_number_to_send > 99) {
-            u8 d = byte_number_to_send / 100;
-            byte_to_send = '0' + d; CALL$(send_byte);
-        }
+    SUB$(format_and_send_u8) {
+        if (u8_to_format_and_send) {
+            u8 h = u8_to_format_and_send / 16;
+            if (h) {
+                byte_to_send = HEX[h]; CALL$(send_byte);
+            }
 
-        if (byte_number_to_send > 9) {
-            u8 d = (byte_number_to_send % 100) / 10;
-            byte_to_send = '0' + d; CALL$(send_byte);
+            u8 i = u8_to_format_and_send & 15;
+            byte_to_send = HEX[i]; CALL$(send_byte);
         }
+    }
 
-        if (byte_number_to_send) {
-            u8 d = byte_number_to_send % 10;
-            byte_to_send = '0' + d; CALL$(send_byte);
+    SUB$(format_and_send_u16) {
+        u8_to_format_and_send = (u8)(u16_to_format_and_send / 256);
+        if (u8_to_format_and_send) {
+            CALL$(format_and_send_u8);
+
+            u8_to_format_and_send = (u8)u16_to_format_and_send;
+            byte_to_send = HEX[u8_to_format_and_send / 16]; CALL$(send_byte);
+            byte_to_send = HEX[u8_to_format_and_send & 15]; CALL$(send_byte);
+        } else {
+            u8_to_format_and_send = (u8)u16_to_format_and_send;
+            CALL$(format_and_send_u8);
         }
     }
 
@@ -360,7 +373,8 @@ THREAD$(usart0_writer, state_type = u8) {
             /*
               COMMPROTO: ${id}${loop.index+1}: ${name}: ${arg}
             */
-            byte_number_to_send = ${arg}; CALL$(send_byte_number);
+            <% [argt, argn] = arg.split(" ", 1) %>
+            ${argt}_to_format_and_send = ${argn}; CALL$(format_and_send_${argt});
             % if not loop.last:
                 byte_to_send = ','; CALL$(send_byte);
             % endif
@@ -372,27 +386,27 @@ THREAD$(usart0_writer, state_type = u8) {
     while(1) {
         crc = 0;
 
-        WRITE_STATUS$(UART0, A, usart0_overflow_count);
+        // WRITE_STATUS(name for documentation, 1-character id for protocol, type1 val1, type2 val2, ...)
+
+        WRITE_STATUS$(UART0, A, u8 usart0_overflow_count);
 
         WRITE_STATUS$("Aquarium temperature",
                       B,
-                      ds18b20_aqua.get_crc_errors(),
-                      ds18b20_aqua.get_disconnects(),
-                      ds18b20_aqua.get_temperature_msb(),
-                      ds18b20_aqua.get_temperature_lsb(),
-                      ds18b20_aqua.get_updated_deciseconds_ago());
+                      u8 ds18b20_aqua.get_crc_errors(),
+                      u8 ds18b20_aqua.get_disconnects(),
+                      u16 ds18b20_aqua.get_temperatureX16(),
+                      u8 ds18b20_aqua.get_updated_deciseconds_ago());
 
         WRITE_STATUS$("Case temperature",
                       C,
-                      ds18b20_case.get_crc_errors(),
-                      ds18b20_case.get_disconnects(),
-                      ds18b20_case.get_temperature_msb(),
-                      ds18b20_case.get_temperature_lsb(),
-                      ds18b20_case.get_updated_deciseconds_ago());
+                      u8 ds18b20_case.get_crc_errors(),
+                      u8 ds18b20_case.get_disconnects(),
+                      u16 ds18b20_case.get_temperatureX16(),
+                      u8 ds18b20_case.get_updated_deciseconds_ago());
 
         // Done writing status, send: CRC\r\n
         byte_to_send = ' '; CALL$(send_byte);
-        byte_number_to_send = crc; CALL$(send_byte_number);
+        u8_to_format_and_send = crc; CALL$(format_and_send_u8);
         byte_to_send = '\r'; CALL$(send_byte);
         byte_to_send = '\n'; CALL$(send_byte);
     }
