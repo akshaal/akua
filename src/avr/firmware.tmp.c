@@ -18308,10 +18308,12 @@ akat_coroutine_l_end:
 #undef byte_to_send
 #undef send_byte
 }
-static AKAT_FORCE_INLINE void usart1_writer() {
-#define akat_coroutine_state usart1_writer__akat_coroutine_state
+static u8 usart1_writer__send_read_gas_command__akat_coroutine_state = 0;
+static u8 usart1_writer__send_read_gas_command() {
+#define akat_coroutine_state usart1_writer__send_read_gas_command__akat_coroutine_state
 #define byte_to_send usart1_writer__byte_to_send
 #define send_byte usart1_writer__send_byte
+#define send_read_gas_command usart1_writer__send_read_gas_command
     ;
     AKAT_HOT_CODE;
 
@@ -18348,9 +18350,149 @@ static AKAT_FORCE_INLINE void usart1_writer() {
 
     case 10:
         goto akat_coroutine_l_10;
+    }
 
-    case 11:
-        goto akat_coroutine_l_11;
+akat_coroutine_l_start:
+    AKAT_COLD_CODE;
+
+    do {
+        //Send command sequence
+        byte_to_send = 0xFF;
+
+        do {
+            akat_coroutine_state = 2;
+akat_coroutine_l_2:
+
+            if (send_byte() != AKAT_COROUTINE_S_START) {
+                return akat_coroutine_state;
+            }
+        } while (0);
+
+        ; //Header
+        byte_to_send = 0x01;
+
+        do {
+            akat_coroutine_state = 3;
+akat_coroutine_l_3:
+
+            if (send_byte() != AKAT_COROUTINE_S_START) {
+                return akat_coroutine_state;
+            }
+        } while (0);
+
+        ; //Sensor #1
+        byte_to_send = 0x86;
+
+        do {
+            akat_coroutine_state = 4;
+akat_coroutine_l_4:
+
+            if (send_byte() != AKAT_COROUTINE_S_START) {
+                return akat_coroutine_state;
+            }
+        } while (0);
+
+        ; //Command (Read gas concentration)
+        //5 times zero
+        byte_to_send = 0x00;
+
+        do {
+            akat_coroutine_state = 5;
+akat_coroutine_l_5:
+
+            if (send_byte() != AKAT_COROUTINE_S_START) {
+                return akat_coroutine_state;
+            }
+        } while (0);
+
+        ;
+
+        do {
+            akat_coroutine_state = 6;
+akat_coroutine_l_6:
+
+            if (send_byte() != AKAT_COROUTINE_S_START) {
+                return akat_coroutine_state;
+            }
+        } while (0);
+
+        ;
+
+        do {
+            akat_coroutine_state = 7;
+akat_coroutine_l_7:
+
+            if (send_byte() != AKAT_COROUTINE_S_START) {
+                return akat_coroutine_state;
+            }
+        } while (0);
+
+        ;
+
+        do {
+            akat_coroutine_state = 8;
+akat_coroutine_l_8:
+
+            if (send_byte() != AKAT_COROUTINE_S_START) {
+                return akat_coroutine_state;
+            }
+        } while (0);
+
+        ;
+
+        do {
+            akat_coroutine_state = 9;
+akat_coroutine_l_9:
+
+            if (send_byte() != AKAT_COROUTINE_S_START) {
+                return akat_coroutine_state;
+            }
+        } while (0);
+
+        ;
+        byte_to_send = 0x79;
+
+        do {
+            akat_coroutine_state = 10;
+akat_coroutine_l_10:
+
+            if (send_byte() != AKAT_COROUTINE_S_START) {
+                return akat_coroutine_state;
+            }
+        } while (0);
+
+        ; //CRC
+    } while (0);
+
+    AKAT_COLD_CODE;
+    akat_coroutine_state = AKAT_COROUTINE_S_START;
+akat_coroutine_l_end:
+    return akat_coroutine_state;
+#undef akat_coroutine_state
+#undef byte_to_send
+#undef send_byte
+#undef send_read_gas_command
+}
+static AKAT_FORCE_INLINE void usart1_writer() {
+#define akat_coroutine_state usart1_writer__akat_coroutine_state
+#define byte_to_send usart1_writer__byte_to_send
+#define send_byte usart1_writer__send_byte
+#define send_read_gas_command usart1_writer__send_read_gas_command
+    ;
+    AKAT_HOT_CODE;
+
+    switch (akat_coroutine_state) {
+    case AKAT_COROUTINE_S_START:
+        goto akat_coroutine_l_start;
+
+    case AKAT_COROUTINE_S_END:
+        goto akat_coroutine_l_end;
+
+    case 2:
+        goto akat_coroutine_l_2;
+
+    case 3:
+        goto akat_coroutine_l_3;
     }
 
 akat_coroutine_l_start:
@@ -18375,112 +18517,17 @@ akat_coroutine_l_2:
             } while (0);
 
             ;
-            //Send command sequence
-            byte_to_send = 0xFF;
 
             do {
                 akat_coroutine_state = 3;
 akat_coroutine_l_3:
 
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ; //Header
-            byte_to_send = 0x01;
-
-            do {
-                akat_coroutine_state = 4;
-akat_coroutine_l_4:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ; //Sensor #1
-            byte_to_send = 0x86;
-
-            do {
-                akat_coroutine_state = 5;
-akat_coroutine_l_5:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ; //Command (Read gas concentration)
-            //5 times zero
-            byte_to_send = 0x00;
-
-            do {
-                akat_coroutine_state = 6;
-akat_coroutine_l_6:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
+                if (send_read_gas_command() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
 
             ;
-
-            do {
-                akat_coroutine_state = 7;
-akat_coroutine_l_7:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-
-            do {
-                akat_coroutine_state = 8;
-akat_coroutine_l_8:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-
-            do {
-                akat_coroutine_state = 9;
-akat_coroutine_l_9:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-
-            do {
-                akat_coroutine_state = 10;
-akat_coroutine_l_10:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            byte_to_send = 0x79;
-
-            do {
-                akat_coroutine_state = 11;
-akat_coroutine_l_11:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ; //CRC
         }
     } while (0);
 
@@ -18491,6 +18538,7 @@ akat_coroutine_l_end:
 #undef akat_coroutine_state
 #undef byte_to_send
 #undef send_byte
+#undef send_read_gas_command
 }
 
 ;

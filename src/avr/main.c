@@ -268,14 +268,7 @@ THREAD$(usart1_writer) {
         UDR1 = byte_to_send;
     }
 
-    while(1) {
-        // TODO: Disable ABC, see all the comments here https://github.com/letscontrolit/ESPEasy/issues/466
-
-        // Wait until it's time to send the command sequence
-        // This counter will be decremented every 0.1 second in the X_EVERY_DECISECOND$ above
-        co2_command_countdown = AK_CO2_DECISECONDS_DELAY;
-        WAIT_UNTIL$(co2_command_countdown == 0, unlikely);
-
+    SUB$(send_read_gas_command) {
         // Send command sequence
         byte_to_send = 0xFF; CALL$(send_byte); // Header
         byte_to_send = 0x01; CALL$(send_byte); // Sensor #1
@@ -290,6 +283,17 @@ THREAD$(usart1_writer) {
         CALL$(send_byte);
 
         byte_to_send = 0x79; CALL$(send_byte); // CRC
+    }
+
+    while(1) {
+        // TODO: Disable ABC, see all the comments here https://github.com/letscontrolit/ESPEasy/issues/466
+
+        // Wait until it's time to send the command sequence
+        // This counter will be decremented every 0.1 second in the X_EVERY_DECISECOND$ above
+        co2_command_countdown = AK_CO2_DECISECONDS_DELAY;
+        WAIT_UNTIL$(co2_command_countdown == 0, unlikely);
+
+        CALL$(send_read_gas_command);
     }
 }
 
