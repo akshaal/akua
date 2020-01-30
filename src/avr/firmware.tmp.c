@@ -396,7 +396,7 @@ static AKAT_FORCE_INLINE AKAT_CONST uint32_t akat_cpu_freq_hz() {
 ;
 
 
-static const char HEX[] = "0123456789ABCDEF";
+static const char HEX[16] = "0123456789abcdef";
 
 
 ////////////////////////////////////////////////////////////////////////////////
