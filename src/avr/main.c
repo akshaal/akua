@@ -6,26 +6,11 @@
 #define AK_USART0_BAUD_RATE     9600
 #define AK_USART0_FRAME_FORMAT  (H(UCSZ00) | H(UCSZ01))
 
-// Here is what we are going to use for communication with NH-Z19 (CO2 Sensor)
-// Frame format is 8N1 (8 bits, no parity, 1 stop bit)
-// We can't change this. This is from the specification for the sensor.
-#define AK_USART1_BAUD_RATE     9600
-#define AK_USART1_FRAME_FORMAT  (H(UCSZ10) | H(UCSZ11))
-
-// Delay in deciseconds between commands to MH-Z19 sensor
-#define AK_CO2_DECISECONDS_DELAY  3
-
 // Size of buffer for bytes we receive from USART0/USB.
 // RX-Interrupt puts bytes into the given ring buffer if there is space in it.
 // A thread takes byte from the buffer and process it.
 // Must be power of 2!
 #define AK_USART0_RX_BUF_SIZE  128
-
-// Size of buffer for bytes we receive from USART1/CO (MH-Z19).
-// RX-Interrupt puts bytes into the given ring buffer if there is space in it.
-// A thread takes byte from the buffer and process it.
-// Must be power of 2!
-#define AK_USART1_RX_BUF_SIZE  32
 
 // 16Mhz, that's external oscillator on Mega 2560.
 // This doesn't configure it here, it just tells to our build system
@@ -206,96 +191,7 @@ X_DS18B20$(ds18b20_case, A1);
 ////////////////////////////////////////////////////////////////////////////////
 // USART1 - MH-Z19 CO2 Module
 
-X_INIT$(usart1_init) {
-    // Set baud rate
-    const u16 ubrr = akat_cpu_freq_hz() / (AK_USART1_BAUD_RATE * 8L) - 1;
-    UBRR1H = ubrr >> 8;
-    UBRR1L = ubrr % 256;
-    UCSR1A = H(U2X1);
-
-    // Set frame format
-    UCSR1C = AK_USART1_FRAME_FORMAT;
-
-    // Enable transmitter, receiver and interrupt for receiver (interrupt for 'byte is received')
-    UCSR1B = H(TXEN1) | H(RXEN1) | H(RXCIE1);
-}
-
-// --- - - - - - - - - - - - RX - - - - - - - -  - - - - - - - --
-// USART1(CO2): Interrupt handler for 'byte is received' event..
-
-GLOBAL$() {
-    STATIC_VAR$(volatile u8 usart1_rx_bytes_buf[AK_USART1_RX_BUF_SIZE], initial = {});
-    STATIC_VAR$(volatile u8 usart1_overflow_count);
-    STATIC_VAR$(volatile u8 usart1_rx_next_empty_idx);
-    STATIC_VAR$(volatile u8 usart1_rx_next_read_idx);
-}
-
-ISR(USART1_RX_vect) {
-    u8 b = UDR1; // we must read here, no matter what, to clear interrupt flag
-
-    u8 new_next_empty_idx = (usart1_rx_next_empty_idx + AKAT_ONE) & (AK_USART1_RX_BUF_SIZE - 1);
-    if (new_next_empty_idx == usart1_rx_next_read_idx) {
-        usart1_overflow_count += AKAT_ONE;
-        // Don't let it overflow!
-        if (!usart1_overflow_count) {
-            usart1_overflow_count -= AKAT_ONE;
-        }
-    } else {
-        usart1_rx_bytes_buf[usart1_rx_next_empty_idx] = b;
-        usart1_rx_next_empty_idx = new_next_empty_idx;
-    }
-}
-
-// --- - - - - - - - - - - - TX - - - - - - - - - - - - - - -
-
-GLOBAL$() {
-    STATIC_VAR$(u8 co2_command_countdown);
-}
-
-X_EVERY_DECISECOND$(co2_ticker) {
-    if (co2_command_countdown) {
-        co2_command_countdown -= 1;
-    }
-}
-
-THREAD$(usart1_writer) {
-    STATIC_VAR$(u8 byte_to_send);
-
-    SUB$(send_byte) {
-        // Wait until USART0 is ready to transmit next byte
-        // from 'byte_to_send';
-        WAIT_UNTIL$(UCSR1A & H(UDRE1), unlikely);
-        UDR1 = byte_to_send;
-    }
-
-    SUB$(send_read_gas_command) {
-        // Send command sequence
-        byte_to_send = 0xFF; CALL$(send_byte); // Header
-        byte_to_send = 0x01; CALL$(send_byte); // Sensor #1
-        byte_to_send = 0x86; CALL$(send_byte); // Command (Read gas concentration)
-
-        // 5 times zero
-        byte_to_send = 0x00;
-        CALL$(send_byte);
-        CALL$(send_byte);
-        CALL$(send_byte);
-        CALL$(send_byte);
-        CALL$(send_byte);
-
-        byte_to_send = 0x79; CALL$(send_byte); // CRC
-    }
-
-    while(1) {
-        // TODO: Disable ABC, see all the comments here https://github.com/letscontrolit/ESPEasy/issues/466
-
-        // Wait until it's time to send the command sequence
-        // This counter will be decremented every 0.1 second in the X_EVERY_DECISECOND$ above
-        co2_command_countdown = AK_CO2_DECISECONDS_DELAY;
-        WAIT_UNTIL$(co2_command_countdown == 0, unlikely);
-
-        CALL$(send_read_gas_command);
-    }
-}
+X_MHZ19$(co2, uart = 1);
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -322,7 +218,7 @@ X_INIT$(usart0_init) {
 
 GLOBAL$() {
     STATIC_VAR$(volatile u8 usart0_rx_bytes_buf[AK_USART0_RX_BUF_SIZE], initial = {});
-    STATIC_VAR$(volatile u8 usart0_overflow_count);
+    STATIC_VAR$(volatile u8 usart0_rx_overflow_count);
     STATIC_VAR$(volatile u8 usart0_rx_next_empty_idx);
     STATIC_VAR$(volatile u8 usart0_rx_next_read_idx);
 }
@@ -332,10 +228,10 @@ ISR(USART0_RX_vect) {
 
     u8 new_next_empty_idx = (usart0_rx_next_empty_idx + AKAT_ONE) & (AK_USART0_RX_BUF_SIZE - 1);
     if (new_next_empty_idx == usart0_rx_next_read_idx) {
-        usart0_overflow_count += AKAT_ONE;
+        usart0_rx_overflow_count += AKAT_ONE;
         // Don't let it overflow!
-        if (!usart0_overflow_count) {
-            usart0_overflow_count -= AKAT_ONE;
+        if (!usart0_rx_overflow_count) {
+            usart0_rx_overflow_count -= AKAT_ONE;
         }
     } else {
         usart0_rx_bytes_buf[usart0_rx_next_empty_idx] = b;
@@ -414,7 +310,10 @@ THREAD$(usart0_writer, state_type = u8) {
 
         // WRITE_STATUS(name for documentation, 1-character id for protocol, type1 val1, type2 val2, ...)
 
-        WRITE_STATUS$(UART0, A, u8 usart0_overflow_count, u8 usart1_overflow_count);
+        WRITE_STATUS$(UART0,
+                      A,
+                      u8 usart0_rx_overflow_count,
+                      u8 co2.get_rx_overflow_count());
 
         WRITE_STATUS$("Aquarium temperature",
                       B,
@@ -528,7 +427,7 @@ THREAD$(usart0_reader) {
 
         switch(command_code) {
         case 'C': // TODO: Remove this crap!
-            usart0_overflow_count = command_arg;
+            usart0_rx_overflow_count = command_arg;
             break;
         }
     }

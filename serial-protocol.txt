@@ -1,5 +1,5 @@
-COMMPROTO: A1: UART0: u8 usart0_overflow_count
-COMMPROTO: A2: UART0: u8 usart1_overflow_count
+COMMPROTO: A1: UART0: u8 usart0_rx_overflow_count
+COMMPROTO: A2: UART0: u8 co2.get_rx_overflow_count
 COMMPROTO: B1: Aquarium temperature: u8 ds18b20_aqua.get_crc_errors
 COMMPROTO: B2: Aquarium temperature: u8 ds18b20_aqua.get_disconnects
 COMMPROTO: B3: Aquarium temperature: u16 ds18b20_aqua.get_temperatureX16

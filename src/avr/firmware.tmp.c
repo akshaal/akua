@@ -370,26 +370,11 @@ static AKAT_UNUSED AKAT_PURE u8 akat_x_tm1637_encode_digit(u8 const digit, u8 co
 #define AK_USART0_BAUD_RATE     9600
 #define AK_USART0_FRAME_FORMAT  (H(UCSZ00) | H(UCSZ01))
 
-// Here is what we are going to use for communication with NH-Z19 (CO2 Sensor)
-// Frame format is 8N1 (8 bits, no parity, 1 stop bit)
-// We can't change this. This is from the specification for the sensor.
-#define AK_USART1_BAUD_RATE     9600
-#define AK_USART1_FRAME_FORMAT  (H(UCSZ10) | H(UCSZ11))
-
-// Delay in deciseconds between commands to MH-Z19 sensor
-#define AK_CO2_DECISECONDS_DELAY  3
-
 // Size of buffer for bytes we receive from USART0/USB.
 // RX-Interrupt puts bytes into the given ring buffer if there is space in it.
 // A thread takes byte from the buffer and process it.
 // Must be power of 2!
 #define AK_USART0_RX_BUF_SIZE  128
-
-// Size of buffer for bytes we receive from USART1/CO (MH-Z19).
-// RX-Interrupt puts bytes into the given ring buffer if there is space in it.
-// A thread takes byte from the buffer and process it.
-// Must be power of 2!
-#define AK_USART1_RX_BUF_SIZE  32
 
 // 16Mhz, that's external oscillator on Mega 2560.
 // This doesn't configure it here, it just tells to our build system
@@ -18188,14 +18173,14 @@ ds18b20_case_t const ds18b20_case = {.get_updated_deciseconds_ago = &get_updated
 ////////////////////////////////////////////////////////////////////////////////
 // USART1 - MH-Z19 CO2 Module
 
-static AKAT_FORCE_INLINE void usart1_init() {
+static AKAT_FORCE_INLINE void co2_init() {
 //Set baud rate
-    const u16 ubrr = akat_cpu_freq_hz() / (AK_USART1_BAUD_RATE * 8L) - 1;
+    const u16 ubrr = akat_cpu_freq_hz() / (9600 * 8L) - 1;
     UBRR1H = ubrr >> 8;
     UBRR1L = ubrr % 256;
     UCSR1A = H(U2X1);
-    //Set frame format
-    UCSR1C = AK_USART1_FRAME_FORMAT;
+    //Set frame format: 8N1
+    UCSR1C = H(UCSZ10) | H(UCSZ11);
     //Enable transmitter, receiver and interrupt for receiver (interrupt for 'byte is received')
     UCSR1B = H(TXEN1) | H(RXEN1) | H(RXCIE1);
 }
@@ -18207,13 +18192,15 @@ static AKAT_FORCE_INLINE void usart1_init() {
 
 
 // --- - - - - - - - - - - - RX - - - - - - - -  - - - - - - - --
-// USART1(CO2): Interrupt handler for 'byte is received' event..
+// Interrupt handler for 'byte is received' event..
 
-static volatile u8 usart1_rx_bytes_buf[AK_USART1_RX_BUF_SIZE] = {};
-static volatile u8 usart1_overflow_count = 0;
-static volatile u8 usart1_rx_next_empty_idx = 0;
-static volatile u8 usart1_rx_next_read_idx = 0;
+static volatile u8 co2_rx_bytes_buf[32] = {};
+static volatile u8 co2_rx_overflow_count = 0;
+static volatile u8 co2_rx_next_empty_idx = 0;
+static volatile u8 co2_rx_next_read_idx = 0;
+static volatile u8 co2_crc_errors = 0;
 
+;
 ;
 ;
 ;
@@ -18223,20 +18210,160 @@ static volatile u8 usart1_rx_next_read_idx = 0;
 
 ISR(USART1_RX_vect) {
     u8 b = UDR1; // we must read here, no matter what, to clear interrupt flag
-    u8 new_next_empty_idx = (usart1_rx_next_empty_idx + AKAT_ONE) & (AK_USART1_RX_BUF_SIZE - 1);
+    u8 new_next_empty_idx = (co2_rx_next_empty_idx + AKAT_ONE) & (32 - 1);
 
-    if (new_next_empty_idx == usart1_rx_next_read_idx) {
-        usart1_overflow_count += AKAT_ONE;
+    if (new_next_empty_idx == co2_rx_next_read_idx) {
+        co2_rx_overflow_count += AKAT_ONE;
 
         // Don't let it overflow!
-        if (!usart1_overflow_count) {
-            usart1_overflow_count -= AKAT_ONE;
+        if (!co2_rx_overflow_count) {
+            co2_rx_overflow_count -= AKAT_ONE;
         }
     } else {
-        usart1_rx_bytes_buf[usart1_rx_next_empty_idx] = b;
-        usart1_rx_next_empty_idx = new_next_empty_idx;
+        co2_rx_bytes_buf[co2_rx_next_empty_idx] = b;
+        co2_rx_next_empty_idx = new_next_empty_idx;
     }
 }
+
+//  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// co2(CO2): This thread processes input from co2_rx_bytes_buf that gets populated in ISR
+
+static u8 co2_reader__akat_coroutine_state = 0;
+static u8 co2_reader__dequeued_byte = 0;
+static u8 co2_reader__crc = 0;
+static u8 co2_reader__dequeue_byte__akat_coroutine_state = 0;
+static u8 co2_reader__dequeue_byte() {
+#define akat_coroutine_state co2_reader__dequeue_byte__akat_coroutine_state
+#define crc co2_reader__crc
+#define dequeue_byte co2_reader__dequeue_byte
+#define dequeued_byte co2_reader__dequeued_byte
+    ;
+    AKAT_HOT_CODE;
+
+    switch (akat_coroutine_state) {
+    case AKAT_COROUTINE_S_START:
+        goto akat_coroutine_l_start;
+
+    case AKAT_COROUTINE_S_END:
+        goto akat_coroutine_l_end;
+
+    case 2:
+        goto akat_coroutine_l_2;
+    }
+
+akat_coroutine_l_start:
+    AKAT_COLD_CODE;
+
+    do {
+        //Wait until there is something to read
+        do {
+            akat_coroutine_state = 2;
+akat_coroutine_l_2:
+
+            if (!(co2_rx_next_empty_idx != co2_rx_next_read_idx)) {
+                AKAT_HOT_CODE;
+                return akat_coroutine_state;
+            }
+        } while (0);
+
+        ;
+        //Read byte first, then increment idx!
+        dequeued_byte = co2_rx_bytes_buf[co2_rx_next_read_idx];
+        co2_rx_next_read_idx = (co2_rx_next_read_idx + 1) & (32 - 1);
+        crc += dequeued_byte;
+    } while (0);
+
+    AKAT_COLD_CODE;
+    akat_coroutine_state = AKAT_COROUTINE_S_START;
+akat_coroutine_l_end:
+    return akat_coroutine_state;
+#undef akat_coroutine_state
+#undef crc
+#undef dequeue_byte
+#undef dequeued_byte
+}
+static AKAT_FORCE_INLINE void co2_reader() {
+#define akat_coroutine_state co2_reader__akat_coroutine_state
+#define crc co2_reader__crc
+#define dequeue_byte co2_reader__dequeue_byte
+#define dequeued_byte co2_reader__dequeued_byte
+    ;
+    AKAT_HOT_CODE;
+
+    switch (akat_coroutine_state) {
+    case AKAT_COROUTINE_S_START:
+        goto akat_coroutine_l_start;
+
+    case AKAT_COROUTINE_S_END:
+        goto akat_coroutine_l_end;
+
+    case 2:
+        goto akat_coroutine_l_2;
+
+    case 3:
+        goto akat_coroutine_l_3;
+    }
+
+akat_coroutine_l_start:
+    AKAT_COLD_CODE;
+
+    do {
+        ;
+        ;
+
+        //Gets byte from co2_rx_bytes_buf buffer.
+
+//- - - - - - - - - - -
+        //Main loop in thread (thread will yield on calls to YIELD$ or WAIT_UNTIL$)
+        while (1) {
+            crc = 0;
+
+            do {
+                akat_coroutine_state = 2;
+akat_coroutine_l_2:
+
+                if (dequeue_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+
+            if (dequeued_byte == 0xFF) {//Check CRC
+                crc = 0xFF - crc + 1;
+
+                do {
+                    akat_coroutine_state = 3;
+akat_coroutine_l_3:
+
+                    if (dequeue_byte() != AKAT_COROUTINE_S_START) {
+                        return ;
+                    }
+                } while (0);
+
+                ;
+                if (dequeued_byte == crc) {} else {//CRC doesn't match
+                }
+            }
+        }
+    } while (0);
+
+    AKAT_COLD_CODE;
+    akat_coroutine_state = AKAT_COROUTINE_S_END;
+akat_coroutine_l_end:
+    return;
+#undef akat_coroutine_state
+#undef crc
+#undef dequeue_byte
+#undef dequeued_byte
+}
+
+;
+
+
+
+
+
 
 // --- - - - - - - - - - - - TX - - - - - - - - - - - - - - -
 
@@ -18259,13 +18386,13 @@ static AKAT_FORCE_INLINE void co2_ticker() {
 
 
 
-static u8 usart1_writer__akat_coroutine_state = 0;
-static u8 usart1_writer__byte_to_send = 0;
-static u8 usart1_writer__send_byte__akat_coroutine_state = 0;
-static u8 usart1_writer__send_byte() {
-#define akat_coroutine_state usart1_writer__send_byte__akat_coroutine_state
-#define byte_to_send usart1_writer__byte_to_send
-#define send_byte usart1_writer__send_byte
+static u8 co2_writer__akat_coroutine_state = 0;
+static u8 co2_writer__byte_to_send = 0;
+static u8 co2_writer__send_byte__akat_coroutine_state = 0;
+static u8 co2_writer__send_byte() {
+#define akat_coroutine_state co2_writer__send_byte__akat_coroutine_state
+#define byte_to_send co2_writer__byte_to_send
+#define send_byte co2_writer__send_byte
     ;
     AKAT_HOT_CODE;
 
@@ -18308,12 +18435,12 @@ akat_coroutine_l_end:
 #undef byte_to_send
 #undef send_byte
 }
-static u8 usart1_writer__send_read_gas_command__akat_coroutine_state = 0;
-static u8 usart1_writer__send_read_gas_command() {
-#define akat_coroutine_state usart1_writer__send_read_gas_command__akat_coroutine_state
-#define byte_to_send usart1_writer__byte_to_send
-#define send_byte usart1_writer__send_byte
-#define send_read_gas_command usart1_writer__send_read_gas_command
+static u8 co2_writer__send_read_gas_command__akat_coroutine_state = 0;
+static u8 co2_writer__send_read_gas_command() {
+#define akat_coroutine_state co2_writer__send_read_gas_command__akat_coroutine_state
+#define byte_to_send co2_writer__byte_to_send
+#define send_byte co2_writer__send_byte
+#define send_read_gas_command co2_writer__send_read_gas_command
     ;
     AKAT_HOT_CODE;
 
@@ -18473,11 +18600,11 @@ akat_coroutine_l_end:
 #undef send_byte
 #undef send_read_gas_command
 }
-static AKAT_FORCE_INLINE void usart1_writer() {
-#define akat_coroutine_state usart1_writer__akat_coroutine_state
-#define byte_to_send usart1_writer__byte_to_send
-#define send_byte usart1_writer__send_byte
-#define send_read_gas_command usart1_writer__send_read_gas_command
+static AKAT_FORCE_INLINE void co2_writer() {
+#define akat_coroutine_state co2_writer__akat_coroutine_state
+#define byte_to_send co2_writer__byte_to_send
+#define send_byte co2_writer__send_byte
+#define send_read_gas_command co2_writer__send_read_gas_command
     ;
     AKAT_HOT_CODE;
 
@@ -18503,8 +18630,8 @@ akat_coroutine_l_start:
 
         while (1) { //TODO: Disable ABC, see all the comments here https://github.com/letscontrolit/ESPEasy/issues/466
             //Wait until it's time to send the command sequence
-            //This counter will be decremented every 0.1 second in the X_EVERY_DECISECOND$ above
-            co2_command_countdown = AK_CO2_DECISECONDS_DELAY;
+            //This counter will be incremented every 0.1 second in the X_EVERY_DECISECOND above
+            co2_command_countdown = 4;
 
             do {
                 akat_coroutine_state = 2;
@@ -18548,6 +18675,57 @@ akat_coroutine_l_end:
 
 
 
+typedef struct {
+    u8 (* const get_rx_overflow_count)();
+    u8 (* const get_crc_errors)();
+} co2_t;
+
+extern co2_t const co2;
+
+static AKAT_FORCE_INLINE u8 co2__get_rx_overflow_count__impl() {
+#define get_rx_overflow_count__impl co2__get_rx_overflow_count__impl
+    return co2_rx_overflow_count;
+#undef get_rx_overflow_count__impl
+}
+static AKAT_FORCE_INLINE u8 co2__get_crc_errors__impl() {
+#define get_crc_errors__impl co2__get_crc_errors__impl
+#define get_rx_overflow_count__impl co2__get_rx_overflow_count__impl
+    return co2_crc_errors;
+#undef get_crc_errors__impl
+#undef get_rx_overflow_count__impl
+}
+#define get_crc_errors__impl co2__get_crc_errors__impl
+#define get_rx_overflow_count__impl co2__get_rx_overflow_count__impl
+
+co2_t const co2 = {.get_rx_overflow_count = &get_rx_overflow_count__impl
+                   ,
+                   .get_crc_errors = &get_crc_errors__impl
+                  };
+
+
+#undef get_crc_errors__impl
+#undef get_rx_overflow_count__impl
+#define get_crc_errors__impl co2__get_crc_errors__impl
+#define get_rx_overflow_count__impl co2__get_rx_overflow_count__impl
+
+
+;
+
+#define get_crc_errors__impl co2__get_crc_errors__impl
+#define get_rx_overflow_count__impl co2__get_rx_overflow_count__impl
+
+
+
+
+
+#undef get_crc_errors__impl
+#undef get_rx_overflow_count__impl
+;
+
+
+
+;
+
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -18576,7 +18754,7 @@ static AKAT_FORCE_INLINE void usart0_init() {
 // USART0(USB): Interrupt handler for 'byte is received' event..
 
 static volatile u8 usart0_rx_bytes_buf[AK_USART0_RX_BUF_SIZE] = {};
-static volatile u8 usart0_overflow_count = 0;
+static volatile u8 usart0_rx_overflow_count = 0;
 static volatile u8 usart0_rx_next_empty_idx = 0;
 static volatile u8 usart0_rx_next_read_idx = 0;
 
@@ -18592,11 +18770,11 @@ ISR(USART0_RX_vect) {
     u8 new_next_empty_idx = (usart0_rx_next_empty_idx + AKAT_ONE) & (AK_USART0_RX_BUF_SIZE - 1);
 
     if (new_next_empty_idx == usart0_rx_next_read_idx) {
-        usart0_overflow_count += AKAT_ONE;
+        usart0_rx_overflow_count += AKAT_ONE;
 
         // Don't let it overflow!
-        if (!usart0_overflow_count) {
-            usart0_overflow_count -= AKAT_ONE;
+        if (!usart0_rx_overflow_count) {
+            usart0_rx_overflow_count -= AKAT_ONE;
         }
     } else {
         usart0_rx_bytes_buf[usart0_rx_next_empty_idx] = b;
@@ -18993,9 +19171,9 @@ akat_coroutine_l_3:
 
             ;
             /*
-              COMMPROTO: A1: UART0: u8 usart0_overflow_count
+              COMMPROTO: A1: UART0: u8 usart0_rx_overflow_count
             */
-            u8_to_format_and_send = usart0_overflow_count;
+            u8_to_format_and_send = usart0_rx_overflow_count;
 
             do {
                 akat_coroutine_state = 4;
@@ -19020,9 +19198,9 @@ akat_coroutine_l_5:
 
             ;
             /*
-              COMMPROTO: A2: UART0: u8 usart1_overflow_count
+              COMMPROTO: A2: UART0: u8 co2.get_rx_overflow_count()
             */
-            u8_to_format_and_send = usart1_overflow_count;
+            u8_to_format_and_send = co2.get_rx_overflow_count();
 
             do {
                 akat_coroutine_state = 6;
@@ -19705,7 +19883,7 @@ akat_coroutine_l_2:
 
             switch (command_code) {
             case 'C': //TODO: Remove this crap!
-                usart0_overflow_count = command_arg;
+                usart0_rx_overflow_count = command_arg;
                 break;
             }
         }
@@ -20771,7 +20949,7 @@ AKAT_NO_RETURN void main() {
     watchdog_init();
     ds18b20_aqua__init();
     ds18b20_case__init();
-    usart1_init();
+    co2_init();
     usart0_init();
     timer1();
     //Init
@@ -20782,7 +20960,8 @@ AKAT_NO_RETURN void main() {
     while (1) {
         watchdog_reset();
         akat_on_every_decisecond_runner();
-        usart1_writer();
+        co2_reader();
+        co2_writer();
         usart0_writer();
         usart0_reader();
         ds18b20_thread();
