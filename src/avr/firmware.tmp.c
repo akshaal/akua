@@ -18392,8 +18392,6 @@ akat_coroutine_l_start:
 //- - - - - - - - - - -
         //Main loop in thread (thread will yield on calls to YIELD$ or WAIT_UNTIL$)
         while (1) {
-            crc = 0;
-
             do {
                 akat_coroutine_state = 2;
 akat_coroutine_l_2:
@@ -18407,6 +18405,8 @@ akat_coroutine_l_2:
 try_interpret_as_command:
 
             if (dequeued_byte == 0xFF) {//0xFF means start of the command...
+                //CRC starts calculation only after 0xFF byte
+                crc = 0;
 
                 //Read command identifier
                 do {
@@ -18506,7 +18506,7 @@ akat_coroutine_l_10:
 
                     ;
                     crc -= dequeued_byte;
-                    crc = 0xFE - crc;
+                    crc = 0xFF - crc + 1;
 
                     if (dequeued_byte == crc) {
                         co2_concentration = b2 * 256 + b3;
