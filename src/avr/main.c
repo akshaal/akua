@@ -329,6 +329,12 @@ THREAD$(usart0_writer, state_type = u8) {
                       u16 ds18b20_case.get_temperatureX16(),
                       u8 ds18b20_case.get_updated_deciseconds_ago());
 
+        WRITE_STATUS$("CO2",
+                      D,
+                      u8 co2.get_crc_errors(),
+                      u16 co2.get_concentration(),
+                      u8 co2.get_updated_deciseconds_ago());
+
         // Done writing status, send: CRC\r\n
         byte_to_send = ' '; CALL$(send_byte);
         u8_to_format_and_send = crc; CALL$(format_and_send_u8);

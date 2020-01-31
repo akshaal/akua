@@ -8,3 +8,6 @@ COMMPROTO: C1: Case temperature: u8 ds18b20_case.get_crc_errors
 COMMPROTO: C2: Case temperature: u8 ds18b20_case.get_disconnects
 COMMPROTO: C3: Case temperature: u16 ds18b20_case.get_temperatureX16
 COMMPROTO: C4: Case temperature: u8 ds18b20_case.get_updated_deciseconds_ago
+COMMPROTO: D1: CO2: u8 co2.get_crc_errors
+COMMPROTO: D2: CO2: u16 co2.get_concentration
+COMMPROTO: D3: CO2: u8 co2.get_updated_deciseconds_ago
