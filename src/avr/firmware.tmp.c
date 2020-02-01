@@ -17146,6 +17146,64 @@ static AKAT_UNUSED void add_debug_byte(const u8 b) {
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+// Uptime
+
+static u32 uptime_deciseconds = 0;
+
+;
+;
+
+
+
+static AKAT_FORCE_INLINE void akat_on_every_decisecond();
+
+// Can't use LOW register here!
+/* Using register r16 for akat_every_decisecond_run_required */;
+
+register u8 akat_every_decisecond_run_required asm ("r16");
+
+;
+;
+
+
+static AKAT_FORCE_INLINE void akat_on_every_decisecond_runner() {
+//Tell gcc that this variable can be changed somehow (in our case via ISR)
+    AKAT_FLUSH_REG_VAR(akat_every_decisecond_run_required);
+
+    if (akat_every_decisecond_run_required) {
+        akat_every_decisecond_run_required = AKAT_FALSE;
+        akat_on_every_decisecond();
+    }
+}
+
+;
+
+
+
+
+
+ISR(TIMER1_COMPA_vect, ISR_NAKED) {
+    // NOTE: Make sure that 'akat_every_decisecond_run_required' is not a register under R16!
+    // NOTE: Otherwise we have to save SREG. That's why we use assembler directly here.
+    asm volatile("ldi %0, 0x01" : "=r" (akat_every_decisecond_run_required));
+    asm volatile("reti");
+}
+
+
+static AKAT_FORCE_INLINE void uptime_ticker() {
+    uptime_deciseconds += 1;
+}
+
+;
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // Led pins
 
 typedef struct {
@@ -17342,41 +17400,6 @@ static AKAT_FORCE_INLINE void watchdog_reset() {
 
 // This piece of code will be executed in akat event/thread loop every 1/10 second.
 // We use to turn the blue led ON and OFF
-
-static AKAT_FORCE_INLINE void akat_on_every_decisecond();
-
-// Can't use LOW register here!
-/* Using register r16 for akat_every_decisecond_run_required */;
-
-register u8 akat_every_decisecond_run_required asm ("r16");
-
-;
-;
-
-
-static AKAT_FORCE_INLINE void akat_on_every_decisecond_runner() {
-//Tell gcc that this variable can be changed somehow (in our case via ISR)
-    AKAT_FLUSH_REG_VAR(akat_every_decisecond_run_required);
-
-    if (akat_every_decisecond_run_required) {
-        akat_every_decisecond_run_required = AKAT_FALSE;
-        akat_on_every_decisecond();
-    }
-}
-
-;
-
-
-
-
-
-ISR(TIMER1_COMPA_vect, ISR_NAKED) {
-    // NOTE: Make sure that 'akat_every_decisecond_run_required' is not a register under R16!
-    // NOTE: Otherwise we have to save SREG. That's why we use assembler directly here.
-    asm volatile("ldi %0, 0x01" : "=r" (akat_every_decisecond_run_required));
-    asm volatile("reti");
-}
-
 
 static u8 activity_led__state = 0;
 static AKAT_FORCE_INLINE void activity_led() {
@@ -19392,6 +19415,7 @@ static u8 usart0_writer__crc = 0;
 static u8 usart0_writer__byte_to_send = 0;
 static u8 usart0_writer__u8_to_format_and_send = 0;
 static u16 usart0_writer__u16_to_format_and_send = 0;
+static u32 usart0_writer__u32_to_format_and_send = 0;
 static u8 usart0_writer__send_byte__akat_coroutine_state = 0;
 static u8 usart0_writer__send_byte() {
 #define akat_coroutine_state usart0_writer__send_byte__akat_coroutine_state
@@ -19399,6 +19423,7 @@ static u8 usart0_writer__send_byte() {
 #define crc usart0_writer__crc
 #define send_byte usart0_writer__send_byte
 #define u16_to_format_and_send usart0_writer__u16_to_format_and_send
+#define u32_to_format_and_send usart0_writer__u32_to_format_and_send
 #define u8_to_format_and_send usart0_writer__u8_to_format_and_send
     ;
     AKAT_HOT_CODE;
@@ -19444,6 +19469,7 @@ akat_coroutine_l_end:
 #undef crc
 #undef send_byte
 #undef u16_to_format_and_send
+#undef u32_to_format_and_send
 #undef u8_to_format_and_send
 }
 static u8 usart0_writer__format_and_send_u8__akat_coroutine_state = 0;
@@ -19454,6 +19480,7 @@ static u8 usart0_writer__format_and_send_u8() {
 #define format_and_send_u8 usart0_writer__format_and_send_u8
 #define send_byte usart0_writer__send_byte
 #define u16_to_format_and_send usart0_writer__u16_to_format_and_send
+#define u32_to_format_and_send usart0_writer__u32_to_format_and_send
 #define u8_to_format_and_send usart0_writer__u8_to_format_and_send
     ;
     AKAT_HOT_CODE;
@@ -19520,6 +19547,7 @@ akat_coroutine_l_end:
 #undef format_and_send_u8
 #undef send_byte
 #undef u16_to_format_and_send
+#undef u32_to_format_and_send
 #undef u8_to_format_and_send
 }
 static u8 usart0_writer__format_and_send_u16__akat_coroutine_state = 0;
@@ -19531,6 +19559,7 @@ static u8 usart0_writer__format_and_send_u16() {
 #define format_and_send_u8 usart0_writer__format_and_send_u8
 #define send_byte usart0_writer__send_byte
 #define u16_to_format_and_send usart0_writer__u16_to_format_and_send
+#define u32_to_format_and_send usart0_writer__u32_to_format_and_send
 #define u8_to_format_and_send usart0_writer__u8_to_format_and_send
     ;
     AKAT_HOT_CODE;
@@ -19624,6 +19653,147 @@ akat_coroutine_l_end:
 #undef format_and_send_u8
 #undef send_byte
 #undef u16_to_format_and_send
+#undef u32_to_format_and_send
+#undef u8_to_format_and_send
+}
+static u8 usart0_writer__format_and_send_u32__akat_coroutine_state = 0;
+static u8 usart0_writer__format_and_send_u32() {
+#define akat_coroutine_state usart0_writer__format_and_send_u32__akat_coroutine_state
+#define byte_to_send usart0_writer__byte_to_send
+#define crc usart0_writer__crc
+#define format_and_send_u16 usart0_writer__format_and_send_u16
+#define format_and_send_u32 usart0_writer__format_and_send_u32
+#define format_and_send_u8 usart0_writer__format_and_send_u8
+#define send_byte usart0_writer__send_byte
+#define u16_to_format_and_send usart0_writer__u16_to_format_and_send
+#define u32_to_format_and_send usart0_writer__u32_to_format_and_send
+#define u8_to_format_and_send usart0_writer__u8_to_format_and_send
+    ;
+    AKAT_HOT_CODE;
+
+    switch (akat_coroutine_state) {
+    case AKAT_COROUTINE_S_START:
+        goto akat_coroutine_l_start;
+
+    case AKAT_COROUTINE_S_END:
+        goto akat_coroutine_l_end;
+
+    case 2:
+        goto akat_coroutine_l_2;
+
+    case 3:
+        goto akat_coroutine_l_3;
+
+    case 4:
+        goto akat_coroutine_l_4;
+
+    case 5:
+        goto akat_coroutine_l_5;
+
+    case 6:
+        goto akat_coroutine_l_6;
+
+    case 7:
+        goto akat_coroutine_l_7;
+    }
+
+akat_coroutine_l_start:
+    AKAT_COLD_CODE;
+
+    do {
+        u16_to_format_and_send = (u16)(u32_to_format_and_send >> 16);
+
+        if (u16_to_format_and_send) {
+            do {
+                akat_coroutine_state = 2;
+akat_coroutine_l_2:
+
+                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
+                    return akat_coroutine_state;
+                }
+            } while (0);
+
+            ;
+            u16_to_format_and_send = (u16)u32_to_format_and_send;
+            u8_to_format_and_send = (u8)(u16_to_format_and_send / 256);
+            byte_to_send = HEX[u8_to_format_and_send / 16];
+
+            do {
+                akat_coroutine_state = 3;
+akat_coroutine_l_3:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return akat_coroutine_state;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = HEX[u8_to_format_and_send & 15];
+
+            do {
+                akat_coroutine_state = 4;
+akat_coroutine_l_4:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return akat_coroutine_state;
+                }
+            } while (0);
+
+            ;
+            u8_to_format_and_send = (u8)u16_to_format_and_send;
+            byte_to_send = HEX[u8_to_format_and_send / 16];
+
+            do {
+                akat_coroutine_state = 5;
+akat_coroutine_l_5:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return akat_coroutine_state;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = HEX[u8_to_format_and_send & 15];
+
+            do {
+                akat_coroutine_state = 6;
+akat_coroutine_l_6:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return akat_coroutine_state;
+                }
+            } while (0);
+
+            ;
+        } else {
+            u16_to_format_and_send = (u16)u32_to_format_and_send;
+
+            do {
+                akat_coroutine_state = 7;
+akat_coroutine_l_7:
+
+                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
+                    return akat_coroutine_state;
+                }
+            } while (0);
+
+            ;
+        }
+    } while (0);
+
+    AKAT_COLD_CODE;
+    akat_coroutine_state = AKAT_COROUTINE_S_START;
+akat_coroutine_l_end:
+    return akat_coroutine_state;
+#undef akat_coroutine_state
+#undef byte_to_send
+#undef crc
+#undef format_and_send_u16
+#undef format_and_send_u32
+#undef format_and_send_u8
+#undef send_byte
+#undef u16_to_format_and_send
+#undef u32_to_format_and_send
 #undef u8_to_format_and_send
 }
 static AKAT_FORCE_INLINE void usart0_writer() {
@@ -19631,9 +19801,11 @@ static AKAT_FORCE_INLINE void usart0_writer() {
 #define byte_to_send usart0_writer__byte_to_send
 #define crc usart0_writer__crc
 #define format_and_send_u16 usart0_writer__format_and_send_u16
+#define format_and_send_u32 usart0_writer__format_and_send_u32
 #define format_and_send_u8 usart0_writer__format_and_send_u8
 #define send_byte usart0_writer__send_byte
 #define u16_to_format_and_send usart0_writer__u16_to_format_and_send
+#define u32_to_format_and_send usart0_writer__u32_to_format_and_send
 #define u8_to_format_and_send usart0_writer__u8_to_format_and_send
     ;
     AKAT_HOT_CODE;
@@ -19788,6 +19960,12 @@ static AKAT_FORCE_INLINE void usart0_writer() {
 
     case 49:
         goto akat_coroutine_l_49;
+
+    case 50:
+        goto akat_coroutine_l_50;
+
+    case 51:
+        goto akat_coroutine_l_51;
     }
 
 akat_coroutine_l_start:
@@ -19795,6 +19973,7 @@ akat_coroutine_l_start:
 
     do {
         //---- All variable in the thread must be static (green threads requirement)
+        ;
         ;
         ;
         ;
@@ -19892,15 +20071,15 @@ akat_coroutine_l_7:
 
             ;
             /*
-              COMMPROTO: A1: UART0: u8 debug_overflow_count
+              COMMPROTO: A1: Misc: u32 uptime_deciseconds
             */
-            u8_to_format_and_send = debug_overflow_count;
+            u32_to_format_and_send = uptime_deciseconds;
 
             do {
                 akat_coroutine_state = 8;
 akat_coroutine_l_8:
 
-                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u32() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
@@ -19919,9 +20098,9 @@ akat_coroutine_l_9:
 
             ;
             /*
-              COMMPROTO: A2: UART0: u8 usart0_rx_overflow_count
+              COMMPROTO: A2: Misc: u8 debug_overflow_count
             */
-            u8_to_format_and_send = usart0_rx_overflow_count;
+            u8_to_format_and_send = debug_overflow_count;
 
             do {
                 akat_coroutine_state = 10;
@@ -19946,9 +20125,9 @@ akat_coroutine_l_11:
 
             ;
             /*
-              COMMPROTO: A3: UART0: u8 co2.get_rx_overflow_count()
+              COMMPROTO: A3: Misc: u8 usart0_rx_overflow_count
             */
-            u8_to_format_and_send = co2.get_rx_overflow_count();
+            u8_to_format_and_send = usart0_rx_overflow_count;
 
             do {
                 akat_coroutine_state = 12;
@@ -19960,8 +20139,7 @@ akat_coroutine_l_12:
             } while (0);
 
             ;
-            ;
-            byte_to_send = ' ';
+            byte_to_send = ',';
 
             do {
                 akat_coroutine_state = 13;
@@ -19973,26 +20151,14 @@ akat_coroutine_l_13:
             } while (0);
 
             ;
-            byte_to_send = 'B';
+            /*
+              COMMPROTO: A4: Misc: u8 co2.get_rx_overflow_count()
+            */
+            u8_to_format_and_send = co2.get_rx_overflow_count();
 
             do {
                 akat_coroutine_state = 14;
 akat_coroutine_l_14:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            /*
-              COMMPROTO: B1: "Aquarium temperature": u8 ds18b20_aqua.get_crc_errors()
-            */
-            u8_to_format_and_send = ds18b20_aqua.get_crc_errors();
-
-            do {
-                akat_coroutine_state = 15;
-akat_coroutine_l_15:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -20000,7 +20166,20 @@ akat_coroutine_l_15:
             } while (0);
 
             ;
-            byte_to_send = ',';
+            ;
+            byte_to_send = ' ';
+
+            do {
+                akat_coroutine_state = 15;
+akat_coroutine_l_15:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = 'B';
 
             do {
                 akat_coroutine_state = 16;
@@ -20013,9 +20192,9 @@ akat_coroutine_l_16:
 
             ;
             /*
-              COMMPROTO: B2: "Aquarium temperature": u8 ds18b20_aqua.get_disconnects()
+              COMMPROTO: B1: "Aquarium temperature": u8 ds18b20_aqua.get_crc_errors()
             */
-            u8_to_format_and_send = ds18b20_aqua.get_disconnects();
+            u8_to_format_and_send = ds18b20_aqua.get_crc_errors();
 
             do {
                 akat_coroutine_state = 17;
@@ -20040,15 +20219,15 @@ akat_coroutine_l_18:
 
             ;
             /*
-              COMMPROTO: B3: "Aquarium temperature": u16 ds18b20_aqua.get_temperatureX16()
+              COMMPROTO: B2: "Aquarium temperature": u8 ds18b20_aqua.get_disconnects()
             */
-            u16_to_format_and_send = ds18b20_aqua.get_temperatureX16();
+            u8_to_format_and_send = ds18b20_aqua.get_disconnects();
 
             do {
                 akat_coroutine_state = 19;
 akat_coroutine_l_19:
 
-                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
@@ -20067,22 +20246,21 @@ akat_coroutine_l_20:
 
             ;
             /*
-              COMMPROTO: B4: "Aquarium temperature": u8 ds18b20_aqua.get_updated_deciseconds_ago()
+              COMMPROTO: B3: "Aquarium temperature": u16 ds18b20_aqua.get_temperatureX16()
             */
-            u8_to_format_and_send = ds18b20_aqua.get_updated_deciseconds_ago();
+            u16_to_format_and_send = ds18b20_aqua.get_temperatureX16();
 
             do {
                 akat_coroutine_state = 21;
 akat_coroutine_l_21:
 
-                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
 
             ;
-            ;
-            byte_to_send = ' ';
+            byte_to_send = ',';
 
             do {
                 akat_coroutine_state = 22;
@@ -20094,26 +20272,14 @@ akat_coroutine_l_22:
             } while (0);
 
             ;
-            byte_to_send = 'C';
+            /*
+              COMMPROTO: B4: "Aquarium temperature": u8 ds18b20_aqua.get_updated_deciseconds_ago()
+            */
+            u8_to_format_and_send = ds18b20_aqua.get_updated_deciseconds_ago();
 
             do {
                 akat_coroutine_state = 23;
 akat_coroutine_l_23:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            /*
-              COMMPROTO: C1: "Case temperature": u8 ds18b20_case.get_crc_errors()
-            */
-            u8_to_format_and_send = ds18b20_case.get_crc_errors();
-
-            do {
-                akat_coroutine_state = 24;
-akat_coroutine_l_24:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -20121,7 +20287,20 @@ akat_coroutine_l_24:
             } while (0);
 
             ;
-            byte_to_send = ',';
+            ;
+            byte_to_send = ' ';
+
+            do {
+                akat_coroutine_state = 24;
+akat_coroutine_l_24:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = 'C';
 
             do {
                 akat_coroutine_state = 25;
@@ -20134,9 +20313,9 @@ akat_coroutine_l_25:
 
             ;
             /*
-              COMMPROTO: C2: "Case temperature": u8 ds18b20_case.get_disconnects()
+              COMMPROTO: C1: "Case temperature": u8 ds18b20_case.get_crc_errors()
             */
-            u8_to_format_and_send = ds18b20_case.get_disconnects();
+            u8_to_format_and_send = ds18b20_case.get_crc_errors();
 
             do {
                 akat_coroutine_state = 26;
@@ -20161,15 +20340,15 @@ akat_coroutine_l_27:
 
             ;
             /*
-              COMMPROTO: C3: "Case temperature": u16 ds18b20_case.get_temperatureX16()
+              COMMPROTO: C2: "Case temperature": u8 ds18b20_case.get_disconnects()
             */
-            u16_to_format_and_send = ds18b20_case.get_temperatureX16();
+            u8_to_format_and_send = ds18b20_case.get_disconnects();
 
             do {
                 akat_coroutine_state = 28;
 akat_coroutine_l_28:
 
-                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
@@ -20188,22 +20367,21 @@ akat_coroutine_l_29:
 
             ;
             /*
-              COMMPROTO: C4: "Case temperature": u8 ds18b20_case.get_updated_deciseconds_ago()
+              COMMPROTO: C3: "Case temperature": u16 ds18b20_case.get_temperatureX16()
             */
-            u8_to_format_and_send = ds18b20_case.get_updated_deciseconds_ago();
+            u16_to_format_and_send = ds18b20_case.get_temperatureX16();
 
             do {
                 akat_coroutine_state = 30;
 akat_coroutine_l_30:
 
-                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
 
             ;
-            ;
-            byte_to_send = ' ';
+            byte_to_send = ',';
 
             do {
                 akat_coroutine_state = 31;
@@ -20215,11 +20393,39 @@ akat_coroutine_l_31:
             } while (0);
 
             ;
-            byte_to_send = 'D';
+            /*
+              COMMPROTO: C4: "Case temperature": u8 ds18b20_case.get_updated_deciseconds_ago()
+            */
+            u8_to_format_and_send = ds18b20_case.get_updated_deciseconds_ago();
 
             do {
                 akat_coroutine_state = 32;
 akat_coroutine_l_32:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            ;
+            byte_to_send = ' ';
+
+            do {
+                akat_coroutine_state = 33;
+akat_coroutine_l_33:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = 'D';
+
+            do {
+                akat_coroutine_state = 34;
+akat_coroutine_l_34:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -20233,37 +20439,10 @@ akat_coroutine_l_32:
             u8_to_format_and_send = co2.get_crc_errors();
 
             do {
-                akat_coroutine_state = 33;
-akat_coroutine_l_33:
-
-                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            byte_to_send = ',';
-
-            do {
-                akat_coroutine_state = 34;
-akat_coroutine_l_34:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            /*
-              COMMPROTO: D2: "CO2": u16 co2.get_abc_setups()
-            */
-            u16_to_format_and_send = co2.get_abc_setups();
-
-            do {
                 akat_coroutine_state = 35;
 akat_coroutine_l_35:
 
-                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
@@ -20282,9 +20461,9 @@ akat_coroutine_l_36:
 
             ;
             /*
-              COMMPROTO: D3: "CO2": u16 co2.get_concentration()
+              COMMPROTO: D2: "CO2": u16 co2.get_abc_setups()
             */
-            u16_to_format_and_send = co2.get_concentration();
+            u16_to_format_and_send = co2.get_abc_setups();
 
             do {
                 akat_coroutine_state = 37;
@@ -20309,15 +20488,15 @@ akat_coroutine_l_38:
 
             ;
             /*
-              COMMPROTO: D4: "CO2": u8 co2.get_temperature()
+              COMMPROTO: D3: "CO2": u16 co2.get_concentration()
             */
-            u8_to_format_and_send = co2.get_temperature();
+            u16_to_format_and_send = co2.get_concentration();
 
             do {
                 akat_coroutine_state = 39;
 akat_coroutine_l_39:
 
-                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
@@ -20336,9 +20515,9 @@ akat_coroutine_l_40:
 
             ;
             /*
-              COMMPROTO: D5: "CO2": u8 co2.get_s()
+              COMMPROTO: D4: "CO2": u8 co2.get_temperature()
             */
-            u8_to_format_and_send = co2.get_s();
+            u8_to_format_and_send = co2.get_temperature();
 
             do {
                 akat_coroutine_state = 41;
@@ -20363,15 +20542,15 @@ akat_coroutine_l_42:
 
             ;
             /*
-              COMMPROTO: D6: "CO2": u16 co2.get_u()
+              COMMPROTO: D5: "CO2": u8 co2.get_s()
             */
-            u16_to_format_and_send = co2.get_u();
+            u8_to_format_and_send = co2.get_s();
 
             do {
                 akat_coroutine_state = 43;
 akat_coroutine_l_43:
 
-                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
@@ -20390,13 +20569,40 @@ akat_coroutine_l_44:
 
             ;
             /*
+              COMMPROTO: D6: "CO2": u16 co2.get_u()
+            */
+            u16_to_format_and_send = co2.get_u();
+
+            do {
+                akat_coroutine_state = 45;
+akat_coroutine_l_45:
+
+                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 46;
+akat_coroutine_l_46:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
               COMMPROTO: D7: "CO2": u8 co2.get_updated_deciseconds_ago()
             */
             u8_to_format_and_send = co2.get_updated_deciseconds_ago();
 
             do {
-                akat_coroutine_state = 45;
-akat_coroutine_l_45:
+                akat_coroutine_state = 47;
+akat_coroutine_l_47:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -20409,8 +20615,8 @@ akat_coroutine_l_45:
             byte_to_send = ' ';
 
             do {
-                akat_coroutine_state = 46;
-akat_coroutine_l_46:
+                akat_coroutine_state = 48;
+akat_coroutine_l_48:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -20421,8 +20627,8 @@ akat_coroutine_l_46:
             u8_to_format_and_send = crc;
 
             do {
-                akat_coroutine_state = 47;
-akat_coroutine_l_47:
+                akat_coroutine_state = 49;
+akat_coroutine_l_49:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -20433,8 +20639,8 @@ akat_coroutine_l_47:
             byte_to_send = '\r';
 
             do {
-                akat_coroutine_state = 48;
-akat_coroutine_l_48:
+                akat_coroutine_state = 50;
+akat_coroutine_l_50:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -20445,8 +20651,8 @@ akat_coroutine_l_48:
             byte_to_send = '\n';
 
             do {
-                akat_coroutine_state = 49;
-akat_coroutine_l_49:
+                akat_coroutine_state = 51;
+akat_coroutine_l_51:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -20465,9 +20671,11 @@ akat_coroutine_l_end:
 #undef byte_to_send
 #undef crc
 #undef format_and_send_u16
+#undef format_and_send_u32
 #undef format_and_send_u8
 #undef send_byte
 #undef u16_to_format_and_send
+#undef u32_to_format_and_send
 #undef u8_to_format_and_send
 }
 
@@ -20865,6 +21073,7 @@ akat_coroutine_l_end:
 
 
 static AKAT_FORCE_INLINE void akat_on_every_decisecond() {
+    uptime_ticker();
     activity_led();
     ds18b20_ticker();
     ds18b20_aqua__ticker();
@@ -21909,8 +22118,8 @@ AKAT_NO_RETURN void main() {
 
     //Endless loop with threads, tasks and such
     while (1) {
-        watchdog_reset();
         akat_on_every_decisecond_runner();
+        watchdog_reset();
         co2_reader();
         co2_writer();
         usart0_writer();

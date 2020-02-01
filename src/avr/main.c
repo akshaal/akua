@@ -177,6 +177,20 @@ FUNCTION$(void add_debug_byte(const u8 b), unused) {
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+// Uptime
+
+GLOBAL$() {
+    STATIC_VAR$(u32 uptime_deciseconds);
+}
+
+X_EVERY_DECISECOND$(uptime_ticker) {
+    uptime_deciseconds += 1;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // Led pins
 
 X_GPIO_OUTPUT$(blue_led, B7);
@@ -200,7 +214,7 @@ X_WATCHDOG$(8s);
 // This piece of code will be executed in akat event/thread loop every 1/10 second.
 // We use to turn the blue led ON and OFF
 X_EVERY_DECISECOND$(activity_led) {
-    STATIC_VAR$(u8 state, initial = 0);
+    STATIC_VAR$(u8 state);
 
     blue_led.set(state);
     state = !state;
@@ -281,6 +295,7 @@ THREAD$(usart0_writer, state_type = u8) {
     STATIC_VAR$(u8 byte_to_send);
     STATIC_VAR$(u8 u8_to_format_and_send);
     STATIC_VAR$(u16 u16_to_format_and_send);
+    STATIC_VAR$(u32 u32_to_format_and_send);
 
     // ---- Subroutines can yield unlike functions
 
@@ -315,6 +330,24 @@ THREAD$(usart0_writer, state_type = u8) {
         } else {
             u8_to_format_and_send = (u8)u16_to_format_and_send;
             CALL$(format_and_send_u8);
+        }
+    }
+
+    SUB$(format_and_send_u32) {
+        u16_to_format_and_send = (u16)(u32_to_format_and_send >> 16);
+        if (u16_to_format_and_send) {
+            CALL$(format_and_send_u16);
+
+            u16_to_format_and_send = (u16)u32_to_format_and_send;
+            u8_to_format_and_send = (u8)(u16_to_format_and_send / 256);
+            byte_to_send = HEX[u8_to_format_and_send / 16]; CALL$(send_byte);
+            byte_to_send = HEX[u8_to_format_and_send & 15]; CALL$(send_byte);
+            u8_to_format_and_send = (u8)u16_to_format_and_send;
+            byte_to_send = HEX[u8_to_format_and_send / 16]; CALL$(send_byte);
+            byte_to_send = HEX[u8_to_format_and_send & 15]; CALL$(send_byte);
+        } else {
+            u16_to_format_and_send = (u16)u32_to_format_and_send;
+            CALL$(format_and_send_u16);
         }
     }
 
@@ -362,8 +395,9 @@ THREAD$(usart0_writer, state_type = u8) {
 
         // WRITE_STATUS(name for documentation, 1-character id for protocol, type1 val1, type2 val2, ...)
 
-        WRITE_STATUS$(UART0,
+        WRITE_STATUS$(Misc,
                       A,
+                      u32 uptime_deciseconds,
                       u8 debug_overflow_count,
                       u8 usart0_rx_overflow_count,
                       u8 co2.get_rx_overflow_count());
