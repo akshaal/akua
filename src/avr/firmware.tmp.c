@@ -376,6 +376,9 @@ static AKAT_UNUSED AKAT_PURE u8 akat_x_tm1637_encode_digit(u8 const digit, u8 co
 // Must be power of 2!
 #define AK_USART0_RX_BUF_SIZE  128
 
+// Number of debug bytes (data is written with '>' prefix into USART0)
+#define AK_DEBUG_BUF_SIZE     64
+
 // 16Mhz, that's external oscillator on Mega 2560.
 // This doesn't configure it here, it just tells to our build system
 // what we is actually using! Configuration is done using fuses (see flash-avr-fuses).
@@ -17103,6 +17106,46 @@ F0_unused_t const F0_unused = {.is_set = &is_set__impl
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+// Support for simple debugging
+
+static volatile u8 debug_bytes_buf[AK_DEBUG_BUF_SIZE] = {};
+static volatile u8 debug_next_empty_idx = 0;
+static volatile u8 debug_next_read_idx = 0;
+static volatile u8 debug_overflow_count = 0;
+
+//Make volatile so we can use it from ISR (in theory)
+;
+;
+;
+;
+;
+
+
+static AKAT_UNUSED void add_debug_byte(const u8 b) {
+    u8 new_next_empty_idx = (debug_next_empty_idx + AKAT_ONE) & (AK_DEBUG_BUF_SIZE - 1);
+
+    if (new_next_empty_idx == debug_next_read_idx) {
+        debug_overflow_count += AKAT_ONE;
+
+        //Don't let it overflow!
+        if (!debug_overflow_count) {
+            debug_overflow_count -= AKAT_ONE;
+        }
+    } else {
+        debug_bytes_buf[debug_next_empty_idx] = b;
+        debug_next_empty_idx = new_next_empty_idx;
+    }
+}
+
+;
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // Led pins
 
 typedef struct {
@@ -18173,6 +18216,7 @@ ds18b20_case_t const ds18b20_case = {.get_updated_deciseconds_ago = &get_updated
 ////////////////////////////////////////////////////////////////////////////////
 // USART1 - MH-Z19 CO2 Module
 
+// NOTE: Use to debug the protocol: debug = add_debug_byte
 static AKAT_FORCE_INLINE void co2_init() {
 //Set baud rate
     const u16 ubrr = akat_cpu_freq_hz() / (9600 * 8L) - 1;
@@ -18226,11 +18270,27 @@ ISR(USART1_RX_vect) {
 //  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // co2(CO2): This thread processes input from co2_rx_bytes_buf that gets populated in ISR
 
+static u8 co2_abc_setup_needed = 0;
+static u16 co2_abc_setups = 0;
+static u32 co2_deciseconds_until_abc = 0;
 static u8 co2_crc_errors = 0;
 static u16 co2_concentration = 0;
+static u8 co2_temperature = 0;
 static u8 co2_updated_deciseconds_ago = 255;
+static u8 co2_s = 0;
+static u16 co2_u = 0;
 
 ;
+;
+;
+;
+;
+;
+;
+
+//https://habr.com/ru/post/401363///and other pages... hard to tell what it is, likely
+//s - status
+//u - uncorrect minimum value of CO2 measured during previous 24h. Used for ABC (Automatic Baseline Correction).
 ;
 ;
 ;
@@ -18243,6 +18303,13 @@ static AKAT_FORCE_INLINE void co2__ticker() {
 
     if (!co2_updated_deciseconds_ago) {//We can't go beyond 255
         co2_updated_deciseconds_ago -= AKAT_ONE;
+    }//Maintain deciseconds until next ABC
+
+    if (co2_deciseconds_until_abc) {
+        co2_deciseconds_until_abc -= 1;
+    } else {
+        co2_abc_setup_needed = 1;
+        co2_deciseconds_until_abc = (u32)12 * 60 * 60 * 10; //12 hours
     }
 }
 
@@ -18255,6 +18322,7 @@ static AKAT_FORCE_INLINE void co2__ticker() {
 static u8 co2_reader__akat_coroutine_state = 0;
 static u8 co2_reader__dequeued_byte = 0;
 static u8 co2_reader__crc = 0;
+static u8 co2_reader__command = 0;
 static u8 co2_reader__b2 = 0;
 static u8 co2_reader__b3 = 0;
 static u8 co2_reader__b4 = 0;
@@ -18270,6 +18338,7 @@ static u8 co2_reader__dequeue_byte() {
 #define b5 co2_reader__b5
 #define b6 co2_reader__b6
 #define b7 co2_reader__b7
+#define command co2_reader__command
 #define crc co2_reader__crc
 #define dequeue_byte co2_reader__dequeue_byte
 #define dequeued_byte co2_reader__dequeued_byte
@@ -18320,6 +18389,7 @@ akat_coroutine_l_end:
 #undef b5
 #undef b6
 #undef b7
+#undef command
 #undef crc
 #undef dequeue_byte
 #undef dequeued_byte
@@ -18332,6 +18402,7 @@ static AKAT_FORCE_INLINE void co2_reader() {
 #define b5 co2_reader__b5
 #define b6 co2_reader__b6
 #define b7 co2_reader__b7
+#define command co2_reader__command
 #define crc co2_reader__crc
 #define dequeue_byte co2_reader__dequeue_byte
 #define dequeued_byte co2_reader__dequeued_byte
@@ -18379,6 +18450,7 @@ akat_coroutine_l_start:
     do {
         ;
         ;
+        ;
         //byte of protocol, we don't put them into named variables until CRC is checked
         ;
         ;
@@ -18420,8 +18492,10 @@ akat_coroutine_l_3:
 
                 ;
 
-                //0x86 - Read CO2 concentration..
-                if (dequeued_byte == 0x86) {
+                //0x86 - Read CO2 concentration.. 0x79 is ack for ABC setup
+                if (dequeued_byte == 0x86 || dequeued_byte == 0x79) {
+                    command = dequeued_byte;
+
                     do {
                         akat_coroutine_state = 4;
 akat_coroutine_l_4:
@@ -18509,14 +18583,26 @@ akat_coroutine_l_10:
                     crc = 0xFF - crc + 1;
 
                     if (dequeued_byte == crc) {
-                        co2_concentration = b2 * 256 + b3;
-                        co2_updated_deciseconds_ago = 0;
+                        if (command == 0x86) {//CO2 read
+                            if (b4 < 90 && b4 > 30) {
+                                co2_concentration = (((u16)b2) << 8) + b3;
+                                co2_temperature = b4 - 40;
+                                co2_updated_deciseconds_ago = 0;
+                            }
+
+                            co2_s = b5;
+                            co2_u = (((u16)b6) << 8) + b7;
+                        } else if (command == 0x79) {//ABC setup result
+                            co2_abc_setup_needed = 0;
+                            co2_abc_setups += 1;
+                        }
                     } else {//CRC doesn't match
                         co2_crc_errors += 1;
                     }
                 } else {//Wrong command... may be 0xFF? Then we must try to use it as start of command.
                     goto try_interpret_as_command;
                 }
+            } else {//Unknown byte
             }
         }
     } while (0);
@@ -18532,6 +18618,7 @@ akat_coroutine_l_end:
 #undef b5
 #undef b6
 #undef b7
+#undef command
 #undef crc
 #undef dequeue_byte
 #undef dequeued_byte
@@ -18614,12 +18701,12 @@ akat_coroutine_l_end:
 #undef byte_to_send
 #undef send_byte
 }
-static u8 co2_writer__send_read_gas_command__akat_coroutine_state = 0;
-static u8 co2_writer__send_read_gas_command() {
-#define akat_coroutine_state co2_writer__send_read_gas_command__akat_coroutine_state
+static u8 co2_writer__send_read_concentration_command__akat_coroutine_state = 0;
+static u8 co2_writer__send_read_concentration_command() {
+#define akat_coroutine_state co2_writer__send_read_concentration_command__akat_coroutine_state
 #define byte_to_send co2_writer__byte_to_send
 #define send_byte co2_writer__send_byte
-#define send_read_gas_command co2_writer__send_read_gas_command
+#define send_read_concentration_command co2_writer__send_read_concentration_command
     ;
     AKAT_HOT_CODE;
 
@@ -18777,13 +18864,15 @@ akat_coroutine_l_end:
 #undef akat_coroutine_state
 #undef byte_to_send
 #undef send_byte
-#undef send_read_gas_command
+#undef send_read_concentration_command
 }
-static AKAT_FORCE_INLINE void co2_writer() {
-#define akat_coroutine_state co2_writer__akat_coroutine_state
+static u8 co2_writer__setup_abc__akat_coroutine_state = 0;
+static u8 co2_writer__setup_abc() {
+#define akat_coroutine_state co2_writer__setup_abc__akat_coroutine_state
 #define byte_to_send co2_writer__byte_to_send
 #define send_byte co2_writer__send_byte
-#define send_read_gas_command co2_writer__send_read_gas_command
+#define send_read_concentration_command co2_writer__send_read_concentration_command
+#define setup_abc co2_writer__setup_abc
     ;
     AKAT_HOT_CODE;
 
@@ -18799,6 +18888,185 @@ static AKAT_FORCE_INLINE void co2_writer() {
 
     case 3:
         goto akat_coroutine_l_3;
+
+    case 4:
+        goto akat_coroutine_l_4;
+
+    case 5:
+        goto akat_coroutine_l_5;
+
+    case 6:
+        goto akat_coroutine_l_6;
+
+    case 7:
+        goto akat_coroutine_l_7;
+
+    case 8:
+        goto akat_coroutine_l_8;
+
+    case 9:
+        goto akat_coroutine_l_9;
+
+    case 10:
+        goto akat_coroutine_l_10;
+    }
+
+akat_coroutine_l_start:
+    AKAT_COLD_CODE;
+
+    do {
+        //Send command sequence
+        byte_to_send = 0xFF;
+
+        do {
+            akat_coroutine_state = 2;
+akat_coroutine_l_2:
+
+            if (send_byte() != AKAT_COROUTINE_S_START) {
+                return akat_coroutine_state;
+            }
+        } while (0);
+
+        ; //Header
+        byte_to_send = 0x01;
+
+        do {
+            akat_coroutine_state = 3;
+akat_coroutine_l_3:
+
+            if (send_byte() != AKAT_COROUTINE_S_START) {
+                return akat_coroutine_state;
+            }
+        } while (0);
+
+        ; //Sensor #1
+        byte_to_send = 0x79;
+
+        do {
+            akat_coroutine_state = 4;
+akat_coroutine_l_4:
+
+            if (send_byte() != AKAT_COROUTINE_S_START) {
+                return akat_coroutine_state;
+            }
+        } while (0);
+
+        ; //Command (ON/OFF Self-calibration for zero point)
+
+        if (0) {
+            byte_to_send = 0xA0;
+        } else {
+            byte_to_send = 0x00;
+        }
+
+        do {
+            akat_coroutine_state = 5;
+akat_coroutine_l_5:
+
+            if (send_byte() != AKAT_COROUTINE_S_START) {
+                return akat_coroutine_state;
+            }
+        } while (0);
+
+        ;
+        byte_to_send = 0x00;
+
+        do {
+            akat_coroutine_state = 6;
+akat_coroutine_l_6:
+
+            if (send_byte() != AKAT_COROUTINE_S_START) {
+                return akat_coroutine_state;
+            }
+        } while (0);
+
+        ;
+
+        do {
+            akat_coroutine_state = 7;
+akat_coroutine_l_7:
+
+            if (send_byte() != AKAT_COROUTINE_S_START) {
+                return akat_coroutine_state;
+            }
+        } while (0);
+
+        ;
+
+        do {
+            akat_coroutine_state = 8;
+akat_coroutine_l_8:
+
+            if (send_byte() != AKAT_COROUTINE_S_START) {
+                return akat_coroutine_state;
+            }
+        } while (0);
+
+        ;
+
+        do {
+            akat_coroutine_state = 9;
+akat_coroutine_l_9:
+
+            if (send_byte() != AKAT_COROUTINE_S_START) {
+                return akat_coroutine_state;
+            }
+        } while (0);
+
+        ;
+
+        if (0) {
+            byte_to_send = 0xE6;
+        } else {
+            byte_to_send = 0x86;
+        }
+
+        do {
+            akat_coroutine_state = 10;
+akat_coroutine_l_10:
+
+            if (send_byte() != AKAT_COROUTINE_S_START) {
+                return akat_coroutine_state;
+            }
+        } while (0);
+
+        ; //CRC
+    } while (0);
+
+    AKAT_COLD_CODE;
+    akat_coroutine_state = AKAT_COROUTINE_S_START;
+akat_coroutine_l_end:
+    return akat_coroutine_state;
+#undef akat_coroutine_state
+#undef byte_to_send
+#undef send_byte
+#undef send_read_concentration_command
+#undef setup_abc
+}
+static AKAT_FORCE_INLINE void co2_writer() {
+#define akat_coroutine_state co2_writer__akat_coroutine_state
+#define byte_to_send co2_writer__byte_to_send
+#define send_byte co2_writer__send_byte
+#define send_read_concentration_command co2_writer__send_read_concentration_command
+#define setup_abc co2_writer__setup_abc
+    ;
+    AKAT_HOT_CODE;
+
+    switch (akat_coroutine_state) {
+    case AKAT_COROUTINE_S_START:
+        goto akat_coroutine_l_start;
+
+    case AKAT_COROUTINE_S_END:
+        goto akat_coroutine_l_end;
+
+    case 2:
+        goto akat_coroutine_l_2;
+
+    case 3:
+        goto akat_coroutine_l_3;
+
+    case 4:
+        goto akat_coroutine_l_4;
     }
 
 akat_coroutine_l_start:
@@ -18807,10 +19075,9 @@ akat_coroutine_l_start:
     do {
         ;
 
-        while (1) { //TODO: Disable ABC, see all the comments here https://github.com/letscontrolit/ESPEasy/issues/466
-            //Wait until it's time to send the command sequence
+        while (1) { //Wait until it's time to send the command sequence
             //This counter will be incremented every 0.1 second in the X_EVERY_DECISECOND above
-            co2_command_countdown = 10; //TODO: Try to use lower value
+            co2_command_countdown = 10; //No need to ask more often than that
 
             do {
                 akat_coroutine_state = 2;
@@ -18824,16 +19091,30 @@ akat_coroutine_l_2:
 
             ;
 
-            do {
-                akat_coroutine_state = 3;
+            if (co2_abc_setup_needed && co2_updated_deciseconds_ago != 255) {//Seems like sensor is responding to our commands and ABC (Automatic Baseline Correction) setup is needed
+                //We do co2_abc_setup_needed = 0 when we receive ack-response.
+                do {
+                    akat_coroutine_state = 3;
 akat_coroutine_l_3:
 
-                if (send_read_gas_command() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
+                    if (setup_abc() != AKAT_COROUTINE_S_START) {
+                        return ;
+                    }
+                } while (0);
 
-            ;
+                ;
+            } else {
+                do {
+                    akat_coroutine_state = 4;
+akat_coroutine_l_4:
+
+                    if (send_read_concentration_command() != AKAT_COROUTINE_S_START) {
+                        return ;
+                    }
+                } while (0);
+
+                ;
+            }
         }
     } while (0);
 
@@ -18844,7 +19125,8 @@ akat_coroutine_l_end:
 #undef akat_coroutine_state
 #undef byte_to_send
 #undef send_byte
-#undef send_read_gas_command
+#undef send_read_concentration_command
+#undef setup_abc
 }
 
 ;
@@ -18860,6 +19142,10 @@ typedef struct {
     u8 (* const get_rx_overflow_count)();
     u8 (* const get_crc_errors)();
     u16 (* const get_concentration)();
+    u16 (* const get_u)();
+    u8 (* const get_s)();
+    u8 (* const get_temperature)();
+    u16 (* const get_abc_setups)();
     u8 (* const get_updated_deciseconds_ago)();
 } co2_t;
 
@@ -18886,20 +19172,88 @@ static AKAT_FORCE_INLINE u16 co2__get_concentration__impl() {
 #undef get_crc_errors__impl
 #undef get_rx_overflow_count__impl
 }
-static AKAT_FORCE_INLINE u8 co2__get_updated_deciseconds_ago__impl() {
+static AKAT_FORCE_INLINE u16 co2__get_u__impl() {
 #define get_concentration__impl co2__get_concentration__impl
 #define get_crc_errors__impl co2__get_crc_errors__impl
 #define get_rx_overflow_count__impl co2__get_rx_overflow_count__impl
-#define get_updated_deciseconds_ago__impl co2__get_updated_deciseconds_ago__impl
-    return co2_updated_deciseconds_ago;
+#define get_u__impl co2__get_u__impl
+    return co2_u;
 #undef get_concentration__impl
 #undef get_crc_errors__impl
 #undef get_rx_overflow_count__impl
-#undef get_updated_deciseconds_ago__impl
+#undef get_u__impl
 }
+static AKAT_FORCE_INLINE u8 co2__get_s__impl() {
 #define get_concentration__impl co2__get_concentration__impl
 #define get_crc_errors__impl co2__get_crc_errors__impl
 #define get_rx_overflow_count__impl co2__get_rx_overflow_count__impl
+#define get_s__impl co2__get_s__impl
+#define get_u__impl co2__get_u__impl
+    return co2_s;
+#undef get_concentration__impl
+#undef get_crc_errors__impl
+#undef get_rx_overflow_count__impl
+#undef get_s__impl
+#undef get_u__impl
+}
+static AKAT_FORCE_INLINE u8 co2__get_temperature__impl() {
+#define get_concentration__impl co2__get_concentration__impl
+#define get_crc_errors__impl co2__get_crc_errors__impl
+#define get_rx_overflow_count__impl co2__get_rx_overflow_count__impl
+#define get_s__impl co2__get_s__impl
+#define get_temperature__impl co2__get_temperature__impl
+#define get_u__impl co2__get_u__impl
+    return co2_temperature;
+#undef get_concentration__impl
+#undef get_crc_errors__impl
+#undef get_rx_overflow_count__impl
+#undef get_s__impl
+#undef get_temperature__impl
+#undef get_u__impl
+}
+static AKAT_FORCE_INLINE u16 co2__get_abc_setups__impl() {
+#define get_abc_setups__impl co2__get_abc_setups__impl
+#define get_concentration__impl co2__get_concentration__impl
+#define get_crc_errors__impl co2__get_crc_errors__impl
+#define get_rx_overflow_count__impl co2__get_rx_overflow_count__impl
+#define get_s__impl co2__get_s__impl
+#define get_temperature__impl co2__get_temperature__impl
+#define get_u__impl co2__get_u__impl
+    return co2_abc_setups;
+#undef get_abc_setups__impl
+#undef get_concentration__impl
+#undef get_crc_errors__impl
+#undef get_rx_overflow_count__impl
+#undef get_s__impl
+#undef get_temperature__impl
+#undef get_u__impl
+}
+static AKAT_FORCE_INLINE u8 co2__get_updated_deciseconds_ago__impl() {
+#define get_abc_setups__impl co2__get_abc_setups__impl
+#define get_concentration__impl co2__get_concentration__impl
+#define get_crc_errors__impl co2__get_crc_errors__impl
+#define get_rx_overflow_count__impl co2__get_rx_overflow_count__impl
+#define get_s__impl co2__get_s__impl
+#define get_temperature__impl co2__get_temperature__impl
+#define get_u__impl co2__get_u__impl
+#define get_updated_deciseconds_ago__impl co2__get_updated_deciseconds_ago__impl
+    return co2_updated_deciseconds_ago;
+#undef get_abc_setups__impl
+#undef get_concentration__impl
+#undef get_crc_errors__impl
+#undef get_rx_overflow_count__impl
+#undef get_s__impl
+#undef get_temperature__impl
+#undef get_u__impl
+#undef get_updated_deciseconds_ago__impl
+}
+#define get_abc_setups__impl co2__get_abc_setups__impl
+#define get_concentration__impl co2__get_concentration__impl
+#define get_crc_errors__impl co2__get_crc_errors__impl
+#define get_rx_overflow_count__impl co2__get_rx_overflow_count__impl
+#define get_s__impl co2__get_s__impl
+#define get_temperature__impl co2__get_temperature__impl
+#define get_u__impl co2__get_u__impl
 #define get_updated_deciseconds_ago__impl co2__get_updated_deciseconds_ago__impl
 
 co2_t const co2 = {.get_rx_overflow_count = &get_rx_overflow_count__impl
@@ -18908,25 +19262,45 @@ co2_t const co2 = {.get_rx_overflow_count = &get_rx_overflow_count__impl
                                      ,
                    .get_concentration = &get_concentration__impl
                                         ,
+                   .get_u = &get_u__impl
+                            ,
+                   .get_s = &get_s__impl
+                            ,
+                   .get_temperature = &get_temperature__impl
+                                      ,
+                   .get_abc_setups = &get_abc_setups__impl
+                                     ,
                    .get_updated_deciseconds_ago = &get_updated_deciseconds_ago__impl
                   };
 
 
+#undef get_abc_setups__impl
 #undef get_concentration__impl
 #undef get_crc_errors__impl
 #undef get_rx_overflow_count__impl
+#undef get_s__impl
+#undef get_temperature__impl
+#undef get_u__impl
 #undef get_updated_deciseconds_ago__impl
+#define get_abc_setups__impl co2__get_abc_setups__impl
 #define get_concentration__impl co2__get_concentration__impl
 #define get_crc_errors__impl co2__get_crc_errors__impl
 #define get_rx_overflow_count__impl co2__get_rx_overflow_count__impl
+#define get_s__impl co2__get_s__impl
+#define get_temperature__impl co2__get_temperature__impl
+#define get_u__impl co2__get_u__impl
 #define get_updated_deciseconds_ago__impl co2__get_updated_deciseconds_ago__impl
 
 
 ;
 
+#define get_abc_setups__impl co2__get_abc_setups__impl
 #define get_concentration__impl co2__get_concentration__impl
 #define get_crc_errors__impl co2__get_crc_errors__impl
 #define get_rx_overflow_count__impl co2__get_rx_overflow_count__impl
+#define get_s__impl co2__get_s__impl
+#define get_temperature__impl co2__get_temperature__impl
+#define get_u__impl co2__get_u__impl
 #define get_updated_deciseconds_ago__impl co2__get_updated_deciseconds_ago__impl
 
 
@@ -18935,9 +19309,17 @@ co2_t const co2 = {.get_rx_overflow_count = &get_rx_overflow_count__impl
 
 
 
+
+
+
+
+#undef get_abc_setups__impl
 #undef get_concentration__impl
 #undef get_crc_errors__impl
 #undef get_rx_overflow_count__impl
+#undef get_s__impl
+#undef get_temperature__impl
+#undef get_u__impl
 #undef get_updated_deciseconds_ago__impl
 ;
 
@@ -19364,6 +19746,48 @@ static AKAT_FORCE_INLINE void usart0_writer() {
 
     case 35:
         goto akat_coroutine_l_35;
+
+    case 36:
+        goto akat_coroutine_l_36;
+
+    case 37:
+        goto akat_coroutine_l_37;
+
+    case 38:
+        goto akat_coroutine_l_38;
+
+    case 39:
+        goto akat_coroutine_l_39;
+
+    case 40:
+        goto akat_coroutine_l_40;
+
+    case 41:
+        goto akat_coroutine_l_41;
+
+    case 42:
+        goto akat_coroutine_l_42;
+
+    case 43:
+        goto akat_coroutine_l_43;
+
+    case 44:
+        goto akat_coroutine_l_44;
+
+    case 45:
+        goto akat_coroutine_l_45;
+
+    case 46:
+        goto akat_coroutine_l_46;
+
+    case 47:
+        goto akat_coroutine_l_47;
+
+    case 48:
+        goto akat_coroutine_l_48;
+
+    case 49:
+        goto akat_coroutine_l_49;
     }
 
 akat_coroutine_l_start:
@@ -19383,14 +19807,71 @@ akat_coroutine_l_start:
         /* Defined new macro with name WRITE_STATUS  *///- - - - - - - - - - -
 
         //Main loop in thread (thread will yield on calls to YIELD$ or WAIT_UNTIL$)
-        while (1) {
+        while (1) { //---- - - - - -- - - - - - - -
+            //Write debug if there is some
+            if (debug_next_empty_idx != debug_next_read_idx) {
+                while (debug_next_empty_idx != debug_next_read_idx) {
+                    byte_to_send = '>';
+
+                    do {
+                        akat_coroutine_state = 2;
+akat_coroutine_l_2:
+
+                        if (send_byte() != AKAT_COROUTINE_S_START) {
+                            return ;
+                        }
+                    } while (0);
+
+                    ;
+                    //Read byte first, then increment idx!
+                    u8_to_format_and_send = debug_bytes_buf[debug_next_read_idx];
+                    debug_next_read_idx = (debug_next_read_idx + 1) & (AK_DEBUG_BUF_SIZE - 1);
+
+                    do {
+                        akat_coroutine_state = 3;
+akat_coroutine_l_3:
+
+                        if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                            return ;
+                        }
+                    } while (0);
+
+                    ;
+                }
+
+                byte_to_send = '\r';
+
+                do {
+                    akat_coroutine_state = 4;
+akat_coroutine_l_4:
+
+                    if (send_byte() != AKAT_COROUTINE_S_START) {
+                        return ;
+                    }
+                } while (0);
+
+                ;
+                byte_to_send = '\n';
+
+                do {
+                    akat_coroutine_state = 5;
+akat_coroutine_l_5:
+
+                    if (send_byte() != AKAT_COROUTINE_S_START) {
+                        return ;
+                    }
+                } while (0);
+
+                ;
+            }//----  - - - - -- - - - - -
+
             crc = 0;
             //WRITE_STATUS(name for documentation, 1-character id for protocol, type1 val1, type2 val2, ...)
             byte_to_send = ' ';
 
             do {
-                akat_coroutine_state = 2;
-akat_coroutine_l_2:
+                akat_coroutine_state = 6;
+akat_coroutine_l_6:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19399,61 +19880,6 @@ akat_coroutine_l_2:
 
             ;
             byte_to_send = 'A';
-
-            do {
-                akat_coroutine_state = 3;
-akat_coroutine_l_3:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            /*
-              COMMPROTO: A1: UART0: u8 usart0_rx_overflow_count
-            */
-            u8_to_format_and_send = usart0_rx_overflow_count;
-
-            do {
-                akat_coroutine_state = 4;
-akat_coroutine_l_4:
-
-                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            byte_to_send = ',';
-
-            do {
-                akat_coroutine_state = 5;
-akat_coroutine_l_5:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            /*
-              COMMPROTO: A2: UART0: u8 co2.get_rx_overflow_count()
-            */
-            u8_to_format_and_send = co2.get_rx_overflow_count();
-
-            do {
-                akat_coroutine_state = 6;
-akat_coroutine_l_6:
-
-                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            ;
-            byte_to_send = ' ';
 
             do {
                 akat_coroutine_state = 7;
@@ -19465,11 +19891,93 @@ akat_coroutine_l_7:
             } while (0);
 
             ;
-            byte_to_send = 'B';
+            /*
+              COMMPROTO: A1: UART0: u8 debug_overflow_count
+            */
+            u8_to_format_and_send = debug_overflow_count;
 
             do {
                 akat_coroutine_state = 8;
 akat_coroutine_l_8:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 9;
+akat_coroutine_l_9:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: A2: UART0: u8 usart0_rx_overflow_count
+            */
+            u8_to_format_and_send = usart0_rx_overflow_count;
+
+            do {
+                akat_coroutine_state = 10;
+akat_coroutine_l_10:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 11;
+akat_coroutine_l_11:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: A3: UART0: u8 co2.get_rx_overflow_count()
+            */
+            u8_to_format_and_send = co2.get_rx_overflow_count();
+
+            do {
+                akat_coroutine_state = 12;
+akat_coroutine_l_12:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            ;
+            byte_to_send = ' ';
+
+            do {
+                akat_coroutine_state = 13;
+akat_coroutine_l_13:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = 'B';
+
+            do {
+                akat_coroutine_state = 14;
+akat_coroutine_l_14:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19483,8 +19991,8 @@ akat_coroutine_l_8:
             u8_to_format_and_send = ds18b20_aqua.get_crc_errors();
 
             do {
-                akat_coroutine_state = 9;
-akat_coroutine_l_9:
+                akat_coroutine_state = 15;
+akat_coroutine_l_15:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19495,8 +20003,8 @@ akat_coroutine_l_9:
             byte_to_send = ',';
 
             do {
-                akat_coroutine_state = 10;
-akat_coroutine_l_10:
+                akat_coroutine_state = 16;
+akat_coroutine_l_16:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19510,8 +20018,8 @@ akat_coroutine_l_10:
             u8_to_format_and_send = ds18b20_aqua.get_disconnects();
 
             do {
-                akat_coroutine_state = 11;
-akat_coroutine_l_11:
+                akat_coroutine_state = 17;
+akat_coroutine_l_17:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19522,8 +20030,8 @@ akat_coroutine_l_11:
             byte_to_send = ',';
 
             do {
-                akat_coroutine_state = 12;
-akat_coroutine_l_12:
+                akat_coroutine_state = 18;
+akat_coroutine_l_18:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19537,8 +20045,8 @@ akat_coroutine_l_12:
             u16_to_format_and_send = ds18b20_aqua.get_temperatureX16();
 
             do {
-                akat_coroutine_state = 13;
-akat_coroutine_l_13:
+                akat_coroutine_state = 19;
+akat_coroutine_l_19:
 
                 if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19549,8 +20057,8 @@ akat_coroutine_l_13:
             byte_to_send = ',';
 
             do {
-                akat_coroutine_state = 14;
-akat_coroutine_l_14:
+                akat_coroutine_state = 20;
+akat_coroutine_l_20:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19564,8 +20072,8 @@ akat_coroutine_l_14:
             u8_to_format_and_send = ds18b20_aqua.get_updated_deciseconds_ago();
 
             do {
-                akat_coroutine_state = 15;
-akat_coroutine_l_15:
+                akat_coroutine_state = 21;
+akat_coroutine_l_21:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19577,8 +20085,8 @@ akat_coroutine_l_15:
             byte_to_send = ' ';
 
             do {
-                akat_coroutine_state = 16;
-akat_coroutine_l_16:
+                akat_coroutine_state = 22;
+akat_coroutine_l_22:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19589,8 +20097,8 @@ akat_coroutine_l_16:
             byte_to_send = 'C';
 
             do {
-                akat_coroutine_state = 17;
-akat_coroutine_l_17:
+                akat_coroutine_state = 23;
+akat_coroutine_l_23:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19604,8 +20112,8 @@ akat_coroutine_l_17:
             u8_to_format_and_send = ds18b20_case.get_crc_errors();
 
             do {
-                akat_coroutine_state = 18;
-akat_coroutine_l_18:
+                akat_coroutine_state = 24;
+akat_coroutine_l_24:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19616,8 +20124,8 @@ akat_coroutine_l_18:
             byte_to_send = ',';
 
             do {
-                akat_coroutine_state = 19;
-akat_coroutine_l_19:
+                akat_coroutine_state = 25;
+akat_coroutine_l_25:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19631,8 +20139,8 @@ akat_coroutine_l_19:
             u8_to_format_and_send = ds18b20_case.get_disconnects();
 
             do {
-                akat_coroutine_state = 20;
-akat_coroutine_l_20:
+                akat_coroutine_state = 26;
+akat_coroutine_l_26:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19643,8 +20151,8 @@ akat_coroutine_l_20:
             byte_to_send = ',';
 
             do {
-                akat_coroutine_state = 21;
-akat_coroutine_l_21:
+                akat_coroutine_state = 27;
+akat_coroutine_l_27:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19658,8 +20166,8 @@ akat_coroutine_l_21:
             u16_to_format_and_send = ds18b20_case.get_temperatureX16();
 
             do {
-                akat_coroutine_state = 22;
-akat_coroutine_l_22:
+                akat_coroutine_state = 28;
+akat_coroutine_l_28:
 
                 if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19670,8 +20178,8 @@ akat_coroutine_l_22:
             byte_to_send = ',';
 
             do {
-                akat_coroutine_state = 23;
-akat_coroutine_l_23:
+                akat_coroutine_state = 29;
+akat_coroutine_l_29:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19685,8 +20193,8 @@ akat_coroutine_l_23:
             u8_to_format_and_send = ds18b20_case.get_updated_deciseconds_ago();
 
             do {
-                akat_coroutine_state = 24;
-akat_coroutine_l_24:
+                akat_coroutine_state = 30;
+akat_coroutine_l_30:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19698,8 +20206,8 @@ akat_coroutine_l_24:
             byte_to_send = ' ';
 
             do {
-                akat_coroutine_state = 25;
-akat_coroutine_l_25:
+                akat_coroutine_state = 31;
+akat_coroutine_l_31:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19710,8 +20218,8 @@ akat_coroutine_l_25:
             byte_to_send = 'D';
 
             do {
-                akat_coroutine_state = 26;
-akat_coroutine_l_26:
+                akat_coroutine_state = 32;
+akat_coroutine_l_32:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19725,8 +20233,8 @@ akat_coroutine_l_26:
             u8_to_format_and_send = co2.get_crc_errors();
 
             do {
-                akat_coroutine_state = 27;
-akat_coroutine_l_27:
+                akat_coroutine_state = 33;
+akat_coroutine_l_33:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19737,8 +20245,8 @@ akat_coroutine_l_27:
             byte_to_send = ',';
 
             do {
-                akat_coroutine_state = 28;
-akat_coroutine_l_28:
+                akat_coroutine_state = 34;
+akat_coroutine_l_34:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19747,13 +20255,40 @@ akat_coroutine_l_28:
 
             ;
             /*
-              COMMPROTO: D2: "CO2": u16 co2.get_concentration()
+              COMMPROTO: D2: "CO2": u8 co2.get_abc_setups()
+            */
+            u8_to_format_and_send = co2.get_abc_setups();
+
+            do {
+                akat_coroutine_state = 35;
+akat_coroutine_l_35:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 36;
+akat_coroutine_l_36:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: D3: "CO2": u16 co2.get_concentration()
             */
             u16_to_format_and_send = co2.get_concentration();
 
             do {
-                akat_coroutine_state = 29;
-akat_coroutine_l_29:
+                akat_coroutine_state = 37;
+akat_coroutine_l_37:
 
                 if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19764,8 +20299,8 @@ akat_coroutine_l_29:
             byte_to_send = ',';
 
             do {
-                akat_coroutine_state = 30;
-akat_coroutine_l_30:
+                akat_coroutine_state = 38;
+akat_coroutine_l_38:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19774,13 +20309,94 @@ akat_coroutine_l_30:
 
             ;
             /*
-              COMMPROTO: D3: "CO2": u8 co2.get_updated_deciseconds_ago()
+              COMMPROTO: D4: "CO2": u8 co2.get_temperature()
+            */
+            u8_to_format_and_send = co2.get_temperature();
+
+            do {
+                akat_coroutine_state = 39;
+akat_coroutine_l_39:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 40;
+akat_coroutine_l_40:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: D5: "CO2": u8 co2.get_s()
+            */
+            u8_to_format_and_send = co2.get_s();
+
+            do {
+                akat_coroutine_state = 41;
+akat_coroutine_l_41:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 42;
+akat_coroutine_l_42:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: D6: "CO2": u16 co2.get_u()
+            */
+            u16_to_format_and_send = co2.get_u();
+
+            do {
+                akat_coroutine_state = 43;
+akat_coroutine_l_43:
+
+                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 44;
+akat_coroutine_l_44:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: D7: "CO2": u8 co2.get_updated_deciseconds_ago()
             */
             u8_to_format_and_send = co2.get_updated_deciseconds_ago();
 
             do {
-                akat_coroutine_state = 31;
-akat_coroutine_l_31:
+                akat_coroutine_state = 45;
+akat_coroutine_l_45:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19793,8 +20409,8 @@ akat_coroutine_l_31:
             byte_to_send = ' ';
 
             do {
-                akat_coroutine_state = 32;
-akat_coroutine_l_32:
+                akat_coroutine_state = 46;
+akat_coroutine_l_46:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19805,8 +20421,8 @@ akat_coroutine_l_32:
             u8_to_format_and_send = crc;
 
             do {
-                akat_coroutine_state = 33;
-akat_coroutine_l_33:
+                akat_coroutine_state = 47;
+akat_coroutine_l_47:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19817,8 +20433,8 @@ akat_coroutine_l_33:
             byte_to_send = '\r';
 
             do {
-                akat_coroutine_state = 34;
-akat_coroutine_l_34:
+                akat_coroutine_state = 48;
+akat_coroutine_l_48:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -19829,8 +20445,8 @@ akat_coroutine_l_34:
             byte_to_send = '\n';
 
             do {
-                akat_coroutine_state = 35;
-akat_coroutine_l_35:
+                akat_coroutine_state = 49;
+akat_coroutine_l_49:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;

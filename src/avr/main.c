@@ -12,6 +12,9 @@
 // Must be power of 2!
 #define AK_USART0_RX_BUF_SIZE  128
 
+// Number of debug bytes (data is written with '>' prefix into USART0)
+#define AK_DEBUG_BUF_SIZE     64
+
 // 16Mhz, that's external oscillator on Mega 2560.
 // This doesn't configure it here, it just tells to our build system
 // what we is actually using! Configuration is done using fuses (see flash-avr-fuses).
@@ -146,6 +149,34 @@ X_UNUSED_PIN$(F0); // 97   PF0 ( ADC0 ) Analog pin 0
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+// Support for simple debugging
+
+GLOBAL$() {
+    // Make volatile so we can use it from ISR (in theory)
+    STATIC_VAR$(volatile u8 debug_bytes_buf[AK_DEBUG_BUF_SIZE], initial = {});
+    STATIC_VAR$(volatile u8 debug_next_empty_idx);
+    STATIC_VAR$(volatile u8 debug_next_read_idx);
+    STATIC_VAR$(volatile u8 debug_overflow_count);
+}
+
+FUNCTION$(void add_debug_byte(const u8 b), unused) {
+    u8 new_next_empty_idx = (debug_next_empty_idx + AKAT_ONE) & (AK_DEBUG_BUF_SIZE - 1);
+    if (new_next_empty_idx == debug_next_read_idx) {
+        debug_overflow_count += AKAT_ONE;
+        // Don't let it overflow!
+        if (!debug_overflow_count) {
+            debug_overflow_count -= AKAT_ONE;
+        }
+    } else {
+        debug_bytes_buf[debug_next_empty_idx] = b;
+        debug_next_empty_idx = new_next_empty_idx;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // Led pins
 
 X_GPIO_OUTPUT$(blue_led, B7);
@@ -191,7 +222,8 @@ X_DS18B20$(ds18b20_case, A1);
 ////////////////////////////////////////////////////////////////////////////////
 // USART1 - MH-Z19 CO2 Module
 
-X_MHZ19$(co2, uart = 1);
+// NOTE: Use to debug the protocol: debug = add_debug_byte
+X_MHZ19$(co2, uart = 1, use_abc = 0);
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -306,12 +338,33 @@ THREAD$(usart0_writer, state_type = u8) {
     // - - - - - - - - - - -
     // Main loop in thread (thread will yield on calls to YIELD$ or WAIT_UNTIL$)
     while(1) {
+        // ---- - - - - -- - - - - - - -
+        // Write debug if there is some
+        if (debug_next_empty_idx != debug_next_read_idx) {
+            while (debug_next_empty_idx != debug_next_read_idx) {
+                byte_to_send = '>'; CALL$(send_byte);
+
+                // Read byte first, then increment idx!
+                u8_to_format_and_send = debug_bytes_buf[debug_next_read_idx];
+                debug_next_read_idx = (debug_next_read_idx + 1) & (AK_DEBUG_BUF_SIZE - 1);
+
+                CALL$(format_and_send_u8);
+            }
+
+            byte_to_send = '\r'; CALL$(send_byte);
+            byte_to_send = '\n'; CALL$(send_byte);
+        }
+
+
+        // ----  - - - - -- - - - - -
+
         crc = 0;
 
         // WRITE_STATUS(name for documentation, 1-character id for protocol, type1 val1, type2 val2, ...)
 
         WRITE_STATUS$(UART0,
                       A,
+                      u8 debug_overflow_count,
                       u8 usart0_rx_overflow_count,
                       u8 co2.get_rx_overflow_count());
 
@@ -332,7 +385,11 @@ THREAD$(usart0_writer, state_type = u8) {
         WRITE_STATUS$("CO2",
                       D,
                       u8 co2.get_crc_errors(),
+                      u8 co2.get_abc_setups(),
                       u16 co2.get_concentration(),
+                      u8 co2.get_temperature(),
+                      u8 co2.get_s(),
+                      u16 co2.get_u(),
                       u8 co2.get_updated_deciseconds_ago());
 
         // Done writing status, send: CRC\r\n
