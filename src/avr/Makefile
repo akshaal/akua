@@ -13,7 +13,7 @@ all: firmware.avr
 distclean: clean
 
 firmware.tmp.c: ${TUNING_SRC} ${SRCS} ${AKAT_SRCS} Makefile
-		${AKATPP} ${AKATPP_OPTS} ${TUNING_SRC} ${AKAT_SRCS} ${SRCS} > "firmware.tmp.c" || rm "firmware.tmp.c"
+		${AKATPP} ${AKATPP_OPTS} ${TUNING_SRC} ${AKAT_SRCS} ${SRCS} > "firmware.tmp.c" && ./maintain-protocol || rm "firmware.tmp.c"
 
 firmware.avr: firmware.tmp.c firmware.cflags Makefile
 	  XX=`cat firmware.cflags` && ${CC} -O3 ${CFLAGS} ${PROJ_CFLAGS} $$XX "$<" -save-temps -o $@ && \
@@ -23,8 +23,7 @@ firmware.avr: firmware.tmp.c firmware.cflags Makefile
 		${SIZE} $@ && \
 		${AKATV} firmware.avr.ltrans0.s && \
 		hex2bin firmware.hex && \
-		dos2unix firmware.hex && \
-		./extract-protocol
+		dos2unix firmware.hex
 
 clean:
 	rm -f *.ii *.o *.i *.s *.a *.avr *.hex *.bin *.inline *.out *.tmp.res serial-protocol.txt.tmp

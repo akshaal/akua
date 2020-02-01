@@ -19966,6 +19966,12 @@ static AKAT_FORCE_INLINE void usart0_writer() {
 
     case 51:
         goto akat_coroutine_l_51;
+
+    case 52:
+        goto akat_coroutine_l_52;
+
+    case 53:
+        goto akat_coroutine_l_53;
     }
 
 akat_coroutine_l_start:
@@ -20202,9 +20208,9 @@ akat_coroutine_l_16:
 
             ;
             /*
-              COMMPROTO: B1: "Aquarium temperature": u8 ds18b20_aqua.get_crc_errors()
-              TS_PROTO_TYPE: ""Aquarium temperature": u8 ds18b20_aqua.get_crc_errors()": number,
-              TS_PROTO_ASSIGN: ""Aquarium temperature": u8 ds18b20_aqua.get_crc_errors()": vals["B1"],
+              COMMPROTO: B1: Aquarium temperature sensor: u8 ds18b20_aqua.get_crc_errors()
+              TS_PROTO_TYPE: "Aquarium temperature sensor: u8 ds18b20_aqua.get_crc_errors()": number,
+              TS_PROTO_ASSIGN: "Aquarium temperature sensor: u8 ds18b20_aqua.get_crc_errors()": vals["B1"],
             */
             u8_to_format_and_send = ds18b20_aqua.get_crc_errors();
 
@@ -20231,9 +20237,9 @@ akat_coroutine_l_18:
 
             ;
             /*
-              COMMPROTO: B2: "Aquarium temperature": u8 ds18b20_aqua.get_disconnects()
-              TS_PROTO_TYPE: ""Aquarium temperature": u8 ds18b20_aqua.get_disconnects()": number,
-              TS_PROTO_ASSIGN: ""Aquarium temperature": u8 ds18b20_aqua.get_disconnects()": vals["B2"],
+              COMMPROTO: B2: Aquarium temperature sensor: u8 ds18b20_aqua.get_disconnects()
+              TS_PROTO_TYPE: "Aquarium temperature sensor: u8 ds18b20_aqua.get_disconnects()": number,
+              TS_PROTO_ASSIGN: "Aquarium temperature sensor: u8 ds18b20_aqua.get_disconnects()": vals["B2"],
             */
             u8_to_format_and_send = ds18b20_aqua.get_disconnects();
 
@@ -20260,9 +20266,9 @@ akat_coroutine_l_20:
 
             ;
             /*
-              COMMPROTO: B3: "Aquarium temperature": u16 ds18b20_aqua.get_temperatureX16()
-              TS_PROTO_TYPE: ""Aquarium temperature": u16 ds18b20_aqua.get_temperatureX16()": number,
-              TS_PROTO_ASSIGN: ""Aquarium temperature": u16 ds18b20_aqua.get_temperatureX16()": vals["B3"],
+              COMMPROTO: B3: Aquarium temperature sensor: u16 ds18b20_aqua.get_temperatureX16()
+              TS_PROTO_TYPE: "Aquarium temperature sensor: u16 ds18b20_aqua.get_temperatureX16()": number,
+              TS_PROTO_ASSIGN: "Aquarium temperature sensor: u16 ds18b20_aqua.get_temperatureX16()": vals["B3"],
             */
             u16_to_format_and_send = ds18b20_aqua.get_temperatureX16();
 
@@ -20289,9 +20295,9 @@ akat_coroutine_l_22:
 
             ;
             /*
-              COMMPROTO: B4: "Aquarium temperature": u8 ds18b20_aqua.get_updated_deciseconds_ago()
-              TS_PROTO_TYPE: ""Aquarium temperature": u8 ds18b20_aqua.get_updated_deciseconds_ago()": number,
-              TS_PROTO_ASSIGN: ""Aquarium temperature": u8 ds18b20_aqua.get_updated_deciseconds_ago()": vals["B4"],
+              COMMPROTO: B4: Aquarium temperature sensor: u8 ds18b20_aqua.get_updated_deciseconds_ago()
+              TS_PROTO_TYPE: "Aquarium temperature sensor: u8 ds18b20_aqua.get_updated_deciseconds_ago()": number,
+              TS_PROTO_ASSIGN: "Aquarium temperature sensor: u8 ds18b20_aqua.get_updated_deciseconds_ago()": vals["B4"],
             */
             u8_to_format_and_send = ds18b20_aqua.get_updated_deciseconds_ago();
 
@@ -20331,9 +20337,9 @@ akat_coroutine_l_25:
 
             ;
             /*
-              COMMPROTO: C1: "Case temperature": u8 ds18b20_case.get_crc_errors()
-              TS_PROTO_TYPE: ""Case temperature": u8 ds18b20_case.get_crc_errors()": number,
-              TS_PROTO_ASSIGN: ""Case temperature": u8 ds18b20_case.get_crc_errors()": vals["C1"],
+              COMMPROTO: C1: Case temperature sensor: u8 ds18b20_case.get_crc_errors()
+              TS_PROTO_TYPE: "Case temperature sensor: u8 ds18b20_case.get_crc_errors()": number,
+              TS_PROTO_ASSIGN: "Case temperature sensor: u8 ds18b20_case.get_crc_errors()": vals["C1"],
             */
             u8_to_format_and_send = ds18b20_case.get_crc_errors();
 
@@ -20360,9 +20366,9 @@ akat_coroutine_l_27:
 
             ;
             /*
-              COMMPROTO: C2: "Case temperature": u8 ds18b20_case.get_disconnects()
-              TS_PROTO_TYPE: ""Case temperature": u8 ds18b20_case.get_disconnects()": number,
-              TS_PROTO_ASSIGN: ""Case temperature": u8 ds18b20_case.get_disconnects()": vals["C2"],
+              COMMPROTO: C2: Case temperature sensor: u8 ds18b20_case.get_disconnects()
+              TS_PROTO_TYPE: "Case temperature sensor: u8 ds18b20_case.get_disconnects()": number,
+              TS_PROTO_ASSIGN: "Case temperature sensor: u8 ds18b20_case.get_disconnects()": vals["C2"],
             */
             u8_to_format_and_send = ds18b20_case.get_disconnects();
 
@@ -20389,9 +20395,9 @@ akat_coroutine_l_29:
 
             ;
             /*
-              COMMPROTO: C3: "Case temperature": u16 ds18b20_case.get_temperatureX16()
-              TS_PROTO_TYPE: ""Case temperature": u16 ds18b20_case.get_temperatureX16()": number,
-              TS_PROTO_ASSIGN: ""Case temperature": u16 ds18b20_case.get_temperatureX16()": vals["C3"],
+              COMMPROTO: C3: Case temperature sensor: u16 ds18b20_case.get_temperatureX16()
+              TS_PROTO_TYPE: "Case temperature sensor: u16 ds18b20_case.get_temperatureX16()": number,
+              TS_PROTO_ASSIGN: "Case temperature sensor: u16 ds18b20_case.get_temperatureX16()": vals["C3"],
             */
             u16_to_format_and_send = ds18b20_case.get_temperatureX16();
 
@@ -20418,9 +20424,9 @@ akat_coroutine_l_31:
 
             ;
             /*
-              COMMPROTO: C4: "Case temperature": u8 ds18b20_case.get_updated_deciseconds_ago()
-              TS_PROTO_TYPE: ""Case temperature": u8 ds18b20_case.get_updated_deciseconds_ago()": number,
-              TS_PROTO_ASSIGN: ""Case temperature": u8 ds18b20_case.get_updated_deciseconds_ago()": vals["C4"],
+              COMMPROTO: C4: Case temperature sensor: u8 ds18b20_case.get_updated_deciseconds_ago()
+              TS_PROTO_TYPE: "Case temperature sensor: u8 ds18b20_case.get_updated_deciseconds_ago()": number,
+              TS_PROTO_ASSIGN: "Case temperature sensor: u8 ds18b20_case.get_updated_deciseconds_ago()": vals["C4"],
             */
             u8_to_format_and_send = ds18b20_case.get_updated_deciseconds_ago();
 
@@ -20460,9 +20466,9 @@ akat_coroutine_l_34:
 
             ;
             /*
-              COMMPROTO: D1: "CO2": u8 co2.get_crc_errors()
-              TS_PROTO_TYPE: ""CO2": u8 co2.get_crc_errors()": number,
-              TS_PROTO_ASSIGN: ""CO2": u8 co2.get_crc_errors()": vals["D1"],
+              COMMPROTO: D1: CO2 sensor: u8 co2.get_crc_errors()
+              TS_PROTO_TYPE: "CO2 sensor: u8 co2.get_crc_errors()": number,
+              TS_PROTO_ASSIGN: "CO2 sensor: u8 co2.get_crc_errors()": vals["D1"],
             */
             u8_to_format_and_send = co2.get_crc_errors();
 
@@ -20489,9 +20495,9 @@ akat_coroutine_l_36:
 
             ;
             /*
-              COMMPROTO: D2: "CO2": u16 co2.get_abc_setups()
-              TS_PROTO_TYPE: ""CO2": u16 co2.get_abc_setups()": number,
-              TS_PROTO_ASSIGN: ""CO2": u16 co2.get_abc_setups()": vals["D2"],
+              COMMPROTO: D2: CO2 sensor: u16 co2.get_abc_setups()
+              TS_PROTO_TYPE: "CO2 sensor: u16 co2.get_abc_setups()": number,
+              TS_PROTO_ASSIGN: "CO2 sensor: u16 co2.get_abc_setups()": vals["D2"],
             */
             u16_to_format_and_send = co2.get_abc_setups();
 
@@ -20518,9 +20524,9 @@ akat_coroutine_l_38:
 
             ;
             /*
-              COMMPROTO: D3: "CO2": u16 co2.get_concentration()
-              TS_PROTO_TYPE: ""CO2": u16 co2.get_concentration()": number,
-              TS_PROTO_ASSIGN: ""CO2": u16 co2.get_concentration()": vals["D3"],
+              COMMPROTO: D3: CO2 sensor: u16 co2.get_concentration()
+              TS_PROTO_TYPE: "CO2 sensor: u16 co2.get_concentration()": number,
+              TS_PROTO_ASSIGN: "CO2 sensor: u16 co2.get_concentration()": vals["D3"],
             */
             u16_to_format_and_send = co2.get_concentration();
 
@@ -20547,9 +20553,9 @@ akat_coroutine_l_40:
 
             ;
             /*
-              COMMPROTO: D4: "CO2": u8 co2.get_temperature()
-              TS_PROTO_TYPE: ""CO2": u8 co2.get_temperature()": number,
-              TS_PROTO_ASSIGN: ""CO2": u8 co2.get_temperature()": vals["D4"],
+              COMMPROTO: D4: CO2 sensor: u8 co2.get_temperature()
+              TS_PROTO_TYPE: "CO2 sensor: u8 co2.get_temperature()": number,
+              TS_PROTO_ASSIGN: "CO2 sensor: u8 co2.get_temperature()": vals["D4"],
             */
             u8_to_format_and_send = co2.get_temperature();
 
@@ -20576,9 +20582,9 @@ akat_coroutine_l_42:
 
             ;
             /*
-              COMMPROTO: D5: "CO2": u8 co2.get_s()
-              TS_PROTO_TYPE: ""CO2": u8 co2.get_s()": number,
-              TS_PROTO_ASSIGN: ""CO2": u8 co2.get_s()": vals["D5"],
+              COMMPROTO: D5: CO2 sensor: u8 co2.get_s()
+              TS_PROTO_TYPE: "CO2 sensor: u8 co2.get_s()": number,
+              TS_PROTO_ASSIGN: "CO2 sensor: u8 co2.get_s()": vals["D5"],
             */
             u8_to_format_and_send = co2.get_s();
 
@@ -20605,9 +20611,9 @@ akat_coroutine_l_44:
 
             ;
             /*
-              COMMPROTO: D6: "CO2": u16 co2.get_u()
-              TS_PROTO_TYPE: ""CO2": u16 co2.get_u()": number,
-              TS_PROTO_ASSIGN: ""CO2": u16 co2.get_u()": vals["D6"],
+              COMMPROTO: D6: CO2 sensor: u16 co2.get_u()
+              TS_PROTO_TYPE: "CO2 sensor: u16 co2.get_u()": number,
+              TS_PROTO_ASSIGN: "CO2 sensor: u16 co2.get_u()": vals["D6"],
             */
             u16_to_format_and_send = co2.get_u();
 
@@ -20634,9 +20640,9 @@ akat_coroutine_l_46:
 
             ;
             /*
-              COMMPROTO: D7: "CO2": u8 co2.get_updated_deciseconds_ago()
-              TS_PROTO_TYPE: ""CO2": u8 co2.get_updated_deciseconds_ago()": number,
-              TS_PROTO_ASSIGN: ""CO2": u8 co2.get_updated_deciseconds_ago()": vals["D7"],
+              COMMPROTO: D7: CO2 sensor: u8 co2.get_updated_deciseconds_ago()
+              TS_PROTO_TYPE: "CO2 sensor: u8 co2.get_updated_deciseconds_ago()": number,
+              TS_PROTO_ASSIGN: "CO2 sensor: u8 co2.get_updated_deciseconds_ago()": vals["D7"],
             */
             u8_to_format_and_send = co2.get_updated_deciseconds_ago();
 
@@ -20651,7 +20657,7 @@ akat_coroutine_l_47:
 
             ;
             ;
-            //Done writing status, send: CRC\r\n
+            //Protocol version
             byte_to_send = ' ';
 
             do {
@@ -20664,7 +20670,7 @@ akat_coroutine_l_48:
             } while (0);
 
             ;
-            u8_to_format_and_send = crc;
+            u8_to_format_and_send = 0xf2;
 
             do {
                 akat_coroutine_state = 49;
@@ -20676,8 +20682,8 @@ akat_coroutine_l_49:
             } while (0);
 
             ;
-            //Newline
-            byte_to_send = '\r';
+            //Done writing status, send: CRC\r\n
+            byte_to_send = ' ';
 
             do {
                 akat_coroutine_state = 50;
@@ -20689,11 +20695,36 @@ akat_coroutine_l_50:
             } while (0);
 
             ;
-            byte_to_send = '\n';
+            u8_to_format_and_send = crc;
 
             do {
                 akat_coroutine_state = 51;
 akat_coroutine_l_51:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            //Newline
+            byte_to_send = '\r';
+
+            do {
+                akat_coroutine_state = 52;
+akat_coroutine_l_52:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = '\n';
+
+            do {
+                akat_coroutine_state = 53;
+akat_coroutine_l_53:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;

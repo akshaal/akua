@@ -358,11 +358,12 @@ THREAD$(usart0_writer, state_type = u8) {
     DEFINE_MACRO$(WRITE_STATUS, required_args = ["name", "id"], keep_rest_as_is = True) {
         byte_to_send = ' '; CALL$(send_byte);
         byte_to_send = '${id}'; CALL$(send_byte);
+
         % for arg in rest:
             /*
-              COMMPROTO: ${id}${loop.index+1}: ${name}: ${arg}
-              TS_PROTO_TYPE: "${name}: ${arg}": number,
-              TS_PROTO_ASSIGN: "${name}: ${arg}": vals["${id}${loop.index+1}"],
+              COMMPROTO: ${id}${loop.index+1}: ${name.replace('"', "")}: ${arg}
+              TS_PROTO_TYPE: "${name.replace('"', "")}: ${arg}": number,
+              TS_PROTO_ASSIGN: "${name.replace('"', "")}: ${arg}": vals["${id}${loop.index+1}"],
             */
             <% [argt, argn] = arg.split(" ", 1) %>
             ${argt}_to_format_and_send = ${argn}; CALL$(format_and_send_${argt});
@@ -406,21 +407,21 @@ THREAD$(usart0_writer, state_type = u8) {
                       u8 usart0_rx_overflow_count,
                       u8 co2.get_rx_overflow_count());
 
-        WRITE_STATUS$("Aquarium temperature",
+        WRITE_STATUS$("Aquarium temperature sensor",
                       B,
                       u8 ds18b20_aqua.get_crc_errors(),
                       u8 ds18b20_aqua.get_disconnects(),
                       u16 ds18b20_aqua.get_temperatureX16(),
                       u8 ds18b20_aqua.get_updated_deciseconds_ago());
 
-        WRITE_STATUS$("Case temperature",
+        WRITE_STATUS$("Case temperature sensor",
                       C,
                       u8 ds18b20_case.get_crc_errors(),
                       u8 ds18b20_case.get_disconnects(),
                       u16 ds18b20_case.get_temperatureX16(),
                       u8 ds18b20_case.get_updated_deciseconds_ago());
 
-        WRITE_STATUS$("CO2",
+        WRITE_STATUS$("CO2 sensor",
                       D,
                       u8 co2.get_crc_errors(),
                       u16 co2.get_abc_setups(),
@@ -429,6 +430,10 @@ THREAD$(usart0_writer, state_type = u8) {
                       u8 co2.get_s(),
                       u16 co2.get_u(),
                       u8 co2.get_updated_deciseconds_ago());
+
+        // Protocol version
+        byte_to_send = ' '; CALL$(send_byte);
+        u8_to_format_and_send = AK_PROTOCOL_VERSION; CALL$(format_and_send_u8);
 
         // Done writing status, send: CRC\r\n
         byte_to_send = ' '; CALL$(send_byte);
