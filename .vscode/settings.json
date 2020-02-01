@@ -22,12 +22,14 @@
         "akat",
         "akua",
         "camelcase",
+        "deciseconds",
         "gargs",
         "maxsize",
         "pify",
         "printf",
         "sourcecode",
         "ubrr",
+        "vals",
         "vect"
     ],
     "C_Cpp.errorSquiggles": "Disabled"
