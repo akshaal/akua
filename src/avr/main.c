@@ -385,7 +385,7 @@ THREAD$(usart0_writer, state_type = u8) {
         WRITE_STATUS$("CO2",
                       D,
                       u8 co2.get_crc_errors(),
-                      u8 co2.get_abc_setups(),
+                      u16 co2.get_abc_setups(),
                       u16 co2.get_concentration(),
                       u8 co2.get_temperature(),
                       u8 co2.get_s(),

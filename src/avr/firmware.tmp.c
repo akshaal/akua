@@ -20255,15 +20255,15 @@ akat_coroutine_l_34:
 
             ;
             /*
-              COMMPROTO: D2: "CO2": u8 co2.get_abc_setups()
+              COMMPROTO: D2: "CO2": u16 co2.get_abc_setups()
             */
-            u8_to_format_and_send = co2.get_abc_setups();
+            u16_to_format_and_send = co2.get_abc_setups();
 
             do {
                 akat_coroutine_state = 35;
 akat_coroutine_l_35:
 
-                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
