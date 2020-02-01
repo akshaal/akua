@@ -352,6 +352,8 @@ THREAD$(usart0_writer, state_type = u8) {
     }
 
     // ---- Macro that writes the given status into UART
+    // We also write some humand readable description of the protocol
+    // also stuff to distinguish protocol versions and generate typescript parser code
 
     DEFINE_MACRO$(WRITE_STATUS, required_args = ["name", "id"], keep_rest_as_is = True) {
         byte_to_send = ' '; CALL$(send_byte);
@@ -359,6 +361,8 @@ THREAD$(usart0_writer, state_type = u8) {
         % for arg in rest:
             /*
               COMMPROTO: ${id}${loop.index+1}: ${name}: ${arg}
+              TS_PROTO_TYPE: "${name}: ${arg}": number,
+              TS_PROTO_ASSIGN: "${name}: ${arg}": vals["${id}${loop.index+1}"],
             */
             <% [argt, argn] = arg.split(" ", 1) %>
             ${argt}_to_format_and_send = ${argn}; CALL$(format_and_send_${argt});
@@ -429,6 +433,8 @@ THREAD$(usart0_writer, state_type = u8) {
         // Done writing status, send: CRC\r\n
         byte_to_send = ' '; CALL$(send_byte);
         u8_to_format_and_send = crc; CALL$(format_and_send_u8);
+
+        // Newline
         byte_to_send = '\r'; CALL$(send_byte);
         byte_to_send = '\n'; CALL$(send_byte);
     }
