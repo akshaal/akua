@@ -14,6 +14,7 @@ const AUTO_REOPEN_MILLIS = 1000;
 
 function asAvrState(avrData: AvrData): AvrState {
     const co2Sensor: AvrCo2SensorState = {
+        updateId: avrData["u8 co2.get_update_id()"],
         crcErrors: avrData["u8 co2.get_crc_errors()"],
         abcSetups: avrData["u16 co2.get_abc_setups()"],
         concentration: avrData["u16 co2.get_concentration()"],
@@ -25,6 +26,7 @@ function asAvrState(avrData: AvrData): AvrState {
     };
 
     const aquariumTemperatureSensor: AvrTemperatureSensorState = {
+        updateId: avrData["u8 ds18b20_aqua.get_update_id()"],
         crcErrors: avrData["u8 ds18b20_aqua.get_crc_errors()"],
         disconnects: avrData["u8 ds18b20_aqua.get_disconnects()"],
         temperature: avrData["u16 ds18b20_aqua.get_temperatureX16()"] / 16.0,
@@ -32,6 +34,7 @@ function asAvrState(avrData: AvrData): AvrState {
     };
 
     const caseTemperatureSensor: AvrTemperatureSensorState = {
+        updateId: avrData["u8 ds18b20_case.get_update_id()"],
         crcErrors: avrData["u8 ds18b20_case.get_crc_errors()"],
         disconnects: avrData["u8 ds18b20_case.get_disconnects()"],
         temperature: avrData["u16 ds18b20_case.get_temperatureX16()"] / 16.0,

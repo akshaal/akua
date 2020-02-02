@@ -411,6 +411,7 @@ THREAD$(usart0_writer, state_type = u8) {
                       u8 ds18b20_aqua.get_crc_errors(),
                       u8 ds18b20_aqua.get_disconnects(),
                       u16 ds18b20_aqua.get_temperatureX16(),
+                      u8 ds18b20_aqua.get_update_id(),
                       u8 ds18b20_aqua.get_updated_deciseconds_ago());
 
         WRITE_STATUS$("Case temperature sensor",
@@ -418,6 +419,7 @@ THREAD$(usart0_writer, state_type = u8) {
                       u8 ds18b20_case.get_crc_errors(),
                       u8 ds18b20_case.get_disconnects(),
                       u16 ds18b20_case.get_temperatureX16(),
+                      u8 ds18b20_case.get_update_id(),
                       u8 ds18b20_case.get_updated_deciseconds_ago());
 
         WRITE_STATUS$("CO2 sensor",
@@ -429,6 +431,7 @@ THREAD$(usart0_writer, state_type = u8) {
                       u8 co2.get_temperature(),
                       u8 co2.get_s(),
                       u16 co2.get_u(),
+                      u8 co2.get_update_id(),
                       u8 co2.get_updated_deciseconds_ago());
 
         // Protocol version

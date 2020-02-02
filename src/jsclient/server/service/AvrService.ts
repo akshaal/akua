@@ -12,6 +12,7 @@ export interface AvrServiceState {
 }
 
 export interface AvrTemperatureSensorState {
+    readonly updateId: number;
     readonly crcErrors: number;
     readonly disconnects: number;
     readonly temperature: number;
@@ -19,6 +20,7 @@ export interface AvrTemperatureSensorState {
 }
 
 export interface AvrCo2SensorState {
+    readonly updateId: number;
     readonly crcErrors: number;
     readonly abcSetups: number;
     readonly concentration: number;

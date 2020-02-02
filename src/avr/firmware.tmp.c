@@ -17700,6 +17700,7 @@ static AKAT_FORCE_INLINE void ds18b20_aqua__init() {
 static u8 ds18b20_aqua__connected = 0;
 static u8 ds18b20_aqua__received_byte = 0;
 static u8 ds18b20_aqua__scratchpad[9] = {};
+static u8 ds18b20_aqua__update_id = 0;
 static u8 ds18b20_aqua__updated_deciseconds_ago = 255;
 static u8 ds18b20_aqua__crc_errors = 0;
 static u8 ds18b20_aqua__disconnects = 0;
@@ -17715,6 +17716,7 @@ static u16 ds18b20_aqua__temperatureX16 = 0;
 ;
 
 //Statistics
+;
 ;
 ;
 ;
@@ -17742,6 +17744,7 @@ static AKAT_FORCE_INLINE void ds18b20_aqua__ticker() {
 
 typedef struct {
     u8 (* const get_updated_deciseconds_ago)();
+    u8 (* const get_update_id)();
     u8 (* const get_disconnects)();
     u8 (* const get_crc_errors)();
     u16 (* const get_temperatureX16)();
@@ -17754,40 +17757,56 @@ static AKAT_FORCE_INLINE u8 ds18b20_aqua__get_updated_deciseconds_ago__impl() {
     return ds18b20_aqua__updated_deciseconds_ago;
 #undef get_updated_deciseconds_ago__impl
 }
+static AKAT_FORCE_INLINE u8 ds18b20_aqua__get_update_id__impl() {
+#define get_update_id__impl ds18b20_aqua__get_update_id__impl
+#define get_updated_deciseconds_ago__impl ds18b20_aqua__get_updated_deciseconds_ago__impl
+    return ds18b20_aqua__update_id;
+#undef get_update_id__impl
+#undef get_updated_deciseconds_ago__impl
+}
 static AKAT_FORCE_INLINE u8 ds18b20_aqua__get_disconnects__impl() {
 #define get_disconnects__impl ds18b20_aqua__get_disconnects__impl
+#define get_update_id__impl ds18b20_aqua__get_update_id__impl
 #define get_updated_deciseconds_ago__impl ds18b20_aqua__get_updated_deciseconds_ago__impl
     return ds18b20_aqua__disconnects;
 #undef get_disconnects__impl
+#undef get_update_id__impl
 #undef get_updated_deciseconds_ago__impl
 }
 static AKAT_FORCE_INLINE u8 ds18b20_aqua__get_crc_errors__impl() {
 #define get_crc_errors__impl ds18b20_aqua__get_crc_errors__impl
 #define get_disconnects__impl ds18b20_aqua__get_disconnects__impl
+#define get_update_id__impl ds18b20_aqua__get_update_id__impl
 #define get_updated_deciseconds_ago__impl ds18b20_aqua__get_updated_deciseconds_ago__impl
     return ds18b20_aqua__crc_errors;
 #undef get_crc_errors__impl
 #undef get_disconnects__impl
+#undef get_update_id__impl
 #undef get_updated_deciseconds_ago__impl
 }
 static AKAT_FORCE_INLINE u16 ds18b20_aqua__get_temperatureX16__impl() {
 #define get_crc_errors__impl ds18b20_aqua__get_crc_errors__impl
 #define get_disconnects__impl ds18b20_aqua__get_disconnects__impl
 #define get_temperatureX16__impl ds18b20_aqua__get_temperatureX16__impl
+#define get_update_id__impl ds18b20_aqua__get_update_id__impl
 #define get_updated_deciseconds_ago__impl ds18b20_aqua__get_updated_deciseconds_ago__impl
     return ds18b20_aqua__temperatureX16;
 #undef get_crc_errors__impl
 #undef get_disconnects__impl
 #undef get_temperatureX16__impl
+#undef get_update_id__impl
 #undef get_updated_deciseconds_ago__impl
 }
 #define get_crc_errors__impl ds18b20_aqua__get_crc_errors__impl
 #define get_disconnects__impl ds18b20_aqua__get_disconnects__impl
 #define get_temperatureX16__impl ds18b20_aqua__get_temperatureX16__impl
+#define get_update_id__impl ds18b20_aqua__get_update_id__impl
 #define get_updated_deciseconds_ago__impl ds18b20_aqua__get_updated_deciseconds_ago__impl
 
 ds18b20_aqua_t const ds18b20_aqua = {.get_updated_deciseconds_ago = &get_updated_deciseconds_ago__impl
                                      ,
+                                     .get_update_id = &get_update_id__impl
+                                             ,
                                      .get_disconnects = &get_disconnects__impl
                                              ,
                                      .get_crc_errors = &get_crc_errors__impl
@@ -17799,10 +17818,12 @@ ds18b20_aqua_t const ds18b20_aqua = {.get_updated_deciseconds_ago = &get_updated
 #undef get_crc_errors__impl
 #undef get_disconnects__impl
 #undef get_temperatureX16__impl
+#undef get_update_id__impl
 #undef get_updated_deciseconds_ago__impl
 #define get_crc_errors__impl ds18b20_aqua__get_crc_errors__impl
 #define get_disconnects__impl ds18b20_aqua__get_disconnects__impl
 #define get_temperatureX16__impl ds18b20_aqua__get_temperatureX16__impl
+#define get_update_id__impl ds18b20_aqua__get_update_id__impl
 #define get_updated_deciseconds_ago__impl ds18b20_aqua__get_updated_deciseconds_ago__impl
 
 
@@ -17811,7 +17832,9 @@ ds18b20_aqua_t const ds18b20_aqua = {.get_updated_deciseconds_ago = &get_updated
 #define get_crc_errors__impl ds18b20_aqua__get_crc_errors__impl
 #define get_disconnects__impl ds18b20_aqua__get_disconnects__impl
 #define get_temperatureX16__impl ds18b20_aqua__get_temperatureX16__impl
+#define get_update_id__impl ds18b20_aqua__get_update_id__impl
 #define get_updated_deciseconds_ago__impl ds18b20_aqua__get_updated_deciseconds_ago__impl
+
 
 
 
@@ -17822,6 +17845,7 @@ ds18b20_aqua_t const ds18b20_aqua = {.get_updated_deciseconds_ago = &get_updated
 #undef get_crc_errors__impl
 #undef get_disconnects__impl
 #undef get_temperatureX16__impl
+#undef get_update_id__impl
 #undef get_updated_deciseconds_ago__impl
 ;
 
@@ -18104,6 +18128,7 @@ static AKAT_FORCE_INLINE void ds18b20_case__init() {
 static u8 ds18b20_case__connected = 0;
 static u8 ds18b20_case__received_byte = 0;
 static u8 ds18b20_case__scratchpad[9] = {};
+static u8 ds18b20_case__update_id = 0;
 static u8 ds18b20_case__updated_deciseconds_ago = 255;
 static u8 ds18b20_case__crc_errors = 0;
 static u8 ds18b20_case__disconnects = 0;
@@ -18119,6 +18144,7 @@ static u16 ds18b20_case__temperatureX16 = 0;
 ;
 
 //Statistics
+;
 ;
 ;
 ;
@@ -18146,6 +18172,7 @@ static AKAT_FORCE_INLINE void ds18b20_case__ticker() {
 
 typedef struct {
     u8 (* const get_updated_deciseconds_ago)();
+    u8 (* const get_update_id)();
     u8 (* const get_disconnects)();
     u8 (* const get_crc_errors)();
     u16 (* const get_temperatureX16)();
@@ -18158,40 +18185,56 @@ static AKAT_FORCE_INLINE u8 ds18b20_case__get_updated_deciseconds_ago__impl() {
     return ds18b20_case__updated_deciseconds_ago;
 #undef get_updated_deciseconds_ago__impl
 }
+static AKAT_FORCE_INLINE u8 ds18b20_case__get_update_id__impl() {
+#define get_update_id__impl ds18b20_case__get_update_id__impl
+#define get_updated_deciseconds_ago__impl ds18b20_case__get_updated_deciseconds_ago__impl
+    return ds18b20_case__update_id;
+#undef get_update_id__impl
+#undef get_updated_deciseconds_ago__impl
+}
 static AKAT_FORCE_INLINE u8 ds18b20_case__get_disconnects__impl() {
 #define get_disconnects__impl ds18b20_case__get_disconnects__impl
+#define get_update_id__impl ds18b20_case__get_update_id__impl
 #define get_updated_deciseconds_ago__impl ds18b20_case__get_updated_deciseconds_ago__impl
     return ds18b20_case__disconnects;
 #undef get_disconnects__impl
+#undef get_update_id__impl
 #undef get_updated_deciseconds_ago__impl
 }
 static AKAT_FORCE_INLINE u8 ds18b20_case__get_crc_errors__impl() {
 #define get_crc_errors__impl ds18b20_case__get_crc_errors__impl
 #define get_disconnects__impl ds18b20_case__get_disconnects__impl
+#define get_update_id__impl ds18b20_case__get_update_id__impl
 #define get_updated_deciseconds_ago__impl ds18b20_case__get_updated_deciseconds_ago__impl
     return ds18b20_case__crc_errors;
 #undef get_crc_errors__impl
 #undef get_disconnects__impl
+#undef get_update_id__impl
 #undef get_updated_deciseconds_ago__impl
 }
 static AKAT_FORCE_INLINE u16 ds18b20_case__get_temperatureX16__impl() {
 #define get_crc_errors__impl ds18b20_case__get_crc_errors__impl
 #define get_disconnects__impl ds18b20_case__get_disconnects__impl
 #define get_temperatureX16__impl ds18b20_case__get_temperatureX16__impl
+#define get_update_id__impl ds18b20_case__get_update_id__impl
 #define get_updated_deciseconds_ago__impl ds18b20_case__get_updated_deciseconds_ago__impl
     return ds18b20_case__temperatureX16;
 #undef get_crc_errors__impl
 #undef get_disconnects__impl
 #undef get_temperatureX16__impl
+#undef get_update_id__impl
 #undef get_updated_deciseconds_ago__impl
 }
 #define get_crc_errors__impl ds18b20_case__get_crc_errors__impl
 #define get_disconnects__impl ds18b20_case__get_disconnects__impl
 #define get_temperatureX16__impl ds18b20_case__get_temperatureX16__impl
+#define get_update_id__impl ds18b20_case__get_update_id__impl
 #define get_updated_deciseconds_ago__impl ds18b20_case__get_updated_deciseconds_ago__impl
 
 ds18b20_case_t const ds18b20_case = {.get_updated_deciseconds_ago = &get_updated_deciseconds_ago__impl
                                      ,
+                                     .get_update_id = &get_update_id__impl
+                                             ,
                                      .get_disconnects = &get_disconnects__impl
                                              ,
                                      .get_crc_errors = &get_crc_errors__impl
@@ -18203,10 +18246,12 @@ ds18b20_case_t const ds18b20_case = {.get_updated_deciseconds_ago = &get_updated
 #undef get_crc_errors__impl
 #undef get_disconnects__impl
 #undef get_temperatureX16__impl
+#undef get_update_id__impl
 #undef get_updated_deciseconds_ago__impl
 #define get_crc_errors__impl ds18b20_case__get_crc_errors__impl
 #define get_disconnects__impl ds18b20_case__get_disconnects__impl
 #define get_temperatureX16__impl ds18b20_case__get_temperatureX16__impl
+#define get_update_id__impl ds18b20_case__get_update_id__impl
 #define get_updated_deciseconds_ago__impl ds18b20_case__get_updated_deciseconds_ago__impl
 
 
@@ -18215,7 +18260,9 @@ ds18b20_case_t const ds18b20_case = {.get_updated_deciseconds_ago = &get_updated
 #define get_crc_errors__impl ds18b20_case__get_crc_errors__impl
 #define get_disconnects__impl ds18b20_case__get_disconnects__impl
 #define get_temperatureX16__impl ds18b20_case__get_temperatureX16__impl
+#define get_update_id__impl ds18b20_case__get_update_id__impl
 #define get_updated_deciseconds_ago__impl ds18b20_case__get_updated_deciseconds_ago__impl
+
 
 
 
@@ -18226,6 +18273,7 @@ ds18b20_case_t const ds18b20_case = {.get_updated_deciseconds_ago = &get_updated
 #undef get_crc_errors__impl
 #undef get_disconnects__impl
 #undef get_temperatureX16__impl
+#undef get_update_id__impl
 #undef get_updated_deciseconds_ago__impl
 ;
 
@@ -18297,12 +18345,14 @@ static u8 co2_abc_setup_needed = 0;
 static u16 co2_abc_setups = 0;
 static u32 co2_deciseconds_until_abc = 0;
 static u8 co2_crc_errors = 0;
+static u8 co2_update_id = 0;
 static u16 co2_concentration = 0;
 static u8 co2_temperature = 0;
 static u8 co2_updated_deciseconds_ago = 255;
 static u8 co2_s = 0;
 static u16 co2_u = 0;
 
+;
 ;
 ;
 ;
@@ -18611,6 +18661,7 @@ akat_coroutine_l_10:
                                 co2_concentration = (((u16)b2) << 8) + b3;
                                 co2_temperature = b4 - 40;
                                 co2_updated_deciseconds_ago = 0;
+                                co2_update_id += 1;
                             }
 
                             co2_s = b5;
@@ -19167,6 +19218,7 @@ typedef struct {
     u16 (* const get_concentration)();
     u16 (* const get_u)();
     u8 (* const get_s)();
+    u8 (* const get_update_id)();
     u8 (* const get_temperature)();
     u16 (* const get_abc_setups)();
     u8 (* const get_updated_deciseconds_ago)();
@@ -19219,6 +19271,21 @@ static AKAT_FORCE_INLINE u8 co2__get_s__impl() {
 #undef get_s__impl
 #undef get_u__impl
 }
+static AKAT_FORCE_INLINE u8 co2__get_update_id__impl() {
+#define get_concentration__impl co2__get_concentration__impl
+#define get_crc_errors__impl co2__get_crc_errors__impl
+#define get_rx_overflow_count__impl co2__get_rx_overflow_count__impl
+#define get_s__impl co2__get_s__impl
+#define get_u__impl co2__get_u__impl
+#define get_update_id__impl co2__get_update_id__impl
+    return co2_update_id;
+#undef get_concentration__impl
+#undef get_crc_errors__impl
+#undef get_rx_overflow_count__impl
+#undef get_s__impl
+#undef get_u__impl
+#undef get_update_id__impl
+}
 static AKAT_FORCE_INLINE u8 co2__get_temperature__impl() {
 #define get_concentration__impl co2__get_concentration__impl
 #define get_crc_errors__impl co2__get_crc_errors__impl
@@ -19226,6 +19293,7 @@ static AKAT_FORCE_INLINE u8 co2__get_temperature__impl() {
 #define get_s__impl co2__get_s__impl
 #define get_temperature__impl co2__get_temperature__impl
 #define get_u__impl co2__get_u__impl
+#define get_update_id__impl co2__get_update_id__impl
     return co2_temperature;
 #undef get_concentration__impl
 #undef get_crc_errors__impl
@@ -19233,6 +19301,7 @@ static AKAT_FORCE_INLINE u8 co2__get_temperature__impl() {
 #undef get_s__impl
 #undef get_temperature__impl
 #undef get_u__impl
+#undef get_update_id__impl
 }
 static AKAT_FORCE_INLINE u16 co2__get_abc_setups__impl() {
 #define get_abc_setups__impl co2__get_abc_setups__impl
@@ -19242,6 +19311,7 @@ static AKAT_FORCE_INLINE u16 co2__get_abc_setups__impl() {
 #define get_s__impl co2__get_s__impl
 #define get_temperature__impl co2__get_temperature__impl
 #define get_u__impl co2__get_u__impl
+#define get_update_id__impl co2__get_update_id__impl
     return co2_abc_setups;
 #undef get_abc_setups__impl
 #undef get_concentration__impl
@@ -19250,6 +19320,7 @@ static AKAT_FORCE_INLINE u16 co2__get_abc_setups__impl() {
 #undef get_s__impl
 #undef get_temperature__impl
 #undef get_u__impl
+#undef get_update_id__impl
 }
 static AKAT_FORCE_INLINE u8 co2__get_updated_deciseconds_ago__impl() {
 #define get_abc_setups__impl co2__get_abc_setups__impl
@@ -19259,6 +19330,7 @@ static AKAT_FORCE_INLINE u8 co2__get_updated_deciseconds_ago__impl() {
 #define get_s__impl co2__get_s__impl
 #define get_temperature__impl co2__get_temperature__impl
 #define get_u__impl co2__get_u__impl
+#define get_update_id__impl co2__get_update_id__impl
 #define get_updated_deciseconds_ago__impl co2__get_updated_deciseconds_ago__impl
     return co2_updated_deciseconds_ago;
 #undef get_abc_setups__impl
@@ -19268,6 +19340,7 @@ static AKAT_FORCE_INLINE u8 co2__get_updated_deciseconds_ago__impl() {
 #undef get_s__impl
 #undef get_temperature__impl
 #undef get_u__impl
+#undef get_update_id__impl
 #undef get_updated_deciseconds_ago__impl
 }
 #define get_abc_setups__impl co2__get_abc_setups__impl
@@ -19277,6 +19350,7 @@ static AKAT_FORCE_INLINE u8 co2__get_updated_deciseconds_ago__impl() {
 #define get_s__impl co2__get_s__impl
 #define get_temperature__impl co2__get_temperature__impl
 #define get_u__impl co2__get_u__impl
+#define get_update_id__impl co2__get_update_id__impl
 #define get_updated_deciseconds_ago__impl co2__get_updated_deciseconds_ago__impl
 
 co2_t const co2 = {.get_rx_overflow_count = &get_rx_overflow_count__impl
@@ -19289,6 +19363,8 @@ co2_t const co2 = {.get_rx_overflow_count = &get_rx_overflow_count__impl
                             ,
                    .get_s = &get_s__impl
                             ,
+                   .get_update_id = &get_update_id__impl
+                                    ,
                    .get_temperature = &get_temperature__impl
                                       ,
                    .get_abc_setups = &get_abc_setups__impl
@@ -19304,6 +19380,7 @@ co2_t const co2 = {.get_rx_overflow_count = &get_rx_overflow_count__impl
 #undef get_s__impl
 #undef get_temperature__impl
 #undef get_u__impl
+#undef get_update_id__impl
 #undef get_updated_deciseconds_ago__impl
 #define get_abc_setups__impl co2__get_abc_setups__impl
 #define get_concentration__impl co2__get_concentration__impl
@@ -19312,6 +19389,7 @@ co2_t const co2 = {.get_rx_overflow_count = &get_rx_overflow_count__impl
 #define get_s__impl co2__get_s__impl
 #define get_temperature__impl co2__get_temperature__impl
 #define get_u__impl co2__get_u__impl
+#define get_update_id__impl co2__get_update_id__impl
 #define get_updated_deciseconds_ago__impl co2__get_updated_deciseconds_ago__impl
 
 
@@ -19324,7 +19402,9 @@ co2_t const co2 = {.get_rx_overflow_count = &get_rx_overflow_count__impl
 #define get_s__impl co2__get_s__impl
 #define get_temperature__impl co2__get_temperature__impl
 #define get_u__impl co2__get_u__impl
+#define get_update_id__impl co2__get_update_id__impl
 #define get_updated_deciseconds_ago__impl co2__get_updated_deciseconds_ago__impl
+
 
 
 
@@ -19343,6 +19423,7 @@ co2_t const co2 = {.get_rx_overflow_count = &get_rx_overflow_count__impl
 #undef get_s__impl
 #undef get_temperature__impl
 #undef get_u__impl
+#undef get_update_id__impl
 #undef get_updated_deciseconds_ago__impl
 ;
 
@@ -19972,6 +20053,24 @@ static AKAT_FORCE_INLINE void usart0_writer() {
 
     case 53:
         goto akat_coroutine_l_53;
+
+    case 54:
+        goto akat_coroutine_l_54;
+
+    case 55:
+        goto akat_coroutine_l_55;
+
+    case 56:
+        goto akat_coroutine_l_56;
+
+    case 57:
+        goto akat_coroutine_l_57;
+
+    case 58:
+        goto akat_coroutine_l_58;
+
+    case 59:
+        goto akat_coroutine_l_59;
     }
 
 akat_coroutine_l_start:
@@ -20266,11 +20365,11 @@ akat_coroutine_l_20:
 
             ;
             /*
-              COMMPROTO: B4: Aquarium temperature sensor: u8 ds18b20_aqua.get_updated_deciseconds_ago()
-              TS_PROTO_TYPE: "u8 ds18b20_aqua.get_updated_deciseconds_ago()": number,
-              TS_PROTO_ASSIGN: "u8 ds18b20_aqua.get_updated_deciseconds_ago()": vals["B4"],
+              COMMPROTO: B4: Aquarium temperature sensor: u8 ds18b20_aqua.get_update_id()
+              TS_PROTO_TYPE: "u8 ds18b20_aqua.get_update_id()": number,
+              TS_PROTO_ASSIGN: "u8 ds18b20_aqua.get_update_id()": vals["B4"],
             */
-            u8_to_format_and_send = ds18b20_aqua.get_updated_deciseconds_ago();
+            u8_to_format_and_send = ds18b20_aqua.get_update_id();
 
             do {
                 akat_coroutine_state = 21;
@@ -20282,8 +20381,7 @@ akat_coroutine_l_21:
             } while (0);
 
             ;
-            ;
-            byte_to_send = ' ';
+            byte_to_send = ',';
 
             do {
                 akat_coroutine_state = 22;
@@ -20295,11 +20393,41 @@ akat_coroutine_l_22:
             } while (0);
 
             ;
-            byte_to_send = 'C';
+            /*
+              COMMPROTO: B5: Aquarium temperature sensor: u8 ds18b20_aqua.get_updated_deciseconds_ago()
+              TS_PROTO_TYPE: "u8 ds18b20_aqua.get_updated_deciseconds_ago()": number,
+              TS_PROTO_ASSIGN: "u8 ds18b20_aqua.get_updated_deciseconds_ago()": vals["B5"],
+            */
+            u8_to_format_and_send = ds18b20_aqua.get_updated_deciseconds_ago();
 
             do {
                 akat_coroutine_state = 23;
 akat_coroutine_l_23:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            ;
+            byte_to_send = ' ';
+
+            do {
+                akat_coroutine_state = 24;
+akat_coroutine_l_24:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = 'C';
+
+            do {
+                akat_coroutine_state = 25;
+akat_coroutine_l_25:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -20313,35 +20441,6 @@ akat_coroutine_l_23:
               TS_PROTO_ASSIGN: "u8 ds18b20_case.get_crc_errors()": vals["C1"],
             */
             u8_to_format_and_send = ds18b20_case.get_crc_errors();
-
-            do {
-                akat_coroutine_state = 24;
-akat_coroutine_l_24:
-
-                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            byte_to_send = ',';
-
-            do {
-                akat_coroutine_state = 25;
-akat_coroutine_l_25:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            /*
-              COMMPROTO: C2: Case temperature sensor: u8 ds18b20_case.get_disconnects()
-              TS_PROTO_TYPE: "u8 ds18b20_case.get_disconnects()": number,
-              TS_PROTO_ASSIGN: "u8 ds18b20_case.get_disconnects()": vals["C2"],
-            */
-            u8_to_format_and_send = ds18b20_case.get_disconnects();
 
             do {
                 akat_coroutine_state = 26;
@@ -20366,17 +20465,17 @@ akat_coroutine_l_27:
 
             ;
             /*
-              COMMPROTO: C3: Case temperature sensor: u16 ds18b20_case.get_temperatureX16()
-              TS_PROTO_TYPE: "u16 ds18b20_case.get_temperatureX16()": number,
-              TS_PROTO_ASSIGN: "u16 ds18b20_case.get_temperatureX16()": vals["C3"],
+              COMMPROTO: C2: Case temperature sensor: u8 ds18b20_case.get_disconnects()
+              TS_PROTO_TYPE: "u8 ds18b20_case.get_disconnects()": number,
+              TS_PROTO_ASSIGN: "u8 ds18b20_case.get_disconnects()": vals["C2"],
             */
-            u16_to_format_and_send = ds18b20_case.get_temperatureX16();
+            u8_to_format_and_send = ds18b20_case.get_disconnects();
 
             do {
                 akat_coroutine_state = 28;
 akat_coroutine_l_28:
 
-                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
@@ -20395,24 +20494,23 @@ akat_coroutine_l_29:
 
             ;
             /*
-              COMMPROTO: C4: Case temperature sensor: u8 ds18b20_case.get_updated_deciseconds_ago()
-              TS_PROTO_TYPE: "u8 ds18b20_case.get_updated_deciseconds_ago()": number,
-              TS_PROTO_ASSIGN: "u8 ds18b20_case.get_updated_deciseconds_ago()": vals["C4"],
+              COMMPROTO: C3: Case temperature sensor: u16 ds18b20_case.get_temperatureX16()
+              TS_PROTO_TYPE: "u16 ds18b20_case.get_temperatureX16()": number,
+              TS_PROTO_ASSIGN: "u16 ds18b20_case.get_temperatureX16()": vals["C3"],
             */
-            u8_to_format_and_send = ds18b20_case.get_updated_deciseconds_ago();
+            u16_to_format_and_send = ds18b20_case.get_temperatureX16();
 
             do {
                 akat_coroutine_state = 30;
 akat_coroutine_l_30:
 
-                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
 
             ;
-            ;
-            byte_to_send = ' ';
+            byte_to_send = ',';
 
             do {
                 akat_coroutine_state = 31;
@@ -20424,11 +20522,70 @@ akat_coroutine_l_31:
             } while (0);
 
             ;
-            byte_to_send = 'D';
+            /*
+              COMMPROTO: C4: Case temperature sensor: u8 ds18b20_case.get_update_id()
+              TS_PROTO_TYPE: "u8 ds18b20_case.get_update_id()": number,
+              TS_PROTO_ASSIGN: "u8 ds18b20_case.get_update_id()": vals["C4"],
+            */
+            u8_to_format_and_send = ds18b20_case.get_update_id();
 
             do {
                 akat_coroutine_state = 32;
 akat_coroutine_l_32:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 33;
+akat_coroutine_l_33:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: C5: Case temperature sensor: u8 ds18b20_case.get_updated_deciseconds_ago()
+              TS_PROTO_TYPE: "u8 ds18b20_case.get_updated_deciseconds_ago()": number,
+              TS_PROTO_ASSIGN: "u8 ds18b20_case.get_updated_deciseconds_ago()": vals["C5"],
+            */
+            u8_to_format_and_send = ds18b20_case.get_updated_deciseconds_ago();
+
+            do {
+                akat_coroutine_state = 34;
+akat_coroutine_l_34:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            ;
+            byte_to_send = ' ';
+
+            do {
+                akat_coroutine_state = 35;
+akat_coroutine_l_35:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = 'D';
+
+            do {
+                akat_coroutine_state = 36;
+akat_coroutine_l_36:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -20444,68 +20601,10 @@ akat_coroutine_l_32:
             u8_to_format_and_send = co2.get_rx_overflow_count();
 
             do {
-                akat_coroutine_state = 33;
-akat_coroutine_l_33:
-
-                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            byte_to_send = ',';
-
-            do {
-                akat_coroutine_state = 34;
-akat_coroutine_l_34:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            /*
-              COMMPROTO: D2: CO2 sensor: u8 co2.get_crc_errors()
-              TS_PROTO_TYPE: "u8 co2.get_crc_errors()": number,
-              TS_PROTO_ASSIGN: "u8 co2.get_crc_errors()": vals["D2"],
-            */
-            u8_to_format_and_send = co2.get_crc_errors();
-
-            do {
-                akat_coroutine_state = 35;
-akat_coroutine_l_35:
-
-                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            byte_to_send = ',';
-
-            do {
-                akat_coroutine_state = 36;
-akat_coroutine_l_36:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            /*
-              COMMPROTO: D3: CO2 sensor: u16 co2.get_abc_setups()
-              TS_PROTO_TYPE: "u16 co2.get_abc_setups()": number,
-              TS_PROTO_ASSIGN: "u16 co2.get_abc_setups()": vals["D3"],
-            */
-            u16_to_format_and_send = co2.get_abc_setups();
-
-            do {
                 akat_coroutine_state = 37;
 akat_coroutine_l_37:
 
-                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
@@ -20524,17 +20623,17 @@ akat_coroutine_l_38:
 
             ;
             /*
-              COMMPROTO: D4: CO2 sensor: u16 co2.get_concentration()
-              TS_PROTO_TYPE: "u16 co2.get_concentration()": number,
-              TS_PROTO_ASSIGN: "u16 co2.get_concentration()": vals["D4"],
+              COMMPROTO: D2: CO2 sensor: u8 co2.get_crc_errors()
+              TS_PROTO_TYPE: "u8 co2.get_crc_errors()": number,
+              TS_PROTO_ASSIGN: "u8 co2.get_crc_errors()": vals["D2"],
             */
-            u16_to_format_and_send = co2.get_concentration();
+            u8_to_format_and_send = co2.get_crc_errors();
 
             do {
                 akat_coroutine_state = 39;
 akat_coroutine_l_39:
 
-                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
@@ -20553,17 +20652,17 @@ akat_coroutine_l_40:
 
             ;
             /*
-              COMMPROTO: D5: CO2 sensor: u8 co2.get_temperature()
-              TS_PROTO_TYPE: "u8 co2.get_temperature()": number,
-              TS_PROTO_ASSIGN: "u8 co2.get_temperature()": vals["D5"],
+              COMMPROTO: D3: CO2 sensor: u16 co2.get_abc_setups()
+              TS_PROTO_TYPE: "u16 co2.get_abc_setups()": number,
+              TS_PROTO_ASSIGN: "u16 co2.get_abc_setups()": vals["D3"],
             */
-            u8_to_format_and_send = co2.get_temperature();
+            u16_to_format_and_send = co2.get_abc_setups();
 
             do {
                 akat_coroutine_state = 41;
 akat_coroutine_l_41:
 
-                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
@@ -20582,17 +20681,17 @@ akat_coroutine_l_42:
 
             ;
             /*
-              COMMPROTO: D6: CO2 sensor: u8 co2.get_s()
-              TS_PROTO_TYPE: "u8 co2.get_s()": number,
-              TS_PROTO_ASSIGN: "u8 co2.get_s()": vals["D6"],
+              COMMPROTO: D4: CO2 sensor: u16 co2.get_concentration()
+              TS_PROTO_TYPE: "u16 co2.get_concentration()": number,
+              TS_PROTO_ASSIGN: "u16 co2.get_concentration()": vals["D4"],
             */
-            u8_to_format_and_send = co2.get_s();
+            u16_to_format_and_send = co2.get_concentration();
 
             do {
                 akat_coroutine_state = 43;
 akat_coroutine_l_43:
 
-                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
@@ -20611,17 +20710,17 @@ akat_coroutine_l_44:
 
             ;
             /*
-              COMMPROTO: D7: CO2 sensor: u16 co2.get_u()
-              TS_PROTO_TYPE: "u16 co2.get_u()": number,
-              TS_PROTO_ASSIGN: "u16 co2.get_u()": vals["D7"],
+              COMMPROTO: D5: CO2 sensor: u8 co2.get_temperature()
+              TS_PROTO_TYPE: "u8 co2.get_temperature()": number,
+              TS_PROTO_ASSIGN: "u8 co2.get_temperature()": vals["D5"],
             */
-            u16_to_format_and_send = co2.get_u();
+            u8_to_format_and_send = co2.get_temperature();
 
             do {
                 akat_coroutine_state = 45;
 akat_coroutine_l_45:
 
-                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
@@ -20640,15 +20739,102 @@ akat_coroutine_l_46:
 
             ;
             /*
-              COMMPROTO: D8: CO2 sensor: u8 co2.get_updated_deciseconds_ago()
-              TS_PROTO_TYPE: "u8 co2.get_updated_deciseconds_ago()": number,
-              TS_PROTO_ASSIGN: "u8 co2.get_updated_deciseconds_ago()": vals["D8"],
+              COMMPROTO: D6: CO2 sensor: u8 co2.get_s()
+              TS_PROTO_TYPE: "u8 co2.get_s()": number,
+              TS_PROTO_ASSIGN: "u8 co2.get_s()": vals["D6"],
             */
-            u8_to_format_and_send = co2.get_updated_deciseconds_ago();
+            u8_to_format_and_send = co2.get_s();
 
             do {
                 akat_coroutine_state = 47;
 akat_coroutine_l_47:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 48;
+akat_coroutine_l_48:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: D7: CO2 sensor: u16 co2.get_u()
+              TS_PROTO_TYPE: "u16 co2.get_u()": number,
+              TS_PROTO_ASSIGN: "u16 co2.get_u()": vals["D7"],
+            */
+            u16_to_format_and_send = co2.get_u();
+
+            do {
+                akat_coroutine_state = 49;
+akat_coroutine_l_49:
+
+                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 50;
+akat_coroutine_l_50:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: D8: CO2 sensor: u8 co2.get_update_id()
+              TS_PROTO_TYPE: "u8 co2.get_update_id()": number,
+              TS_PROTO_ASSIGN: "u8 co2.get_update_id()": vals["D8"],
+            */
+            u8_to_format_and_send = co2.get_update_id();
+
+            do {
+                akat_coroutine_state = 51;
+akat_coroutine_l_51:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 52;
+akat_coroutine_l_52:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: D9: CO2 sensor: u8 co2.get_updated_deciseconds_ago()
+              TS_PROTO_TYPE: "u8 co2.get_updated_deciseconds_ago()": number,
+              TS_PROTO_ASSIGN: "u8 co2.get_updated_deciseconds_ago()": vals["D9"],
+            */
+            u8_to_format_and_send = co2.get_updated_deciseconds_ago();
+
+            do {
+                akat_coroutine_state = 53;
+akat_coroutine_l_53:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -20661,8 +20847,8 @@ akat_coroutine_l_47:
             byte_to_send = ' ';
 
             do {
-                akat_coroutine_state = 48;
-akat_coroutine_l_48:
+                akat_coroutine_state = 54;
+akat_coroutine_l_54:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -20670,11 +20856,11 @@ akat_coroutine_l_48:
             } while (0);
 
             ;
-            u8_to_format_and_send = 0x3b;
+            u8_to_format_and_send = 0x77;
 
             do {
-                akat_coroutine_state = 49;
-akat_coroutine_l_49:
+                akat_coroutine_state = 55;
+akat_coroutine_l_55:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -20686,8 +20872,8 @@ akat_coroutine_l_49:
             byte_to_send = ' ';
 
             do {
-                akat_coroutine_state = 50;
-akat_coroutine_l_50:
+                akat_coroutine_state = 56;
+akat_coroutine_l_56:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -20698,8 +20884,8 @@ akat_coroutine_l_50:
             u8_to_format_and_send = crc;
 
             do {
-                akat_coroutine_state = 51;
-akat_coroutine_l_51:
+                akat_coroutine_state = 57;
+akat_coroutine_l_57:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -20711,8 +20897,8 @@ akat_coroutine_l_51:
             byte_to_send = '\r';
 
             do {
-                akat_coroutine_state = 52;
-akat_coroutine_l_52:
+                akat_coroutine_state = 58;
+akat_coroutine_l_58:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -20723,8 +20909,8 @@ akat_coroutine_l_52:
             byte_to_send = '\n';
 
             do {
-                akat_coroutine_state = 53;
-akat_coroutine_l_53:
+                akat_coroutine_state = 59;
+akat_coroutine_l_59:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -22025,6 +22211,7 @@ akat_coroutine_l_14:
 
                         if (ds18b20_aqua__scratchpad[8] == crc) {//CRC is OK
                             ds18b20_aqua__updated_deciseconds_ago = 0;
+                            ds18b20_aqua__update_id += 1;
                             ds18b20_aqua__temperatureX16 = ((u16)ds18b20_aqua__scratchpad[1]) * 256 + ds18b20_aqua__scratchpad[0];
                         } else {//CRC is incorrect
                             ds18b20_aqua__crc_errors += AKAT_ONE;
@@ -22049,6 +22236,7 @@ akat_coroutine_l_15:
 
                         if (ds18b20_case__scratchpad[8] == crc) {//CRC is OK
                             ds18b20_case__updated_deciseconds_ago = 0;
+                            ds18b20_case__update_id += 1;
                             ds18b20_case__temperatureX16 = ((u16)ds18b20_case__scratchpad[1]) * 256 + ds18b20_case__scratchpad[0];
                         } else {//CRC is incorrect
                             ds18b20_case__crc_errors += AKAT_ONE;
