@@ -11,7 +11,6 @@ const L_GC_TYPE = 'gc_type';
 const L_VERSION = 'version';
 const L_TARGET = "target";
 const L_LEVEL = "level";
-const L_EVENT = "event";
 
 // ==========================================================================================
 
@@ -206,9 +205,14 @@ function updateLoggingMetrics() {
 const serviceEventCountGauge = new Counter({
     name: 'akua_event_count',
     help: 'Number of events.',
-    labelNames: [L_EVENT]
+    labelNames: [L_TARGET]
 });
 
+const serviceStateGauge = new Gauge({
+    name: 'akua_state',
+    help: 'State.',
+    labelNames: [L_TARGET]
+});
 
 // ==========================================================================================
 
@@ -241,8 +245,12 @@ export default class MetricsServiceImpl extends MetricsService {
 
         // AVR
         const avrServiceState = this._avrService.getState();
-        serviceEventCountGauge.inc({ [L_EVENT]: 'avr_serial_port_errors' }, avrServiceState.serialPortErrors);
-        serviceEventCountGauge.inc({ [L_EVENT]: 'avr_serial_port_open_attempts' }, avrServiceState.serialPortOpenAttempts);
-        serviceEventCountGauge.inc({ [L_EVENT]: 'avr_serial_port_is_open' }, avrServiceState.serialPortIsOpen);
+        serviceEventCountGauge.inc({ [L_TARGET]: 'avr_serial_port_errors' }, avrServiceState.serialPortErrors);
+        serviceEventCountGauge.inc({ [L_TARGET]: 'avr_serial_port_open_attempts' }, avrServiceState.serialPortOpenAttempts);
+        serviceEventCountGauge.inc({ [L_TARGET]: 'avr_protocol_crc_errors' }, avrServiceState.protocolCrcErrors);
+        serviceEventCountGauge.inc({ [L_TARGET]: 'avr_protocol_debug_messages' }, avrServiceState.protocolDebugMessages);
+
+        serviceStateGauge.set({ [L_TARGET]: 'avr_serial_port_is_open' }, avrServiceState.serialPortIsOpen);
+        serviceStateGauge.set({ [L_TARGET]: 'avr_protocol_version_mismatch' }, avrServiceState.protocolVersionMismatch);
     }
 }

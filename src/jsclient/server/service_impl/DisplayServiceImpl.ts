@@ -1,4 +1,4 @@
-import { injectable } from "inversify";
+import { injectable, postConstruct } from "inversify";
 import DisplayService from "server/service/DisplayService";
 import logger from "server/logger";
 import { config } from "server/config";
@@ -13,9 +13,8 @@ const port = config.nextion.port;
 export default class DisplayServiceImpl extends DisplayService {
     private _nextionP: Promise<Nextion> = openNextionPort(port);
 
-    constructor() {
-        super();
-
+    @postConstruct()
+    _init() {
         this._nextionP.then(nextion => {
             logger.debug("Display: Connected to nextion display", { port, nextion });
 

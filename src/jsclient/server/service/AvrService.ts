@@ -4,6 +4,9 @@ export interface AvrServiceState {
     readonly serialPortErrors: number;
     readonly serialPortOpenAttempts: number;
     readonly serialPortIsOpen: 0 | 1;
+    readonly protocolVersionMismatch: 0 | 1;
+    readonly protocolCrcErrors: number;
+    readonly protocolDebugMessages: number;
 }
 
 @injectable()
