@@ -20,6 +20,10 @@ export interface NextionConfig {
     readonly port: string;
 }
 
+export interface AvrConfig {
+    readonly port: string;
+}
+
 export interface Config {
     readonly version: string;
     readonly isProd: boolean;
@@ -27,6 +31,7 @@ export interface Config {
     readonly bindOptions: ProtoHostPort;
     readonly metrics: MetricsConfig;
     readonly nextion: NextionConfig;
+    readonly avr: AvrConfig;
 }
 
 // ================================================================================================
@@ -63,13 +68,18 @@ const nextion: NextionConfig = {
     port: "/dev/ttyAMA0"
 }
 
+const avr: AvrConfig = {
+    port: "/dev/ttyUSB0"
+}
+
 export const config: Config = {
     isDev,
     version,
     isProd: !isDev,
     bindOptions,
     metrics,
-    nextion
+    nextion,
+    avr
 };
 
 // ================================================================================================

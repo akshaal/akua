@@ -4,12 +4,14 @@ import perfHooks from 'perf_hooks';
 import config from "server/config";
 import { getInfoCount, getErrorCount, getWarningCount } from "server/logger";
 import MetricsService from "server/service/MetricsService";
+import AvrService from "server/service/AvrService";
 
 // Use constants for labels to avoid typos and to be consistent about names.
 const L_GC_TYPE = 'gc_type';
 const L_VERSION = 'version';
 const L_TARGET = "target";
 const L_LEVEL = "level";
+const L_EVENT = "event";
 
 // ==========================================================================================
 
@@ -201,8 +203,21 @@ function updateLoggingMetrics() {
 
 // ==========================================================================================
 
+const serviceEventCountGauge = new Counter({
+    name: 'akua_event_count',
+    help: 'Number of events.',
+    labelNames: [L_EVENT]
+});
+
+
+// ==========================================================================================
+
 @injectable()
 export default class MetricsServiceImpl extends MetricsService {
+    constructor(private _avrService: AvrService) {
+        super();
+    }
+
     public observeSimpleMeasurement(target: string, delta: [number, number]): void {
         simpleMeasurementSummary.observe({ [L_TARGET]: target }, delta[0] + delta[1] / 1e9);
     }
@@ -216,6 +231,18 @@ export default class MetricsServiceImpl extends MetricsService {
         updateMemUsageMetrics();
         updateLoggingMetrics();
 
+        this._updateServiceEventMetrics();
+
         return register.metrics();
+    }
+
+    private _updateServiceEventMetrics() {
+        serviceEventCountGauge.reset();
+
+        // AVR
+        const avrServiceState = this._avrService.getState();
+        serviceEventCountGauge.inc({ [L_EVENT]: 'avr_serial_port_errors' }, avrServiceState.serialPortErrors);
+        serviceEventCountGauge.inc({ [L_EVENT]: 'avr_serial_port_open_attempts' }, avrServiceState.serialPortOpenAttempts);
+        serviceEventCountGauge.inc({ [L_EVENT]: 'avr_serial_port_is_open' }, avrServiceState.serialPortIsOpen);
     }
 }

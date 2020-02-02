@@ -7,12 +7,15 @@ import MetricsService from "server/service/MetricsService";
 import ServerServices from "server/service/ServerServices";
 import DisplayService from "server/service/DisplayService";
 import DisplayServiceImpl from "./DisplayServiceImpl";
+import AvrService from "server/service/AvrService";
+import AvrServiceImpl from "./AvrServiceImpl";
 
 function createNewContainer(): Container {
     const container = new Container();
-    container.bind(MetricsService).to(MetricsServiceImpl);
-    container.bind(DisplayService).to(DisplayServiceImpl);
-    container.bind(ServerServices).toSelf();
+    container.bind(MetricsService).to(MetricsServiceImpl).inSingletonScope();
+    container.bind(DisplayService).to(DisplayServiceImpl).inSingletonScope();
+    container.bind(AvrService).to(AvrServiceImpl).inSingletonScope();
+    container.bind(ServerServices).toSelf().inSingletonScope();
 
     if (process.env.NODE_ENV === "development") {
         const tracer = new InversifyTracer();
