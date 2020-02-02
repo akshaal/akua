@@ -5,11 +5,13 @@ import config from "server/config";
 import { getInfoCount, getErrorCount, getWarningCount } from "server/logger";
 import MetricsService from "server/service/MetricsService";
 import AvrService from "server/service/AvrService";
+import TemperatureSensorService, { Temperature } from "server/service/TemperatureSensorService";
 
 // Use constants for labels to avoid typos and to be consistent about names.
 const L_GC_TYPE = 'gc_type';
 const L_VERSION = 'version';
 const L_TARGET = "target";
+const L_COUNTER = "counter";
 const L_LEVEL = "level";
 
 // ==========================================================================================
@@ -214,11 +216,29 @@ const serviceStateGauge = new Gauge({
     labelNames: [L_TARGET]
 });
 
+const temperatureGauge = new Gauge({
+    name: 'akua_temperature',
+    help: 'Temperature.',
+    labelNames: [L_TARGET]
+});
+
+const temperatureSamplesGauge = new Gauge({
+    name: 'akua_temperature_samples',
+    help: 'Temperature samples count.',
+    labelNames: [L_TARGET]
+});
+
+const temperatureCountGauge = new Counter({
+    name: 'akua_temperature_count',
+    help: 'Number of temperature related events.',
+    labelNames: [L_TARGET, L_COUNTER]
+});
+
 // ==========================================================================================
 
 @injectable()
 export default class MetricsServiceImpl extends MetricsService {
-    constructor(private _avrService: AvrService) {
+    constructor(private _avrService: AvrService, private _temperatureSensorService: TemperatureSensorService) {
         super();
     }
 
@@ -235,15 +255,20 @@ export default class MetricsServiceImpl extends MetricsService {
         updateMemUsageMetrics();
         updateLoggingMetrics();
 
-        this._updateServiceEventMetrics();
+        this._updateServiceMetrics();
 
         return register.metrics();
     }
 
-    private _updateServiceEventMetrics() {
+    private _updateServiceMetrics() {
         serviceEventCountGauge.reset();
+        temperatureCountGauge.reset();
 
-        // AVR
+        // TODO: readonly uptimeSeconds: number;
+        // TODO: readonly debugOverflows: number;
+        // TODO: readonly usbRxOverflows: number;
+
+        // AVR service
         const avrServiceState = this._avrService.getState();
         serviceEventCountGauge.inc({ [L_TARGET]: 'avr_serial_port_errors' }, avrServiceState.serialPortErrors);
         serviceEventCountGauge.inc({ [L_TARGET]: 'avr_serial_port_open_attempts' }, avrServiceState.serialPortOpenAttempts);
@@ -253,5 +278,23 @@ export default class MetricsServiceImpl extends MetricsService {
 
         serviceStateGauge.set({ [L_TARGET]: 'avr_serial_port_is_open' }, avrServiceState.serialPortIsOpen);
         serviceStateGauge.set({ [L_TARGET]: 'avr_protocol_version_mismatch' }, avrServiceState.protocolVersionMismatch);
+
+        // Temperature sensors
+        const handleTemperature = (name: string, t: Temperature | null): void => {
+            if (t && t.value) {
+                temperatureGauge.set({ [L_TARGET]: name }, t.value);
+            } else {
+                temperatureGauge.remove(name);
+            }
+
+            if (t) {
+                temperatureCountGauge.inc({ [L_TARGET]: name, [L_COUNTER]: "crc_errors" }, t.crcErrors);
+                temperatureCountGauge.inc({ [L_TARGET]: name, [L_COUNTER]: "disconnects" }, t.disconnects);
+                temperatureSamplesGauge.set({ [L_TARGET]: name }, t.valueSamples);
+            }
+        };
+
+        handleTemperature("aquarium", this._temperatureSensorService.aquariumTemperature);
+        handleTemperature("case", this._temperatureSensorService.caseTemperature);
     }
 }
