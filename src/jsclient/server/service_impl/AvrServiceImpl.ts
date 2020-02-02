@@ -14,34 +14,34 @@ const AUTO_REOPEN_MILLIS = 1000;
 
 function asAvrState(avrData: AvrData): AvrState {
     const co2Sensor: AvrCo2SensorState = {
-        crcErrors: avrData["CO2 sensor: u8 co2.get_crc_errors()"],
-        abcSetups: avrData["CO2 sensor: u16 co2.get_abc_setups()"],
-        concentration: avrData["CO2 sensor: u16 co2.get_concentration()"],
-        temperature: avrData["CO2 sensor: u8 co2.get_temperature()"],
-        s: avrData["CO2 sensor: u8 co2.get_s()"],
-        u: avrData["CO2 sensor: u16 co2.get_u()"],
-        updatedSecondsAgo: avrData["CO2 sensor: u8 co2.get_updated_deciseconds_ago()"] / 10.0,
-        rxOverflows: avrData["CO2 sensor: u8 co2.get_rx_overflow_count()"],
+        crcErrors: avrData["u8 co2.get_crc_errors()"],
+        abcSetups: avrData["u16 co2.get_abc_setups()"],
+        concentration: avrData["u16 co2.get_concentration()"],
+        temperature: avrData["u8 co2.get_temperature()"],
+        s: avrData["u8 co2.get_s()"],
+        u: avrData["u16 co2.get_u()"],
+        updatedSecondsAgo: avrData["u8 co2.get_updated_deciseconds_ago()"] / 10.0,
+        rxOverflows: avrData["u8 co2.get_rx_overflow_count()"],
     };
 
     const aquariumTemperatureSensor: AvrTemperatureSensorState = {
-        crcErrors: avrData["Aquarium temperature sensor: u8 ds18b20_aqua.get_crc_errors()"],
-        disconnects: avrData["Aquarium temperature sensor: u8 ds18b20_aqua.get_disconnects()"],
-        temperature: avrData["Aquarium temperature sensor: u16 ds18b20_aqua.get_temperatureX16()"] / 16.0,
-        updatedSecondsAgo: avrData["Aquarium temperature sensor: u8 ds18b20_aqua.get_updated_deciseconds_ago()"] / 10.0,
+        crcErrors: avrData["u8 ds18b20_aqua.get_crc_errors()"],
+        disconnects: avrData["u8 ds18b20_aqua.get_disconnects()"],
+        temperature: avrData["u16 ds18b20_aqua.get_temperatureX16()"] / 16.0,
+        updatedSecondsAgo: avrData["u8 ds18b20_aqua.get_updated_deciseconds_ago()"] / 10.0,
     };
 
     const caseTemperatureSensor: AvrTemperatureSensorState = {
-        crcErrors: avrData["Case temperature sensor: u8 ds18b20_case.get_crc_errors()"],
-        disconnects: avrData["Case temperature sensor: u8 ds18b20_case.get_disconnects()"],
-        temperature: avrData["Case temperature sensor: u16 ds18b20_case.get_temperatureX16()"] / 16.0,
-        updatedSecondsAgo: avrData["Case temperature sensor: u8 ds18b20_case.get_updated_deciseconds_ago()"] / 10.0,
+        crcErrors: avrData["u8 ds18b20_case.get_crc_errors()"],
+        disconnects: avrData["u8 ds18b20_case.get_disconnects()"],
+        temperature: avrData["u16 ds18b20_case.get_temperatureX16()"] / 16.0,
+        updatedSecondsAgo: avrData["u8 ds18b20_case.get_updated_deciseconds_ago()"] / 10.0,
     };
 
     return {
-        uptimeSeconds: avrData["Misc: u32 uptime_deciseconds"] / 10.0,
-        debugOverflows: avrData["Misc: u8 debug_overflow_count"],
-        usbRxOverflows: avrData["Misc: u8 usart0_rx_overflow_count"],
+        uptimeSeconds: avrData["u32 uptime_deciseconds"] / 10.0,
+        debugOverflows: avrData["u8 debug_overflow_count"],
+        usbRxOverflows: avrData["u8 usart0_rx_overflow_count"],
         co2Sensor,
         aquariumTemperatureSensor,
         caseTemperatureSensor

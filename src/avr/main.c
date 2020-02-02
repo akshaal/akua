@@ -362,8 +362,8 @@ THREAD$(usart0_writer, state_type = u8) {
         % for arg in rest:
             /*
               COMMPROTO: ${id}${loop.index+1}: ${name.replace('"', "")}: ${arg}
-              TS_PROTO_TYPE: "${name.replace('"', "")}: ${arg}": number,
-              TS_PROTO_ASSIGN: "${name.replace('"', "")}: ${arg}": vals["${id}${loop.index+1}"],
+              TS_PROTO_TYPE: "${arg}": number,
+              TS_PROTO_ASSIGN: "${arg}": vals["${id}${loop.index+1}"],
             */
             <% [argt, argn] = arg.split(" ", 1) %>
             ${argt}_to_format_and_send = ${argn}; CALL$(format_and_send_${argt});
