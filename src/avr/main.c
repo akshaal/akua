@@ -404,8 +404,7 @@ THREAD$(usart0_writer, state_type = u8) {
                       A,
                       u32 uptime_deciseconds,
                       u8 debug_overflow_count,
-                      u8 usart0_rx_overflow_count,
-                      u8 co2.get_rx_overflow_count());
+                      u8 usart0_rx_overflow_count);
 
         WRITE_STATUS$("Aquarium temperature sensor",
                       B,
@@ -423,6 +422,7 @@ THREAD$(usart0_writer, state_type = u8) {
 
         WRITE_STATUS$("CO2 sensor",
                       D,
+                      u8 co2.get_rx_overflow_count(),
                       u8 co2.get_crc_errors(),
                       u16 co2.get_abc_setups(),
                       u16 co2.get_concentration(),

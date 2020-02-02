@@ -1,13 +1,52 @@
 import { injectable, postConstruct } from "inversify";
-import AvrService, { AvrServiceState } from "server/service/AvrService";
+import AvrService, { AvrServiceState, AvrState, AvrCo2SensorState, AvrTemperatureSensorState } from "server/service/AvrService";
 import SerialPort from "serialport";
 import config from "server/config";
 import logger from "server/logger";
 import { SerialportReadlineParser } from "./ReadlineParser";
-import { avrProtocolVersion } from "server/avr/protocol";
+import { avrProtocolVersion, asAvrData, AvrData } from "server/avr/protocol";
+import { Subject } from "rxjs";
 
 // We do attempt to reopen the port every this number of milliseconds.
 const AUTO_REOPEN_MILLIS = 1000;
+
+// ==========================================================================================
+
+function asAvrState(avrData: AvrData): AvrState {
+    const co2Sensor: AvrCo2SensorState = {
+        crcErrors: avrData["CO2 sensor: u8 co2.get_crc_errors()"],
+        abcSetups: avrData["CO2 sensor: u16 co2.get_abc_setups()"],
+        concentration: avrData["CO2 sensor: u16 co2.get_concentration()"],
+        temperature: avrData["CO2 sensor: u8 co2.get_temperature()"],
+        s: avrData["CO2 sensor: u8 co2.get_s()"],
+        u: avrData["CO2 sensor: u16 co2.get_u()"],
+        updatedSecondsAgo: avrData["CO2 sensor: u8 co2.get_updated_deciseconds_ago()"] / 10.0,
+        rxOverflows: avrData["CO2 sensor: u8 co2.get_rx_overflow_count()"],
+    };
+
+    const aquariumTemperatureSensor: AvrTemperatureSensorState = {
+        crcErrors: avrData["Aquarium temperature sensor: u8 ds18b20_aqua.get_crc_errors()"],
+        disconnects: avrData["Aquarium temperature sensor: u8 ds18b20_aqua.get_disconnects()"],
+        temperature: avrData["Aquarium temperature sensor: u16 ds18b20_aqua.get_temperatureX16()"] / 16.0,
+        updatedSecondsAgo: avrData["Aquarium temperature sensor: u8 ds18b20_aqua.get_updated_deciseconds_ago()"] / 10.0,
+    };
+
+    const caseTemperatureSensor: AvrTemperatureSensorState = {
+        crcErrors: avrData["Case temperature sensor: u8 ds18b20_case.get_crc_errors()"],
+        disconnects: avrData["Case temperature sensor: u8 ds18b20_case.get_disconnects()"],
+        temperature: avrData["Case temperature sensor: u16 ds18b20_case.get_temperatureX16()"] / 16.0,
+        updatedSecondsAgo: avrData["Case temperature sensor: u8 ds18b20_case.get_updated_deciseconds_ago()"] / 10.0,
+    };
+
+    return {
+        uptimeSeconds: avrData["Misc: u32 uptime_deciseconds"] / 10.0,
+        debugOverflows: avrData["Misc: u8 debug_overflow_count"],
+        usbRxOverflows: avrData["Misc: u8 usart0_rx_overflow_count"],
+        co2Sensor,
+        aquariumTemperatureSensor,
+        caseTemperatureSensor
+    };
+}
 
 // ==========================================================================================
 
@@ -44,9 +83,12 @@ const serialPortOptions: SerialPort.OpenOptions = {
 
 @injectable()
 export default class AvrServiceImpl extends AvrService {
+    readonly avrState$ = new Subject<AvrState>();
+
     private _serialPort = new SerialPort(config.avr.port, serialPortOptions);
     private _serialPortErrorCount = 0;
     private _serialPortOpenAttemptCount = 0;
+    private _incomingMessages = 0;
     private _protocolCrcErrors = 0;
     private _protocolDebugMessages = 0;
     private _protocolVersionMismatch: 0 | 1 = 0;
@@ -73,6 +115,8 @@ export default class AvrServiceImpl extends AvrService {
     }
 
     private _onSerialPortData(data: string): void {
+        this._incomingMessages += 1;
+
         data = (data || "").replace("\r", "");
 
         if (data.indexOf('>') >= 0) {
@@ -113,7 +157,27 @@ export default class AvrServiceImpl extends AvrService {
             return;
         }
 
+        // Parse fields
+        const vals: {[id: string]: number} = {};
+        for (let fieldIdx = 1; fieldIdx < fields.length - 2; fieldIdx++) {
+            const field = fields[fieldIdx];
+            const prefix = field[0];
+            const valStrings = field.substr(1).split(",");
+            for (let valIdx = 0; valIdx < valStrings.length; valIdx++) {
+                vals[prefix + (valIdx + 1)] = parseHex(valStrings[valIdx]);
+            }
+        }
 
+        logger.debug("AVR: parsed values", { vals });
+
+        // Convert into more meaningful and stable AvrData structure
+        const avrData = asAvrData(vals);
+        logger.debug("AVR: parsed data", { avrData });
+
+        // Convert into AvrState and publish
+        const avrState = asAvrState(avrData);
+        logger.debug("AVR: next AvrSate", { avrState });
+        this.avrState$.next(avrState);
     }
 
     private _onSerialPortError(error: Error): void {
@@ -134,6 +198,7 @@ export default class AvrServiceImpl extends AvrService {
             protocolCrcErrors: this._protocolCrcErrors,
             protocolVersionMismatch: this._protocolVersionMismatch,
             protocolDebugMessages: this._protocolDebugMessages,
+            incomingMessages: this._incomingMessages,
         };
     }
 }

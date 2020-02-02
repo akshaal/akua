@@ -249,6 +249,7 @@ export default class MetricsServiceImpl extends MetricsService {
         serviceEventCountGauge.inc({ [L_TARGET]: 'avr_serial_port_open_attempts' }, avrServiceState.serialPortOpenAttempts);
         serviceEventCountGauge.inc({ [L_TARGET]: 'avr_protocol_crc_errors' }, avrServiceState.protocolCrcErrors);
         serviceEventCountGauge.inc({ [L_TARGET]: 'avr_protocol_debug_messages' }, avrServiceState.protocolDebugMessages);
+        serviceEventCountGauge.inc({ [L_TARGET]: 'avr_incoming_messages' }, avrServiceState.incomingMessages);
 
         serviceStateGauge.set({ [L_TARGET]: 'avr_serial_port_is_open' }, avrServiceState.serialPortIsOpen);
         serviceStateGauge.set({ [L_TARGET]: 'avr_protocol_version_mismatch' }, avrServiceState.protocolVersionMismatch);
