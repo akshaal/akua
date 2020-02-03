@@ -391,6 +391,7 @@ export default class MetricsServiceImpl extends MetricsService {
         avrUsbRxOverflowsGauge.setOrRemove(avrServiceState.lastAvrState?.usbRxOverflows);
         avrDebugOverflowsGauge.setOrRemove(avrServiceState.lastAvrState?.debugOverflows);
 
+        // TODO: Add last temp/co2 values in addition to average
         // TODO: Only value and valueCount must be part oc Co2 and Temperature. Other stuff must be taken from lastAvrState!
         // TODO: Use setOrRemove below
 

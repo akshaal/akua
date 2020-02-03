@@ -3,7 +3,7 @@ import Co2SensorService, { Co2 } from "server/service/Co2SensorService";
 import AvrService, { AvrCo2SensorState } from "server/service/AvrService";
 import { AveragingWindow } from "./AveragingWindow";
 
-const CO2_WINDOW_SPAN_SECONDS = 60 * 3; // 3 minutes
+const CO2_WINDOW_SPAN_SECONDS = 60 * 5; // 3 minutes
 const CO2_SAMPLE_FREQUENCY = 1; // How many measurements per second our AVR performs
 
 // ==========================================================================================
