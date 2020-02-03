@@ -11,8 +11,20 @@ import TemperatureSensorService, { Temperature } from "server/service/Temperatur
 const L_GC_TYPE = 'gc_type';
 const L_VERSION = 'version';
 const L_TARGET = "target";
-const L_COUNTER = "counter";
 const L_LEVEL = "level";
+
+// ==========================================================================================
+
+class SettableSimpleCounter extends Counter {
+    constructor(config: { name: string, help: string }) {
+        super(config);
+    }
+
+    set(value: number) {
+        this.reset();
+        this.inc(value);
+    }
+}
 
 // ==========================================================================================
 
@@ -204,16 +216,39 @@ function updateLoggingMetrics() {
 
 // ==========================================================================================
 
-const serviceEventCountGauge = new Counter({
-    name: 'akua_event_count',
-    help: 'Number of events.',
-    labelNames: [L_TARGET]
+const avrSerialPortErrorCountGauge = new SettableSimpleCounter({
+    name: 'akua_avr_serial_port_errors',
+    help: 'Number of AVR serial port errors.'
 });
 
-const serviceStateGauge = new Gauge({
-    name: 'akua_state',
-    help: 'State.',
-    labelNames: [L_TARGET]
+const avrSerialPortOpenAttemptCountGauge = new SettableSimpleCounter({
+    name: 'akua_avr_serial_port_open_attempts',
+    help: 'Number of attempts to open AVR serial port.'
+});
+
+const avrProtocolCrcErrorCountGauge = new SettableSimpleCounter({
+    name: 'akua_avr_protocol_crc_errors',
+    help: 'Number of CRC errors (when decoding incoming message from AVR).'
+});
+
+const avrProtocolDebugMessageCountGauge = new SettableSimpleCounter({
+    name: 'akua_avr_protocol_debug_messages',
+    help: 'Number of messages received from AVR.'
+});
+
+const avrIncomingMessageCountGauge = new SettableSimpleCounter({
+    name: 'akua_avr_incoming_messages',
+    help: 'Total number of messages received from AVR.'
+});
+
+const avrSerialPortIsOpenGauge = new Gauge({
+    name: 'akua_avr_port_is_open',
+    help: '1 means that serial port is currently open, 0 means it is closed.'
+});
+
+const avrProtocolVersionMismatchGauge = new Gauge({
+    name: 'akua_avr_protocol_version_mismatch',
+    help: '1 if AVR uses incompatible version of protocol, 0 if OK.'
 });
 
 const temperatureGauge = new Gauge({
@@ -228,10 +263,16 @@ const temperatureSamplesGauge = new Gauge({
     labelNames: [L_TARGET]
 });
 
-const temperatureCountGauge = new Counter({
-    name: 'akua_temperature_count',
-    help: 'Number of temperature related events.',
-    labelNames: [L_TARGET, L_COUNTER]
+const temperatureSensorCrcErrorsGauge = new Counter({
+    name: 'akua_temperature_sensor_crc_errors',
+    help: 'Number of CRC errors during communication with temperature sensor.',
+    labelNames: [L_TARGET]
+});
+
+const temperatureSensorDisconnectsGauge = new Counter({
+    name: 'akua_temperature_sensor_disconnects',
+    help: 'Number of time temperature sensor was missing and not replied.',
+    labelNames: [L_TARGET]
 });
 
 // ==========================================================================================
@@ -261,23 +302,19 @@ export default class MetricsServiceImpl extends MetricsService {
     }
 
     private _updateServiceMetrics() {
-        serviceEventCountGauge.reset();
-        temperatureCountGauge.reset();
-
         // TODO: readonly uptimeSeconds: number;
         // TODO: readonly debugOverflows: number;
         // TODO: readonly usbRxOverflows: number;
 
         // AVR service
         const avrServiceState = this._avrService.getState();
-        serviceEventCountGauge.inc({ [L_TARGET]: 'avr_serial_port_errors' }, avrServiceState.serialPortErrors);
-        serviceEventCountGauge.inc({ [L_TARGET]: 'avr_serial_port_open_attempts' }, avrServiceState.serialPortOpenAttempts);
-        serviceEventCountGauge.inc({ [L_TARGET]: 'avr_protocol_crc_errors' }, avrServiceState.protocolCrcErrors);
-        serviceEventCountGauge.inc({ [L_TARGET]: 'avr_protocol_debug_messages' }, avrServiceState.protocolDebugMessages);
-        serviceEventCountGauge.inc({ [L_TARGET]: 'avr_incoming_messages' }, avrServiceState.incomingMessages);
-
-        serviceStateGauge.set({ [L_TARGET]: 'avr_serial_port_is_open' }, avrServiceState.serialPortIsOpen);
-        serviceStateGauge.set({ [L_TARGET]: 'avr_protocol_version_mismatch' }, avrServiceState.protocolVersionMismatch);
+        avrSerialPortErrorCountGauge.set(avrServiceState.serialPortErrors);
+        avrSerialPortOpenAttemptCountGauge.set(avrServiceState.serialPortOpenAttempts);
+        avrProtocolCrcErrorCountGauge.set(avrServiceState.protocolCrcErrors);
+        avrProtocolDebugMessageCountGauge.set(avrServiceState.protocolDebugMessages);
+        avrIncomingMessageCountGauge.set(avrServiceState.incomingMessages);
+        avrSerialPortIsOpenGauge.set(avrServiceState.serialPortIsOpen);
+        avrProtocolVersionMismatchGauge.set(avrServiceState.protocolVersionMismatch);
 
         // Temperature sensors
         const handleTemperature = (name: string, t: Temperature | null): void => {
@@ -287,9 +324,12 @@ export default class MetricsServiceImpl extends MetricsService {
                 temperatureGauge.remove(name);
             }
 
+            temperatureSensorCrcErrorsGauge.remove(name);
+            temperatureSensorDisconnectsGauge.remove(name);
+
             if (t) {
-                temperatureCountGauge.inc({ [L_TARGET]: name, [L_COUNTER]: "crc_errors" }, t.crcErrors);
-                temperatureCountGauge.inc({ [L_TARGET]: name, [L_COUNTER]: "disconnects" }, t.disconnects);
+                temperatureSensorCrcErrorsGauge.inc({ [L_TARGET]: name }, t.crcErrors);
+                temperatureSensorDisconnectsGauge.inc({ [L_TARGET]: name }, t.disconnects);
                 temperatureSamplesGauge.set({ [L_TARGET]: name }, t.valueSamples);
             }
         };

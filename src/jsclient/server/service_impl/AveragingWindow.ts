@@ -1,4 +1,5 @@
 const MIN_PERCENT = 80;
+const FORCE_FILTER_EVERY_SECS = 0.3;
 
 type Timestamp = Readonly<[number, number]>;
 
@@ -17,6 +18,7 @@ export class AveragingWindow {
     private _sum: number = 0;
     private _records: Record[] = [];
     private _dirty = false;
+    private _last_filtering?: Timestamp;
 
     private readonly _minSamples = this.windowSpanSeconds * this.sampleFrequency * MIN_PERCENT / 100.0;
 
@@ -29,7 +31,7 @@ export class AveragingWindow {
     }
 
     get(): number | null {
-        if (this._dirty) {
+        if (this._dirty || !this._last_filtering || getElapsedSecondsSince(this._last_filtering) > FORCE_FILTER_EVERY_SECS) {
             // We filter and recalculate sum again to avoid sum drifting away because of floating point number stuff
             this._sum = 0;
             this._records = this._records.filter(record => {
@@ -40,6 +42,7 @@ export class AveragingWindow {
                 return keep;
             });
             this._dirty = false;
+            this._last_filtering = process.hrtime();
         }
 
         if (this._records.length >= this._minSamples) {
