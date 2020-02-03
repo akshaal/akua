@@ -6,6 +6,7 @@ import { getInfoCount, getErrorCount, getWarningCount } from "server/logger";
 import MetricsService from "server/service/MetricsService";
 import AvrService from "server/service/AvrService";
 import TemperatureSensorService, { Temperature } from "server/service/TemperatureSensorService";
+import Co2SensorService from "server/service/Co2SensorService";
 
 // Use constants for labels to avoid typos and to be consistent about names.
 const L_GC_TYPE = 'gc_type';
@@ -23,6 +24,14 @@ class SettableSimpleCounter extends Counter {
     set(value: number) {
         this.reset();
         this.inc(value);
+    }
+
+    setOrRemove(value?: number) {
+        if (typeof value === "number") {
+            this.set(value);
+        } else {
+            this.remove();
+        }
     }
 }
 
@@ -216,6 +225,21 @@ function updateLoggingMetrics() {
 
 // ==========================================================================================
 
+const avrUptimeSecondsGauge = new SettableSimpleCounter({
+    name: 'akua_avr_uptime_seconds',
+    help: 'Uptime seconds as returned by AVR (might be inaccurate as there is no RTC there).'
+});
+
+const avrDebugOverflowsGauge = new SettableSimpleCounter({
+    name: 'akua_avr_debug_overflows',
+    help: 'Number of times AVR was out of buffer space trying to send debug info to host.'
+});
+
+const avrUsbRxOverflowsGauge = new SettableSimpleCounter({
+    name: 'akua_avr_usb_rx_overflows',
+    help: 'Number of times AVR was out of buffer trying to receive data from USB.'
+});
+
 const avrSerialPortErrorCountGauge = new SettableSimpleCounter({
     name: 'akua_avr_serial_port_errors',
     help: 'Number of AVR serial port errors.'
@@ -251,6 +275,9 @@ const avrProtocolVersionMismatchGauge = new Gauge({
     help: '1 if AVR uses incompatible version of protocol, 0 if OK.'
 });
 
+// ==========================================================================================
+// Temperature sensor
+
 const temperatureGauge = new Gauge({
     name: 'akua_temperature',
     help: 'Temperature.',
@@ -276,10 +303,57 @@ const temperatureSensorDisconnectsGauge = new Counter({
 });
 
 // ==========================================================================================
+// Temperature sensor
+
+const co2Gauge = new Gauge({
+    name: 'akua_co2',
+    help: 'CO2.'
+});
+
+const co2SamplesGauge = new Gauge({
+    name: 'akua_co2_samples',
+    help: 'CO2 samples count.'
+});
+
+const co2SensorCrcErrorsGauge = new SettableSimpleCounter({
+    name: 'akua_co2_sensor_crc_errors',
+    help: 'Number of CRC errors during communication of AVR with CO2 sensor.'
+});
+
+const co2SensorRxOverflowsGauge = new SettableSimpleCounter({
+    name: 'akua_co2_sensor_rx_overflows',
+    help: 'Number of rx overflows during communication of AVR with CO2 sensor.'
+});
+
+const co2SensorAbcSetupsGauge = new SettableSimpleCounter({
+    name: 'akua_co2_sensor_abc_setups',
+    help: 'How many times AVR has turned off/on ABC in CO2 sensor.'
+});
+
+const co2SensorTemperatureGauge = new Gauge({
+    name: 'akua_co2_sensor_temperature',
+    help: 'Temperature of CO2 sensor.'
+});
+
+const co2SensorSGauge = new Gauge({
+    name: 'akua_co2_sensor_s',
+    help: 'Parameter S of MH-Z19 CO2 sensor.'
+});
+
+const co2SensorUGauge = new Gauge({
+    name: 'akua_co2_sensor_u',
+    help: 'Parameter U of MH-Z19 CO2 sensor.'
+});
+
+// ==========================================================================================
 
 @injectable()
 export default class MetricsServiceImpl extends MetricsService {
-    constructor(private _avrService: AvrService, private _temperatureSensorService: TemperatureSensorService) {
+    constructor(
+        private _avrService: AvrService,
+        private _temperatureSensorService: TemperatureSensorService,
+        private _co2SensorService: Co2SensorService
+    ) {
         super();
     }
 
@@ -302,10 +376,6 @@ export default class MetricsServiceImpl extends MetricsService {
     }
 
     private _updateServiceMetrics() {
-        // TODO: readonly uptimeSeconds: number;
-        // TODO: readonly debugOverflows: number;
-        // TODO: readonly usbRxOverflows: number;
-
         // AVR service
         const avrServiceState = this._avrService.getState();
         avrSerialPortErrorCountGauge.set(avrServiceState.serialPortErrors);
@@ -315,6 +385,14 @@ export default class MetricsServiceImpl extends MetricsService {
         avrIncomingMessageCountGauge.set(avrServiceState.incomingMessages);
         avrSerialPortIsOpenGauge.set(avrServiceState.serialPortIsOpen);
         avrProtocolVersionMismatchGauge.set(avrServiceState.protocolVersionMismatch);
+
+        // AVR related stuff
+        avrUptimeSecondsGauge.setOrRemove(avrServiceState.lastAvrState?.uptimeSeconds);
+        avrUsbRxOverflowsGauge.setOrRemove(avrServiceState.lastAvrState?.usbRxOverflows);
+        avrDebugOverflowsGauge.setOrRemove(avrServiceState.lastAvrState?.debugOverflows);
+
+        // TODO: Only value and valueCount must be part oc Co2 and Temperature. Other stuff must be taken from lastAvrState!
+        // TODO: Use setOrRemove below
 
         // Temperature sensors
         const handleTemperature = (name: string, t: Temperature | null): void => {
@@ -336,5 +414,23 @@ export default class MetricsServiceImpl extends MetricsService {
 
         handleTemperature("aquarium", this._temperatureSensorService.aquariumTemperature);
         handleTemperature("case", this._temperatureSensorService.caseTemperature);
+
+        // CO2 - - - -
+        const co2 = this._co2SensorService.co2;
+        if (co2 && co2.value) {
+            co2Gauge.set(co2.value);
+        } else {
+            co2Gauge.remove();
+        }
+
+        if (co2) {
+            co2SensorCrcErrorsGauge.inc(co2.crcErrors);
+            co2SamplesGauge.set(co2.valueSamples);
+            co2SensorAbcSetupsGauge.set(co2.abcSetups);
+            co2SensorRxOverflowsGauge.set(co2.rxOverflows);
+            co2SensorTemperatureGauge.set(co2.temperature);
+            co2SensorSGauge.set(co2.s);
+            co2SensorUGauge.set(co2.u);
+        }
     }
 }

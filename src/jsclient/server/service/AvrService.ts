@@ -9,6 +9,7 @@ export interface AvrServiceState {
     readonly protocolCrcErrors: number;
     readonly protocolDebugMessages: number;
     readonly incomingMessages: number;
+    readonly lastAvrState?: AvrState;
 }
 
 export interface AvrTemperatureSensorState {

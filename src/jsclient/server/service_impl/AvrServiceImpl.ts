@@ -95,6 +95,7 @@ export default class AvrServiceImpl extends AvrService {
     private _protocolCrcErrors = 0;
     private _protocolDebugMessages = 0;
     private _protocolVersionMismatch: 0 | 1 = 0;
+    private _lastAvrState?: AvrState;
 
     @postConstruct()
     _init(): void {
@@ -180,6 +181,8 @@ export default class AvrServiceImpl extends AvrService {
         // Convert into AvrState and publish
         const avrState = asAvrState(avrData);
         logger.debug("AVR: next AvrSate", { avrState });
+
+        this._lastAvrState = avrState;
         this.avrState$.next(avrState);
     }
 
@@ -202,6 +205,7 @@ export default class AvrServiceImpl extends AvrService {
             protocolVersionMismatch: this._protocolVersionMismatch,
             protocolDebugMessages: this._protocolDebugMessages,
             incomingMessages: this._incomingMessages,
+            lastAvrState: this._lastAvrState
         };
     }
 }

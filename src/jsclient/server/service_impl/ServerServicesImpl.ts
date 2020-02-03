@@ -11,6 +11,8 @@ import AvrService from "server/service/AvrService";
 import AvrServiceImpl from "./AvrServiceImpl";
 import TemperatureSensorServiceImpl from "./TemperatureSensorServiceImpl";
 import TemperatureSensorService from "server/service/TemperatureSensorService";
+import Co2SensorServiceImpl from "./Co2SensorServiceImpl";
+import Co2SensorService from "server/service/Co2SensorService";
 
 function createNewContainer(): Container {
     const container = new Container();
@@ -18,6 +20,7 @@ function createNewContainer(): Container {
     container.bind(DisplayService).to(DisplayServiceImpl).inSingletonScope();
     container.bind(AvrService).to(AvrServiceImpl).inSingletonScope();
     container.bind(TemperatureSensorService).to(TemperatureSensorServiceImpl).inSingletonScope();
+    container.bind(Co2SensorService).to(Co2SensorServiceImpl).inSingletonScope();
     container.bind(ServerServices).toSelf().inSingletonScope();
 
     if (process.env.NODE_ENV === "development") {
