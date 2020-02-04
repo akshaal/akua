@@ -1,17 +1,13 @@
-const MIN_PERCENT = 80;
-const FORCE_FILTER_EVERY_SECS = 0.3;
+import type { Timestamp } from "./Timestamp";
+import { getElapsedSecondsSince } from "./get-elapsed-seconds-since";
+import { newTimestamp } from "./new-timestamp";
 
-type Timestamp = Readonly<[number, number]>;
+const MIN_PERCENT = 70;
+const FORCE_FILTER_EVERY_SECS = 0.3;
 
 interface Record {
     readonly t: Timestamp;
     readonly v: number;
-}
-
-function getElapsedSecondsSince(t: Timestamp): number {
-    const delta = process.hrtime(t as any);
-    const nanoseconds = delta[0] * 1e9 + delta[1];
-    return nanoseconds / 1e9;
 }
 
 export class AveragingWindow {
@@ -42,7 +38,7 @@ export class AveragingWindow {
                 return keep;
             });
             this._dirty = false;
-            this._last_filtering = process.hrtime();
+            this._last_filtering = newTimestamp();
         }
 
         if (this._records.length >= this._minSamples) {
@@ -56,7 +52,7 @@ export class AveragingWindow {
         this._dirty = true;
         this._sum += v;
         this._records.push({
-            t: process.hrtime(),
+            t: newTimestamp(),
             v
         });
     }

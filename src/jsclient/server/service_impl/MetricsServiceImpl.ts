@@ -16,7 +16,7 @@ const L_LEVEL = "level";
 
 // ==========================================================================================
 
-class SettableSimpleCounter extends Counter {
+class SimpleCounter extends Counter {
     constructor(config: { name: string, help: string }) {
         super(config);
     }
@@ -26,7 +26,7 @@ class SettableSimpleCounter extends Counter {
         this.inc(value);
     }
 
-    setOrRemove(value?: number) {
+    setOrRemove(value?: number | null) {
         if (typeof value === "number") {
             this.set(value);
         } else {
@@ -34,6 +34,48 @@ class SettableSimpleCounter extends Counter {
         }
     }
 }
+
+class SimpleGauge extends Gauge {
+    constructor(config: { name: string, help: string }) {
+        super(config);
+    }
+
+    setOrRemove(value?: number | null) {
+        if (typeof value === "number") {
+            this.set(value);
+        } else {
+            this.remove();
+        }
+    }
+}
+
+class TargetedGauge extends Gauge {
+    constructor(config: { name: string, help: string }) {
+        super({ ...config, labelNames: [L_TARGET] });
+    }
+
+    setOrRemove(target: string, value?: number | null) {
+        if (typeof value === "number") {
+            this.set({ [L_TARGET]: target }, value);
+        } else {
+            this.remove(target);
+        }
+    }
+}
+
+class TargetedCounter extends Counter {
+    constructor(config: { name: string, help: string }) {
+        super({ ...config, labelNames: [L_TARGET] });
+    }
+
+    setOrRemove(target: string, value?: number | null) {
+        this.remove(target);
+        if (typeof value === "number") {
+            this.inc({ [L_TARGET]: target }, value);
+        }
+    }
+}
+
 
 // ==========================================================================================
 
@@ -225,42 +267,42 @@ function updateLoggingMetrics() {
 
 // ==========================================================================================
 
-const avrUptimeSecondsGauge = new SettableSimpleCounter({
+const avrUptimeSecondsGauge = new SimpleCounter({
     name: 'akua_avr_uptime_seconds',
     help: 'Uptime seconds as returned by AVR (might be inaccurate as there is no RTC there).'
 });
 
-const avrDebugOverflowsGauge = new SettableSimpleCounter({
+const avrDebugOverflowsGauge = new SimpleCounter({
     name: 'akua_avr_debug_overflows',
     help: 'Number of times AVR was out of buffer space trying to send debug info to host.'
 });
 
-const avrUsbRxOverflowsGauge = new SettableSimpleCounter({
+const avrUsbRxOverflowsGauge = new SimpleCounter({
     name: 'akua_avr_usb_rx_overflows',
     help: 'Number of times AVR was out of buffer trying to receive data from USB.'
 });
 
-const avrSerialPortErrorCountGauge = new SettableSimpleCounter({
+const avrSerialPortErrorCountGauge = new SimpleCounter({
     name: 'akua_avr_serial_port_errors',
     help: 'Number of AVR serial port errors.'
 });
 
-const avrSerialPortOpenAttemptCountGauge = new SettableSimpleCounter({
+const avrSerialPortOpenAttemptCountGauge = new SimpleCounter({
     name: 'akua_avr_serial_port_open_attempts',
     help: 'Number of attempts to open AVR serial port.'
 });
 
-const avrProtocolCrcErrorCountGauge = new SettableSimpleCounter({
+const avrProtocolCrcErrorCountGauge = new SimpleCounter({
     name: 'akua_avr_protocol_crc_errors',
     help: 'Number of CRC errors (when decoding incoming message from AVR).'
 });
 
-const avrProtocolDebugMessageCountGauge = new SettableSimpleCounter({
+const avrProtocolDebugMessageCountGauge = new SimpleCounter({
     name: 'akua_avr_protocol_debug_messages',
     help: 'Number of messages received from AVR.'
 });
 
-const avrIncomingMessageCountGauge = new SettableSimpleCounter({
+const avrIncomingMessageCountGauge = new SimpleCounter({
     name: 'akua_avr_incoming_messages',
     help: 'Total number of messages received from AVR.'
 });
@@ -278,69 +320,110 @@ const avrProtocolVersionMismatchGauge = new Gauge({
 // ==========================================================================================
 // Temperature sensor
 
-const temperatureGauge = new Gauge({
+const temperatureGauge = new TargetedGauge({
     name: 'akua_temperature',
-    help: 'Temperature.',
-    labelNames: [L_TARGET]
+    help: 'Current average temperature.'
 });
 
-const temperatureSamplesGauge = new Gauge({
+const temperatureSamplesGauge = new TargetedGauge({
     name: 'akua_temperature_samples',
-    help: 'Temperature samples count.',
-    labelNames: [L_TARGET]
+    help: 'Current temperature samples count.'
 });
 
-const temperatureSensorCrcErrorsGauge = new Counter({
+const temperatureSensorTemperatureGauge = new TargetedGauge({
+    name: 'akua_temperature_sensor_temperature',
+    help: 'Last measured temperature as reported by the sensor.'
+});
+
+const temperatureSensorUpdatedSecondsAgoGauge = new TargetedGauge({
+    name: 'akua_temperature_sensor_updated_seconds_ago',
+    help: 'Freshness of last data when it was received from AVR.'
+});
+
+const temperatureSensorCrcErrorsGauge = new TargetedCounter({
     name: 'akua_temperature_sensor_crc_errors',
-    help: 'Number of CRC errors during communication with temperature sensor.',
-    labelNames: [L_TARGET]
+    help: 'Number of CRC errors during communication with temperature sensor.'
 });
 
-const temperatureSensorDisconnectsGauge = new Counter({
+const temperatureSensorDisconnectsGauge = new TargetedCounter({
     name: 'akua_temperature_sensor_disconnects',
-    help: 'Number of time temperature sensor was missing and not replied.',
-    labelNames: [L_TARGET]
+    help: 'Number of time temperature sensor was missing and not replied.'
 });
 
 // ==========================================================================================
 // Temperature sensor
 
-const co2Gauge = new Gauge({
+const co2Gauge = new SimpleGauge({
     name: 'akua_co2',
-    help: 'CO2.'
+    help: 'Current average CO2.'
 });
 
-const co2SamplesGauge = new Gauge({
+const co2SamplesGauge = new SimpleGauge({
     name: 'akua_co2_samples',
-    help: 'CO2 samples count.'
+    help: 'Current CO2 samples count.'
 });
 
-const co2SensorCrcErrorsGauge = new SettableSimpleCounter({
+const co2SensorConcentrationGauge = new SimpleGauge({
+    name: 'akua_co2_sensor_concentration',
+    help: 'Last measured concentration as reported by the sensor.'
+});
+
+const co2SensorClampedConcentrationGauge = new SimpleGauge({
+    name: 'akua_co2_sensor_clamped_concentration',
+    help: 'Last measured clamped concentration as reported by the sensor.'
+});
+
+const co2SensorRawConcentrationGauge = new SimpleGauge({
+    name: 'akua_co2_sensor_raw_concentration',
+    help: 'Last measured raw concentration as reported by the sensor.'
+});
+
+const co2SensorUpdatedSecondsAgoGauge = new SimpleGauge({
+    name: 'akua_co2_sensor_updated_seconds_ago',
+    help: 'Freshness of last data when it was received from AVR.'
+});
+
+const co2SensorUptimeSecondsGauge = new SimpleGauge({
+    name: 'akua_co2_sensor_uptime_seconds',
+    help: 'Number of seconds since the sensor started.'
+});
+
+const co2SensorBootGauge = new SimpleGauge({
+    name: 'akua_co2_sensor_boot',
+    help: '1 means sensor is booting, 0 means it is started.'
+});
+
+const co2WarmupGauge = new SimpleGauge({
+    name: 'akua_co2_warmup',
+    help: '1 means we ignore current co2 values and waiting for sensor or AVR to warm up.'
+});
+
+const co2SensorCrcErrorsGauge = new SimpleCounter({
     name: 'akua_co2_sensor_crc_errors',
     help: 'Number of CRC errors during communication of AVR with CO2 sensor.'
 });
 
-const co2SensorRxOverflowsGauge = new SettableSimpleCounter({
+const co2SensorRxOverflowsGauge = new SimpleCounter({
     name: 'akua_co2_sensor_rx_overflows',
     help: 'Number of rx overflows during communication of AVR with CO2 sensor.'
 });
 
-const co2SensorAbcSetupsGauge = new SettableSimpleCounter({
+const co2SensorAbcSetupsGauge = new SimpleCounter({
     name: 'akua_co2_sensor_abc_setups',
     help: 'How many times AVR has turned off/on ABC in CO2 sensor.'
 });
 
-const co2SensorTemperatureGauge = new Gauge({
+const co2SensorTemperatureGauge = new SimpleGauge({
     name: 'akua_co2_sensor_temperature',
     help: 'Temperature of CO2 sensor.'
 });
 
-const co2SensorSGauge = new Gauge({
+const co2SensorSGauge = new SimpleGauge({
     name: 'akua_co2_sensor_s',
     help: 'Parameter S of MH-Z19 CO2 sensor.'
 });
 
-const co2SensorUGauge = new Gauge({
+const co2SensorUGauge = new SimpleGauge({
     name: 'akua_co2_sensor_u',
     help: 'Parameter U of MH-Z19 CO2 sensor.'
 });
@@ -391,27 +474,14 @@ export default class MetricsServiceImpl extends MetricsService {
         avrUsbRxOverflowsGauge.setOrRemove(avrServiceState.lastAvrState?.usbRxOverflows);
         avrDebugOverflowsGauge.setOrRemove(avrServiceState.lastAvrState?.debugOverflows);
 
-        // TODO: Ignore values in Co2SensorServices if avrTime is too low (< 10 minutes!)
-        // TODO: Add last temp/co2 values in addition to average
-        // TODO: Only value and valueCount must be part oc Co2 and Temperature. Other stuff must be taken from lastAvrState!
-        // TODO: Use setOrRemove below
-
         // Temperature sensors
         const handleTemperature = (name: string, t: Temperature | null): void => {
-            if (t && t.value) {
-                temperatureGauge.set({ [L_TARGET]: name }, t.value);
-            } else {
-                temperatureGauge.remove(name);
-            }
-
-            temperatureSensorCrcErrorsGauge.remove(name);
-            temperatureSensorDisconnectsGauge.remove(name);
-
-            if (t) {
-                temperatureSensorCrcErrorsGauge.inc({ [L_TARGET]: name }, t.crcErrors);
-                temperatureSensorDisconnectsGauge.inc({ [L_TARGET]: name }, t.disconnects);
-                temperatureSamplesGauge.set({ [L_TARGET]: name }, t.valueSamples);
-            }
+            temperatureGauge.setOrRemove(name, t?.value);
+            temperatureSamplesGauge.setOrRemove(name, t?.valueSamples);
+            temperatureSensorUpdatedSecondsAgoGauge.setOrRemove(name, t?.lastSensorState?.updatedSecondsAgo);
+            temperatureSensorTemperatureGauge.setOrRemove(name, t?.lastSensorState?.temperature);
+            temperatureSensorCrcErrorsGauge.setOrRemove(name, t?.lastSensorState?.crcErrors);
+            temperatureSensorDisconnectsGauge.setOrRemove(name, t?.lastSensorState?.disconnects);
         };
 
         handleTemperature("aquarium", this._temperatureSensorService.aquariumTemperature);
@@ -419,20 +489,20 @@ export default class MetricsServiceImpl extends MetricsService {
 
         // CO2 - - - -
         const co2 = this._co2SensorService.co2;
-        if (co2 && co2.value) {
-            co2Gauge.set(co2.value);
-        } else {
-            co2Gauge.remove();
-        }
-
-        if (co2) {
-            co2SensorCrcErrorsGauge.inc(co2.crcErrors);
-            co2SamplesGauge.set(co2.valueSamples);
-            co2SensorAbcSetupsGauge.set(co2.abcSetups);
-            co2SensorRxOverflowsGauge.set(co2.rxOverflows);
-            co2SensorTemperatureGauge.set(co2.temperature);
-            co2SensorSGauge.set(co2.s);
-            co2SensorUGauge.set(co2.u);
-        }
+        co2Gauge.setOrRemove(co2?.value);
+        co2SamplesGauge.setOrRemove(co2?.valueSamples);
+        co2WarmupGauge.setOrRemove(co2?.warmup ? 1 : 0);
+        co2SensorBootGauge.setOrRemove(co2?.sensorBoot ? 1 : 0);
+        co2SensorUptimeSecondsGauge.setOrRemove(co2?.sensorUptimeSeconds);
+        co2SensorConcentrationGauge.setOrRemove(co2?.lastSensorState?.concentration);
+        co2SensorRawConcentrationGauge.setOrRemove(co2?.lastSensorState?.rawConcentration);
+        co2SensorClampedConcentrationGauge.setOrRemove(co2?.lastSensorState?.clampedConcentration);
+        co2SensorUpdatedSecondsAgoGauge.setOrRemove(co2?.lastSensorState?.updatedSecondsAgo);
+        co2SensorCrcErrorsGauge.setOrRemove(co2?.lastSensorState?.crcErrors);
+        co2SensorAbcSetupsGauge.setOrRemove(co2?.lastSensorState?.abcSetups);
+        co2SensorRxOverflowsGauge.setOrRemove(co2?.lastSensorState?.rxOverflows);
+        co2SensorTemperatureGauge.setOrRemove(co2?.lastSensorState?.temperature);
+        co2SensorSGauge.setOrRemove(co2?.lastSensorState?.s);
+        co2SensorUGauge.setOrRemove(co2?.lastSensorState?.u);
     }
 }

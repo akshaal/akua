@@ -236,8 +236,7 @@ X_DS18B20$(ds18b20_case, A1);
 ////////////////////////////////////////////////////////////////////////////////
 // USART1 - MH-Z19 CO2 Module
 
-// NOTE: Use to debug the protocol: debug = add_debug_byte
-X_MHZ19$(co2, uart = 1, use_abc = 0);
+X_MHZ19$(co2, uart = 1, use_abc = 0, debug = add_debug_byte);
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -427,6 +426,8 @@ THREAD$(usart0_writer, state_type = u8) {
                       u8 co2.get_rx_overflow_count(),
                       u8 co2.get_crc_errors(),
                       u16 co2.get_abc_setups(),
+                      u16 co2.get_raw_concentration(),
+                      u16 co2.get_clamped_concentration(),
                       u16 co2.get_concentration(),
                       u8 co2.get_temperature(),
                       u8 co2.get_s(),

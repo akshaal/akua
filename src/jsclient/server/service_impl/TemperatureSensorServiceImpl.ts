@@ -9,7 +9,7 @@ const TEMPERATURE_SAMPLE_FREQUENCY = 1; // How many measurements per second our 
 // ==========================================================================================
 
 class SensorProcessor {
-    private _prevState?: AvrTemperatureSensorState;
+    private _prevState: AvrTemperatureSensorState | null = null;
     private _avgWindow = new AveragingWindow(TEMPERATURE_WINDOW_SPAN_SECONDS, TEMPERATURE_SAMPLE_FREQUENCY);
 
     onNewAvrState(newState: AvrTemperatureSensorState) {
@@ -26,12 +26,11 @@ class SensorProcessor {
         if (!this._prevState) {
             return null;
         }
-
+        
         return {
             value: this._avgWindow.get(),
             valueSamples: this._avgWindow.getCount(),
-            crcErrors: this._prevState.crcErrors,
-            disconnects: this._prevState.disconnects
+            lastSensorState: this._prevState
         };
     }
 }

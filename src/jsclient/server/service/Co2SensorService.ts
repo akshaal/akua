@@ -1,14 +1,13 @@
 import { injectable } from "inversify";
+import type { AvrCo2SensorState } from "./AvrService";
 
 export interface Co2 {
     readonly value: number | null;
     readonly valueSamples: number;
-    readonly rxOverflows: number;
-    readonly crcErrors: number;
-    readonly abcSetups: number;
-    readonly temperature: number;
-    readonly s: number;
-    readonly u: number;
+    readonly lastSensorState: AvrCo2SensorState | null;
+    readonly sensorBoot: boolean;
+    readonly sensorUptimeSeconds: number;
+    readonly warmup: boolean;
 }
 
 @injectable()

@@ -25,6 +25,8 @@ export interface AvrCo2SensorState {
     readonly crcErrors: number;
     readonly abcSetups: number;
     readonly concentration: number;
+    readonly rawConcentration: number;
+    readonly clampedConcentration: number;
     readonly temperature: number;
     readonly s: number;
     readonly u: number;

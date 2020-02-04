@@ -1,10 +1,10 @@
 import { injectable } from "inversify";
+import type { AvrTemperatureSensorState } from "./AvrService";
 
 export interface Temperature {
     readonly value: number | null;
     readonly valueSamples: number;
-    readonly disconnects: number;
-    readonly crcErrors: number;
+    readonly lastSensorState: AvrTemperatureSensorState | null;
 }
 
 @injectable()

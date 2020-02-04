@@ -18,6 +18,8 @@ function asAvrState(avrData: AvrData): AvrState {
         crcErrors: avrData["u8 co2.get_crc_errors()"],
         abcSetups: avrData["u16 co2.get_abc_setups()"],
         concentration: avrData["u16 co2.get_concentration()"],
+        rawConcentration: avrData["u16 co2.get_raw_concentration()"],
+        clampedConcentration: avrData["u16 co2.get_clamped_concentration()"],
         temperature: avrData["u8 co2.get_temperature()"],
         s: avrData["u8 co2.get_s()"],
         u: avrData["u16 co2.get_u()"],
