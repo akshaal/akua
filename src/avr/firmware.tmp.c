@@ -18287,6 +18287,7 @@ ds18b20_case_t const ds18b20_case = {.get_updated_deciseconds_ago = &get_updated
 ////////////////////////////////////////////////////////////////////////////////
 // USART1 - MH-Z19 CO2 Module
 
+// Add for debug: debug = add_debug_byte
 static AKAT_FORCE_INLINE void co2_init() {
 //Set baud rate
     const u16 ubrr = akat_cpu_freq_hz() / (9600 * 8L) - 1;
@@ -18696,7 +18697,6 @@ akat_coroutine_l_10:
                     goto try_interpret_as_command;
                 }
             } else {//Unknown byte
-                add_debug_byte(dequeued_byte);
             }
         }
     } while (0);

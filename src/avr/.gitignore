@@ -11,4 +11,3 @@ serial-protocol.txt.tmp
 *.ii
 *.avr
 *.bin
-firmware.hex
