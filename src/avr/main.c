@@ -199,7 +199,7 @@ X_GPIO_OUTPUT$(night_light_switch, A5);
 // Testing code ........ START
 
 GLOBAL$() {
-    STATIC_VAR$(u32 xxxx)
+    STATIC_VAR$(u8 xxxx)
 }
 
 X_EVERY_DECISECOND$(xxxx_ticker) {
