@@ -33,5 +33,6 @@
         "vect"
     ],
     "C_Cpp.errorSquiggles": "Disabled",
-    "C_Cpp.clang_format_fallbackStyle": "Google"
+    "C_Cpp.clang_format_fallbackStyle": "Google",
+    "C_Cpp.default.intelliSenseMode": "gcc-x64"
 }
