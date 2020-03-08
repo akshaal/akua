@@ -189,7 +189,7 @@ FUNCTION$(void turn_all_devices_off()) {
 }
 
 // Set safe state on init
-X_INIT$(_init) {
+X_INIT$(start_in_safe_state) {
     turn_all_devices_off();
 };
 
