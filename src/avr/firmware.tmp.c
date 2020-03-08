@@ -17097,7 +17097,7 @@ night_light_switch_t const night_light_switch = {.set = &set__impl
 
 // Testing code ........ START
 
-static u32 xxxx = 0;
+static u8 xxxx = 0;
 
 ;
 
