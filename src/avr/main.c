@@ -106,8 +106,8 @@ X_UNUSED_PIN$(J6); // 69   PJ6 ( PCINT 15 )
 X_UNUSED_PIN$(G2); // 70   PG2 ( ALE ) Digital pin 39
 X_UNUSED_PIN$(A7); // 71   PA7 ( AD7 ) Digital pin 29
 X_UNUSED_PIN$(A6); // 72   PA6 ( AD6 ) Digital pin 28
-X_UNUSED_PIN$(A5); // 73   PA5 ( AD5 ) Digital pin 27
-X_UNUSED_PIN$(A4); // 74   PA4 ( AD4 ) Digital pin 26
+// Night light switch 73   PA5 ( AD5 ) Digital pin 27
+// Main light switch  74   PA4 ( AD4 ) Digital pin 26
 X_UNUSED_PIN$(A3); // 75   PA3 ( AD3 ) Digital pin 25
 X_UNUSED_PIN$(A2); // 76   PA2 ( AD2 ) Digital pin 24
 // DS18B20 Case ..... 77   PA1 ( AD1 ) Digital pin 23
@@ -186,6 +186,29 @@ GLOBAL$() {
 X_EVERY_DECISECOND$(uptime_ticker) {
     uptime_deciseconds += 1;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// Switches
+
+X_GPIO_OUTPUT$(main_light_switch, A4);
+X_GPIO_OUTPUT$(night_light_switch, A5);
+
+// Testing code ........ START
+
+GLOBAL$() {
+    STATIC_VAR$(u32 xxxx)
+}
+
+X_EVERY_DECISECOND$(xxxx_ticker) {
+    xxxx += 1;
+    main_light_switch.set(xxxx > 128);
+    night_light_switch.set(xxxx % 2);
+}
+
+// Testing code ........ END
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
