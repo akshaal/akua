@@ -362,7 +362,7 @@ static AKAT_UNUSED AKAT_PURE u8 akat_x_tm1637_encode_digit(u8 const digit, u8 co
     return pgm_read_byte(akat_x_tm1637_digits_map + digit) | (colon ? AKAT_X_TM1637_COLON_MASK : 0);
 }
 
-#include <avr/interrupt.h>
+
 #include <avr/io.h>
 
 // Here is what we are going to use for communication using USB/serial port
@@ -16681,7 +16681,6 @@ F0_unused_t const F0_unused = {.is_set = &is_set__impl
 
 // 16-bit Timer1 is used for 'X_EVERY_DECISECOND$'
 
-
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -16722,16 +16721,218 @@ static AKAT_UNUSED void add_debug_byte(const u8 b) {
 
 
 
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-// Uptime
 
-static u32 uptime_deciseconds = 0;
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// Control
+
+// Like X_GPIO_OUTPUT$ but times out if state is not updated witjin state_timeout_deciseconds.
+// If timeout happens, then the state of pin is set to 'safe_state'
+
+typedef struct {
+    void (* const set)(u8 state);
+    u8 (* const is_set)();
+} day_light_switch__output__port_t;
+
+extern day_light_switch__output__port_t const day_light_switch__output__port;
+
+static AKAT_FORCE_INLINE void day_light_switch__output__port__set__impl(u8 state) {
+#define set__impl day_light_switch__output__port__set__impl
+
+    if (state) {
+        PORTA |= 1 << 4;  //Set PORTA of A4 to 1
+    } else {
+        PORTA &= ~(1 << 4);  //Set PORTA of A4 to 0
+    }
+
+#undef set__impl
+}
+static AKAT_FORCE_INLINE u8 day_light_switch__output__port__is_set__impl() {
+#define is_set__impl day_light_switch__output__port__is_set__impl
+#define set__impl day_light_switch__output__port__set__impl
+    return PORTA & (1 << 4);  //Get value of PORTA for A4
+#undef is_set__impl
+#undef set__impl
+}
+#define is_set__impl day_light_switch__output__port__is_set__impl
+#define set__impl day_light_switch__output__port__set__impl
+
+day_light_switch__output__port_t const day_light_switch__output__port = {.set = &set__impl
+                                                                         ,
+                                                                         .is_set = &is_set__impl
+                                                                        };
+
+
+#undef is_set__impl
+#undef set__impl
+#define is_set__impl day_light_switch__output__port__is_set__impl
+#define set__impl day_light_switch__output__port__set__impl
+
+
+;
+
+#define is_set__impl day_light_switch__output__port__is_set__impl
+#define set__impl day_light_switch__output__port__set__impl
+
+
+
+
+
+#undef is_set__impl
+#undef set__impl
+;
+
+
+
+typedef struct {
+    void (* const set)(u8 state);
+    u8 (* const is_set)();
+} day_light_switch__output__ddr_t;
+
+extern day_light_switch__output__ddr_t const day_light_switch__output__ddr;
+
+static AKAT_FORCE_INLINE void day_light_switch__output__ddr__set__impl(u8 state) {
+#define set__impl day_light_switch__output__ddr__set__impl
+
+    if (state) {
+        DDRA |= 1 << 4;  //Set DDRA of A4 to 1
+    } else {
+        DDRA &= ~(1 << 4);  //Set DDRA of A4 to 0
+    }
+
+#undef set__impl
+}
+static AKAT_FORCE_INLINE u8 day_light_switch__output__ddr__is_set__impl() {
+#define is_set__impl day_light_switch__output__ddr__is_set__impl
+#define set__impl day_light_switch__output__ddr__set__impl
+    return DDRA & (1 << 4);  //Get value of DDRA for A4
+#undef is_set__impl
+#undef set__impl
+}
+#define is_set__impl day_light_switch__output__ddr__is_set__impl
+#define set__impl day_light_switch__output__ddr__set__impl
+
+day_light_switch__output__ddr_t const day_light_switch__output__ddr = {.set = &set__impl
+                                                                       ,
+                                                                       .is_set = &is_set__impl
+                                                                      };
+
+
+#undef is_set__impl
+#undef set__impl
+#define is_set__impl day_light_switch__output__ddr__is_set__impl
+#define set__impl day_light_switch__output__ddr__set__impl
+
+
+;
+
+#define is_set__impl day_light_switch__output__ddr__is_set__impl
+#define set__impl day_light_switch__output__ddr__set__impl
+
+
+
+
+
+#undef is_set__impl
+#undef set__impl
+;
+
+
+
+static AKAT_FORCE_INLINE void day_light_switch__output__init() {
+    day_light_switch__output__ddr.set(1); //Init A4 as output
+}
+
+;
+
+
+
+
+
+typedef struct {
+    void (* const set)(u8 state);
+} day_light_switch__output_t;
+
+extern day_light_switch__output_t const day_light_switch__output;
+
+static AKAT_FORCE_INLINE void day_light_switch__output__set__impl(u8 state) {
+#define set__impl day_light_switch__output__set__impl
+    day_light_switch__output__port.set(state);
+#undef set__impl
+}
+#define set__impl day_light_switch__output__set__impl
+
+day_light_switch__output_t const day_light_switch__output = {.set = &set__impl
+                                                            };
+
+
+#undef set__impl
+#define set__impl day_light_switch__output__set__impl
+
+
+;
+
+#define set__impl day_light_switch__output__set__impl
+
+
+
+
+#undef set__impl
+;
+
+
+
+static AKAT_FORCE_INLINE void day_light_switch__init() {
+    day_light_switch__output.set(0);
+}
+
+;
+
+
+
+
+
+static u8 day_light_switch__updated_ago = 255;
 
 ;
 ;
+
+
+typedef struct {
+    void (* const set)(u8 state);
+} day_light_switch_t;
+
+extern day_light_switch_t const day_light_switch;
+
+static AKAT_FORCE_INLINE void day_light_switch__set__impl(u8 state) {
+#define set__impl day_light_switch__set__impl
+    day_light_switch__output.set(state);
+    day_light_switch__updated_ago = 0;
+#undef set__impl
+}
+#define set__impl day_light_switch__set__impl
+
+day_light_switch_t const day_light_switch = {.set = &set__impl
+                                            };
+
+
+#undef set__impl
+#define set__impl day_light_switch__set__impl
+
+
+;
+
+#define set__impl day_light_switch__set__impl
+
+
+
+
+#undef set__impl
+;
+
+
 
 
 
@@ -16770,185 +16971,35 @@ ISR(TIMER1_COMPA_vect, ISR_NAKED) {
 }
 
 
-static AKAT_FORCE_INLINE void uptime_ticker() {
-    uptime_deciseconds += 1;
-}
+static AKAT_FORCE_INLINE void day_light_switch__ticker() {
+    day_light_switch__updated_ago += 1;
 
-;
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-// Switches
-
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} main_light_switch__port_t;
-
-extern main_light_switch__port_t const main_light_switch__port;
-
-static AKAT_FORCE_INLINE void main_light_switch__port__set__impl(u8 state) {
-#define set__impl main_light_switch__port__set__impl
-
-    if (state) {
-        PORTA |= 1 << 4;  //Set PORTA of A4 to 1
-    } else {
-        PORTA &= ~(1 << 4);  //Set PORTA of A4 to 0
+    if (!day_light_switch__updated_ago) {
+        day_light_switch__updated_ago -= 1;
     }
 
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 main_light_switch__port__is_set__impl() {
-#define is_set__impl main_light_switch__port__is_set__impl
-#define set__impl main_light_switch__port__set__impl
-    return PORTA & (1 << 4);  //Get value of PORTA for A4
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl main_light_switch__port__is_set__impl
-#define set__impl main_light_switch__port__set__impl
-
-main_light_switch__port_t const main_light_switch__port = {.set = &set__impl
-                                                           ,
-                                                           .is_set = &is_set__impl
-                                                          };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl main_light_switch__port__is_set__impl
-#define set__impl main_light_switch__port__set__impl
-
-
-;
-
-#define is_set__impl main_light_switch__port__is_set__impl
-#define set__impl main_light_switch__port__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} main_light_switch__ddr_t;
-
-extern main_light_switch__ddr_t const main_light_switch__ddr;
-
-static AKAT_FORCE_INLINE void main_light_switch__ddr__set__impl(u8 state) {
-#define set__impl main_light_switch__ddr__set__impl
-
-    if (state) {
-        DDRA |= 1 << 4;  //Set DDRA of A4 to 1
-    } else {
-        DDRA &= ~(1 << 4);  //Set DDRA of A4 to 0
+    if (day_light_switch__updated_ago >= 100) {
+        day_light_switch__output.set(0);
     }
-
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 main_light_switch__ddr__is_set__impl() {
-#define is_set__impl main_light_switch__ddr__is_set__impl
-#define set__impl main_light_switch__ddr__set__impl
-    return DDRA & (1 << 4);  //Get value of DDRA for A4
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl main_light_switch__ddr__is_set__impl
-#define set__impl main_light_switch__ddr__set__impl
-
-main_light_switch__ddr_t const main_light_switch__ddr = {.set = &set__impl
-                                                         ,
-                                                         .is_set = &is_set__impl
-                                                        };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl main_light_switch__ddr__is_set__impl
-#define set__impl main_light_switch__ddr__set__impl
-
-
-;
-
-#define is_set__impl main_light_switch__ddr__is_set__impl
-#define set__impl main_light_switch__ddr__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-static AKAT_FORCE_INLINE void main_light_switch__init() {
-    main_light_switch__ddr.set(1); //Init A4 as output
 }
 
 ;
 
 
 
-
-
-typedef struct {
-    void (* const set)(u8 state);
-} main_light_switch_t;
-
-extern main_light_switch_t const main_light_switch;
-
-static AKAT_FORCE_INLINE void main_light_switch__set__impl(u8 state) {
-#define set__impl main_light_switch__set__impl
-    main_light_switch__port.set(state);
-#undef set__impl
-}
-#define set__impl main_light_switch__set__impl
-
-main_light_switch_t const main_light_switch = {.set = &set__impl
-                                              };
-
-
-#undef set__impl
-#define set__impl main_light_switch__set__impl
-
-
 ;
+// Like X_GPIO_OUTPUT$ but times out if state is not updated witjin state_timeout_deciseconds.
+// If timeout happens, then the state of pin is set to 'safe_state'
 
-#define set__impl main_light_switch__set__impl
-
-
-
-
-#undef set__impl
-;
-
-
-
-;
 typedef struct {
     void (* const set)(u8 state);
     u8 (* const is_set)();
-} night_light_switch__port_t;
+} night_light_switch__output__port_t;
 
-extern night_light_switch__port_t const night_light_switch__port;
+extern night_light_switch__output__port_t const night_light_switch__output__port;
 
-static AKAT_FORCE_INLINE void night_light_switch__port__set__impl(u8 state) {
-#define set__impl night_light_switch__port__set__impl
+static AKAT_FORCE_INLINE void night_light_switch__output__port__set__impl(u8 state) {
+#define set__impl night_light_switch__output__port__set__impl
 
     if (state) {
         PORTA |= 1 << 5;  //Set PORTA of A5 to 1
@@ -16958,32 +17009,32 @@ static AKAT_FORCE_INLINE void night_light_switch__port__set__impl(u8 state) {
 
 #undef set__impl
 }
-static AKAT_FORCE_INLINE u8 night_light_switch__port__is_set__impl() {
-#define is_set__impl night_light_switch__port__is_set__impl
-#define set__impl night_light_switch__port__set__impl
+static AKAT_FORCE_INLINE u8 night_light_switch__output__port__is_set__impl() {
+#define is_set__impl night_light_switch__output__port__is_set__impl
+#define set__impl night_light_switch__output__port__set__impl
     return PORTA & (1 << 5);  //Get value of PORTA for A5
 #undef is_set__impl
 #undef set__impl
 }
-#define is_set__impl night_light_switch__port__is_set__impl
-#define set__impl night_light_switch__port__set__impl
+#define is_set__impl night_light_switch__output__port__is_set__impl
+#define set__impl night_light_switch__output__port__set__impl
 
-night_light_switch__port_t const night_light_switch__port = {.set = &set__impl
-                                                             ,
-                                                             .is_set = &is_set__impl
-                                                            };
+night_light_switch__output__port_t const night_light_switch__output__port = {.set = &set__impl
+                                                                             ,
+                                                                             .is_set = &is_set__impl
+                                                                            };
 
 
 #undef is_set__impl
 #undef set__impl
-#define is_set__impl night_light_switch__port__is_set__impl
-#define set__impl night_light_switch__port__set__impl
+#define is_set__impl night_light_switch__output__port__is_set__impl
+#define set__impl night_light_switch__output__port__set__impl
 
 
 ;
 
-#define is_set__impl night_light_switch__port__is_set__impl
-#define set__impl night_light_switch__port__set__impl
+#define is_set__impl night_light_switch__output__port__is_set__impl
+#define set__impl night_light_switch__output__port__set__impl
 
 
 
@@ -16998,12 +17049,12 @@ night_light_switch__port_t const night_light_switch__port = {.set = &set__impl
 typedef struct {
     void (* const set)(u8 state);
     u8 (* const is_set)();
-} night_light_switch__ddr_t;
+} night_light_switch__output__ddr_t;
 
-extern night_light_switch__ddr_t const night_light_switch__ddr;
+extern night_light_switch__output__ddr_t const night_light_switch__output__ddr;
 
-static AKAT_FORCE_INLINE void night_light_switch__ddr__set__impl(u8 state) {
-#define set__impl night_light_switch__ddr__set__impl
+static AKAT_FORCE_INLINE void night_light_switch__output__ddr__set__impl(u8 state) {
+#define set__impl night_light_switch__output__ddr__set__impl
 
     if (state) {
         DDRA |= 1 << 5;  //Set DDRA of A5 to 1
@@ -17013,51 +17064,100 @@ static AKAT_FORCE_INLINE void night_light_switch__ddr__set__impl(u8 state) {
 
 #undef set__impl
 }
-static AKAT_FORCE_INLINE u8 night_light_switch__ddr__is_set__impl() {
-#define is_set__impl night_light_switch__ddr__is_set__impl
-#define set__impl night_light_switch__ddr__set__impl
+static AKAT_FORCE_INLINE u8 night_light_switch__output__ddr__is_set__impl() {
+#define is_set__impl night_light_switch__output__ddr__is_set__impl
+#define set__impl night_light_switch__output__ddr__set__impl
     return DDRA & (1 << 5);  //Get value of DDRA for A5
 #undef is_set__impl
 #undef set__impl
 }
-#define is_set__impl night_light_switch__ddr__is_set__impl
-#define set__impl night_light_switch__ddr__set__impl
+#define is_set__impl night_light_switch__output__ddr__is_set__impl
+#define set__impl night_light_switch__output__ddr__set__impl
 
-night_light_switch__ddr_t const night_light_switch__ddr = {.set = &set__impl
-                                                           ,
-                                                           .is_set = &is_set__impl
-                                                          };
+night_light_switch__output__ddr_t const night_light_switch__output__ddr = {.set = &set__impl
+                                                                           ,
+                                                                           .is_set = &is_set__impl
+                                                                          };
 
 
 #undef is_set__impl
 #undef set__impl
-#define is_set__impl night_light_switch__ddr__is_set__impl
-#define set__impl night_light_switch__ddr__set__impl
+#define is_set__impl night_light_switch__output__ddr__is_set__impl
+#define set__impl night_light_switch__output__ddr__set__impl
 
 
 ;
 
-#define is_set__impl night_light_switch__ddr__is_set__impl
-#define set__impl night_light_switch__ddr__set__impl
+#define is_set__impl night_light_switch__output__ddr__is_set__impl
+#define set__impl night_light_switch__output__ddr__set__impl
 
 
 
 
 
 #undef is_set__impl
+#undef set__impl
+;
+
+
+
+static AKAT_FORCE_INLINE void night_light_switch__output__init() {
+    night_light_switch__output__ddr.set(1); //Init A5 as output
+}
+
+;
+
+
+
+
+
+typedef struct {
+    void (* const set)(u8 state);
+} night_light_switch__output_t;
+
+extern night_light_switch__output_t const night_light_switch__output;
+
+static AKAT_FORCE_INLINE void night_light_switch__output__set__impl(u8 state) {
+#define set__impl night_light_switch__output__set__impl
+    night_light_switch__output__port.set(state);
+#undef set__impl
+}
+#define set__impl night_light_switch__output__set__impl
+
+night_light_switch__output_t const night_light_switch__output = {.set = &set__impl
+                                                                };
+
+
+#undef set__impl
+#define set__impl night_light_switch__output__set__impl
+
+
+;
+
+#define set__impl night_light_switch__output__set__impl
+
+
+
+
 #undef set__impl
 ;
 
 
 
 static AKAT_FORCE_INLINE void night_light_switch__init() {
-    night_light_switch__ddr.set(1); //Init A5 as output
+    night_light_switch__output.set(0);
 }
 
 ;
 
 
 
+
+
+static u8 night_light_switch__updated_ago = 255;
+
+;
+;
 
 
 typedef struct {
@@ -17068,7 +17168,8 @@ extern night_light_switch_t const night_light_switch;
 
 static AKAT_FORCE_INLINE void night_light_switch__set__impl(u8 state) {
 #define set__impl night_light_switch__set__impl
-    night_light_switch__port.set(state);
+    night_light_switch__output.set(state);
+    night_light_switch__updated_ago = 0;
 #undef set__impl
 }
 #define set__impl night_light_switch__set__impl
@@ -17093,20 +17194,41 @@ night_light_switch_t const night_light_switch = {.set = &set__impl
 
 
 
+
+
+static AKAT_FORCE_INLINE void night_light_switch__ticker() {
+    night_light_switch__updated_ago += 1;
+
+    if (!night_light_switch__updated_ago) {
+        night_light_switch__updated_ago -= 1;
+    }
+
+    if (night_light_switch__updated_ago >= 100) {
+        night_light_switch__output.set(0);
+    }
+}
+
 ;
 
-// Testing code ........ START
 
-static u8 xxxx = 0;
 
+;
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// Uptime
+
+static u32 uptime_deciseconds = 0;
+
+;
 ;
 
 
 
-static AKAT_FORCE_INLINE void xxxx_ticker() {
-    xxxx += 1;
-    main_light_switch.set(xxxx > 128);
-    night_light_switch.set(xxxx % 2);
+static AKAT_FORCE_INLINE void uptime_ticker() {
+    uptime_deciseconds += 1;
 }
 
 ;
@@ -17114,8 +17236,6 @@ static AKAT_FORCE_INLINE void xxxx_ticker() {
 
 
 
-
-// Testing code ........ END
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -21249,7 +21369,7 @@ akat_coroutine_l_start:
         ;
         ;
         //Gets byte from usart0_rx_bytes_buf buffer.
-//Read arg into command_arg, leaves byte after arg in the dqeueued_byte variable
+//Read arg into command_arg, leaves byte after arg in the dequeued_byte variable
         //so the caller must process it as well upon return!
 command_reading_start:
 
@@ -21288,7 +21408,7 @@ akat_coroutine_l_3:
         command_code = dequeued_byte;
 
         //Read arg and save it as copy, note that read_arg aborts
-        //when it either read foruth character in a row or a non digit character
+        //when it either read fourth character in a row or a non digit character
         //so we have to process it (dequeued_byte) when the call to read_arg returns.
         //Verify that stuff that comes after the arg is a command code again!
         do {
@@ -21388,8 +21508,12 @@ akat_coroutine_l_2:
             ;
 
             switch (command_code) {
-            case 'C': //TODO: Remove this crap!
-                usart0_rx_overflow_count = command_arg;
+            case 'D':
+                day_light_switch.set(command_arg ? 1 : 0);
+                break;
+
+            case 'N':
+                night_light_switch.set(command_arg ? 1 : 0);
                 break;
             }
         }
@@ -21421,8 +21545,9 @@ akat_coroutine_l_end:
 
 
 static AKAT_FORCE_INLINE void akat_on_every_decisecond() {
+    day_light_switch__ticker();
+    night_light_switch__ticker();
     uptime_ticker();
-    xxxx_ticker();
     activity_led();
     ds18b20_ticker();
     ds18b20_aqua__ticker();
@@ -22454,7 +22579,9 @@ AKAT_NO_RETURN void main() {
     F2_unused__init();
     F1_unused__init();
     F0_unused__init();
-    main_light_switch__init();
+    day_light_switch__output__init();
+    day_light_switch__init();
+    night_light_switch__output__init();
     night_light_switch__init();
     blue_led__init();
     watchdog_init();

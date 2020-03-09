@@ -179,19 +179,8 @@ FUNCTION$(void add_debug_byte(const u8 b), unused) {
 ////////////////////////////////////////////////////////////////////////////////
 // Control
 
-X_GPIO_OUTPUT$(main_light_switch, A4);
-X_GPIO_OUTPUT$(night_light_switch, A5);
-
-// Set safe
-FUNCTION$(void turn_all_devices_off()) {
-    main_light_switch.set(0);
-    night_light_switch.set(0);
-}
-
-// Set safe state on init
-X_INIT$(start_in_safe_state) {
-    turn_all_devices_off();
-};
+X_GPIO_SAFE_OUTPUT$(day_light_switch, A4, safe_state = 0, state_timeout_deciseconds = 100);
+X_GPIO_SAFE_OUTPUT$(night_light_switch, A5, safe_state = 0, state_timeout_deciseconds = 100);
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -497,7 +486,7 @@ THREAD$(usart0_reader) {
             usart0_rx_next_read_idx = (usart0_rx_next_read_idx + 1) & (AK_USART0_RX_BUF_SIZE - 1);
         }
 
-        // Read arg into command_arg, leaves byte after arg in the dqeueued_byte variable
+        // Read arg into command_arg, leaves byte after arg in the dequeued_byte variable
         // so the caller must process it as well upon return!
         SUB$(read_arg_and_dequeue) {
             command_arg = 0;
@@ -534,7 +523,7 @@ THREAD$(usart0_reader) {
         command_code = dequeued_byte;
 
         // Read arg and save it as copy, note that read_arg aborts
-        // when it either read foruth character in a row or a non digit character
+        // when it either read fourth character in a row or a non digit character
         // so we have to process it (dequeued_byte) when the call to read_arg returns.
         // Verify that stuff that comes after the arg is a command code again!
         CALL$(read_arg_and_dequeue);
@@ -559,8 +548,12 @@ THREAD$(usart0_reader) {
         CALL$(read_command);
 
         switch(command_code) {
-        case 'C': // TODO: Remove this crap!
-            usart0_rx_overflow_count = command_arg;
+        case 'D':
+            day_light_switch.set(command_arg ? 1 : 0);
+            break;
+
+        case 'N':
+            night_light_switch.set(command_arg ? 1 : 0);
             break;
         }
     }
