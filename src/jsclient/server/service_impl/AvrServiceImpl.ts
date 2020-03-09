@@ -10,6 +10,9 @@ import { Subject } from "rxjs";
 // We do attempt to reopen the port every this number of milliseconds.
 const AUTO_REOPEN_MILLIS = 1000;
 
+// How often we update state to AVR
+const AUTO_WRITE_MILLIS = 300;
+
 // ==========================================================================================
 
 function asAvrState(avrData: AvrData): AvrState {
@@ -93,15 +96,19 @@ export default class AvrServiceImpl extends AvrService {
     private _serialPort = new SerialPort(config.avr.port, serialPortOptions);
     private _serialPortErrorCount = 0;
     private _serialPortOpenAttemptCount = 0;
+    private _outgoingMessages = 0;
     private _incomingMessages = 0;
     private _protocolCrcErrors = 0;
     private _protocolDebugMessages = 0;
     private _protocolVersionMismatch: 0 | 1 = 0;
     private _lastAvrState?: AvrState;
+    private _canWrite = false;
 
     @postConstruct()
     _init(): void {
         this._serialPort.on("error", error => this._onSerialPortError(error));
+        this._serialPort.on("open", () => this._onSerialPortOpen());
+        this._serialPort.on("close", () => this._onSerialPortClose());
 
         // Setup reaction on new data
         const parser = this._serialPort.pipe(new SerialportReadlineParser) as NodeJS.WritableStream;
@@ -118,6 +125,41 @@ export default class AvrServiceImpl extends AvrService {
         };
 
         autoReopen();
+
+        // Tries to write new state
+        const autoWrite = () => {
+            setTimeout(autoWrite, AUTO_WRITE_MILLIS);
+            if (this._canWrite) {
+                this._write_state();
+            }
+        };
+
+        autoWrite();
+    }
+
+    private _write_state(): void {
+        if (!this._canWrite) {
+            return;
+        }
+
+        this._canWrite = false;
+
+        logger.debug("Writing");
+        this._serialPort.write("<AA>\n", undefined, () => {
+            this._canWrite = true;
+            this._outgoingMessages += 1;
+            logger.debug("Done writing");
+        });
+    }
+
+    private _onSerialPortOpen(): void {
+        logger.debug("Open");
+        this._canWrite = true;
+    }
+
+    private _onSerialPortClose(): void {
+        logger.debug("Close");
+        this._canWrite = false;
     }
 
     private _onSerialPortData(data: string): void {
@@ -164,7 +206,7 @@ export default class AvrServiceImpl extends AvrService {
         }
 
         // Parse fields
-        const vals: {[id: string]: number} = {};
+        const vals: { [id: string]: number } = {};
         for (let fieldIdx = 1; fieldIdx < fields.length - 2; fieldIdx++) {
             const field = fields[fieldIdx];
             const prefix = field[0];
@@ -191,6 +233,7 @@ export default class AvrServiceImpl extends AvrService {
     private _onSerialPortError(error: Error): void {
         logger.error("AVR: Serial port error", { error })
         this._serialPortErrorCount += 1;
+        this._canWrite = false;
 
         // It will be automatically reopened
         if (this._serialPort.isOpen) {
@@ -207,6 +250,7 @@ export default class AvrServiceImpl extends AvrService {
             protocolVersionMismatch: this._protocolVersionMismatch,
             protocolDebugMessages: this._protocolDebugMessages,
             incomingMessages: this._incomingMessages,
+            outgoingMessages: this._outgoingMessages,
             lastAvrState: this._lastAvrState
         };
     }

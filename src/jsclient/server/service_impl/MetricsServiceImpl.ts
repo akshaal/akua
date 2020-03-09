@@ -307,6 +307,11 @@ const avrIncomingMessageCountGauge = new SimpleCounter({
     help: 'Total number of messages received from AVR.'
 });
 
+const avrOutgoingMessageCountGauge = new SimpleCounter({
+    name: 'akua_avr_outgoing_messages',
+    help: 'Total number of messages sent to AVR.'
+});
+
 const avrSerialPortIsOpenGauge = new Gauge({
     name: 'akua_avr_port_is_open',
     help: '1 means that serial port is currently open, 0 means it is closed.'
@@ -466,6 +471,7 @@ export default class MetricsServiceImpl extends MetricsService {
         avrProtocolCrcErrorCountGauge.set(avrServiceState.protocolCrcErrors);
         avrProtocolDebugMessageCountGauge.set(avrServiceState.protocolDebugMessages);
         avrIncomingMessageCountGauge.set(avrServiceState.incomingMessages);
+        avrOutgoingMessageCountGauge.set(avrServiceState.outgoingMessages);
         avrSerialPortIsOpenGauge.set(avrServiceState.serialPortIsOpen);
         avrProtocolVersionMismatchGauge.set(avrServiceState.protocolVersionMismatch);
 

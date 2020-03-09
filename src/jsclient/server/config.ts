@@ -69,7 +69,7 @@ const nextion: NextionConfig = {
 }
 
 const avr: AvrConfig = {
-    port: "/dev/ttyUSB0"
+    port: process.env.AKUA_PORT || "/dev/ttyUSB0"
 }
 
 export const config: Config = {
