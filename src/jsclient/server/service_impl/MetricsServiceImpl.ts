@@ -465,7 +465,7 @@ export default class MetricsServiceImpl extends MetricsService {
 
     private _updateServiceMetrics() {
         // AVR service
-        const avrServiceState = this._avrService.getState();
+        const avrServiceState = this._avrService.getServiceState();
         avrSerialPortErrorCountGauge.set(avrServiceState.serialPortErrors);
         avrSerialPortOpenAttemptCountGauge.set(avrServiceState.serialPortOpenAttempts);
         avrProtocolCrcErrorCountGauge.set(avrServiceState.protocolCrcErrors);
