@@ -44,9 +44,17 @@ export interface AvrState {
     readonly caseTemperatureSensor: AvrTemperatureSensorState;
 }
 
+export interface AvrControlState {
+    readonly nightLightSwitchOn: boolean;
+    readonly dayLightSwitchOn: boolean;
+}
+
 @injectable()
 export default abstract class AvrService {
     readonly abstract avrState$: Observable<AvrState>;
+    readonly abstract requestedControlState$: Observable<AvrControlState>;
 
-    abstract getState(): AvrServiceState;
+    abstract getServiceState(): AvrServiceState;
+
+    abstract requestControlState(controlState: AvrControlState): void;
 }

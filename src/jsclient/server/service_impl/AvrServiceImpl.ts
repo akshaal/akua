@@ -1,5 +1,5 @@
 import { injectable, postConstruct } from "inversify";
-import AvrService, { AvrServiceState, AvrState, AvrCo2SensorState, AvrTemperatureSensorState } from "server/service/AvrService";
+import AvrService, { AvrServiceState, AvrState, AvrCo2SensorState, AvrTemperatureSensorState, AvrControlState } from "server/service/AvrService";
 import SerialPort from "serialport";
 import config from "server/config";
 import logger from "server/logger";
@@ -81,6 +81,28 @@ function calcCrc(str: string): number {
 
 // ==========================================================================================
 
+function serializeControlState(state: AvrControlState): string {
+    var result = "";
+
+    function addValue(id: 'D' | 'N', v: number): void {
+        const vStr = v ? v + "" : "";
+
+        result += "<";
+        result += id;
+        result += vStr;
+        result += id;
+        result += vStr;
+        result += ">";
+    }
+
+    addValue('D', state.dayLightSwitchOn ? 1 : 0);
+    addValue('N', state.nightLightSwitchOn ? 1 : 0);
+
+    return result;
+}
+
+// ==========================================================================================
+
 const serialPortOptions: SerialPort.OpenOptions = {
     dataBits: 8,
     parity: 'none',
@@ -92,6 +114,7 @@ const serialPortOptions: SerialPort.OpenOptions = {
 @injectable()
 export default class AvrServiceImpl extends AvrService {
     readonly avrState$ = new Subject<AvrState>();
+    readonly requestedControlState$ = new Subject<AvrControlState>();
 
     private _serialPort = new SerialPort(config.avr.port, serialPortOptions);
     private _serialPortErrorCount = 0;
@@ -103,6 +126,7 @@ export default class AvrServiceImpl extends AvrService {
     private _protocolVersionMismatch: 0 | 1 = 0;
     private _lastAvrState?: AvrState;
     private _canWrite = false;
+    private _controlStateToWrite?: AvrControlState;
 
     @postConstruct()
     _init(): void {
@@ -138,16 +162,21 @@ export default class AvrServiceImpl extends AvrService {
     }
 
     private _write_state(): void {
-        if (!this._canWrite) {
+        if (!this._canWrite || !this._controlStateToWrite) {
             return;
         }
 
         this._canWrite = false;
 
+        // Capture state to avoid possible mutation issues
+        const controlState = this._controlStateToWrite;
+        const text = serializeControlState(controlState);
+
         logger.debug("Writing");
-        this._serialPort.write("<AA>\n", undefined, () => {
+        this._serialPort.write(text, undefined, () => {
             this._canWrite = true;
             this._outgoingMessages += 1;
+            this.requestedControlState$.next(controlState);
             logger.debug("Done writing");
         });
     }
@@ -241,7 +270,7 @@ export default class AvrServiceImpl extends AvrService {
         }
     }
 
-    getState(): AvrServiceState {
+    public getServiceState(): AvrServiceState {
         return {
             serialPortErrors: this._serialPortErrorCount,
             serialPortOpenAttempts: this._serialPortOpenAttemptCount,
@@ -253,5 +282,9 @@ export default class AvrServiceImpl extends AvrService {
             outgoingMessages: this._outgoingMessages,
             lastAvrState: this._lastAvrState
         };
+    }
+
+    public requestControlState(controlState: AvrControlState): void {
+        this._controlStateToWrite = controlState;
     }
 }
