@@ -40,8 +40,10 @@ class SimpleGauge extends Gauge {
         super(config);
     }
 
-    setOrRemove(value?: number | null) {
-        if (typeof value === "number") {
+    setOrRemove(value?: number | boolean | null) {
+        if (typeof value === "boolean") {
+            this.set(value ? 1 : 0);
+        } else if (typeof value === "number") {
             this.set(value);
         } else {
             this.remove();
@@ -443,6 +445,33 @@ const co2SensorUGauge = new SimpleGauge({
 
 // ==========================================================================================
 
+const dayLightOnGauge = new SimpleGauge({
+    name: 'akua_day_light_on',
+    help: '1 means on, 0 means off.'
+});
+
+const nightLightOnGauge = new SimpleGauge({
+    name: 'akua_night_light_on',
+    help: '1 means on, 0 means off.'
+});
+
+const dayLightForcedGauge = new SimpleGauge({
+    name: 'akua_day_light_forced',
+    help: '1 means forced, 0 means not-forced.'
+});
+
+const nightLightForcedGauge = new SimpleGauge({
+    name: 'akua_night_light_forced',
+    help: '1 means forced, 0 means not-forced.'
+});
+
+const lightForcesSinceProtectionStatResetGauge = new SimpleGauge({
+    name: 'akua_light_forces_since_protection_stat_reset',
+    help: 'Number of light forces since last protection stat reset.'
+});
+
+// ==========================================================================================
+
 @injectable()
 export default class MetricsServiceImpl extends MetricsService {
     constructor(
@@ -519,8 +548,8 @@ export default class MetricsServiceImpl extends MetricsService {
         const co2 = this._co2SensorService.co2;
         co2Gauge.setOrRemove(co2?.value);
         co2SamplesGauge.setOrRemove(co2?.valueSamples);
-        co2WarmupGauge.setOrRemove(co2?.warmup ? 1 : 0);
-        co2SensorBootGauge.setOrRemove(co2?.sensorBoot ? 1 : 0);
+        co2WarmupGauge.setOrRemove(co2?.warmup);
+        co2SensorBootGauge.setOrRemove(co2?.sensorBoot);
         co2SensorUptimeSecondsGauge.setOrRemove(co2?.sensorUptimeSeconds);
         co2SensorConcentrationGauge.setOrRemove(co2?.lastSensorState?.concentration);
         co2SensorRawConcentrationGauge.setOrRemove(co2?.lastSensorState?.rawConcentration);
@@ -532,5 +561,13 @@ export default class MetricsServiceImpl extends MetricsService {
         co2SensorTemperatureGauge.setOrRemove(co2?.lastSensorState?.temperature);
         co2SensorSGauge.setOrRemove(co2?.lastSensorState?.s);
         co2SensorUGauge.setOrRemove(co2?.lastSensorState?.u);
+
+        // Light - - - - 
+        const light = avrServiceState.lastAvrState?.light;
+        dayLightOnGauge.setOrRemove(light?.dayLightOn);
+        nightLightOnGauge.setOrRemove(light?.nightLightOn);
+        dayLightForcedGauge.setOrRemove(light?.dayLightForced);
+        nightLightForcedGauge.setOrRemove(light?.nightLightForced);
+        lightForcesSinceProtectionStatResetGauge.setOrRemove(light?.lightForcesSinceProtectionStatReset);
     }
 }

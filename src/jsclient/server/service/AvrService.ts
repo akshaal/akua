@@ -13,6 +13,14 @@ export interface AvrServiceState {
     readonly lastAvrState?: AvrState;
 }
 
+export interface AvrLightState {
+    readonly dayLightOn: boolean;
+    readonly dayLightForced: boolean;
+    readonly nightLightOn: boolean;
+    readonly nightLightForced: boolean;
+    readonly lightForcesSinceProtectionStatReset: number;
+}
+
 export interface AvrTemperatureSensorState {
     readonly updateId: number;
     readonly crcErrors: number;
@@ -43,6 +51,7 @@ export interface AvrState {
     readonly co2Sensor: AvrCo2SensorState;
     readonly aquariumTemperatureSensor: AvrTemperatureSensorState;
     readonly caseTemperatureSensor: AvrTemperatureSensorState;
+    readonly light: AvrLightState;
 }
 
 export enum LightForceMode {

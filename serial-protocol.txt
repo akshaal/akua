@@ -23,3 +23,8 @@ D8: CO2 sensor: u8 co2.get_s()
 D9: CO2 sensor: u16 co2.get_u()
 D10: CO2 sensor: u8 co2.get_update_id()
 D11: CO2 sensor: u8 co2.get_updated_deciseconds_ago()
+E1: Light: u8 day_light_switch.is_set() ? 1 : 0
+E2: Light: u8 night_light_switch.is_set() ? 1 : 0
+E3: Light: u8 day_light_forced.is_set() ? 1 : 0
+E4: Light: u8 night_light_forced.is_set() ? 1 : 0
+E5: Light: u8 light_forces_since_protection_stat_reset

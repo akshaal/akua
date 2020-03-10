@@ -15,6 +15,9 @@
 // Number of debug bytes (data is written with '>' prefix into USART0)
 #define AK_DEBUG_BUF_SIZE     64
 
+// Maximum number of light forces within one hour
+#define AK_MAX_LIGHT_FORCES_WITHIN_ONE_HOUR 10
+
 // 16Mhz, that's external oscillator on Mega 2560.
 // This doesn't configure it here, it just tells to our build system
 // what we is actually using! Configuration is done using fuses (see flash-avr-fuses).
@@ -25,6 +28,8 @@ X_CPU$(cpu_freq = 16000000);
 
 static const char HEX[16] = "0123456789abcdef";
 
+// Must be the same enum as the enum in typescript with the same name
+typedef enum {NotForced = 0, Day = 1, Night = 2} LightForceMode;
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -207,6 +212,42 @@ X_EVERY_DECISECOND$(performance_ticker) {
 
 X_GPIO_SAFE_OUTPUT$(day_light_switch, A4, safe_state = 0, state_timeout_deciseconds = 100);
 X_GPIO_SAFE_OUTPUT$(night_light_switch, A5, safe_state = 0, state_timeout_deciseconds = 100);
+
+GLOBAL$() {
+    // Protects against spam / malfunction / misuse
+    STATIC_VAR$(u8 light_forces_since_protection_stat_reset);
+}
+
+// Forced states
+X_FLAG_WITH_TIMEOUT$(day_light_forced, timeout = 10, unit = minutes);
+X_FLAG_WITH_TIMEOUT$(night_light_forced, timeout = 10, unit = minutes);
+
+X_EVERY_HOUR$(reset_protection_stats) {
+    light_forces_since_protection_stat_reset = 0;
+}
+
+FUNCTION$(void force_light(const LightForceMode mode)) {
+    if (mode == NotForced) {
+        day_light_forced.set(0);
+        night_light_forced.set(0);
+        return;
+    }
+
+    if (light_forces_since_protection_stat_reset >= AK_MAX_LIGHT_FORCES_WITHIN_ONE_HOUR) {
+        return;
+    }
+
+    if (mode == Day) {
+        day_light_forced.set(1);
+        night_light_forced.set(0);
+        return;
+    }
+
+    day_light_forced.set(0);
+    night_light_forced.set(1);
+
+    light_forces_since_protection_stat_reset += 1;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -472,6 +513,14 @@ THREAD$(usart0_writer, state_type = u8) {
                       u8 co2.get_update_id(),
                       u8 co2.get_updated_deciseconds_ago());
 
+        WRITE_STATUS$("Light",
+                      E,
+                      u8 day_light_switch.is_set() ? 1 : 0,
+                      u8 night_light_switch.is_set() ? 1 : 0,
+                      u8 day_light_forced.is_set() ? 1 : 0,
+                      u8 night_light_forced.is_set() ? 1 : 0,
+                      u8 light_forces_since_protection_stat_reset);
+
         // Protocol version
         byte_to_send = ' '; CALL$(send_byte);
         u8_to_format_and_send = AK_PROTOCOL_VERSION; CALL$(format_and_send_u8);
@@ -575,17 +624,12 @@ THREAD$(usart0_reader) {
         CALL$(read_command);
 
         switch(command_code) {
-        case 'D':
-            day_light_switch.set(command_arg ? 1 : 0);
-            break;
-
-        case 'N':
-            night_light_switch.set(command_arg ? 1 : 0);
+        case 'L':
+            force_light(command_arg);
             break;
         }
     }
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////

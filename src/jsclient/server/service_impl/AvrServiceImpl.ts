@@ -1,5 +1,5 @@
 import { injectable, postConstruct } from "inversify";
-import AvrService, { AvrServiceState, AvrState, AvrCo2SensorState, AvrTemperatureSensorState, LightForceMode } from "server/service/AvrService";
+import AvrService, { AvrServiceState, AvrState, AvrCo2SensorState, AvrTemperatureSensorState, LightForceMode, AvrLightState } from "server/service/AvrService";
 import SerialPort from "serialport";
 import config from "server/config";
 import logger from "server/logger";
@@ -46,6 +46,14 @@ function asAvrState(avrData: AvrData): AvrState {
         updatedSecondsAgo: avrData["u8 ds18b20_case.get_updated_deciseconds_ago()"] / 10.0,
     };
 
+    const light: AvrLightState = {
+        dayLightOn: !!avrData["u8 day_light_switch.is_set() ? 1 : 0"],
+        nightLightOn: !!avrData["u8 night_light_switch.is_set() ? 1 : 0"],
+        dayLightForced: !!avrData["u8 day_light_forced.is_set() ? 1 : 0"],
+        nightLightForced: !!avrData["u8 night_light_forced.is_set() ? 1 : 0"],
+        lightForcesSinceProtectionStatReset: avrData["u8 light_forces_since_protection_stat_reset"]
+    };
+
     return {
         uptimeSeconds: avrData["u32 uptime_deciseconds"] / 10.0,
         mainLoopIterationsInLastDecisecond: avrData["u32 main_loop_iterations_in_last_decisecond"],
@@ -53,7 +61,8 @@ function asAvrState(avrData: AvrData): AvrState {
         usbRxOverflows: avrData["u8 usart0_rx_overflow_count"],
         co2Sensor,
         aquariumTemperatureSensor,
-        caseTemperatureSensor
+        caseTemperatureSensor,
+        light
     };
 }
 

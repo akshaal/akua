@@ -379,6 +379,9 @@ static AKAT_UNUSED AKAT_PURE u8 akat_x_tm1637_encode_digit(u8 const digit, u8 co
 // Number of debug bytes (data is written with '>' prefix into USART0)
 #define AK_DEBUG_BUF_SIZE     64
 
+// Maximum number of light forces within one hour
+#define AK_MAX_LIGHT_FORCES_WITHIN_ONE_HOUR 10
+
 // 16Mhz, that's external oscillator on Mega 2560.
 // This doesn't configure it here, it just tells to our build system
 // what we is actually using! Configuration is done using fuses (see flash-avr-fuses).
@@ -392,6 +395,8 @@ static AKAT_FORCE_INLINE AKAT_CONST uint32_t akat_cpu_freq_hz() {
 
 static const char HEX[16] = "0123456789abcdef";
 
+// Must be the same enum as the enum in typescript with the same name
+typedef enum {NotForced = 0, Day = 1, Night = 2} LightForceMode;
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -16930,6 +16935,7 @@ static AKAT_FORCE_INLINE void day_light_switch__output__init() {
 
 typedef struct {
     void (* const set)(u8 state);
+    u8 (* const is_set)();
 } day_light_switch__output_t;
 
 extern day_light_switch__output_t const day_light_switch__output;
@@ -16939,23 +16945,38 @@ static AKAT_FORCE_INLINE void day_light_switch__output__set__impl(u8 state) {
     day_light_switch__output__port.set(state);
 #undef set__impl
 }
+static AKAT_FORCE_INLINE u8 day_light_switch__output__is_set__impl() {
+#define is_set__impl day_light_switch__output__is_set__impl
+#define set__impl day_light_switch__output__set__impl
+    return day_light_switch__output__port.is_set();
+#undef is_set__impl
+#undef set__impl
+}
+#define is_set__impl day_light_switch__output__is_set__impl
 #define set__impl day_light_switch__output__set__impl
 
 day_light_switch__output_t const day_light_switch__output = {.set = &set__impl
+                                                             ,
+                                                             .is_set = &is_set__impl
                                                             };
 
 
+#undef is_set__impl
 #undef set__impl
+#define is_set__impl day_light_switch__output__is_set__impl
 #define set__impl day_light_switch__output__set__impl
 
 
 ;
 
+#define is_set__impl day_light_switch__output__is_set__impl
 #define set__impl day_light_switch__output__set__impl
 
 
 
 
+
+#undef is_set__impl
 #undef set__impl
 ;
 
@@ -16979,6 +17000,7 @@ static u8 day_light_switch__updated_ago = 255;
 
 typedef struct {
     void (* const set)(u8 state);
+    u8 (* const is_set)();
 } day_light_switch_t;
 
 extern day_light_switch_t const day_light_switch;
@@ -16989,23 +17011,38 @@ static AKAT_FORCE_INLINE void day_light_switch__set__impl(u8 state) {
     day_light_switch__updated_ago = 0;
 #undef set__impl
 }
+static AKAT_FORCE_INLINE u8 day_light_switch__is_set__impl() {
+#define is_set__impl day_light_switch__is_set__impl
+#define set__impl day_light_switch__set__impl
+    return day_light_switch__output.is_set();
+#undef is_set__impl
+#undef set__impl
+}
+#define is_set__impl day_light_switch__is_set__impl
 #define set__impl day_light_switch__set__impl
 
 day_light_switch_t const day_light_switch = {.set = &set__impl
+                                             ,
+                                             .is_set = &is_set__impl
                                             };
 
 
+#undef is_set__impl
 #undef set__impl
+#define is_set__impl day_light_switch__is_set__impl
 #define set__impl day_light_switch__set__impl
 
 
 ;
 
+#define is_set__impl day_light_switch__is_set__impl
 #define set__impl day_light_switch__set__impl
 
 
 
 
+
+#undef is_set__impl
 #undef set__impl
 ;
 
@@ -17155,6 +17192,7 @@ static AKAT_FORCE_INLINE void night_light_switch__output__init() {
 
 typedef struct {
     void (* const set)(u8 state);
+    u8 (* const is_set)();
 } night_light_switch__output_t;
 
 extern night_light_switch__output_t const night_light_switch__output;
@@ -17164,23 +17202,38 @@ static AKAT_FORCE_INLINE void night_light_switch__output__set__impl(u8 state) {
     night_light_switch__output__port.set(state);
 #undef set__impl
 }
+static AKAT_FORCE_INLINE u8 night_light_switch__output__is_set__impl() {
+#define is_set__impl night_light_switch__output__is_set__impl
+#define set__impl night_light_switch__output__set__impl
+    return night_light_switch__output__port.is_set();
+#undef is_set__impl
+#undef set__impl
+}
+#define is_set__impl night_light_switch__output__is_set__impl
 #define set__impl night_light_switch__output__set__impl
 
 night_light_switch__output_t const night_light_switch__output = {.set = &set__impl
+                                                                 ,
+                                                                 .is_set = &is_set__impl
                                                                 };
 
 
+#undef is_set__impl
 #undef set__impl
+#define is_set__impl night_light_switch__output__is_set__impl
 #define set__impl night_light_switch__output__set__impl
 
 
 ;
 
+#define is_set__impl night_light_switch__output__is_set__impl
 #define set__impl night_light_switch__output__set__impl
 
 
 
 
+
+#undef is_set__impl
 #undef set__impl
 ;
 
@@ -17204,6 +17257,7 @@ static u8 night_light_switch__updated_ago = 255;
 
 typedef struct {
     void (* const set)(u8 state);
+    u8 (* const is_set)();
 } night_light_switch_t;
 
 extern night_light_switch_t const night_light_switch;
@@ -17214,23 +17268,38 @@ static AKAT_FORCE_INLINE void night_light_switch__set__impl(u8 state) {
     night_light_switch__updated_ago = 0;
 #undef set__impl
 }
+static AKAT_FORCE_INLINE u8 night_light_switch__is_set__impl() {
+#define is_set__impl night_light_switch__is_set__impl
+#define set__impl night_light_switch__set__impl
+    return night_light_switch__output.is_set();
+#undef is_set__impl
+#undef set__impl
+}
+#define is_set__impl night_light_switch__is_set__impl
 #define set__impl night_light_switch__set__impl
 
 night_light_switch_t const night_light_switch = {.set = &set__impl
+                                                 ,
+                                                 .is_set = &is_set__impl
                                                 };
 
 
+#undef is_set__impl
 #undef set__impl
+#define is_set__impl night_light_switch__is_set__impl
 #define set__impl night_light_switch__set__impl
 
 
 ;
 
+#define is_set__impl night_light_switch__is_set__impl
 #define set__impl night_light_switch__set__impl
 
 
 
 
+
+#undef is_set__impl
 #undef set__impl
 ;
 
@@ -17255,6 +17324,278 @@ static AKAT_FORCE_INLINE void night_light_switch__ticker() {
 
 
 ;
+
+static u8 light_forces_since_protection_stat_reset = 0;
+
+//Protects against spam /malfunction /misuse
+;
+;
+
+
+// Forced states
+static u8 day_light_forced__v = 0;
+static u8 day_light_forced__countdown = 0;
+
+;
+;
+;
+
+
+typedef struct {
+    void (* const set)(u8 state);
+    u8 (* const is_set)();
+} day_light_forced_t;
+
+extern day_light_forced_t const day_light_forced;
+
+static AKAT_FORCE_INLINE void day_light_forced__set__impl(u8 state) {
+#define set__impl day_light_forced__set__impl
+    day_light_forced__v = state;
+    day_light_forced__countdown = 10;
+#undef set__impl
+}
+static AKAT_FORCE_INLINE u8 day_light_forced__is_set__impl() {
+#define is_set__impl day_light_forced__is_set__impl
+#define set__impl day_light_forced__set__impl
+    return day_light_forced__v;
+#undef is_set__impl
+#undef set__impl
+}
+#define is_set__impl day_light_forced__is_set__impl
+#define set__impl day_light_forced__set__impl
+
+day_light_forced_t const day_light_forced = {.set = &set__impl
+                                             ,
+                                             .is_set = &is_set__impl
+                                            };
+
+
+#undef is_set__impl
+#undef set__impl
+#define is_set__impl day_light_forced__is_set__impl
+#define set__impl day_light_forced__set__impl
+
+
+;
+
+#define is_set__impl day_light_forced__is_set__impl
+#define set__impl day_light_forced__set__impl
+
+
+
+
+
+#undef is_set__impl
+#undef set__impl
+;
+
+
+
+
+
+static AKAT_FORCE_INLINE void akat_on_every_minute();
+
+static u8 akat_every_minute_counter = 60;
+
+;
+;
+
+
+
+static AKAT_FORCE_INLINE void akat_on_every_second();
+
+static u8 akat_every_second_counter = 10;
+
+;
+;
+
+
+
+static AKAT_FORCE_INLINE void akat_every_second_decisecond_handler() {
+    akat_every_second_counter -= 1;
+
+    if (akat_every_second_counter == 0) {
+        akat_every_second_counter = 10;
+        akat_on_every_second();
+    }
+}
+
+;
+
+
+
+
+
+
+static AKAT_FORCE_INLINE void akat_every_minute_second_handler() {
+    akat_every_minute_counter -= 1;
+
+    if (akat_every_minute_counter == 0) {
+        akat_every_minute_counter = 60;
+        akat_on_every_minute();
+    }
+}
+
+;
+
+
+
+
+
+
+static AKAT_FORCE_INLINE void day_light_forced__reset_checker() {
+    if (day_light_forced__v) {
+        day_light_forced__countdown -= 1;
+
+        if (!day_light_forced__countdown) {
+            day_light_forced__v = 0;
+        }
+    }
+}
+
+;
+
+
+
+;
+static u8 night_light_forced__v = 0;
+static u8 night_light_forced__countdown = 0;
+
+;
+;
+;
+
+
+typedef struct {
+    void (* const set)(u8 state);
+    u8 (* const is_set)();
+} night_light_forced_t;
+
+extern night_light_forced_t const night_light_forced;
+
+static AKAT_FORCE_INLINE void night_light_forced__set__impl(u8 state) {
+#define set__impl night_light_forced__set__impl
+    night_light_forced__v = state;
+    night_light_forced__countdown = 10;
+#undef set__impl
+}
+static AKAT_FORCE_INLINE u8 night_light_forced__is_set__impl() {
+#define is_set__impl night_light_forced__is_set__impl
+#define set__impl night_light_forced__set__impl
+    return night_light_forced__v;
+#undef is_set__impl
+#undef set__impl
+}
+#define is_set__impl night_light_forced__is_set__impl
+#define set__impl night_light_forced__set__impl
+
+night_light_forced_t const night_light_forced = {.set = &set__impl
+                                                 ,
+                                                 .is_set = &is_set__impl
+                                                };
+
+
+#undef is_set__impl
+#undef set__impl
+#define is_set__impl night_light_forced__is_set__impl
+#define set__impl night_light_forced__set__impl
+
+
+;
+
+#define is_set__impl night_light_forced__is_set__impl
+#define set__impl night_light_forced__set__impl
+
+
+
+
+
+#undef is_set__impl
+#undef set__impl
+;
+
+
+
+
+
+static AKAT_FORCE_INLINE void night_light_forced__reset_checker() {
+    if (night_light_forced__v) {
+        night_light_forced__countdown -= 1;
+
+        if (!night_light_forced__countdown) {
+            night_light_forced__v = 0;
+        }
+    }
+}
+
+;
+
+
+
+;
+
+
+static AKAT_FORCE_INLINE void akat_on_every_hour();
+
+static u8 akat_every_hour_counter = 60;
+
+;
+;
+
+
+
+static AKAT_FORCE_INLINE void akat_every_hour_minute_handler() {
+    akat_every_hour_counter -= 1;
+
+    if (akat_every_hour_counter == 0) {
+        akat_every_hour_counter = 60;
+        akat_on_every_hour();
+    }
+}
+
+;
+
+
+
+
+
+
+static AKAT_FORCE_INLINE void reset_protection_stats() {
+    light_forces_since_protection_stat_reset = 0;
+}
+
+;
+
+
+
+
+
+static void force_light(const LightForceMode mode) {
+    if (mode == NotForced) {
+        day_light_forced.set(0);
+        night_light_forced.set(0);
+        return;
+    }
+
+    if (light_forces_since_protection_stat_reset >= AK_MAX_LIGHT_FORCES_WITHIN_ONE_HOUR) {
+        return;
+    }
+
+    if (mode == Day) {
+        day_light_forced.set(1);
+        night_light_forced.set(0);
+        return;
+    }
+
+    day_light_forced.set(0);
+    night_light_forced.set(1);
+    light_forces_since_protection_stat_reset += 1;
+}
+
+;
+
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -17407,6 +17748,7 @@ static AKAT_FORCE_INLINE void blue_led__init() {
 
 typedef struct {
     void (* const set)(u8 state);
+    u8 (* const is_set)();
 } blue_led_t;
 
 extern blue_led_t const blue_led;
@@ -17416,23 +17758,38 @@ static AKAT_FORCE_INLINE void blue_led__set__impl(u8 state) {
     blue_led__port.set(state);
 #undef set__impl
 }
+static AKAT_FORCE_INLINE u8 blue_led__is_set__impl() {
+#define is_set__impl blue_led__is_set__impl
+#define set__impl blue_led__set__impl
+    return blue_led__port.is_set();
+#undef is_set__impl
+#undef set__impl
+}
+#define is_set__impl blue_led__is_set__impl
 #define set__impl blue_led__set__impl
 
 blue_led_t const blue_led = {.set = &set__impl
+                                    ,
+                             .is_set = &is_set__impl
                             };
 
 
+#undef is_set__impl
 #undef set__impl
+#define is_set__impl blue_led__is_set__impl
 #define set__impl blue_led__set__impl
 
 
 ;
 
+#define is_set__impl blue_led__is_set__impl
 #define set__impl blue_led__set__impl
 
 
 
 
+
+#undef is_set__impl
 #undef set__impl
 ;
 
@@ -20271,6 +20628,39 @@ static AKAT_FORCE_INLINE void usart0_writer() {
 
     case 65:
         goto akat_coroutine_l_65;
+
+    case 66:
+        goto akat_coroutine_l_66;
+
+    case 67:
+        goto akat_coroutine_l_67;
+
+    case 68:
+        goto akat_coroutine_l_68;
+
+    case 69:
+        goto akat_coroutine_l_69;
+
+    case 70:
+        goto akat_coroutine_l_70;
+
+    case 71:
+        goto akat_coroutine_l_71;
+
+    case 72:
+        goto akat_coroutine_l_72;
+
+    case 73:
+        goto akat_coroutine_l_73;
+
+    case 74:
+        goto akat_coroutine_l_74;
+
+    case 75:
+        goto akat_coroutine_l_75;
+
+    case 76:
+        goto akat_coroutine_l_76;
     }
 
 akat_coroutine_l_start:
@@ -21130,7 +21520,6 @@ akat_coroutine_l_59:
 
             ;
             ;
-            //Protocol version
             byte_to_send = ' ';
 
             do {
@@ -21143,11 +21532,170 @@ akat_coroutine_l_60:
             } while (0);
 
             ;
-            u8_to_format_and_send = 0x2c;
+            byte_to_send = 'E';
 
             do {
                 akat_coroutine_state = 61;
 akat_coroutine_l_61:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: E1: Light: u8 day_light_switch.is_set() ? 1 : 0
+              TS_PROTO_TYPE: "u8 day_light_switch.is_set() ? 1 : 0": number,
+              TS_PROTO_ASSIGN: "u8 day_light_switch.is_set() ? 1 : 0": vals["E1"],
+            */
+            u8_to_format_and_send = day_light_switch.is_set() ? 1 : 0;
+
+            do {
+                akat_coroutine_state = 62;
+akat_coroutine_l_62:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 63;
+akat_coroutine_l_63:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: E2: Light: u8 night_light_switch.is_set() ? 1 : 0
+              TS_PROTO_TYPE: "u8 night_light_switch.is_set() ? 1 : 0": number,
+              TS_PROTO_ASSIGN: "u8 night_light_switch.is_set() ? 1 : 0": vals["E2"],
+            */
+            u8_to_format_and_send = night_light_switch.is_set() ? 1 : 0;
+
+            do {
+                akat_coroutine_state = 64;
+akat_coroutine_l_64:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 65;
+akat_coroutine_l_65:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: E3: Light: u8 day_light_forced.is_set() ? 1 : 0
+              TS_PROTO_TYPE: "u8 day_light_forced.is_set() ? 1 : 0": number,
+              TS_PROTO_ASSIGN: "u8 day_light_forced.is_set() ? 1 : 0": vals["E3"],
+            */
+            u8_to_format_and_send = day_light_forced.is_set() ? 1 : 0;
+
+            do {
+                akat_coroutine_state = 66;
+akat_coroutine_l_66:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 67;
+akat_coroutine_l_67:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: E4: Light: u8 night_light_forced.is_set() ? 1 : 0
+              TS_PROTO_TYPE: "u8 night_light_forced.is_set() ? 1 : 0": number,
+              TS_PROTO_ASSIGN: "u8 night_light_forced.is_set() ? 1 : 0": vals["E4"],
+            */
+            u8_to_format_and_send = night_light_forced.is_set() ? 1 : 0;
+
+            do {
+                akat_coroutine_state = 68;
+akat_coroutine_l_68:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 69;
+akat_coroutine_l_69:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: E5: Light: u8 light_forces_since_protection_stat_reset
+              TS_PROTO_TYPE: "u8 light_forces_since_protection_stat_reset": number,
+              TS_PROTO_ASSIGN: "u8 light_forces_since_protection_stat_reset": vals["E5"],
+            */
+            u8_to_format_and_send = light_forces_since_protection_stat_reset;
+
+            do {
+                akat_coroutine_state = 70;
+akat_coroutine_l_70:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            ;
+            //Protocol version
+            byte_to_send = ' ';
+
+            do {
+                akat_coroutine_state = 71;
+akat_coroutine_l_71:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            u8_to_format_and_send = 0xe8;
+
+            do {
+                akat_coroutine_state = 72;
+akat_coroutine_l_72:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21159,8 +21707,8 @@ akat_coroutine_l_61:
             byte_to_send = ' ';
 
             do {
-                akat_coroutine_state = 62;
-akat_coroutine_l_62:
+                akat_coroutine_state = 73;
+akat_coroutine_l_73:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21171,8 +21719,8 @@ akat_coroutine_l_62:
             u8_to_format_and_send = crc;
 
             do {
-                akat_coroutine_state = 63;
-akat_coroutine_l_63:
+                akat_coroutine_state = 74;
+akat_coroutine_l_74:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21184,8 +21732,8 @@ akat_coroutine_l_63:
             byte_to_send = '\r';
 
             do {
-                akat_coroutine_state = 64;
-akat_coroutine_l_64:
+                akat_coroutine_state = 75;
+akat_coroutine_l_75:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21196,8 +21744,8 @@ akat_coroutine_l_64:
             byte_to_send = '\n';
 
             do {
-                akat_coroutine_state = 65;
-akat_coroutine_l_65:
+                akat_coroutine_state = 76;
+akat_coroutine_l_76:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21585,12 +22133,8 @@ akat_coroutine_l_2:
             ;
 
             switch (command_code) {
-            case 'D':
-                day_light_switch.set(command_arg ? 1 : 0);
-                break;
-
-            case 'N':
-                night_light_switch.set(command_arg ? 1 : 0);
+            case 'L':
+                force_light(command_arg);
                 break;
             }
         }
@@ -21613,7 +22157,6 @@ akat_coroutine_l_end:
 
 
 
-
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -21625,6 +22168,7 @@ static AKAT_FORCE_INLINE void akat_on_every_decisecond() {
     performance_ticker();
     day_light_switch__ticker();
     night_light_switch__ticker();
+    akat_every_second_decisecond_handler();
     uptime_ticker();
     activity_led();
     ds18b20_ticker();
@@ -21647,6 +22191,23 @@ static AKAT_FORCE_INLINE void timer1() {
 
 
 ;
+
+
+static AKAT_FORCE_INLINE void akat_on_every_minute() {
+    day_light_forced__reset_checker();
+    night_light_forced__reset_checker();
+    akat_every_hour_minute_handler();
+}
+
+
+static AKAT_FORCE_INLINE void akat_on_every_second() {
+    akat_every_minute_second_handler();
+}
+
+
+static AKAT_FORCE_INLINE void akat_on_every_hour() {
+    reset_protection_stats();
+}
 
 // Performs temperature measurements for sensors registered with X_DS18S20$ macro.
 // We measure temperature for several sensors at the same time without blocking other threads as much as possible
