@@ -45,6 +45,6 @@
     "nodemon": "^2.0.2",
     "npm-upgrade": "^2.0.2",
     "ts-node": "^8.6.2",
-    "typescript": "3.8.0-beta"
+    "typescript": "3.8.3"
   }
 }

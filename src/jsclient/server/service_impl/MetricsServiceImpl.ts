@@ -1,4 +1,4 @@
-import { injectable } from "inversify";
+import { injectable, postConstruct } from "inversify";
 import { Gauge, register, Summary, Counter } from 'prom-client';
 import perfHooks from 'perf_hooks';
 import config from "server/config";
@@ -267,6 +267,14 @@ function updateLoggingMetrics() {
 
 // ==========================================================================================
 
+const avrMainLoopDecisecondIterationsSummary = new Summary({
+    name: 'akua_avr_main_loop_decisecond_iterations_summary',
+    help: "Number of iterations of AVR's main loop within one decisecond.",
+    maxAgeSeconds: 60,
+    ageBuckets: 5,
+    percentiles: [0.1, 0.25, 0.5, 0.75, 0.9, 0.99, 0.999]
+});
+
 const avrUptimeSecondsGauge = new SimpleCounter({
     name: 'akua_avr_uptime_seconds',
     help: 'Uptime seconds as returned by AVR (might be inaccurate as there is no RTC there).'
@@ -443,6 +451,20 @@ export default class MetricsServiceImpl extends MetricsService {
         private _co2SensorService: Co2SensorService
     ) {
         super();
+    }
+
+    @postConstruct()
+    _init() {
+        // Update summaries
+        var lastObservedUptime: number | undefined;
+
+        this._avrService.avrState$.subscribe(avrState => {
+            // Observe data that's really updated every decisecond
+            if (lastObservedUptime != avrState.uptimeSeconds) {
+                avrMainLoopDecisecondIterationsSummary.observe(avrState.mainLoopIterationsInLastDecisecond);
+                lastObservedUptime = avrState.uptimeSeconds;
+            }
+        });
     }
 
     public observeSimpleMeasurement(target: string, delta: [number, number]): void {

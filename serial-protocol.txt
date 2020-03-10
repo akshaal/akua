@@ -1,6 +1,7 @@
 A1: Misc: u32 uptime_deciseconds
 A2: Misc: u8 debug_overflow_count
 A3: Misc: u8 usart0_rx_overflow_count
+A4: Misc: u32 main_loop_iterations_in_last_decisecond
 B1: Aquarium temperature sensor: u8 ds18b20_aqua.get_crc_errors()
 B2: Aquarium temperature sensor: u8 ds18b20_aqua.get_disconnects()
 B3: Aquarium temperature sensor: u16 ds18b20_aqua.get_temperatureX16()

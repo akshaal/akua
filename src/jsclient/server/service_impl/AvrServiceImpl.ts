@@ -48,6 +48,7 @@ function asAvrState(avrData: AvrData): AvrState {
 
     return {
         uptimeSeconds: avrData["u32 uptime_deciseconds"] / 10.0,
+        mainLoopIterationsInLastDecisecond: avrData["u32 main_loop_iterations_in_last_decisecond"],
         debugOverflows: avrData["u8 debug_overflow_count"],
         usbRxOverflows: avrData["u8 usart0_rx_overflow_count"],
         co2Sensor,

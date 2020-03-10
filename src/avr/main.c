@@ -177,6 +177,32 @@ FUNCTION$(void add_debug_byte(const u8 b), unused) {
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+// Performance counter
+
+// Measure how many iteration we are able to perform between decisecond ticks
+// We use internal counter which we increment in every iteration of main loop
+// and then we copy the counter to main_loop_iterations_in_last_decisecond
+// every decisecond and reset the internal counter.
+// Lowe the value in main_loop_iterations_in_last_decisecond, busyier the loop!
+
+GLOBAL$() {
+    STATIC_VAR$(u32 __current_main_loop_iterations);
+    STATIC_VAR$(u32 main_loop_iterations_in_last_decisecond);
+}
+
+RUNNABLE$(performance_runnable) {
+    __current_main_loop_iterations += 1;
+}
+
+X_EVERY_DECISECOND$(performance_ticker) {
+    main_loop_iterations_in_last_decisecond = __current_main_loop_iterations;
+    __current_main_loop_iterations = 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // Control
 
 X_GPIO_SAFE_OUTPUT$(day_light_switch, A4, safe_state = 0, state_timeout_deciseconds = 100);
@@ -413,7 +439,8 @@ THREAD$(usart0_writer, state_type = u8) {
                       A,
                       u32 uptime_deciseconds,
                       u8 debug_overflow_count,
-                      u8 usart0_rx_overflow_count);
+                      u8 usart0_rx_overflow_count,
+                      u32 main_loop_iterations_in_last_decisecond);
 
         WRITE_STATUS$("Aquarium temperature sensor",
                       B,
