@@ -1,5 +1,5 @@
 import { injectable, postConstruct } from "inversify";
-import AvrService, { AvrServiceState, AvrState, AvrCo2SensorState, AvrTemperatureSensorState, AvrControlState } from "server/service/AvrService";
+import AvrService, { AvrServiceState, AvrState, AvrCo2SensorState, AvrTemperatureSensorState, LightForceMode } from "server/service/AvrService";
 import SerialPort from "serialport";
 import config from "server/config";
 import logger from "server/logger";
@@ -11,7 +11,7 @@ import { Subject } from "rxjs";
 const AUTO_REOPEN_MILLIS = 1000;
 
 // How often we update state to AVR
-const AUTO_WRITE_MILLIS = 300;
+const AUTO_WRITE_MILLIS = 100;
 
 // ==========================================================================================
 
@@ -82,10 +82,14 @@ function calcCrc(str: string): number {
 
 // ==========================================================================================
 
-function serializeControlState(state: AvrControlState): string {
+function serializeCommands(commands: { lightForceMode?: LightForceMode }): string {
     var result = "";
 
-    function addValue(id: 'D' | 'N', v: number): void {
+    function addValue(id: 'L', v?: number): void {
+        if (typeof v === "undefined") {
+            return;
+        }
+
         const vStr = v ? v + "" : "";
 
         result += "<";
@@ -96,8 +100,7 @@ function serializeControlState(state: AvrControlState): string {
         result += ">";
     }
 
-    addValue('D', state.dayLightSwitchOn ? 1 : 0);
-    addValue('N', state.nightLightSwitchOn ? 1 : 0);
+    addValue('L', commands.lightForceMode);
 
     return result;
 }
@@ -112,10 +115,23 @@ const serialPortOptions: SerialPort.OpenOptions = {
     autoOpen: false
 };
 
+// ==========================================================================================
+
+// Run given function every number of milliseconds
+function recurrent(milliseconds: number, f: () => void): void {
+    function scheduleAndRun(): void {
+        setTimeout(scheduleAndRun, milliseconds);
+        f();
+    }
+
+    scheduleAndRun();
+}
+
+// ==========================================================================================
+
 @injectable()
 export default class AvrServiceImpl extends AvrService {
     readonly avrState$ = new Subject<AvrState>();
-    readonly requestedControlState$ = new Subject<AvrControlState>();
 
     private _serialPort = new SerialPort(config.avr.port, serialPortOptions);
     private _serialPortErrorCount = 0;
@@ -127,7 +143,7 @@ export default class AvrServiceImpl extends AvrService {
     private _protocolVersionMismatch: 0 | 1 = 0;
     private _lastAvrState?: AvrState;
     private _canWrite = false;
-    private _controlStateToWrite?: AvrControlState;
+    private _lightForceMode?: LightForceMode;
 
     @postConstruct()
     _init(): void {
@@ -139,45 +155,46 @@ export default class AvrServiceImpl extends AvrService {
         const parser = this._serialPort.pipe(new SerialportReadlineParser) as NodeJS.WritableStream;
         parser.on("data", data => this._onSerialPortData(data));
 
-        // Try to open and schedule ourself
-        const autoReopen = () => {
-            setTimeout(autoReopen, AUTO_REOPEN_MILLIS);
+        // Tries to open port if closed
+        recurrent(AUTO_REOPEN_MILLIS, () => {
             if (this._serialPort.isOpen) {
                 return;
             }
             this._serialPort.open();
             this._serialPortOpenAttemptCount += 1;
-        };
+        });
 
-        autoReopen();
-
-        // Tries to write new state
-        const autoWrite = () => {
-            setTimeout(autoWrite, AUTO_WRITE_MILLIS);
-            if (this._canWrite) {
-                this._write_state();
-            }
-        };
-
-        autoWrite();
+        // Send commands to AVR
+        recurrent(AUTO_WRITE_MILLIS, () => this._write_commands());
     }
 
-    private _write_state(): void {
-        if (!this._canWrite || !this._controlStateToWrite) {
+    // Write commands if needed, this is called recurrently
+    private _write_commands(): void {
+        if (!this._canWrite) {
             return;
         }
 
+        // Create commands, this will return empty string if no commands needed
+        const text = serializeCommands({
+            lightForceMode: this._lightForceMode
+        });
+
+        // Don't try to write if there is nothing to write
+        if (text == "") {
+            return;
+        }
+
+        // Assume that we have sent it...
+        this._lightForceMode = undefined;
+
+        // Set us into busy mode
         this._canWrite = false;
 
-        // Capture state to avoid possible mutation issues
-        const controlState = this._controlStateToWrite;
-        const text = serializeControlState(controlState);
-
+        // Actually write
         logger.debug("Writing");
         this._serialPort.write(text, undefined, () => {
             this._canWrite = true;
             this._outgoingMessages += 1;
-            this.requestedControlState$.next(controlState);
             logger.debug("Done writing");
         });
     }
@@ -281,11 +298,13 @@ export default class AvrServiceImpl extends AvrService {
             protocolDebugMessages: this._protocolDebugMessages,
             incomingMessages: this._incomingMessages,
             outgoingMessages: this._outgoingMessages,
-            lastAvrState: this._lastAvrState
+            lastAvrState: this._lastAvrState,
         };
     }
 
-    public requestControlState(controlState: AvrControlState): void {
-        this._controlStateToWrite = controlState;
+    public forceLight(mode: LightForceMode): void {
+        logger.info("Forcing light mode: " + mode);
+
+        this._lightForceMode = mode;
     }
 }

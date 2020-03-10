@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { Observable } from "rxjs";
+import type { Observable } from "rxjs";
 
 export interface AvrServiceState {
     readonly serialPortErrors: number;
@@ -45,17 +45,17 @@ export interface AvrState {
     readonly caseTemperatureSensor: AvrTemperatureSensorState;
 }
 
-export interface AvrControlState {
-    readonly nightLightSwitchOn: boolean;
-    readonly dayLightSwitchOn: boolean;
-}
+export enum LightForceMode {
+    NotForced = 0,
+    Day = 1,
+    Night = 2
+};
 
 @injectable()
 export default abstract class AvrService {
     readonly abstract avrState$: Observable<AvrState>;
-    readonly abstract requestedControlState$: Observable<AvrControlState>;
 
     abstract getServiceState(): AvrServiceState;
 
-    abstract requestControlState(controlState: AvrControlState): void;
+    abstract forceLight(mode: LightForceMode): void;
 }

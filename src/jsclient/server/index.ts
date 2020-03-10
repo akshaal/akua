@@ -9,6 +9,7 @@ import bodyParser from 'body-parser';
 import { IncomingMessage } from "http";
 import { OutgoingMessage } from "http";
 import onFinished from "on-finished";
+import { LightForceMode } from "./service/AvrService";
 
 logger.info("============================================================================");
 logger.info("============================================================================");
@@ -50,12 +51,31 @@ expressServer.use(bodyParser.urlencoded({ extended: true }));
 // Metrics
 
 const metricsService = serverServices.metricsService;
+const avrService = serverServices.avrService;
 
 expressServer.use("/metrics", measure("/metrics"));
 
 expressServer.get("/metrics", (_, res) => {
     res.set('Content-Type', metricsService.getContentType());
     res.end(metricsService.getMetrics());
+});
+
+// -------------------------------------
+// Light commands
+
+expressServer.get("/force-day-light", (_, res) => {
+    avrService.forceLight(LightForceMode.Day);
+    res.end("OK");
+});
+
+expressServer.get("/force-night-light", (_, res) => {
+    avrService.forceLight(LightForceMode.Night);
+    res.end("OK");
+});
+
+expressServer.get("/do-not-force-light", (_, res) => {
+    avrService.forceLight(LightForceMode.NotForced);
+    res.end("OK");
 });
 
 // -------------------------------------
