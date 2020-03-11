@@ -62,7 +62,7 @@ function asAvrState(avrData: AvrData): AvrState {
         // TODO: Fix sign!
         clockDriftSeconds: avrData["u32 ((u32)last_drift_of_clock_deciseconds_since_midnight)"] / 10.0,
         clockCorrectionsSinceProtectionStatReset: avrData["u32 clock_corrections_since_protection_stat_reset"],
-        clockSecondsSinceMidnight: avrData["u32 clock_deciseconds_since_midnight"],
+        clockSecondsSinceMidnight: avrData["u32 clock_deciseconds_since_midnight"] / 10.0,
         mainLoopIterationsInLastDecisecond: avrData["u32 main_loop_iterations_in_last_decisecond"],
         debugOverflows: avrData["u8 debug_overflow_count"],
         usbRxOverflows: avrData["u8 usart0_rx_overflow_count"],
