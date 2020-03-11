@@ -22,7 +22,7 @@ class SimpleCounter extends Counter {
     }
 
     set(value: number) {
-        this.reset();
+        this.remove();
         this.inc(value);
     }
 
@@ -282,7 +282,7 @@ const avrUptimeSecondsGauge = new SimpleCounter({
     help: 'Uptime seconds as returned by AVR (might be inaccurate as there is no RTC there).'
 });
 
-const avrClockDriftSecondsGauge = new SimpleCounter({
+const avrClockDriftSecondsGauge = new SimpleGauge({
     name: 'akua_avr_clock_drift_seconds',
     help: 'Drift of AVR clock compared to clock of raspberry pi.'
 });
@@ -292,7 +292,7 @@ const avrClockCorrectionsSinceProtectionStatResetGauge = new SimpleCounter({
     help: 'Number of times clock has been corrected since statistic was reset (every hour).'
 });
 
-const avrClockSecondsSinceMidnightGauge = new SimpleCounter({
+const avrClockSecondsSinceMidnightGauge = new SimpleGauge({
     name: 'akua_avr_clock_seconds_since_midnight',
     help: 'Number of seconds since midnight (i.e. clock of AVR).'
 });
