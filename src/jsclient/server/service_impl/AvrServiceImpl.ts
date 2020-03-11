@@ -57,10 +57,15 @@ function asAvrState(avrData: AvrData): AvrState {
         lightForcesSinceProtectionStatReset: avrData["u8 light_forces_since_protection_stat_reset"]
     };
 
+    let clockDriftSeconds = avrData["u32 ((u32)last_drift_of_clock_deciseconds_since_midnight)"];
+    if (clockDriftSeconds > 0x7FFFFFFF) {
+        clockDriftSeconds = clockDriftSeconds - 0x100000000;
+    }
+    clockDriftSeconds = clockDriftSeconds / 10.0;
+
     return {
         uptimeSeconds: avrData["u32 uptime_deciseconds"] / 10.0,
-        // TODO: Fix sign!
-        clockDriftSeconds: avrData["u32 ((u32)last_drift_of_clock_deciseconds_since_midnight)"] / 10.0,
+        clockDriftSeconds,
         clockCorrectionsSinceProtectionStatReset: avrData["u32 clock_corrections_since_protection_stat_reset"],
         clockSecondsSinceMidnight: avrData["u32 clock_deciseconds_since_midnight"] / 10.0,
         mainLoopIterationsInLastDecisecond: avrData["u32 main_loop_iterations_in_last_decisecond"],
