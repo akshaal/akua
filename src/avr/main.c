@@ -289,11 +289,10 @@ FUNCTION$(void force_light(const LightForceMode mode)) {
     if (mode == Day) {
         day_light_forced.set(1);
         night_light_forced.set(0);
-        return;
+    } else {
+        day_light_forced.set(0);
+        night_light_forced.set(1);
     }
-
-    day_light_forced.set(0);
-    night_light_forced.set(1);
 
     light_forces_since_protection_stat_reset += 1;
 }

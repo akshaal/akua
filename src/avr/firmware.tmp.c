@@ -17639,11 +17639,11 @@ static void force_light(const LightForceMode mode) {
     if (mode == Day) {
         day_light_forced.set(1);
         night_light_forced.set(0);
-        return;
+    } else {
+        day_light_forced.set(0);
+        night_light_forced.set(1);
     }
 
-    day_light_forced.set(0);
-    night_light_forced.set(1);
     light_forces_since_protection_stat_reset += 1;
 }
 
@@ -17685,22 +17685,23 @@ static AKAT_FORCE_INLINE void controller_tick() {
 
     u8 new_calculated_day_light_state = is_day(new_clock_deciseconds_since_midnight);
 
-    if (received_clock2 != 255 && clock_corrections_since_protection_stat_reset < AK_MAX_CLOCK_CORRECTIONS_WITHIN_ONE_HOUR) {
+    if (received_clock2 != 255) {
         u24 received_clock = (((u24)received_clock2) << 16) + (((u24)received_clock1) << 8) + received_clock0;
-        //TODO: Test it other way around
         last_drift_of_clock_deciseconds_since_midnight = (i24)received_clock - (i24)clock_deciseconds_since_midnight;
 
         //Perform correction if drift is large than a limit
-        if ((last_drift_of_clock_deciseconds_since_midnight >= AK_MAX_CLOCK_DRIFT_DECISECONDS) || (last_drift_of_clock_deciseconds_since_midnight <= -AK_MAX_CLOCK_DRIFT_DECISECONDS)) {//Perform correction if correction doesn't affect light state..
-            //or if we can't delay correction any longer.
-            const u8 corrected_calculated_day_light_state = is_day(new_clock_deciseconds_since_midnight);
+        if (clock_corrections_since_protection_stat_reset < AK_MAX_CLOCK_CORRECTIONS_WITHIN_ONE_HOUR) {
+            if ((last_drift_of_clock_deciseconds_since_midnight >= AK_MAX_CLOCK_DRIFT_DECISECONDS) || (last_drift_of_clock_deciseconds_since_midnight <= -AK_MAX_CLOCK_DRIFT_DECISECONDS)) {//Perform correction if correction doesn't affect light state..
+                //or if we can't delay correction any longer.
+                const u8 corrected_calculated_day_light_state = is_day(new_clock_deciseconds_since_midnight);
 
-            if ((corrected_calculated_day_light_state == new_calculated_day_light_state)
-                    || (last_drift_of_clock_deciseconds_since_midnight >= AK_MAX_HARDLIMIT_CLOCK_DRIFT_DECISECONDS)
-                    || (last_drift_of_clock_deciseconds_since_midnight <= -AK_MAX_HARDLIMIT_CLOCK_DRIFT_DECISECONDS)) {//Perform correction...
-                clock_corrections_since_protection_stat_reset += 1;
-                new_clock_deciseconds_since_midnight = received_clock;
-                new_calculated_day_light_state = corrected_calculated_day_light_state;
+                if ((corrected_calculated_day_light_state == new_calculated_day_light_state)
+                        || (last_drift_of_clock_deciseconds_since_midnight >= AK_MAX_HARDLIMIT_CLOCK_DRIFT_DECISECONDS)
+                        || (last_drift_of_clock_deciseconds_since_midnight <= -AK_MAX_HARDLIMIT_CLOCK_DRIFT_DECISECONDS)) {//Perform correction...
+                    clock_corrections_since_protection_stat_reset += 1;
+                    new_clock_deciseconds_since_midnight = received_clock;
+                    new_calculated_day_light_state = corrected_calculated_day_light_state;
+                }
             }
         }
     }//We either have handled clock correction or ignored it.

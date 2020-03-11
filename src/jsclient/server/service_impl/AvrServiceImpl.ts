@@ -120,7 +120,8 @@ function serializeCommands(commands: { lightForceMode?: LightForceMode, sendCloc
 
     if (commands.sendClock) {
         // Order of commands is important!
-        const c = (new Date().getTime() / 100) % (24 * 60 * 60 * 10);
+        const d = new Date();
+        const c = ((d.getHours() * 60 + d.getMinutes()) * 60 + d.getSeconds()) * 10 + Math.floor(d.getMilliseconds() / 10.0);
         addValue('A', c % 256);
         addValue('B', Math.floor(c / 256) % 256);
         addValue('C', Math.floor(c / 65536));
