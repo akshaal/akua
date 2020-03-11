@@ -46,6 +46,9 @@ export interface AvrCo2SensorState {
 export interface AvrState {
     readonly mainLoopIterationsInLastDecisecond: number;
     readonly uptimeSeconds: number;
+    readonly clockDriftSeconds: number;
+    readonly clockCorrectionsSinceProtectionStatReset: number;
+    readonly clockSecondsSinceMidnight: number;
     readonly debugOverflows: number;
     readonly usbRxOverflows: number;
     readonly co2Sensor: AvrCo2SensorState;

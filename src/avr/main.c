@@ -1,6 +1,11 @@
 
 #include <avr/io.h>
 
+// Day interval. Affects day-light and night light modes.
+#define AK_DAY_START_HOUR 10
+#define AK_DAY_DURATION_HOURS 10
+#define AK_DAY_END_HOUR (AK_DAY_START_HOUR + AK_DAY_DURATION_HOURS)
+
 // Here is what we are going to use for communication using USB/serial port
 // Frame format is 8N1 (8 bits, no parity, 1 stop bit)
 #define AK_USART0_BAUD_RATE     9600
@@ -17,6 +22,31 @@
 
 // Maximum number of light forces within one hour
 #define AK_MAX_LIGHT_FORCES_WITHIN_ONE_HOUR 10
+
+// Maximum number of clock corrections within one hour
+#define AK_MAX_CLOCK_CORRECTIONS_WITHIN_ONE_HOUR 10
+
+// Maximum allowed clock drift before it's corrected
+#define AK_MAX_CLOCK_DRIFT_DECISECONDS 200
+
+// Maximum allowed delaying of clock correction (see above).
+// This will be used if it's detected that correction
+// will cause light changes... so we delay it until it doesn't cause it
+#define AK_MAX_HARDLIMIT_CLOCK_DRIFT_DECISECONDS 400
+
+// Number of deciseconds in a day
+#define AK_NUMBER_DECISECONDS_IN_DAY (24L * 60L * 60L * 10L)
+
+// Default time controller starts with.
+// This is used to avoid situation when reset happens
+// and Raspberry PI or other controller are unable to provide
+// time. In this situtation cycle will be shifted, but basic light operation
+// will continue to work.
+// Default time is choosen in such a way that it doesn't trigger
+// noisy switches (220v daylight contactor switching).
+// This also helps to indicate that AVR has started (it will start with night light).
+// So all this means that the default time is 3 hours after midnight.
+#define AK_NUMBER_OF_CLOCK_DECISECONDS_AT_STARTUP (3L * 60L * 60L * 10L)
 
 // 16Mhz, that's external oscillator on Mega 2560.
 // This doesn't configure it here, it just tells to our build system
@@ -214,8 +244,23 @@ X_GPIO_SAFE_OUTPUT$(day_light_switch, A4, safe_state = 0, state_timeout_deciseco
 X_GPIO_SAFE_OUTPUT$(night_light_switch, A5, safe_state = 0, state_timeout_deciseconds = 100);
 
 GLOBAL$() {
+    // Clock used to calculate state
+    STATIC_VAR$(u24 clock_deciseconds_since_midnight,
+                initial = AK_NUMBER_OF_CLOCK_DECISECONDS_AT_STARTUP);
+
+    // Last calculated drift of our clock comapred to data we got from server
+    // This one is signed integer!
+    STATIC_VAR$(i24 last_drift_of_clock_deciseconds_since_midnight,
+                initial = 0);
+
     // Protects against spam / malfunction / misuse
     STATIC_VAR$(u8 light_forces_since_protection_stat_reset);
+    STATIC_VAR$(u8 clock_corrections_since_protection_stat_reset);
+
+    // These variables indicate correction stuff received from raspberry-pi (i.e. via USB)
+    STATIC_VAR$(u8 received_clock0); // LSByte
+    STATIC_VAR$(u8 received_clock1);
+    STATIC_VAR$(u8 received_clock2, initial = 255); // MSByte. 255 means nothing is received
 }
 
 // Forced states
@@ -224,8 +269,12 @@ X_FLAG_WITH_TIMEOUT$(night_light_forced, timeout = 10, unit = minutes);
 
 X_EVERY_HOUR$(reset_protection_stats) {
     light_forces_since_protection_stat_reset = 0;
+    clock_corrections_since_protection_stat_reset = 0;
 }
 
+// Called from uart-command-receiver if force-light command is received from raspberry-pi
+// Note that if we force something, then it will be automatically reset by 
+// X_FLAG_WITH_TIMEOUT after some interval. See above.
 FUNCTION$(void force_light(const LightForceMode mode)) {
     if (mode == NotForced) {
         day_light_forced.set(0);
@@ -247,6 +296,72 @@ FUNCTION$(void force_light(const LightForceMode mode)) {
     night_light_forced.set(1);
 
     light_forces_since_protection_stat_reset += 1;
+}
+
+// - - - - - - - - - - - -  - - - - - - - ---- - - -- - - - -  - - - -
+// - - - - - - - - - - - -  - - - - - - - ---- - - -- - - - -  - - - -
+// - - - - - - - - - - - -  - - - - - - - ---- - - -- - - - -  - - - -
+// Main function that performs state switching
+
+FUNCTION$(u8 is_day(const u24 deciseconds_since_midnight)) {
+    if (day_light_forced.is_set()) {
+        return AKAT_ONE;
+    }
+
+    if (night_light_forced.is_set()) {
+        return 0;
+    }
+
+    return (deciseconds_since_midnight >= (AK_DAY_START_HOUR * 60L * 60L * 10L)) && (deciseconds_since_midnight < (AK_DAY_END_HOUR * 60L * 60L * 10L));
+}
+
+X_EVERY_DECISECOND$(controller_tick) {
+    // - - - - - - - - - - - - - - - -  CLOCK CORRECTION - - - - - - 
+    u24 new_clock_deciseconds_since_midnight = clock_deciseconds_since_midnight + 1;
+    if (new_clock_deciseconds_since_midnight >= AK_NUMBER_DECISECONDS_IN_DAY) {
+        new_clock_deciseconds_since_midnight = 0;
+    }
+
+    u8 new_calculated_day_light_state = is_day(new_clock_deciseconds_since_midnight);
+
+    if (received_clock2 != 255 && clock_corrections_since_protection_stat_reset < AK_MAX_CLOCK_CORRECTIONS_WITHIN_ONE_HOUR) {
+        u24 received_clock = (((u24)received_clock2) << 16) + (((u24)received_clock1) << 8) + received_clock0;
+
+        // TODO: Test it other way around
+        last_drift_of_clock_deciseconds_since_midnight = (i24)received_clock - (i24)clock_deciseconds_since_midnight;
+
+        // Perform correction if drift is large than a limit
+        if ((last_drift_of_clock_deciseconds_since_midnight >= AK_MAX_CLOCK_DRIFT_DECISECONDS) || (last_drift_of_clock_deciseconds_since_midnight <= -AK_MAX_CLOCK_DRIFT_DECISECONDS)) {
+            // Perform correction if correction doesn't affect light state..
+            // or if we can't delay correction any longer.
+            const u8 corrected_calculated_day_light_state = is_day(new_clock_deciseconds_since_midnight);
+            if ((corrected_calculated_day_light_state == new_calculated_day_light_state)
+                    || (last_drift_of_clock_deciseconds_since_midnight >= AK_MAX_HARDLIMIT_CLOCK_DRIFT_DECISECONDS)
+                    || (last_drift_of_clock_deciseconds_since_midnight <= -AK_MAX_HARDLIMIT_CLOCK_DRIFT_DECISECONDS)) {
+                // Perform correction...
+                clock_corrections_since_protection_stat_reset += 1;
+                new_clock_deciseconds_since_midnight = received_clock;
+                new_calculated_day_light_state = corrected_calculated_day_light_state;
+            }
+        }
+    }
+
+    // We either have handled clock correction or ignored it.
+    // Anyway, invalidate current correction data
+    received_clock2 = 255;
+
+    // Finally set clock to new clock value, either corrected or normal one
+    clock_deciseconds_since_midnight = new_clock_deciseconds_since_midnight;
+
+    // - - - - - - - - - - - - - - - -  STATE CHANGING - - - - - - 
+
+    if (new_calculated_day_light_state) {
+        day_light_switch.set(AKAT_ONE);
+        night_light_switch.set(0);
+    } else {
+        day_light_switch.set(0);
+        night_light_switch.set(AKAT_ONE);
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -279,7 +394,6 @@ X_GPIO_OUTPUT$(blue_led, B7);
 // Watchdog
 
 X_WATCHDOG$(8s);
-
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -481,7 +595,10 @@ THREAD$(usart0_writer, state_type = u8) {
                       u32 uptime_deciseconds,
                       u8 debug_overflow_count,
                       u8 usart0_rx_overflow_count,
-                      u32 main_loop_iterations_in_last_decisecond);
+                      u32 main_loop_iterations_in_last_decisecond,
+                      u32 ((u32)last_drift_of_clock_deciseconds_since_midnight),
+                      u32 clock_corrections_since_protection_stat_reset,
+                      u32 clock_deciseconds_since_midnight);
 
         WRITE_STATUS$("Aquarium temperature sensor",
                       B,
@@ -626,6 +743,21 @@ THREAD$(usart0_reader) {
         switch(command_code) {
         case 'L':
             force_light(command_arg);
+            break;
+
+        case 'A':
+            // Least significant clock byte
+            received_clock0 = command_arg;
+            break;
+
+        case 'B':
+            received_clock1 = command_arg;
+            break;
+
+        case 'C':
+            // Most significant clock byte. This one is supposed to be received LAST.
+            // ('A' and 'B') must be already here.
+            received_clock2 = command_arg;
             break;
         }
     }

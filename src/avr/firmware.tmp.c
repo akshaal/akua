@@ -21,10 +21,12 @@
 
 #define i8 int8_t
 #define i16 int16_t
+#define i24 __int24
 #define i32 int32_t
 
 #define u8 uint8_t
 #define u16 uint16_t
+#define u24 __uint24
 #define u32 uint32_t
 
 #define H(v)                 (1 << (v))
@@ -365,6 +367,11 @@ static AKAT_UNUSED AKAT_PURE u8 akat_x_tm1637_encode_digit(u8 const digit, u8 co
 
 #include <avr/io.h>
 
+// Day interval. Affects day-light and night light modes.
+#define AK_DAY_START_HOUR 10
+#define AK_DAY_DURATION_HOURS 10
+#define AK_DAY_END_HOUR (AK_DAY_START_HOUR + AK_DAY_DURATION_HOURS)
+
 // Here is what we are going to use for communication using USB/serial port
 // Frame format is 8N1 (8 bits, no parity, 1 stop bit)
 #define AK_USART0_BAUD_RATE     9600
@@ -381,6 +388,31 @@ static AKAT_UNUSED AKAT_PURE u8 akat_x_tm1637_encode_digit(u8 const digit, u8 co
 
 // Maximum number of light forces within one hour
 #define AK_MAX_LIGHT_FORCES_WITHIN_ONE_HOUR 10
+
+// Maximum number of clock corrections within one hour
+#define AK_MAX_CLOCK_CORRECTIONS_WITHIN_ONE_HOUR 10
+
+// Maximum allowed clock drift before it's corrected
+#define AK_MAX_CLOCK_DRIFT_DECISECONDS 200
+
+// Maximum allowed delaying of clock correction (see above).
+// This will be used if it's detected that correction
+// will cause light changes... so we delay it until it doesn't cause it
+#define AK_MAX_HARDLIMIT_CLOCK_DRIFT_DECISECONDS 400
+
+// Number of deciseconds in a day
+#define AK_NUMBER_DECISECONDS_IN_DAY (24L * 60L * 60L * 10L)
+
+// Default time controller starts with.
+// This is used to avoid situation when reset happens
+// and Raspberry PI or other controller are unable to provide
+// time. In this situtation cycle will be shifted, but basic light operation
+// will continue to work.
+// Default time is choosen in such a way that it doesn't trigger
+// noisy switches (220v daylight contactor switching).
+// This also helps to indicate that AVR has started (it will start with night light).
+// So all this means that the default time is 3 hours after midnight.
+#define AK_NUMBER_OF_CLOCK_DECISECONDS_AT_STARTUP (3L * 60L * 60L * 10L)
 
 // 16Mhz, that's external oscillator on Mega 2560.
 // This doesn't configure it here, it just tells to our build system
@@ -17325,10 +17357,29 @@ static AKAT_FORCE_INLINE void night_light_switch__ticker() {
 
 ;
 
+static u24 clock_deciseconds_since_midnight = AK_NUMBER_OF_CLOCK_DECISECONDS_AT_STARTUP;
+static i24 last_drift_of_clock_deciseconds_since_midnight = 0;
 static u8 light_forces_since_protection_stat_reset = 0;
+static u8 clock_corrections_since_protection_stat_reset = 0;
+static u8 received_clock0 = 0;
+static u8 received_clock1 = 0;
+static u8 received_clock2 = 255;
+
+//Clock used to calculate state
+;
+
+//Last calculated drift of our clock comapred to data we got from server
+//This one is signed integer!
+;
 
 //Protects against spam /malfunction /misuse
 ;
+;
+
+//These variables indicate correction stuff received from raspberry-pi (i.e. via USB)
+; //LSByte
+;
+; //MSByte. 255 means nothing is received
 ;
 
 
@@ -17562,6 +17613,7 @@ static AKAT_FORCE_INLINE void akat_every_hour_minute_handler() {
 
 static AKAT_FORCE_INLINE void reset_protection_stats() {
     light_forces_since_protection_stat_reset = 0;
+    clock_corrections_since_protection_stat_reset = 0;
 }
 
 ;
@@ -17570,6 +17622,9 @@ static AKAT_FORCE_INLINE void reset_protection_stats() {
 
 
 
+// Called from uart-command-receiver if force-light command is received from raspberry-pi
+// Note that if we force something, then it will be automatically reset by
+// X_FLAG_WITH_TIMEOUT after some interval. See above.
 static void force_light(const LightForceMode mode) {
     if (mode == NotForced) {
         day_light_forced.set(0);
@@ -17593,6 +17648,81 @@ static void force_light(const LightForceMode mode) {
 }
 
 ;
+
+
+
+
+// - - - - - - - - - - - -  - - - - - - - ---- - - -- - - - -  - - - -
+// - - - - - - - - - - - -  - - - - - - - ---- - - -- - - - -  - - - -
+// - - - - - - - - - - - -  - - - - - - - ---- - - -- - - - -  - - - -
+// Main function that performs state switching
+
+static u8 is_day(const u24 deciseconds_since_midnight) {
+    if (day_light_forced.is_set()) {
+        return AKAT_ONE;
+    }
+
+    if (night_light_forced.is_set()) {
+        return 0;
+    }
+
+    return (deciseconds_since_midnight >= (AK_DAY_START_HOUR * 60L * 60L * 10L)) && (deciseconds_since_midnight < (AK_DAY_END_HOUR * 60L * 60L * 10L));
+}
+
+;
+
+
+
+
+
+static AKAT_FORCE_INLINE void controller_tick() {
+//- - - - - - - - - - - - - - - -  CLOCK CORRECTION - - - - - -
+    u24 new_clock_deciseconds_since_midnight = clock_deciseconds_since_midnight + 1;
+
+    if (new_clock_deciseconds_since_midnight >= AK_NUMBER_DECISECONDS_IN_DAY) {
+        new_clock_deciseconds_since_midnight = 0;
+    }
+
+    u8 new_calculated_day_light_state = is_day(new_clock_deciseconds_since_midnight);
+
+    if (received_clock2 != 255 && clock_corrections_since_protection_stat_reset < AK_MAX_CLOCK_CORRECTIONS_WITHIN_ONE_HOUR) {
+        u24 received_clock = (((u24)received_clock2) << 16) + (((u24)received_clock1) << 8) + received_clock0;
+        //TODO: Test it other way around
+        last_drift_of_clock_deciseconds_since_midnight = (i24)received_clock - (i24)clock_deciseconds_since_midnight;
+
+        //Perform correction if drift is large than a limit
+        if ((last_drift_of_clock_deciseconds_since_midnight >= AK_MAX_CLOCK_DRIFT_DECISECONDS) || (last_drift_of_clock_deciseconds_since_midnight <= -AK_MAX_CLOCK_DRIFT_DECISECONDS)) {//Perform correction if correction doesn't affect light state..
+            //or if we can't delay correction any longer.
+            const u8 corrected_calculated_day_light_state = is_day(new_clock_deciseconds_since_midnight);
+
+            if ((corrected_calculated_day_light_state == new_calculated_day_light_state)
+                    || (last_drift_of_clock_deciseconds_since_midnight >= AK_MAX_HARDLIMIT_CLOCK_DRIFT_DECISECONDS)
+                    || (last_drift_of_clock_deciseconds_since_midnight <= -AK_MAX_HARDLIMIT_CLOCK_DRIFT_DECISECONDS)) {//Perform correction...
+                clock_corrections_since_protection_stat_reset += 1;
+                new_clock_deciseconds_since_midnight = received_clock;
+                new_calculated_day_light_state = corrected_calculated_day_light_state;
+            }
+        }
+    }//We either have handled clock correction or ignored it.
+
+    //Anyway, invalidate current correction data
+    received_clock2 = 255;
+    //Finally set clock to new clock value, either corrected or normal one
+    clock_deciseconds_since_midnight = new_clock_deciseconds_since_midnight;
+
+    //- - - - - - - - - - - - - - - -  STATE CHANGING - - - - - -
+
+    if (new_calculated_day_light_state) {
+        day_light_switch.set(AKAT_ONE);
+        night_light_switch.set(0);
+    } else {
+        day_light_switch.set(0);
+        night_light_switch.set(AKAT_ONE);
+    }
+}
+
+;
+
 
 
 
@@ -17826,7 +17956,6 @@ static AKAT_FORCE_INLINE void watchdog_reset() {
 
 
 ;
-
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -20661,6 +20790,24 @@ static AKAT_FORCE_INLINE void usart0_writer() {
 
     case 76:
         goto akat_coroutine_l_76;
+
+    case 77:
+        goto akat_coroutine_l_77;
+
+    case 78:
+        goto akat_coroutine_l_78;
+
+    case 79:
+        goto akat_coroutine_l_79;
+
+    case 80:
+        goto akat_coroutine_l_80;
+
+    case 81:
+        goto akat_coroutine_l_81;
+
+    case 82:
+        goto akat_coroutine_l_82;
     }
 
 akat_coroutine_l_start:
@@ -20871,8 +21018,7 @@ akat_coroutine_l_14:
             } while (0);
 
             ;
-            ;
-            byte_to_send = ' ';
+            byte_to_send = ',';
 
             do {
                 akat_coroutine_state = 15;
@@ -20884,11 +21030,99 @@ akat_coroutine_l_15:
             } while (0);
 
             ;
-            byte_to_send = 'B';
+            /*
+              COMMPROTO: A5: Misc: u32 ((u32)last_drift_of_clock_deciseconds_since_midnight)
+              TS_PROTO_TYPE: "u32 ((u32)last_drift_of_clock_deciseconds_since_midnight)": number,
+              TS_PROTO_ASSIGN: "u32 ((u32)last_drift_of_clock_deciseconds_since_midnight)": vals["A5"],
+            */
+            u32_to_format_and_send = ((u32)last_drift_of_clock_deciseconds_since_midnight);
 
             do {
                 akat_coroutine_state = 16;
 akat_coroutine_l_16:
+
+                if (format_and_send_u32() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 17;
+akat_coroutine_l_17:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: A6: Misc: u32 clock_corrections_since_protection_stat_reset
+              TS_PROTO_TYPE: "u32 clock_corrections_since_protection_stat_reset": number,
+              TS_PROTO_ASSIGN: "u32 clock_corrections_since_protection_stat_reset": vals["A6"],
+            */
+            u32_to_format_and_send = clock_corrections_since_protection_stat_reset;
+
+            do {
+                akat_coroutine_state = 18;
+akat_coroutine_l_18:
+
+                if (format_and_send_u32() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 19;
+akat_coroutine_l_19:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: A7: Misc: u32 clock_deciseconds_since_midnight
+              TS_PROTO_TYPE: "u32 clock_deciseconds_since_midnight": number,
+              TS_PROTO_ASSIGN: "u32 clock_deciseconds_since_midnight": vals["A7"],
+            */
+            u32_to_format_and_send = clock_deciseconds_since_midnight;
+
+            do {
+                akat_coroutine_state = 20;
+akat_coroutine_l_20:
+
+                if (format_and_send_u32() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            ;
+            byte_to_send = ' ';
+
+            do {
+                akat_coroutine_state = 21;
+akat_coroutine_l_21:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = 'B';
+
+            do {
+                akat_coroutine_state = 22;
+akat_coroutine_l_22:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -20902,93 +21136,6 @@ akat_coroutine_l_16:
               TS_PROTO_ASSIGN: "u8 ds18b20_aqua.get_crc_errors()": vals["B1"],
             */
             u8_to_format_and_send = ds18b20_aqua.get_crc_errors();
-
-            do {
-                akat_coroutine_state = 17;
-akat_coroutine_l_17:
-
-                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            byte_to_send = ',';
-
-            do {
-                akat_coroutine_state = 18;
-akat_coroutine_l_18:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            /*
-              COMMPROTO: B2: Aquarium temperature sensor: u8 ds18b20_aqua.get_disconnects()
-              TS_PROTO_TYPE: "u8 ds18b20_aqua.get_disconnects()": number,
-              TS_PROTO_ASSIGN: "u8 ds18b20_aqua.get_disconnects()": vals["B2"],
-            */
-            u8_to_format_and_send = ds18b20_aqua.get_disconnects();
-
-            do {
-                akat_coroutine_state = 19;
-akat_coroutine_l_19:
-
-                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            byte_to_send = ',';
-
-            do {
-                akat_coroutine_state = 20;
-akat_coroutine_l_20:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            /*
-              COMMPROTO: B3: Aquarium temperature sensor: u16 ds18b20_aqua.get_temperatureX16()
-              TS_PROTO_TYPE: "u16 ds18b20_aqua.get_temperatureX16()": number,
-              TS_PROTO_ASSIGN: "u16 ds18b20_aqua.get_temperatureX16()": vals["B3"],
-            */
-            u16_to_format_and_send = ds18b20_aqua.get_temperatureX16();
-
-            do {
-                akat_coroutine_state = 21;
-akat_coroutine_l_21:
-
-                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            byte_to_send = ',';
-
-            do {
-                akat_coroutine_state = 22;
-akat_coroutine_l_22:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            /*
-              COMMPROTO: B4: Aquarium temperature sensor: u8 ds18b20_aqua.get_update_id()
-              TS_PROTO_TYPE: "u8 ds18b20_aqua.get_update_id()": number,
-              TS_PROTO_ASSIGN: "u8 ds18b20_aqua.get_update_id()": vals["B4"],
-            */
-            u8_to_format_and_send = ds18b20_aqua.get_update_id();
 
             do {
                 akat_coroutine_state = 23;
@@ -21013,11 +21160,11 @@ akat_coroutine_l_24:
 
             ;
             /*
-              COMMPROTO: B5: Aquarium temperature sensor: u8 ds18b20_aqua.get_updated_deciseconds_ago()
-              TS_PROTO_TYPE: "u8 ds18b20_aqua.get_updated_deciseconds_ago()": number,
-              TS_PROTO_ASSIGN: "u8 ds18b20_aqua.get_updated_deciseconds_ago()": vals["B5"],
+              COMMPROTO: B2: Aquarium temperature sensor: u8 ds18b20_aqua.get_disconnects()
+              TS_PROTO_TYPE: "u8 ds18b20_aqua.get_disconnects()": number,
+              TS_PROTO_ASSIGN: "u8 ds18b20_aqua.get_disconnects()": vals["B2"],
             */
-            u8_to_format_and_send = ds18b20_aqua.get_updated_deciseconds_ago();
+            u8_to_format_and_send = ds18b20_aqua.get_disconnects();
 
             do {
                 akat_coroutine_state = 25;
@@ -21029,8 +21176,7 @@ akat_coroutine_l_25:
             } while (0);
 
             ;
-            ;
-            byte_to_send = ' ';
+            byte_to_send = ',';
 
             do {
                 akat_coroutine_state = 26;
@@ -21042,11 +21188,99 @@ akat_coroutine_l_26:
             } while (0);
 
             ;
-            byte_to_send = 'C';
+            /*
+              COMMPROTO: B3: Aquarium temperature sensor: u16 ds18b20_aqua.get_temperatureX16()
+              TS_PROTO_TYPE: "u16 ds18b20_aqua.get_temperatureX16()": number,
+              TS_PROTO_ASSIGN: "u16 ds18b20_aqua.get_temperatureX16()": vals["B3"],
+            */
+            u16_to_format_and_send = ds18b20_aqua.get_temperatureX16();
 
             do {
                 akat_coroutine_state = 27;
 akat_coroutine_l_27:
+
+                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 28;
+akat_coroutine_l_28:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: B4: Aquarium temperature sensor: u8 ds18b20_aqua.get_update_id()
+              TS_PROTO_TYPE: "u8 ds18b20_aqua.get_update_id()": number,
+              TS_PROTO_ASSIGN: "u8 ds18b20_aqua.get_update_id()": vals["B4"],
+            */
+            u8_to_format_and_send = ds18b20_aqua.get_update_id();
+
+            do {
+                akat_coroutine_state = 29;
+akat_coroutine_l_29:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 30;
+akat_coroutine_l_30:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: B5: Aquarium temperature sensor: u8 ds18b20_aqua.get_updated_deciseconds_ago()
+              TS_PROTO_TYPE: "u8 ds18b20_aqua.get_updated_deciseconds_ago()": number,
+              TS_PROTO_ASSIGN: "u8 ds18b20_aqua.get_updated_deciseconds_ago()": vals["B5"],
+            */
+            u8_to_format_and_send = ds18b20_aqua.get_updated_deciseconds_ago();
+
+            do {
+                akat_coroutine_state = 31;
+akat_coroutine_l_31:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            ;
+            byte_to_send = ' ';
+
+            do {
+                akat_coroutine_state = 32;
+akat_coroutine_l_32:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = 'C';
+
+            do {
+                akat_coroutine_state = 33;
+akat_coroutine_l_33:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21060,93 +21294,6 @@ akat_coroutine_l_27:
               TS_PROTO_ASSIGN: "u8 ds18b20_case.get_crc_errors()": vals["C1"],
             */
             u8_to_format_and_send = ds18b20_case.get_crc_errors();
-
-            do {
-                akat_coroutine_state = 28;
-akat_coroutine_l_28:
-
-                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            byte_to_send = ',';
-
-            do {
-                akat_coroutine_state = 29;
-akat_coroutine_l_29:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            /*
-              COMMPROTO: C2: Case temperature sensor: u8 ds18b20_case.get_disconnects()
-              TS_PROTO_TYPE: "u8 ds18b20_case.get_disconnects()": number,
-              TS_PROTO_ASSIGN: "u8 ds18b20_case.get_disconnects()": vals["C2"],
-            */
-            u8_to_format_and_send = ds18b20_case.get_disconnects();
-
-            do {
-                akat_coroutine_state = 30;
-akat_coroutine_l_30:
-
-                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            byte_to_send = ',';
-
-            do {
-                akat_coroutine_state = 31;
-akat_coroutine_l_31:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            /*
-              COMMPROTO: C3: Case temperature sensor: u16 ds18b20_case.get_temperatureX16()
-              TS_PROTO_TYPE: "u16 ds18b20_case.get_temperatureX16()": number,
-              TS_PROTO_ASSIGN: "u16 ds18b20_case.get_temperatureX16()": vals["C3"],
-            */
-            u16_to_format_and_send = ds18b20_case.get_temperatureX16();
-
-            do {
-                akat_coroutine_state = 32;
-akat_coroutine_l_32:
-
-                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            byte_to_send = ',';
-
-            do {
-                akat_coroutine_state = 33;
-akat_coroutine_l_33:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            /*
-              COMMPROTO: C4: Case temperature sensor: u8 ds18b20_case.get_update_id()
-              TS_PROTO_TYPE: "u8 ds18b20_case.get_update_id()": number,
-              TS_PROTO_ASSIGN: "u8 ds18b20_case.get_update_id()": vals["C4"],
-            */
-            u8_to_format_and_send = ds18b20_case.get_update_id();
 
             do {
                 akat_coroutine_state = 34;
@@ -21171,11 +21318,11 @@ akat_coroutine_l_35:
 
             ;
             /*
-              COMMPROTO: C5: Case temperature sensor: u8 ds18b20_case.get_updated_deciseconds_ago()
-              TS_PROTO_TYPE: "u8 ds18b20_case.get_updated_deciseconds_ago()": number,
-              TS_PROTO_ASSIGN: "u8 ds18b20_case.get_updated_deciseconds_ago()": vals["C5"],
+              COMMPROTO: C2: Case temperature sensor: u8 ds18b20_case.get_disconnects()
+              TS_PROTO_TYPE: "u8 ds18b20_case.get_disconnects()": number,
+              TS_PROTO_ASSIGN: "u8 ds18b20_case.get_disconnects()": vals["C2"],
             */
-            u8_to_format_and_send = ds18b20_case.get_updated_deciseconds_ago();
+            u8_to_format_and_send = ds18b20_case.get_disconnects();
 
             do {
                 akat_coroutine_state = 36;
@@ -21187,8 +21334,7 @@ akat_coroutine_l_36:
             } while (0);
 
             ;
-            ;
-            byte_to_send = ' ';
+            byte_to_send = ',';
 
             do {
                 akat_coroutine_state = 37;
@@ -21200,11 +21346,99 @@ akat_coroutine_l_37:
             } while (0);
 
             ;
-            byte_to_send = 'D';
+            /*
+              COMMPROTO: C3: Case temperature sensor: u16 ds18b20_case.get_temperatureX16()
+              TS_PROTO_TYPE: "u16 ds18b20_case.get_temperatureX16()": number,
+              TS_PROTO_ASSIGN: "u16 ds18b20_case.get_temperatureX16()": vals["C3"],
+            */
+            u16_to_format_and_send = ds18b20_case.get_temperatureX16();
 
             do {
                 akat_coroutine_state = 38;
 akat_coroutine_l_38:
+
+                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 39;
+akat_coroutine_l_39:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: C4: Case temperature sensor: u8 ds18b20_case.get_update_id()
+              TS_PROTO_TYPE: "u8 ds18b20_case.get_update_id()": number,
+              TS_PROTO_ASSIGN: "u8 ds18b20_case.get_update_id()": vals["C4"],
+            */
+            u8_to_format_and_send = ds18b20_case.get_update_id();
+
+            do {
+                akat_coroutine_state = 40;
+akat_coroutine_l_40:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 41;
+akat_coroutine_l_41:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: C5: Case temperature sensor: u8 ds18b20_case.get_updated_deciseconds_ago()
+              TS_PROTO_TYPE: "u8 ds18b20_case.get_updated_deciseconds_ago()": number,
+              TS_PROTO_ASSIGN: "u8 ds18b20_case.get_updated_deciseconds_ago()": vals["C5"],
+            */
+            u8_to_format_and_send = ds18b20_case.get_updated_deciseconds_ago();
+
+            do {
+                akat_coroutine_state = 42;
+akat_coroutine_l_42:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            ;
+            byte_to_send = ' ';
+
+            do {
+                akat_coroutine_state = 43;
+akat_coroutine_l_43:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = 'D';
+
+            do {
+                akat_coroutine_state = 44;
+akat_coroutine_l_44:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21220,97 +21454,10 @@ akat_coroutine_l_38:
             u8_to_format_and_send = co2.get_rx_overflow_count();
 
             do {
-                akat_coroutine_state = 39;
-akat_coroutine_l_39:
-
-                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            byte_to_send = ',';
-
-            do {
-                akat_coroutine_state = 40;
-akat_coroutine_l_40:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            /*
-              COMMPROTO: D2: CO2 sensor: u8 co2.get_crc_errors()
-              TS_PROTO_TYPE: "u8 co2.get_crc_errors()": number,
-              TS_PROTO_ASSIGN: "u8 co2.get_crc_errors()": vals["D2"],
-            */
-            u8_to_format_and_send = co2.get_crc_errors();
-
-            do {
-                akat_coroutine_state = 41;
-akat_coroutine_l_41:
-
-                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            byte_to_send = ',';
-
-            do {
-                akat_coroutine_state = 42;
-akat_coroutine_l_42:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            /*
-              COMMPROTO: D3: CO2 sensor: u16 co2.get_abc_setups()
-              TS_PROTO_TYPE: "u16 co2.get_abc_setups()": number,
-              TS_PROTO_ASSIGN: "u16 co2.get_abc_setups()": vals["D3"],
-            */
-            u16_to_format_and_send = co2.get_abc_setups();
-
-            do {
-                akat_coroutine_state = 43;
-akat_coroutine_l_43:
-
-                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            byte_to_send = ',';
-
-            do {
-                akat_coroutine_state = 44;
-akat_coroutine_l_44:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            /*
-              COMMPROTO: D4: CO2 sensor: u16 co2.get_raw_concentration()
-              TS_PROTO_TYPE: "u16 co2.get_raw_concentration()": number,
-              TS_PROTO_ASSIGN: "u16 co2.get_raw_concentration()": vals["D4"],
-            */
-            u16_to_format_and_send = co2.get_raw_concentration();
-
-            do {
                 akat_coroutine_state = 45;
 akat_coroutine_l_45:
 
-                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
@@ -21329,17 +21476,17 @@ akat_coroutine_l_46:
 
             ;
             /*
-              COMMPROTO: D5: CO2 sensor: u16 co2.get_clamped_concentration()
-              TS_PROTO_TYPE: "u16 co2.get_clamped_concentration()": number,
-              TS_PROTO_ASSIGN: "u16 co2.get_clamped_concentration()": vals["D5"],
+              COMMPROTO: D2: CO2 sensor: u8 co2.get_crc_errors()
+              TS_PROTO_TYPE: "u8 co2.get_crc_errors()": number,
+              TS_PROTO_ASSIGN: "u8 co2.get_crc_errors()": vals["D2"],
             */
-            u16_to_format_and_send = co2.get_clamped_concentration();
+            u8_to_format_and_send = co2.get_crc_errors();
 
             do {
                 akat_coroutine_state = 47;
 akat_coroutine_l_47:
 
-                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
@@ -21358,11 +21505,11 @@ akat_coroutine_l_48:
 
             ;
             /*
-              COMMPROTO: D6: CO2 sensor: u16 co2.get_concentration()
-              TS_PROTO_TYPE: "u16 co2.get_concentration()": number,
-              TS_PROTO_ASSIGN: "u16 co2.get_concentration()": vals["D6"],
+              COMMPROTO: D3: CO2 sensor: u16 co2.get_abc_setups()
+              TS_PROTO_TYPE: "u16 co2.get_abc_setups()": number,
+              TS_PROTO_ASSIGN: "u16 co2.get_abc_setups()": vals["D3"],
             */
-            u16_to_format_and_send = co2.get_concentration();
+            u16_to_format_and_send = co2.get_abc_setups();
 
             do {
                 akat_coroutine_state = 49;
@@ -21387,17 +21534,17 @@ akat_coroutine_l_50:
 
             ;
             /*
-              COMMPROTO: D7: CO2 sensor: u8 co2.get_temperature()
-              TS_PROTO_TYPE: "u8 co2.get_temperature()": number,
-              TS_PROTO_ASSIGN: "u8 co2.get_temperature()": vals["D7"],
+              COMMPROTO: D4: CO2 sensor: u16 co2.get_raw_concentration()
+              TS_PROTO_TYPE: "u16 co2.get_raw_concentration()": number,
+              TS_PROTO_ASSIGN: "u16 co2.get_raw_concentration()": vals["D4"],
             */
-            u8_to_format_and_send = co2.get_temperature();
+            u16_to_format_and_send = co2.get_raw_concentration();
 
             do {
                 akat_coroutine_state = 51;
 akat_coroutine_l_51:
 
-                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
@@ -21416,17 +21563,17 @@ akat_coroutine_l_52:
 
             ;
             /*
-              COMMPROTO: D8: CO2 sensor: u8 co2.get_s()
-              TS_PROTO_TYPE: "u8 co2.get_s()": number,
-              TS_PROTO_ASSIGN: "u8 co2.get_s()": vals["D8"],
+              COMMPROTO: D5: CO2 sensor: u16 co2.get_clamped_concentration()
+              TS_PROTO_TYPE: "u16 co2.get_clamped_concentration()": number,
+              TS_PROTO_ASSIGN: "u16 co2.get_clamped_concentration()": vals["D5"],
             */
-            u8_to_format_and_send = co2.get_s();
+            u16_to_format_and_send = co2.get_clamped_concentration();
 
             do {
                 akat_coroutine_state = 53;
 akat_coroutine_l_53:
 
-                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
@@ -21445,11 +21592,11 @@ akat_coroutine_l_54:
 
             ;
             /*
-              COMMPROTO: D9: CO2 sensor: u16 co2.get_u()
-              TS_PROTO_TYPE: "u16 co2.get_u()": number,
-              TS_PROTO_ASSIGN: "u16 co2.get_u()": vals["D9"],
+              COMMPROTO: D6: CO2 sensor: u16 co2.get_concentration()
+              TS_PROTO_TYPE: "u16 co2.get_concentration()": number,
+              TS_PROTO_ASSIGN: "u16 co2.get_concentration()": vals["D6"],
             */
-            u16_to_format_and_send = co2.get_u();
+            u16_to_format_and_send = co2.get_concentration();
 
             do {
                 akat_coroutine_state = 55;
@@ -21474,11 +21621,11 @@ akat_coroutine_l_56:
 
             ;
             /*
-              COMMPROTO: D10: CO2 sensor: u8 co2.get_update_id()
-              TS_PROTO_TYPE: "u8 co2.get_update_id()": number,
-              TS_PROTO_ASSIGN: "u8 co2.get_update_id()": vals["D10"],
+              COMMPROTO: D7: CO2 sensor: u8 co2.get_temperature()
+              TS_PROTO_TYPE: "u8 co2.get_temperature()": number,
+              TS_PROTO_ASSIGN: "u8 co2.get_temperature()": vals["D7"],
             */
-            u8_to_format_and_send = co2.get_update_id();
+            u8_to_format_and_send = co2.get_temperature();
 
             do {
                 akat_coroutine_state = 57;
@@ -21503,11 +21650,11 @@ akat_coroutine_l_58:
 
             ;
             /*
-              COMMPROTO: D11: CO2 sensor: u8 co2.get_updated_deciseconds_ago()
-              TS_PROTO_TYPE: "u8 co2.get_updated_deciseconds_ago()": number,
-              TS_PROTO_ASSIGN: "u8 co2.get_updated_deciseconds_ago()": vals["D11"],
+              COMMPROTO: D8: CO2 sensor: u8 co2.get_s()
+              TS_PROTO_TYPE: "u8 co2.get_s()": number,
+              TS_PROTO_ASSIGN: "u8 co2.get_s()": vals["D8"],
             */
-            u8_to_format_and_send = co2.get_updated_deciseconds_ago();
+            u8_to_format_and_send = co2.get_s();
 
             do {
                 akat_coroutine_state = 59;
@@ -21519,8 +21666,7 @@ akat_coroutine_l_59:
             } while (0);
 
             ;
-            ;
-            byte_to_send = ' ';
+            byte_to_send = ',';
 
             do {
                 akat_coroutine_state = 60;
@@ -21532,11 +21678,99 @@ akat_coroutine_l_60:
             } while (0);
 
             ;
-            byte_to_send = 'E';
+            /*
+              COMMPROTO: D9: CO2 sensor: u16 co2.get_u()
+              TS_PROTO_TYPE: "u16 co2.get_u()": number,
+              TS_PROTO_ASSIGN: "u16 co2.get_u()": vals["D9"],
+            */
+            u16_to_format_and_send = co2.get_u();
 
             do {
                 akat_coroutine_state = 61;
 akat_coroutine_l_61:
+
+                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 62;
+akat_coroutine_l_62:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: D10: CO2 sensor: u8 co2.get_update_id()
+              TS_PROTO_TYPE: "u8 co2.get_update_id()": number,
+              TS_PROTO_ASSIGN: "u8 co2.get_update_id()": vals["D10"],
+            */
+            u8_to_format_and_send = co2.get_update_id();
+
+            do {
+                akat_coroutine_state = 63;
+akat_coroutine_l_63:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 64;
+akat_coroutine_l_64:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: D11: CO2 sensor: u8 co2.get_updated_deciseconds_ago()
+              TS_PROTO_TYPE: "u8 co2.get_updated_deciseconds_ago()": number,
+              TS_PROTO_ASSIGN: "u8 co2.get_updated_deciseconds_ago()": vals["D11"],
+            */
+            u8_to_format_and_send = co2.get_updated_deciseconds_ago();
+
+            do {
+                akat_coroutine_state = 65;
+akat_coroutine_l_65:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            ;
+            byte_to_send = ' ';
+
+            do {
+                akat_coroutine_state = 66;
+akat_coroutine_l_66:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = 'E';
+
+            do {
+                akat_coroutine_state = 67;
+akat_coroutine_l_67:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21550,93 +21784,6 @@ akat_coroutine_l_61:
               TS_PROTO_ASSIGN: "u8 day_light_switch.is_set() ? 1 : 0": vals["E1"],
             */
             u8_to_format_and_send = day_light_switch.is_set() ? 1 : 0;
-
-            do {
-                akat_coroutine_state = 62;
-akat_coroutine_l_62:
-
-                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            byte_to_send = ',';
-
-            do {
-                akat_coroutine_state = 63;
-akat_coroutine_l_63:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            /*
-              COMMPROTO: E2: Light: u8 night_light_switch.is_set() ? 1 : 0
-              TS_PROTO_TYPE: "u8 night_light_switch.is_set() ? 1 : 0": number,
-              TS_PROTO_ASSIGN: "u8 night_light_switch.is_set() ? 1 : 0": vals["E2"],
-            */
-            u8_to_format_and_send = night_light_switch.is_set() ? 1 : 0;
-
-            do {
-                akat_coroutine_state = 64;
-akat_coroutine_l_64:
-
-                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            byte_to_send = ',';
-
-            do {
-                akat_coroutine_state = 65;
-akat_coroutine_l_65:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            /*
-              COMMPROTO: E3: Light: u8 day_light_forced.is_set() ? 1 : 0
-              TS_PROTO_TYPE: "u8 day_light_forced.is_set() ? 1 : 0": number,
-              TS_PROTO_ASSIGN: "u8 day_light_forced.is_set() ? 1 : 0": vals["E3"],
-            */
-            u8_to_format_and_send = day_light_forced.is_set() ? 1 : 0;
-
-            do {
-                akat_coroutine_state = 66;
-akat_coroutine_l_66:
-
-                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            byte_to_send = ',';
-
-            do {
-                akat_coroutine_state = 67;
-akat_coroutine_l_67:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            /*
-              COMMPROTO: E4: Light: u8 night_light_forced.is_set() ? 1 : 0
-              TS_PROTO_TYPE: "u8 night_light_forced.is_set() ? 1 : 0": number,
-              TS_PROTO_ASSIGN: "u8 night_light_forced.is_set() ? 1 : 0": vals["E4"],
-            */
-            u8_to_format_and_send = night_light_forced.is_set() ? 1 : 0;
 
             do {
                 akat_coroutine_state = 68;
@@ -21661,6 +21808,93 @@ akat_coroutine_l_69:
 
             ;
             /*
+              COMMPROTO: E2: Light: u8 night_light_switch.is_set() ? 1 : 0
+              TS_PROTO_TYPE: "u8 night_light_switch.is_set() ? 1 : 0": number,
+              TS_PROTO_ASSIGN: "u8 night_light_switch.is_set() ? 1 : 0": vals["E2"],
+            */
+            u8_to_format_and_send = night_light_switch.is_set() ? 1 : 0;
+
+            do {
+                akat_coroutine_state = 70;
+akat_coroutine_l_70:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 71;
+akat_coroutine_l_71:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: E3: Light: u8 day_light_forced.is_set() ? 1 : 0
+              TS_PROTO_TYPE: "u8 day_light_forced.is_set() ? 1 : 0": number,
+              TS_PROTO_ASSIGN: "u8 day_light_forced.is_set() ? 1 : 0": vals["E3"],
+            */
+            u8_to_format_and_send = day_light_forced.is_set() ? 1 : 0;
+
+            do {
+                akat_coroutine_state = 72;
+akat_coroutine_l_72:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 73;
+akat_coroutine_l_73:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: E4: Light: u8 night_light_forced.is_set() ? 1 : 0
+              TS_PROTO_TYPE: "u8 night_light_forced.is_set() ? 1 : 0": number,
+              TS_PROTO_ASSIGN: "u8 night_light_forced.is_set() ? 1 : 0": vals["E4"],
+            */
+            u8_to_format_and_send = night_light_forced.is_set() ? 1 : 0;
+
+            do {
+                akat_coroutine_state = 74;
+akat_coroutine_l_74:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 75;
+akat_coroutine_l_75:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
               COMMPROTO: E5: Light: u8 light_forces_since_protection_stat_reset
               TS_PROTO_TYPE: "u8 light_forces_since_protection_stat_reset": number,
               TS_PROTO_ASSIGN: "u8 light_forces_since_protection_stat_reset": vals["E5"],
@@ -21668,8 +21902,8 @@ akat_coroutine_l_69:
             u8_to_format_and_send = light_forces_since_protection_stat_reset;
 
             do {
-                akat_coroutine_state = 70;
-akat_coroutine_l_70:
+                akat_coroutine_state = 76;
+akat_coroutine_l_76:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21682,8 +21916,8 @@ akat_coroutine_l_70:
             byte_to_send = ' ';
 
             do {
-                akat_coroutine_state = 71;
-akat_coroutine_l_71:
+                akat_coroutine_state = 77;
+akat_coroutine_l_77:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21691,11 +21925,11 @@ akat_coroutine_l_71:
             } while (0);
 
             ;
-            u8_to_format_and_send = 0xe8;
+            u8_to_format_and_send = 0x54;
 
             do {
-                akat_coroutine_state = 72;
-akat_coroutine_l_72:
+                akat_coroutine_state = 78;
+akat_coroutine_l_78:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21707,8 +21941,8 @@ akat_coroutine_l_72:
             byte_to_send = ' ';
 
             do {
-                akat_coroutine_state = 73;
-akat_coroutine_l_73:
+                akat_coroutine_state = 79;
+akat_coroutine_l_79:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21719,8 +21953,8 @@ akat_coroutine_l_73:
             u8_to_format_and_send = crc;
 
             do {
-                akat_coroutine_state = 74;
-akat_coroutine_l_74:
+                akat_coroutine_state = 80;
+akat_coroutine_l_80:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21732,8 +21966,8 @@ akat_coroutine_l_74:
             byte_to_send = '\r';
 
             do {
-                akat_coroutine_state = 75;
-akat_coroutine_l_75:
+                akat_coroutine_state = 81;
+akat_coroutine_l_81:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21744,8 +21978,8 @@ akat_coroutine_l_75:
             byte_to_send = '\n';
 
             do {
-                akat_coroutine_state = 76;
-akat_coroutine_l_76:
+                akat_coroutine_state = 82;
+akat_coroutine_l_82:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -22136,6 +22370,21 @@ akat_coroutine_l_2:
             case 'L':
                 force_light(command_arg);
                 break;
+
+            case 'A':
+                //Least significant clock byte
+                received_clock0 = command_arg;
+                break;
+
+            case 'B':
+                received_clock1 = command_arg;
+                break;
+
+            case 'C':
+                //Most significant clock byte. This one is supposed to be received LAST.
+                //('A' and 'B') must be already here.
+                received_clock2 = command_arg;
+                break;
             }
         }
     } while (0);
@@ -22169,6 +22418,7 @@ static AKAT_FORCE_INLINE void akat_on_every_decisecond() {
     day_light_switch__ticker();
     night_light_switch__ticker();
     akat_every_second_decisecond_handler();
+    controller_tick();
     uptime_ticker();
     activity_led();
     ds18b20_ticker();

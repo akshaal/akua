@@ -282,6 +282,21 @@ const avrUptimeSecondsGauge = new SimpleCounter({
     help: 'Uptime seconds as returned by AVR (might be inaccurate as there is no RTC there).'
 });
 
+const avrClockDriftSecondsGauge = new SimpleCounter({
+    name: 'akua_avr_clock_drift_seconds',
+    help: 'Drift of AVR clock compared to clock of raspberry pi.'
+});
+
+const avrClockCorrectionsSinceProtectionStatResetGauge = new SimpleCounter({
+    name: 'akua_avr_clock_corrections_since_protection_stat_reset',
+    help: 'Number of times clock has been corrected since statistic was reset (every hour).'
+});
+
+const avrClockSecondsSinceMidnightGauge = new SimpleCounter({
+    name: 'akua_avr_clock_seconds_since_midnight',
+    help: 'Number of seconds since midnight (i.e. clock of AVR).'
+});
+
 const avrDebugOverflowsGauge = new SimpleCounter({
     name: 'akua_avr_debug_overflows',
     help: 'Number of times AVR was out of buffer space trying to send debug info to host.'
@@ -530,6 +545,9 @@ export default class MetricsServiceImpl extends MetricsService {
         avrUptimeSecondsGauge.setOrRemove(avrServiceState.lastAvrState?.uptimeSeconds);
         avrUsbRxOverflowsGauge.setOrRemove(avrServiceState.lastAvrState?.usbRxOverflows);
         avrDebugOverflowsGauge.setOrRemove(avrServiceState.lastAvrState?.debugOverflows);
+        avrClockCorrectionsSinceProtectionStatResetGauge.setOrRemove(avrServiceState.lastAvrState?.clockCorrectionsSinceProtectionStatReset);
+        avrClockDriftSecondsGauge.setOrRemove(avrServiceState.lastAvrState?.clockDriftSeconds);
+        avrClockSecondsSinceMidnightGauge.setOrRemove(avrServiceState.lastAvrState?.clockSecondsSinceMidnight);
 
         // Temperature sensors
         const handleTemperature = (name: string, t: Temperature | null): void => {

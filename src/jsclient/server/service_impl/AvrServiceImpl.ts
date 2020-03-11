@@ -13,6 +13,9 @@ const AUTO_REOPEN_MILLIS = 1000;
 // How often we update state to AVR
 const AUTO_WRITE_MILLIS = 100;
 
+// How often we send our clock time to AVR
+const CLOCK_UPDATE_MILLIS = 3000;
+
 // ==========================================================================================
 
 function asAvrState(avrData: AvrData): AvrState {
@@ -56,6 +59,10 @@ function asAvrState(avrData: AvrData): AvrState {
 
     return {
         uptimeSeconds: avrData["u32 uptime_deciseconds"] / 10.0,
+        // TODO: Fix sign!
+        clockDriftSeconds: avrData["u32 ((u32)last_drift_of_clock_deciseconds_since_midnight)"] / 10.0,
+        clockCorrectionsSinceProtectionStatReset: avrData["u32 clock_corrections_since_protection_stat_reset"],
+        clockSecondsSinceMidnight: avrData["u32 clock_deciseconds_since_midnight"],
         mainLoopIterationsInLastDecisecond: avrData["u32 main_loop_iterations_in_last_decisecond"],
         debugOverflows: avrData["u8 debug_overflow_count"],
         usbRxOverflows: avrData["u8 usart0_rx_overflow_count"],
@@ -91,10 +98,10 @@ function calcCrc(str: string): number {
 
 // ==========================================================================================
 
-function serializeCommands(commands: { lightForceMode?: LightForceMode }): string {
+function serializeCommands(commands: { lightForceMode?: LightForceMode, sendClock: boolean }): string {
     var result = "";
 
-    function addValue(id: 'L', v?: number): void {
+    function addValue(id: 'L' | 'A' | 'B' | 'C', v?: number): void {
         if (typeof v === "undefined") {
             return;
         }
@@ -110,6 +117,14 @@ function serializeCommands(commands: { lightForceMode?: LightForceMode }): strin
     }
 
     addValue('L', commands.lightForceMode);
+
+    if (commands.sendClock) {
+        // Order of commands is important!
+        const c = (new Date().getTime() / 100) % (24 * 60 * 60 * 10);
+        addValue('A', c % 256);
+        addValue('B', Math.floor(c / 256) % 256);
+        addValue('C', Math.floor(c / 65536));
+    }
 
     return result;
 }
@@ -153,6 +168,7 @@ export default class AvrServiceImpl extends AvrService {
     private _lastAvrState?: AvrState;
     private _canWrite = false;
     private _lightForceMode?: LightForceMode;
+    private _sendClockReq: boolean = false;
 
     @postConstruct()
     _init(): void {
@@ -175,6 +191,9 @@ export default class AvrServiceImpl extends AvrService {
 
         // Send commands to AVR
         recurrent(AUTO_WRITE_MILLIS, () => this._write_commands());
+
+        // Send clock
+        recurrent(CLOCK_UPDATE_MILLIS, () => this._sendClockReq = true);
     }
 
     // Write commands if needed, this is called recurrently
@@ -185,7 +204,8 @@ export default class AvrServiceImpl extends AvrService {
 
         // Create commands, this will return empty string if no commands needed
         const text = serializeCommands({
-            lightForceMode: this._lightForceMode
+            lightForceMode: this._lightForceMode,
+            sendClock: this._sendClockReq
         });
 
         // Don't try to write if there is nothing to write
@@ -195,6 +215,7 @@ export default class AvrServiceImpl extends AvrService {
 
         // Assume that we have sent it...
         this._lightForceMode = undefined;
+        this._sendClockReq = false;
 
         // Set us into busy mode
         this._canWrite = false;
