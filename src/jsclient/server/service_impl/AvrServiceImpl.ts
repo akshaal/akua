@@ -233,7 +233,7 @@ export default class AvrServiceImpl extends AvrService {
             this._outgoingMessages += 1;
             logger.debug("Done writing");
         });
-        this._serialPort.flush();
+        this._serialPort.drain();
     }
 
     private _onSerialPortOpen(): void {
