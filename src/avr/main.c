@@ -27,12 +27,12 @@
 #define AK_MAX_CLOCK_CORRECTIONS_WITHIN_ONE_HOUR 10
 
 // Maximum allowed clock drift before it's corrected
-#define AK_MAX_CLOCK_DRIFT_DECISECONDS 200
+#define AK_MAX_CLOCK_DRIFT_DECISECONDS 5
 
 // Maximum allowed delaying of clock correction (see above).
 // This will be used if it's detected that correction
 // will cause light changes... so we delay it until it doesn't cause it
-#define AK_MAX_HARDLIMIT_CLOCK_DRIFT_DECISECONDS 400
+#define AK_MAX_HARDLIMIT_CLOCK_DRIFT_DECISECONDS 20
 
 // Number of deciseconds in a day
 #define AK_NUMBER_DECISECONDS_IN_DAY (24L * 60L * 60L * 10L)
