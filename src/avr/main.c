@@ -284,6 +284,7 @@ FUNCTION$(void force_light(const LightForceMode mode)) {
     }
 
     if (light_forces_since_protection_stat_reset >= AK_MAX_LIGHT_FORCES_WITHIN_ONE_HOUR) {
+        // TODO: Add statistics about how many forces was ignored!
         return;
     }
 
@@ -296,6 +297,17 @@ FUNCTION$(void force_light(const LightForceMode mode)) {
     }
 
     light_forces_since_protection_stat_reset += 1;
+}
+
+// Called from uart-command-receiver if set-co2 switch command is received from raspberry-pi
+FUNCTION$(void update_co2_switch_state(const u8 new_state)) {
+    // TODO: This is temporary code.
+    // TODO: Implement proper stuff
+    // TODO: Check whether we opened switch this hour and ignore further requests if
+    // TODO: it was opened this hour but now closed and now requested to open again.
+    // TODO: IF the current state is 'open/on' and new_state is the same, then we just
+    // TODO: need to refresh the state in pin (otherwise it will expire).
+    co2_switch.set(new_state);
 }
 
 // - - - - - - - - - - - -  - - - - - - - ---- - - -- - - - -  - - - -
@@ -629,7 +641,8 @@ THREAD$(usart0_writer, state_type = u8) {
                       u8 co2.get_s(),
                       u16 co2.get_u(),
                       u8 co2.get_update_id(),
-                      u8 co2.get_updated_deciseconds_ago());
+                      u8 co2.get_updated_deciseconds_ago(),
+                      u8 co2_switch.is_set() ? 1 : 0);
 
         WRITE_STATUS$("Light",
                       E,
@@ -742,6 +755,10 @@ THREAD$(usart0_reader) {
         CALL$(read_command);
 
         switch(command_code) {
+        case 'G':
+            update_co2_switch_state(command_arg);
+            break;
+
         case 'L':
             force_light(command_arg);
             break;

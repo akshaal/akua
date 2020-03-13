@@ -460,6 +460,11 @@ const co2SensorUGauge = new SimpleGauge({
 
 // ==========================================================================================
 
+const co2ValveOpenGauge = new SimpleGauge({
+    name: 'akua_co2_valve_open',
+    help: '1 means open (co2 can flow into tank), 0 means closed (no co2).'
+});
+
 const dayLightOnGauge = new SimpleGauge({
     name: 'akua_day_light_on',
     help: '1 means on, 0 means off.'
@@ -579,6 +584,7 @@ export default class MetricsServiceImpl extends MetricsService {
         co2SensorTemperatureGauge.setOrRemove(co2?.lastSensorState?.temperature);
         co2SensorSGauge.setOrRemove(co2?.lastSensorState?.s);
         co2SensorUGauge.setOrRemove(co2?.lastSensorState?.u);
+        co2ValveOpenGauge.setOrRemove(avrServiceState.lastAvrState?.co2ValveOpen);
 
         // Light - - - - 
         const light = avrServiceState.lastAvrState?.light;

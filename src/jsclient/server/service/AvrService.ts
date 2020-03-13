@@ -55,12 +55,18 @@ export interface AvrState {
     readonly aquariumTemperatureSensor: AvrTemperatureSensorState;
     readonly caseTemperatureSensor: AvrTemperatureSensorState;
     readonly light: AvrLightState;
+    readonly co2ValveOpen: boolean;
 }
 
 export enum LightForceMode {
     NotForced = 0,
     Day = 1,
     Night = 2
+};
+
+export enum Co2ValveOpenState {
+    Closed = 0,
+    Open = 1
 };
 
 @injectable()
@@ -70,4 +76,6 @@ export default abstract class AvrService {
     abstract getServiceState(): AvrServiceState;
 
     abstract forceLight(mode: LightForceMode): void;
+
+    abstract setCo2ValveOpenState(newCo2ValveOpenState: Co2ValveOpenState): void;
 }

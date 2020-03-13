@@ -17679,7 +17679,7 @@ static void force_light(const LightForceMode mode) {
         return;
     }
 
-    if (light_forces_since_protection_stat_reset >= AK_MAX_LIGHT_FORCES_WITHIN_ONE_HOUR) {
+    if (light_forces_since_protection_stat_reset >= AK_MAX_LIGHT_FORCES_WITHIN_ONE_HOUR) {//TODO: Add statistics about how many forces was ignored!
         return;
     }
 
@@ -17692,6 +17692,22 @@ static void force_light(const LightForceMode mode) {
     }
 
     light_forces_since_protection_stat_reset += 1;
+}
+
+;
+
+
+
+
+// Called from uart-command-receiver if set-co2 switch command is received from raspberry-pi
+static void update_co2_switch_state(const u8 new_state) {
+//TODO: This is temporary code.
+    //TODO: Implement proper stuff
+    //TODO: Check whether we opened switch this hour and ignore further requests if
+    //TODO: it was opened this hour but now closed and now requested to open again.
+    //TODO: IF the current state is 'open/on' and new_state is the same, then we just
+    //TODO: need to refresh the state in pin (otherwise it will expire).
+    co2_switch.set(new_state);
 }
 
 ;
@@ -20856,6 +20872,12 @@ static AKAT_FORCE_INLINE void usart0_writer() {
 
     case 82:
         goto akat_coroutine_l_82;
+
+    case 83:
+        goto akat_coroutine_l_83;
+
+    case 84:
+        goto akat_coroutine_l_84;
     }
 
 akat_coroutine_l_start:
@@ -21801,8 +21823,7 @@ akat_coroutine_l_65:
             } while (0);
 
             ;
-            ;
-            byte_to_send = ' ';
+            byte_to_send = ',';
 
             do {
                 akat_coroutine_state = 66;
@@ -21814,11 +21835,41 @@ akat_coroutine_l_66:
             } while (0);
 
             ;
-            byte_to_send = 'E';
+            /*
+              COMMPROTO: D12: CO2 sensor: u8 co2_switch.is_set() ? 1 : 0
+              TS_PROTO_TYPE: "u8 co2_switch.is_set() ? 1 : 0": number,
+              TS_PROTO_ASSIGN: "u8 co2_switch.is_set() ? 1 : 0": vals["D12"],
+            */
+            u8_to_format_and_send = co2_switch.is_set() ? 1 : 0;
 
             do {
                 akat_coroutine_state = 67;
 akat_coroutine_l_67:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            ;
+            byte_to_send = ' ';
+
+            do {
+                akat_coroutine_state = 68;
+akat_coroutine_l_68:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = 'E';
+
+            do {
+                akat_coroutine_state = 69;
+akat_coroutine_l_69:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21832,35 +21883,6 @@ akat_coroutine_l_67:
               TS_PROTO_ASSIGN: "u8 day_light_switch.is_set() ? 1 : 0": vals["E1"],
             */
             u8_to_format_and_send = day_light_switch.is_set() ? 1 : 0;
-
-            do {
-                akat_coroutine_state = 68;
-akat_coroutine_l_68:
-
-                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            byte_to_send = ',';
-
-            do {
-                akat_coroutine_state = 69;
-akat_coroutine_l_69:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            /*
-              COMMPROTO: E2: Light: u8 night_light_switch.is_set() ? 1 : 0
-              TS_PROTO_TYPE: "u8 night_light_switch.is_set() ? 1 : 0": number,
-              TS_PROTO_ASSIGN: "u8 night_light_switch.is_set() ? 1 : 0": vals["E2"],
-            */
-            u8_to_format_and_send = night_light_switch.is_set() ? 1 : 0;
 
             do {
                 akat_coroutine_state = 70;
@@ -21885,11 +21907,11 @@ akat_coroutine_l_71:
 
             ;
             /*
-              COMMPROTO: E3: Light: u8 day_light_forced.is_set() ? 1 : 0
-              TS_PROTO_TYPE: "u8 day_light_forced.is_set() ? 1 : 0": number,
-              TS_PROTO_ASSIGN: "u8 day_light_forced.is_set() ? 1 : 0": vals["E3"],
+              COMMPROTO: E2: Light: u8 night_light_switch.is_set() ? 1 : 0
+              TS_PROTO_TYPE: "u8 night_light_switch.is_set() ? 1 : 0": number,
+              TS_PROTO_ASSIGN: "u8 night_light_switch.is_set() ? 1 : 0": vals["E2"],
             */
-            u8_to_format_and_send = day_light_forced.is_set() ? 1 : 0;
+            u8_to_format_and_send = night_light_switch.is_set() ? 1 : 0;
 
             do {
                 akat_coroutine_state = 72;
@@ -21914,11 +21936,11 @@ akat_coroutine_l_73:
 
             ;
             /*
-              COMMPROTO: E4: Light: u8 night_light_forced.is_set() ? 1 : 0
-              TS_PROTO_TYPE: "u8 night_light_forced.is_set() ? 1 : 0": number,
-              TS_PROTO_ASSIGN: "u8 night_light_forced.is_set() ? 1 : 0": vals["E4"],
+              COMMPROTO: E3: Light: u8 day_light_forced.is_set() ? 1 : 0
+              TS_PROTO_TYPE: "u8 day_light_forced.is_set() ? 1 : 0": number,
+              TS_PROTO_ASSIGN: "u8 day_light_forced.is_set() ? 1 : 0": vals["E3"],
             */
-            u8_to_format_and_send = night_light_forced.is_set() ? 1 : 0;
+            u8_to_format_and_send = day_light_forced.is_set() ? 1 : 0;
 
             do {
                 akat_coroutine_state = 74;
@@ -21943,6 +21965,35 @@ akat_coroutine_l_75:
 
             ;
             /*
+              COMMPROTO: E4: Light: u8 night_light_forced.is_set() ? 1 : 0
+              TS_PROTO_TYPE: "u8 night_light_forced.is_set() ? 1 : 0": number,
+              TS_PROTO_ASSIGN: "u8 night_light_forced.is_set() ? 1 : 0": vals["E4"],
+            */
+            u8_to_format_and_send = night_light_forced.is_set() ? 1 : 0;
+
+            do {
+                akat_coroutine_state = 76;
+akat_coroutine_l_76:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 77;
+akat_coroutine_l_77:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
               COMMPROTO: E5: Light: u8 light_forces_since_protection_stat_reset
               TS_PROTO_TYPE: "u8 light_forces_since_protection_stat_reset": number,
               TS_PROTO_ASSIGN: "u8 light_forces_since_protection_stat_reset": vals["E5"],
@@ -21950,8 +22001,8 @@ akat_coroutine_l_75:
             u8_to_format_and_send = light_forces_since_protection_stat_reset;
 
             do {
-                akat_coroutine_state = 76;
-akat_coroutine_l_76:
+                akat_coroutine_state = 78;
+akat_coroutine_l_78:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21964,31 +22015,6 @@ akat_coroutine_l_76:
             byte_to_send = ' ';
 
             do {
-                akat_coroutine_state = 77;
-akat_coroutine_l_77:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            u8_to_format_and_send = 0x54;
-
-            do {
-                akat_coroutine_state = 78;
-akat_coroutine_l_78:
-
-                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            //Done writing status, send: CRC\r\n
-            byte_to_send = ' ';
-
-            do {
                 akat_coroutine_state = 79;
 akat_coroutine_l_79:
 
@@ -21998,7 +22024,7 @@ akat_coroutine_l_79:
             } while (0);
 
             ;
-            u8_to_format_and_send = crc;
+            u8_to_format_and_send = 0x8e;
 
             do {
                 akat_coroutine_state = 80;
@@ -22010,8 +22036,8 @@ akat_coroutine_l_80:
             } while (0);
 
             ;
-            //Newline
-            byte_to_send = '\r';
+            //Done writing status, send: CRC\r\n
+            byte_to_send = ' ';
 
             do {
                 akat_coroutine_state = 81;
@@ -22023,11 +22049,36 @@ akat_coroutine_l_81:
             } while (0);
 
             ;
-            byte_to_send = '\n';
+            u8_to_format_and_send = crc;
 
             do {
                 akat_coroutine_state = 82;
 akat_coroutine_l_82:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            //Newline
+            byte_to_send = '\r';
+
+            do {
+                akat_coroutine_state = 83;
+akat_coroutine_l_83:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = '\n';
+
+            do {
+                akat_coroutine_state = 84;
+akat_coroutine_l_84:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -22415,6 +22466,10 @@ akat_coroutine_l_2:
             ;
 
             switch (command_code) {
+            case 'G':
+                update_co2_switch_state(command_arg);
+                break;
+
             case 'L':
                 force_light(command_arg);
                 break;

@@ -1,5 +1,5 @@
 import { injectable, postConstruct } from "inversify";
-import AvrService, { AvrServiceState, AvrState, AvrCo2SensorState, AvrTemperatureSensorState, LightForceMode, AvrLightState } from "server/service/AvrService";
+import AvrService, { AvrServiceState, AvrState, AvrCo2SensorState, AvrTemperatureSensorState, LightForceMode, AvrLightState, Co2ValveOpenState } from "server/service/AvrService";
 import SerialPort from "serialport";
 import config from "server/config";
 import logger from "server/logger";
@@ -71,6 +71,7 @@ function asAvrState(avrData: AvrData): AvrState {
         mainLoopIterationsInLastDecisecond: avrData["u32 main_loop_iterations_in_last_decisecond"],
         debugOverflows: avrData["u8 debug_overflow_count"],
         usbRxOverflows: avrData["u8 usart0_rx_overflow_count"],
+        co2ValveOpen: !!avrData["u8 co2_switch.is_set() ? 1 : 0"],
         co2Sensor,
         aquariumTemperatureSensor,
         caseTemperatureSensor,
@@ -103,10 +104,14 @@ function calcCrc(str: string): number {
 
 // ==========================================================================================
 
-function serializeCommands(commands: { lightForceMode?: LightForceMode, sendClock: boolean }): string {
+function serializeCommands(commands: {
+    lightForceMode?: LightForceMode,
+    newCo2ValveOpenState?: Co2ValveOpenState,
+    sendClock: boolean,
+}): string {
     var result = "";
 
-    function addValue(id: 'L' | 'A' | 'B' | 'C', v?: number): void {
+    function addValue(id: 'L' | 'A' | 'B' | 'C' | 'G', v?: number): void {
         if (typeof v === "undefined") {
             return;
         }
@@ -122,6 +127,7 @@ function serializeCommands(commands: { lightForceMode?: LightForceMode, sendCloc
     }
 
     addValue('L', commands.lightForceMode);
+    addValue('G', commands.newCo2ValveOpenState);
 
     if (commands.sendClock) {
         // Order of commands is important!
@@ -175,6 +181,7 @@ export default class AvrServiceImpl extends AvrService {
     private _canWrite = false;
     private _lightForceMode?: LightForceMode;
     private _sendClockReq: boolean = false;
+    private _newCo2ValveOpenState?: Co2ValveOpenState;
 
     @postConstruct()
     _init(): void {
@@ -211,7 +218,8 @@ export default class AvrServiceImpl extends AvrService {
         // Create commands, this will return empty string if no commands needed
         const text = serializeCommands({
             lightForceMode: this._lightForceMode,
-            sendClock: this._sendClockReq
+            sendClock: this._sendClockReq,
+            newCo2ValveOpenState: this._newCo2ValveOpenState
         });
 
         // Don't try to write if there is nothing to write
@@ -221,6 +229,7 @@ export default class AvrServiceImpl extends AvrService {
 
         // Assume that we have sent it...
         this._lightForceMode = undefined;
+        this._newCo2ValveOpenState = undefined;
         this._sendClockReq = false;
 
         // Set us into busy mode
@@ -341,7 +350,10 @@ export default class AvrServiceImpl extends AvrService {
 
     public forceLight(mode: LightForceMode): void {
         logger.info("Forcing light mode: " + mode);
-
         this._lightForceMode = mode;
+    }
+
+    public setCo2ValveOpenState(newCo2ValveOpenState: Co2ValveOpenState): void {
+        this._newCo2ValveOpenState = newCo2ValveOpenState;
     }
 }
