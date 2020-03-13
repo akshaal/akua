@@ -140,7 +140,7 @@ X_UNUSED_PIN$(J5); // 68   PJ5 ( PCINT14 )
 X_UNUSED_PIN$(J6); // 69   PJ6 ( PCINT 15 )
 X_UNUSED_PIN$(G2); // 70   PG2 ( ALE ) Digital pin 39
 X_UNUSED_PIN$(A7); // 71   PA7 ( AD7 ) Digital pin 29
-X_UNUSED_PIN$(A6); // 72   PA6 ( AD6 ) Digital pin 28
+// CO2 switch         72   PA6 ( AD6 ) Digital pin 28
 // Night light switch 73   PA5 ( AD5 ) Digital pin 27
 // Main light switch  74   PA4 ( AD4 ) Digital pin 26
 X_UNUSED_PIN$(A3); // 75   PA3 ( AD3 ) Digital pin 25
@@ -242,6 +242,7 @@ X_EVERY_DECISECOND$(performance_ticker) {
 
 X_GPIO_SAFE_OUTPUT$(day_light_switch, A4, safe_state = 0, state_timeout_deciseconds = 100);
 X_GPIO_SAFE_OUTPUT$(night_light_switch, A5, safe_state = 0, state_timeout_deciseconds = 100);
+X_GPIO_SAFE_OUTPUT$(co2_switch, A6, safe_state = 0, state_timeout_deciseconds = 100);
 
 GLOBAL$() {
     // Clock used to calculate state

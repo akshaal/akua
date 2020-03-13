@@ -12479,217 +12479,7 @@ A7_unused_t const A7_unused = {.is_set = &is_set__impl
 
 ;
 ; // 71   PA7 ( AD7 ) Digital pin 29
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} A6_unused__port_t;
-
-extern A6_unused__port_t const A6_unused__port;
-
-static AKAT_FORCE_INLINE void A6_unused__port__set__impl(u8 state) {
-#define set__impl A6_unused__port__set__impl
-
-    if (state) {
-        PORTA |= 1 << 6;  //Set PORTA of A6 to 1
-    } else {
-        PORTA &= ~(1 << 6);  //Set PORTA of A6 to 0
-    }
-
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 A6_unused__port__is_set__impl() {
-#define is_set__impl A6_unused__port__is_set__impl
-#define set__impl A6_unused__port__set__impl
-    return PORTA & (1 << 6);  //Get value of PORTA for A6
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl A6_unused__port__is_set__impl
-#define set__impl A6_unused__port__set__impl
-
-A6_unused__port_t const A6_unused__port = {.set = &set__impl
-                                           ,
-                                           .is_set = &is_set__impl
-                                          };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl A6_unused__port__is_set__impl
-#define set__impl A6_unused__port__set__impl
-
-
-;
-
-#define is_set__impl A6_unused__port__is_set__impl
-#define set__impl A6_unused__port__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} A6_unused__ddr_t;
-
-extern A6_unused__ddr_t const A6_unused__ddr;
-
-static AKAT_FORCE_INLINE void A6_unused__ddr__set__impl(u8 state) {
-#define set__impl A6_unused__ddr__set__impl
-
-    if (state) {
-        DDRA |= 1 << 6;  //Set DDRA of A6 to 1
-    } else {
-        DDRA &= ~(1 << 6);  //Set DDRA of A6 to 0
-    }
-
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 A6_unused__ddr__is_set__impl() {
-#define is_set__impl A6_unused__ddr__is_set__impl
-#define set__impl A6_unused__ddr__set__impl
-    return DDRA & (1 << 6);  //Get value of DDRA for A6
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl A6_unused__ddr__is_set__impl
-#define set__impl A6_unused__ddr__set__impl
-
-A6_unused__ddr_t const A6_unused__ddr = {.set = &set__impl
-                                         ,
-                                         .is_set = &is_set__impl
-                                        };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl A6_unused__ddr__is_set__impl
-#define set__impl A6_unused__ddr__set__impl
-
-
-;
-
-#define is_set__impl A6_unused__ddr__is_set__impl
-#define set__impl A6_unused__ddr__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} A6_unused__pin_t;
-
-extern A6_unused__pin_t const A6_unused__pin;
-
-static AKAT_FORCE_INLINE void A6_unused__pin__set__impl(u8 state) {
-#define set__impl A6_unused__pin__set__impl
-
-    if (state) {
-        PINA |= 1 << 6;  //Set PINA of A6 to 1
-    } else {
-        PINA &= ~(1 << 6);  //Set PINA of A6 to 0
-    }
-
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 A6_unused__pin__is_set__impl() {
-#define is_set__impl A6_unused__pin__is_set__impl
-#define set__impl A6_unused__pin__set__impl
-    return PINA & (1 << 6);  //Get value of PINA for A6
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl A6_unused__pin__is_set__impl
-#define set__impl A6_unused__pin__set__impl
-
-A6_unused__pin_t const A6_unused__pin = {.set = &set__impl
-                                         ,
-                                         .is_set = &is_set__impl
-                                        };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl A6_unused__pin__is_set__impl
-#define set__impl A6_unused__pin__set__impl
-
-
-;
-
-#define is_set__impl A6_unused__pin__is_set__impl
-#define set__impl A6_unused__pin__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-static AKAT_FORCE_INLINE void A6_unused__init() {
-    A6_unused__ddr.set(0);
-    A6_unused__port.set(1);
-}
-
-;
-
-
-
-
-
-typedef struct {
-    u8 (* const is_set)();
-} A6_unused_t;
-
-extern A6_unused_t const A6_unused;
-
-static AKAT_FORCE_INLINE u8 A6_unused__is_set__impl() {
-#define is_set__impl A6_unused__is_set__impl
-    return A6_unused__pin.is_set();
-#undef is_set__impl
-}
-#define is_set__impl A6_unused__is_set__impl
-
-A6_unused_t const A6_unused = {.is_set = &is_set__impl
-                              };
-
-
-#undef is_set__impl
-#define is_set__impl A6_unused__is_set__impl
-
-
-;
-
-#define is_set__impl A6_unused__is_set__impl
-
-
-
-
-#undef is_set__impl
-;
-
-
-
-;
-; // 72   PA6 ( AD6 ) Digital pin 28
+// CO2 switch         72   PA6 ( AD6 ) Digital pin 28
 // Night light switch 73   PA5 ( AD5 ) Digital pin 27
 // Main light switch  74   PA4 ( AD4 ) Digital pin 26
 typedef struct {
@@ -17348,6 +17138,263 @@ static AKAT_FORCE_INLINE void night_light_switch__ticker() {
 
     if (night_light_switch__updated_ago >= 100) {
         night_light_switch__output.set(0);
+    }
+}
+
+;
+
+
+
+;
+// Like X_GPIO_OUTPUT$ but times out if state is not updated witjin state_timeout_deciseconds.
+// If timeout happens, then the state of pin is set to 'safe_state'
+
+typedef struct {
+    void (* const set)(u8 state);
+    u8 (* const is_set)();
+} co2_switch__output__port_t;
+
+extern co2_switch__output__port_t const co2_switch__output__port;
+
+static AKAT_FORCE_INLINE void co2_switch__output__port__set__impl(u8 state) {
+#define set__impl co2_switch__output__port__set__impl
+
+    if (state) {
+        PORTA |= 1 << 6;  //Set PORTA of A6 to 1
+    } else {
+        PORTA &= ~(1 << 6);  //Set PORTA of A6 to 0
+    }
+
+#undef set__impl
+}
+static AKAT_FORCE_INLINE u8 co2_switch__output__port__is_set__impl() {
+#define is_set__impl co2_switch__output__port__is_set__impl
+#define set__impl co2_switch__output__port__set__impl
+    return PORTA & (1 << 6);  //Get value of PORTA for A6
+#undef is_set__impl
+#undef set__impl
+}
+#define is_set__impl co2_switch__output__port__is_set__impl
+#define set__impl co2_switch__output__port__set__impl
+
+co2_switch__output__port_t const co2_switch__output__port = {.set = &set__impl
+                                                             ,
+                                                             .is_set = &is_set__impl
+                                                            };
+
+
+#undef is_set__impl
+#undef set__impl
+#define is_set__impl co2_switch__output__port__is_set__impl
+#define set__impl co2_switch__output__port__set__impl
+
+
+;
+
+#define is_set__impl co2_switch__output__port__is_set__impl
+#define set__impl co2_switch__output__port__set__impl
+
+
+
+
+
+#undef is_set__impl
+#undef set__impl
+;
+
+
+
+typedef struct {
+    void (* const set)(u8 state);
+    u8 (* const is_set)();
+} co2_switch__output__ddr_t;
+
+extern co2_switch__output__ddr_t const co2_switch__output__ddr;
+
+static AKAT_FORCE_INLINE void co2_switch__output__ddr__set__impl(u8 state) {
+#define set__impl co2_switch__output__ddr__set__impl
+
+    if (state) {
+        DDRA |= 1 << 6;  //Set DDRA of A6 to 1
+    } else {
+        DDRA &= ~(1 << 6);  //Set DDRA of A6 to 0
+    }
+
+#undef set__impl
+}
+static AKAT_FORCE_INLINE u8 co2_switch__output__ddr__is_set__impl() {
+#define is_set__impl co2_switch__output__ddr__is_set__impl
+#define set__impl co2_switch__output__ddr__set__impl
+    return DDRA & (1 << 6);  //Get value of DDRA for A6
+#undef is_set__impl
+#undef set__impl
+}
+#define is_set__impl co2_switch__output__ddr__is_set__impl
+#define set__impl co2_switch__output__ddr__set__impl
+
+co2_switch__output__ddr_t const co2_switch__output__ddr = {.set = &set__impl
+                                                           ,
+                                                           .is_set = &is_set__impl
+                                                          };
+
+
+#undef is_set__impl
+#undef set__impl
+#define is_set__impl co2_switch__output__ddr__is_set__impl
+#define set__impl co2_switch__output__ddr__set__impl
+
+
+;
+
+#define is_set__impl co2_switch__output__ddr__is_set__impl
+#define set__impl co2_switch__output__ddr__set__impl
+
+
+
+
+
+#undef is_set__impl
+#undef set__impl
+;
+
+
+
+static AKAT_FORCE_INLINE void co2_switch__output__init() {
+    co2_switch__output__ddr.set(1); //Init A6 as output
+}
+
+;
+
+
+
+
+
+typedef struct {
+    void (* const set)(u8 state);
+    u8 (* const is_set)();
+} co2_switch__output_t;
+
+extern co2_switch__output_t const co2_switch__output;
+
+static AKAT_FORCE_INLINE void co2_switch__output__set__impl(u8 state) {
+#define set__impl co2_switch__output__set__impl
+    co2_switch__output__port.set(state);
+#undef set__impl
+}
+static AKAT_FORCE_INLINE u8 co2_switch__output__is_set__impl() {
+#define is_set__impl co2_switch__output__is_set__impl
+#define set__impl co2_switch__output__set__impl
+    return co2_switch__output__port.is_set();
+#undef is_set__impl
+#undef set__impl
+}
+#define is_set__impl co2_switch__output__is_set__impl
+#define set__impl co2_switch__output__set__impl
+
+co2_switch__output_t const co2_switch__output = {.set = &set__impl
+                                                 ,
+                                                 .is_set = &is_set__impl
+                                                };
+
+
+#undef is_set__impl
+#undef set__impl
+#define is_set__impl co2_switch__output__is_set__impl
+#define set__impl co2_switch__output__set__impl
+
+
+;
+
+#define is_set__impl co2_switch__output__is_set__impl
+#define set__impl co2_switch__output__set__impl
+
+
+
+
+
+#undef is_set__impl
+#undef set__impl
+;
+
+
+
+static AKAT_FORCE_INLINE void co2_switch__init() {
+    co2_switch__output.set(0);
+}
+
+;
+
+
+
+
+
+static u8 co2_switch__updated_ago = 255;
+
+;
+;
+
+
+typedef struct {
+    void (* const set)(u8 state);
+    u8 (* const is_set)();
+} co2_switch_t;
+
+extern co2_switch_t const co2_switch;
+
+static AKAT_FORCE_INLINE void co2_switch__set__impl(u8 state) {
+#define set__impl co2_switch__set__impl
+    co2_switch__output.set(state);
+    co2_switch__updated_ago = 0;
+#undef set__impl
+}
+static AKAT_FORCE_INLINE u8 co2_switch__is_set__impl() {
+#define is_set__impl co2_switch__is_set__impl
+#define set__impl co2_switch__set__impl
+    return co2_switch__output.is_set();
+#undef is_set__impl
+#undef set__impl
+}
+#define is_set__impl co2_switch__is_set__impl
+#define set__impl co2_switch__set__impl
+
+co2_switch_t const co2_switch = {.set = &set__impl
+                                        ,
+                                 .is_set = &is_set__impl
+                                };
+
+
+#undef is_set__impl
+#undef set__impl
+#define is_set__impl co2_switch__is_set__impl
+#define set__impl co2_switch__set__impl
+
+
+;
+
+#define is_set__impl co2_switch__is_set__impl
+#define set__impl co2_switch__set__impl
+
+
+
+
+
+#undef is_set__impl
+#undef set__impl
+;
+
+
+
+
+
+static AKAT_FORCE_INLINE void co2_switch__ticker() {
+    co2_switch__updated_ago += 1;
+
+    if (!co2_switch__updated_ago) {
+        co2_switch__updated_ago -= 1;
+    }
+
+    if (co2_switch__updated_ago >= 100) {
+        co2_switch__output.set(0);
     }
 }
 
@@ -22418,6 +22465,7 @@ static AKAT_FORCE_INLINE void akat_on_every_decisecond() {
     performance_ticker();
     day_light_switch__ticker();
     night_light_switch__ticker();
+    co2_switch__ticker();
     akat_every_second_decisecond_handler();
     controller_tick();
     uptime_ticker();
@@ -23449,7 +23497,6 @@ AKAT_NO_RETURN void main() {
     J6_unused__init();
     G2_unused__init();
     A7_unused__init();
-    A6_unused__init();
     A3_unused__init();
     A2_unused__init();
     J7_unused__init();
@@ -23473,6 +23520,8 @@ AKAT_NO_RETURN void main() {
     day_light_switch__init();
     night_light_switch__output__init();
     night_light_switch__init();
+    co2_switch__output__init();
+    co2_switch__init();
     blue_led__init();
     watchdog_init();
     ds18b20_aqua__init();
