@@ -7,6 +7,7 @@ import MetricsService from "server/service/MetricsService";
 import AvrService from "server/service/AvrService";
 import TemperatureSensorService, { Temperature } from "server/service/TemperatureSensorService";
 import Co2SensorService from "server/service/Co2SensorService";
+import PhSensorService from "server/service/PhSensorService";
 
 // Use constants for labels to avoid typos and to be consistent about names.
 const L_GC_TYPE = 'gc_type';
@@ -381,7 +382,7 @@ const temperatureSensorDisconnectsGauge = new TargetedCounter({
 });
 
 // ==========================================================================================
-// Temperature sensor
+// CO2 sensor
 
 const co2Gauge = new SimpleGauge({
     name: 'akua_co2',
@@ -459,6 +460,39 @@ const co2SensorUGauge = new SimpleGauge({
 });
 
 // ==========================================================================================
+// PH meter
+
+const ph5sVoltageGauge = new SimpleGauge({
+    name: 'akua_ph5s_voltage',
+    help: 'Current ph averaging 5 seconds of values.'
+});
+
+const ph5sVoltageSamplesGauge = new SimpleGauge({
+    name: 'akua_ph5s_voltage_samples',
+    help: 'Number of samples in ph averaging 5 seconds of values.'
+});
+
+const ph60sGauge = new SimpleGauge({
+    name: 'akua_ph60s',
+    help: 'Current ph averaging 60 seconds of values.'
+});
+
+const ph60sSamplesGauge = new SimpleGauge({
+    name: 'akua_ph60s_samples',
+    help: 'Number of samples in ph averaging 60 seconds of values.'
+});
+
+const phSensorVoltageGauge = new SimpleGauge({
+    name: 'akua_ph_sensor_voltage',
+    help: 'Last measured voltage from ph sensor as reported by AVR.'
+});
+
+const phSensorVoltageSamplesGauge = new SimpleGauge({
+    name: 'akua_ph_sensor_voltage_samples',
+    help: 'Number of ADC samples used by AVR to calculate voltage.'
+});
+
+// ==========================================================================================
 
 const co2ValveOpenGauge = new SimpleGauge({
     name: 'akua_co2_valve_open',
@@ -497,7 +531,8 @@ export default class MetricsServiceImpl extends MetricsService {
     constructor(
         private _avrService: AvrService,
         private _temperatureSensorService: TemperatureSensorService,
-        private _co2SensorService: Co2SensorService
+        private _co2SensorService: Co2SensorService,
+        private _phSensorService: PhSensorService
     ) {
         super();
     }
@@ -593,5 +628,14 @@ export default class MetricsServiceImpl extends MetricsService {
         dayLightForcedGauge.setOrRemove(light?.dayLightForced);
         nightLightForcedGauge.setOrRemove(light?.nightLightForced);
         lightForcesSinceProtectionStatResetGauge.setOrRemove(light?.lightForcesSinceProtectionStatReset);
+
+        // Ph - - - - - - - - - -
+        const ph = this._phSensorService.ph;
+        ph60sGauge.setOrRemove(ph?.value60s);
+        ph60sSamplesGauge.setOrRemove(ph?.value60sSamples);
+        ph5sVoltageGauge.setOrRemove(ph?.voltage5s);
+        ph5sVoltageSamplesGauge.setOrRemove(ph?.voltage5sSamples);
+        phSensorVoltageGauge.setOrRemove(ph?.lastSensorState?.voltage);
+        phSensorVoltageSamplesGauge.setOrRemove(ph?.lastSensorState?.voltageSamples);
     }
 }

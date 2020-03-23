@@ -1,6 +1,9 @@
 {
     "typescript.tsdk": "src/jsclient/node_modules/typescript/lib",
     "cSpell.words": [
+        "ADMUX",
+        "ADPS",
+        "ADSC",
         "AGND",
         "AREF",
         "AVCC",
@@ -26,6 +29,7 @@
         "UDRE",
         "USART",
         "XTAL",
+        "accum",
         "akat",
         "akua",
         "argt",

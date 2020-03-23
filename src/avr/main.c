@@ -165,7 +165,7 @@ X_UNUSED_PIN$(F4); // 93   PF4 ( ADC4/TCK ) Analog pin 4
 X_UNUSED_PIN$(F3); // 94   PF3 ( ADC3 ) Analog pin 3
 X_UNUSED_PIN$(F2); // 95   PF2 ( ADC2 ) Analog pin 2
 X_UNUSED_PIN$(F1); // 96   PF1 ( ADC1 ) Analog pin 1
-X_UNUSED_PIN$(F0); // 97   PF0 ( ADC0 ) Analog pin 0
+// PH Meter ADC Port  97   PF0 ( ADC0 ) Analog pin 0 (marked as A0 on PCB, but F0 in code)
 // .................. 98   AREF, Analog Reference
 // .................. 99   GND
 // .................. 100  AVCC
@@ -437,6 +437,50 @@ X_DS18B20$(ds18b20_case, A1);
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+// ADC
+
+X_INIT$(init_adc) {
+    // We just use default ADC channel (ADC0 marked as 'A0' on the PCB)
+    // No need to change or setup that. But we must select reference voltage for ADC.
+    // We use AVCC which is connected to VCC on the board.
+    ADMUX = H(REFS0);
+
+    // Setup prescaler.
+    // Slower we do measurement, better are results.
+    // Higher prescaler means lower frequency of ADC.
+    // Highest prescaler is 128. 16Mhz / 128 = 125khz.
+    // ADPS - Prescaler Selection. ADEN - enables ADC.
+    ADCSRA = H(ADPS2) | H(ADPS1) | H(ADPS0) | H(ADEN);
+
+    // Immediately start AD-conversion for PH-Meter
+    ADCSRA |= H(ADSC);
+};
+
+GLOBAL$() {
+    STATIC_VAR$(u24 ph_adc_accum);
+    STATIC_VAR$(u16 ph_adc_accum_samples);
+};
+
+RUNNABLE$(adc_runnable) {
+    if (!(ADCSRA & H(ADSC))) {
+        // No conversions are in progress now, read current value and start a new conversion
+
+        // First store current value into a temporary variable
+        u16 current_adc = ADC;
+
+        // Start new conversion
+        ADCSRA |= H(ADSC);
+
+        // Add current value into accumulator
+        ph_adc_accum += current_adc;
+        ph_adc_accum_samples += 1;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // USART1 - MH-Z19 CO2 Module
 
 // Add for debug: debug = add_debug_byte
@@ -499,6 +543,9 @@ THREAD$(usart0_writer, state_type = u8) {
     STATIC_VAR$(u8 u8_to_format_and_send);
     STATIC_VAR$(u16 u16_to_format_and_send);
     STATIC_VAR$(u32 u32_to_format_and_send);
+    
+    STATIC_VAR$(u24 __ph_adc_accum);
+    STATIC_VAR$(u16 __ph_adc_accum_samples);
 
     // ---- Subroutines can yield unlike functions
 
@@ -651,6 +698,23 @@ THREAD$(usart0_writer, state_type = u8) {
                       u8 day_light_forced.is_set() ? 1 : 0,
                       u8 night_light_forced.is_set() ? 1 : 0,
                       u8 light_forces_since_protection_stat_reset);
+
+        // Special handling for ph meter ADC result.
+        // Remember values before writing and then set current accum values to zero
+        // This is because of this thread might YIELD and we don't want our stuff to be
+        // messes up in the middle of the process.
+        __ph_adc_accum = ph_adc_accum;
+        __ph_adc_accum_samples = ph_adc_accum_samples;
+
+        // Set to zero to start a new oversampling batch
+        ph_adc_accum = 0;
+        ph_adc_accum_samples = 0;
+
+        // Write Voltage status... this might YIELD
+        WRITE_STATUS$("PH Voltage",
+                      F,
+                      u32 __ph_adc_accum,
+                      u16 __ph_adc_accum_samples);
 
         // Protocol version
         byte_to_send = ' '; CALL$(send_byte);

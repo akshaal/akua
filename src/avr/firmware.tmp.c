@@ -16284,217 +16284,7 @@ F1_unused_t const F1_unused = {.is_set = &is_set__impl
 
 ;
 ; // 96   PF1 ( ADC1 ) Analog pin 1
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} F0_unused__port_t;
-
-extern F0_unused__port_t const F0_unused__port;
-
-static AKAT_FORCE_INLINE void F0_unused__port__set__impl(u8 state) {
-#define set__impl F0_unused__port__set__impl
-
-    if (state) {
-        PORTF |= 1 << 0;  //Set PORTF of F0 to 1
-    } else {
-        PORTF &= ~(1 << 0);  //Set PORTF of F0 to 0
-    }
-
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 F0_unused__port__is_set__impl() {
-#define is_set__impl F0_unused__port__is_set__impl
-#define set__impl F0_unused__port__set__impl
-    return PORTF & (1 << 0);  //Get value of PORTF for F0
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl F0_unused__port__is_set__impl
-#define set__impl F0_unused__port__set__impl
-
-F0_unused__port_t const F0_unused__port = {.set = &set__impl
-                                           ,
-                                           .is_set = &is_set__impl
-                                          };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl F0_unused__port__is_set__impl
-#define set__impl F0_unused__port__set__impl
-
-
-;
-
-#define is_set__impl F0_unused__port__is_set__impl
-#define set__impl F0_unused__port__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} F0_unused__ddr_t;
-
-extern F0_unused__ddr_t const F0_unused__ddr;
-
-static AKAT_FORCE_INLINE void F0_unused__ddr__set__impl(u8 state) {
-#define set__impl F0_unused__ddr__set__impl
-
-    if (state) {
-        DDRF |= 1 << 0;  //Set DDRF of F0 to 1
-    } else {
-        DDRF &= ~(1 << 0);  //Set DDRF of F0 to 0
-    }
-
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 F0_unused__ddr__is_set__impl() {
-#define is_set__impl F0_unused__ddr__is_set__impl
-#define set__impl F0_unused__ddr__set__impl
-    return DDRF & (1 << 0);  //Get value of DDRF for F0
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl F0_unused__ddr__is_set__impl
-#define set__impl F0_unused__ddr__set__impl
-
-F0_unused__ddr_t const F0_unused__ddr = {.set = &set__impl
-                                         ,
-                                         .is_set = &is_set__impl
-                                        };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl F0_unused__ddr__is_set__impl
-#define set__impl F0_unused__ddr__set__impl
-
-
-;
-
-#define is_set__impl F0_unused__ddr__is_set__impl
-#define set__impl F0_unused__ddr__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} F0_unused__pin_t;
-
-extern F0_unused__pin_t const F0_unused__pin;
-
-static AKAT_FORCE_INLINE void F0_unused__pin__set__impl(u8 state) {
-#define set__impl F0_unused__pin__set__impl
-
-    if (state) {
-        PINF |= 1 << 0;  //Set PINF of F0 to 1
-    } else {
-        PINF &= ~(1 << 0);  //Set PINF of F0 to 0
-    }
-
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 F0_unused__pin__is_set__impl() {
-#define is_set__impl F0_unused__pin__is_set__impl
-#define set__impl F0_unused__pin__set__impl
-    return PINF & (1 << 0);  //Get value of PINF for F0
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl F0_unused__pin__is_set__impl
-#define set__impl F0_unused__pin__set__impl
-
-F0_unused__pin_t const F0_unused__pin = {.set = &set__impl
-                                         ,
-                                         .is_set = &is_set__impl
-                                        };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl F0_unused__pin__is_set__impl
-#define set__impl F0_unused__pin__set__impl
-
-
-;
-
-#define is_set__impl F0_unused__pin__is_set__impl
-#define set__impl F0_unused__pin__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-static AKAT_FORCE_INLINE void F0_unused__init() {
-    F0_unused__ddr.set(0);
-    F0_unused__port.set(1);
-}
-
-;
-
-
-
-
-
-typedef struct {
-    u8 (* const is_set)();
-} F0_unused_t;
-
-extern F0_unused_t const F0_unused;
-
-static AKAT_FORCE_INLINE u8 F0_unused__is_set__impl() {
-#define is_set__impl F0_unused__is_set__impl
-    return F0_unused__pin.is_set();
-#undef is_set__impl
-}
-#define is_set__impl F0_unused__is_set__impl
-
-F0_unused_t const F0_unused = {.is_set = &is_set__impl
-                              };
-
-
-#undef is_set__impl
-#define is_set__impl F0_unused__is_set__impl
-
-
-;
-
-#define is_set__impl F0_unused__is_set__impl
-
-
-
-
-#undef is_set__impl
-;
-
-
-
-;
-; // 97   PF0 ( ADC0 ) Analog pin 0
+// PH Meter ADC Port  97   PF0 ( ADC0 ) Analog pin 0 (marked as A0 on PCB, but F0 in code)
 // .................. 98   AREF, Analog Reference
 // .................. 99   GND
 // .................. 100  AVCC
@@ -18914,6 +18704,59 @@ ds18b20_case_t const ds18b20_case = {.get_updated_deciseconds_ago = &get_updated
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+// ADC
+
+static AKAT_FORCE_INLINE void init_adc() {
+//We just use default ADC channel (ADC0 marked as 'A0' on the PCB)
+    //No need to change or setup that. But we must select reference voltage for ADC.
+    //We use AVCC which is connected to VCC on the board.
+    ADMUX = H(REFS0);
+    //Setup prescaler.
+    //Slower we do measurement, better are results.
+    //Higher prescaler means lower frequency of ADC.
+    //Highest prescaler is 128. 16Mhz /128 = 125khz.
+    //ADPS - Prescaler Selection. ADEN - enables ADC.
+    ADCSRA = H(ADPS2) | H(ADPS1) | H(ADPS0) | H(ADEN);
+    //Immediately start AD-conversion for PH-Meter
+    ADCSRA |= H(ADSC);
+}
+
+;
+
+
+
+;
+
+static u24 ph_adc_accum = 0;
+static u16 ph_adc_accum_samples = 0;
+
+;
+;
+;
+;
+
+static AKAT_FORCE_INLINE void adc_runnable() {
+    if (!(ADCSRA & H(ADSC))) {//No conversions are in progress now, read current value and start a new conversion
+        //First store current value into a temporary variable
+        u16 current_adc = ADC;
+        //Start new conversion
+        ADCSRA |= H(ADSC);
+        //Add current value into accumulator
+        ph_adc_accum += current_adc;
+        ph_adc_accum_samples += 1;
+    }
+}
+
+;
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // USART1 - MH-Z19 CO2 Module
 
 // Add for debug: debug = add_debug_byte
@@ -20229,8 +20072,12 @@ static u8 usart0_writer__byte_to_send = 0;
 static u8 usart0_writer__u8_to_format_and_send = 0;
 static u16 usart0_writer__u16_to_format_and_send = 0;
 static u32 usart0_writer__u32_to_format_and_send = 0;
+static u24 usart0_writer____ph_adc_accum = 0;
+static u16 usart0_writer____ph_adc_accum_samples = 0;
 static u8 usart0_writer__send_byte__akat_coroutine_state = 0;
 static u8 usart0_writer__send_byte() {
+#define __ph_adc_accum usart0_writer____ph_adc_accum
+#define __ph_adc_accum_samples usart0_writer____ph_adc_accum_samples
 #define akat_coroutine_state usart0_writer__send_byte__akat_coroutine_state
 #define byte_to_send usart0_writer__byte_to_send
 #define crc usart0_writer__crc
@@ -20277,6 +20124,8 @@ akat_coroutine_l_2:
     akat_coroutine_state = AKAT_COROUTINE_S_START;
 akat_coroutine_l_end:
     return akat_coroutine_state;
+#undef __ph_adc_accum
+#undef __ph_adc_accum_samples
 #undef akat_coroutine_state
 #undef byte_to_send
 #undef crc
@@ -20287,6 +20136,8 @@ akat_coroutine_l_end:
 }
 static u8 usart0_writer__format_and_send_u8__akat_coroutine_state = 0;
 static u8 usart0_writer__format_and_send_u8() {
+#define __ph_adc_accum usart0_writer____ph_adc_accum
+#define __ph_adc_accum_samples usart0_writer____ph_adc_accum_samples
 #define akat_coroutine_state usart0_writer__format_and_send_u8__akat_coroutine_state
 #define byte_to_send usart0_writer__byte_to_send
 #define crc usart0_writer__crc
@@ -20354,6 +20205,8 @@ akat_coroutine_l_3:
     akat_coroutine_state = AKAT_COROUTINE_S_START;
 akat_coroutine_l_end:
     return akat_coroutine_state;
+#undef __ph_adc_accum
+#undef __ph_adc_accum_samples
 #undef akat_coroutine_state
 #undef byte_to_send
 #undef crc
@@ -20365,6 +20218,8 @@ akat_coroutine_l_end:
 }
 static u8 usart0_writer__format_and_send_u16__akat_coroutine_state = 0;
 static u8 usart0_writer__format_and_send_u16() {
+#define __ph_adc_accum usart0_writer____ph_adc_accum
+#define __ph_adc_accum_samples usart0_writer____ph_adc_accum_samples
 #define akat_coroutine_state usart0_writer__format_and_send_u16__akat_coroutine_state
 #define byte_to_send usart0_writer__byte_to_send
 #define crc usart0_writer__crc
@@ -20459,6 +20314,8 @@ akat_coroutine_l_5:
     akat_coroutine_state = AKAT_COROUTINE_S_START;
 akat_coroutine_l_end:
     return akat_coroutine_state;
+#undef __ph_adc_accum
+#undef __ph_adc_accum_samples
 #undef akat_coroutine_state
 #undef byte_to_send
 #undef crc
@@ -20471,6 +20328,8 @@ akat_coroutine_l_end:
 }
 static u8 usart0_writer__format_and_send_u32__akat_coroutine_state = 0;
 static u8 usart0_writer__format_and_send_u32() {
+#define __ph_adc_accum usart0_writer____ph_adc_accum
+#define __ph_adc_accum_samples usart0_writer____ph_adc_accum_samples
 #define akat_coroutine_state usart0_writer__format_and_send_u32__akat_coroutine_state
 #define byte_to_send usart0_writer__byte_to_send
 #define crc usart0_writer__crc
@@ -20598,6 +20457,8 @@ akat_coroutine_l_7:
     akat_coroutine_state = AKAT_COROUTINE_S_START;
 akat_coroutine_l_end:
     return akat_coroutine_state;
+#undef __ph_adc_accum
+#undef __ph_adc_accum_samples
 #undef akat_coroutine_state
 #undef byte_to_send
 #undef crc
@@ -20610,6 +20471,8 @@ akat_coroutine_l_end:
 #undef u8_to_format_and_send
 }
 static AKAT_FORCE_INLINE void usart0_writer() {
+#define __ph_adc_accum usart0_writer____ph_adc_accum
+#define __ph_adc_accum_samples usart0_writer____ph_adc_accum_samples
 #define akat_coroutine_state usart0_writer__akat_coroutine_state
 #define byte_to_send usart0_writer__byte_to_send
 #define crc usart0_writer__crc
@@ -20878,6 +20741,21 @@ static AKAT_FORCE_INLINE void usart0_writer() {
 
     case 84:
         goto akat_coroutine_l_84;
+
+    case 85:
+        goto akat_coroutine_l_85;
+
+    case 86:
+        goto akat_coroutine_l_86;
+
+    case 87:
+        goto akat_coroutine_l_87;
+
+    case 88:
+        goto akat_coroutine_l_88;
+
+    case 89:
+        goto akat_coroutine_l_89;
     }
 
 akat_coroutine_l_start:
@@ -20885,6 +20763,8 @@ akat_coroutine_l_start:
 
     do {
         //---- All variable in the thread must be static (green threads requirement)
+        ;
+        ;
         ;
         ;
         ;
@@ -22011,7 +21891,16 @@ akat_coroutine_l_78:
 
             ;
             ;
-            //Protocol version
+            //Special handling for ph meter ADC result.
+            //Remember values before writing and then set current accum values to zero
+            //This is because of this thread might YIELD and we don't want our stuff to be
+            //messes up in the middle of the process.
+            __ph_adc_accum = ph_adc_accum;
+            __ph_adc_accum_samples = ph_adc_accum_samples;
+            //Set to zero to start a new oversampling batch
+            ph_adc_accum = 0;
+            ph_adc_accum_samples = 0;
+            //Write Voltage status... this might YIELD
             byte_to_send = ' ';
 
             do {
@@ -22024,11 +21913,83 @@ akat_coroutine_l_79:
             } while (0);
 
             ;
-            u8_to_format_and_send = 0x8e;
+            byte_to_send = 'F';
 
             do {
                 akat_coroutine_state = 80;
 akat_coroutine_l_80:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: F1: PH Voltage: u32 __ph_adc_accum
+              TS_PROTO_TYPE: "u32 __ph_adc_accum": number,
+              TS_PROTO_ASSIGN: "u32 __ph_adc_accum": vals["F1"],
+            */
+            u32_to_format_and_send = __ph_adc_accum;
+
+            do {
+                akat_coroutine_state = 81;
+akat_coroutine_l_81:
+
+                if (format_and_send_u32() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 82;
+akat_coroutine_l_82:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: F2: PH Voltage: u16 __ph_adc_accum_samples
+              TS_PROTO_TYPE: "u16 __ph_adc_accum_samples": number,
+              TS_PROTO_ASSIGN: "u16 __ph_adc_accum_samples": vals["F2"],
+            */
+            u16_to_format_and_send = __ph_adc_accum_samples;
+
+            do {
+                akat_coroutine_state = 83;
+akat_coroutine_l_83:
+
+                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            ;
+            //Protocol version
+            byte_to_send = ' ';
+
+            do {
+                akat_coroutine_state = 84;
+akat_coroutine_l_84:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            u8_to_format_and_send = 0xcb;
+
+            do {
+                akat_coroutine_state = 85;
+akat_coroutine_l_85:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -22040,8 +22001,8 @@ akat_coroutine_l_80:
             byte_to_send = ' ';
 
             do {
-                akat_coroutine_state = 81;
-akat_coroutine_l_81:
+                akat_coroutine_state = 86;
+akat_coroutine_l_86:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -22052,8 +22013,8 @@ akat_coroutine_l_81:
             u8_to_format_and_send = crc;
 
             do {
-                akat_coroutine_state = 82;
-akat_coroutine_l_82:
+                akat_coroutine_state = 87;
+akat_coroutine_l_87:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -22065,8 +22026,8 @@ akat_coroutine_l_82:
             byte_to_send = '\r';
 
             do {
-                akat_coroutine_state = 83;
-akat_coroutine_l_83:
+                akat_coroutine_state = 88;
+akat_coroutine_l_88:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -22077,8 +22038,8 @@ akat_coroutine_l_83:
             byte_to_send = '\n';
 
             do {
-                akat_coroutine_state = 84;
-akat_coroutine_l_84:
+                akat_coroutine_state = 89;
+akat_coroutine_l_89:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -22093,6 +22054,8 @@ akat_coroutine_l_84:
     akat_coroutine_state = AKAT_COROUTINE_S_END;
 akat_coroutine_l_end:
     return;
+#undef __ph_adc_accum
+#undef __ph_adc_accum_samples
 #undef akat_coroutine_state
 #undef byte_to_send
 #undef crc
@@ -23570,7 +23533,6 @@ AKAT_NO_RETURN void main() {
     F3_unused__init();
     F2_unused__init();
     F1_unused__init();
-    F0_unused__init();
     day_light_switch__output__init();
     day_light_switch__init();
     night_light_switch__output__init();
@@ -23581,6 +23543,7 @@ AKAT_NO_RETURN void main() {
     watchdog_init();
     ds18b20_aqua__init();
     ds18b20_case__init();
+    init_adc();
     co2_init();
     usart0_init();
     timer1();
@@ -23593,6 +23556,7 @@ AKAT_NO_RETURN void main() {
         performance_runnable();
         akat_on_every_decisecond_runner();
         watchdog_reset();
+        adc_runnable();
         co2_reader();
         co2_writer();
         usart0_writer();

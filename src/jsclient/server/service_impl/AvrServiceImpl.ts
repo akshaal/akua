@@ -1,5 +1,5 @@
 import { injectable, postConstruct } from "inversify";
-import AvrService, { AvrServiceState, AvrState, AvrCo2SensorState, AvrTemperatureSensorState, LightForceMode, AvrLightState, Co2ValveOpenState } from "server/service/AvrService";
+import AvrService, { AvrServiceState, AvrState, AvrCo2SensorState, AvrTemperatureSensorState, LightForceMode, AvrLightState, Co2ValveOpenState, AvrPhState } from "server/service/AvrService";
 import SerialPort from "serialport";
 import config from "server/config";
 import logger from "server/logger";
@@ -49,6 +49,11 @@ function asAvrState(avrData: AvrData): AvrState {
         updatedSecondsAgo: avrData["u8 ds18b20_case.get_updated_deciseconds_ago()"] / 10.0,
     };
 
+    const ph: AvrPhState = {
+        voltage: avrData["u32 __ph_adc_accum"] / (avrData["u16 __ph_adc_accum_samples"] || 1) * 5.0 / 1024.0,
+        voltageSamples: avrData["u16 __ph_adc_accum_samples"]
+    };
+
     const light: AvrLightState = {
         dayLightOn: !!avrData["u8 day_light_switch.is_set() ? 1 : 0"],
         nightLightOn: !!avrData["u8 night_light_switch.is_set() ? 1 : 0"],
@@ -75,7 +80,8 @@ function asAvrState(avrData: AvrData): AvrState {
         co2Sensor,
         aquariumTemperatureSensor,
         caseTemperatureSensor,
-        light
+        light,
+        ph
     };
 }
 

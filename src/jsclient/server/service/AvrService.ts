@@ -21,6 +21,11 @@ export interface AvrLightState {
     readonly lightForcesSinceProtectionStatReset: number;
 }
 
+export interface AvrPhState {
+    readonly voltage: number;
+    readonly voltageSamples: number;
+}
+
 export interface AvrTemperatureSensorState {
     readonly updateId: number;
     readonly crcErrors: number;
@@ -55,6 +60,7 @@ export interface AvrState {
     readonly aquariumTemperatureSensor: AvrTemperatureSensorState;
     readonly caseTemperatureSensor: AvrTemperatureSensorState;
     readonly light: AvrLightState;
+    readonly ph: AvrPhState;
     readonly co2ValveOpen: boolean;
 }
 
