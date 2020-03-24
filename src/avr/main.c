@@ -164,7 +164,7 @@ X_UNUSED_PIN$(F5); // 92   PF5 ( ADC5/TMS ) Analog pin 5
 X_UNUSED_PIN$(F4); // 93   PF4 ( ADC4/TCK ) Analog pin 4
 X_UNUSED_PIN$(F3); // 94   PF3 ( ADC3 ) Analog pin 3
 X_UNUSED_PIN$(F2); // 95   PF2 ( ADC2 ) Analog pin 2
-// Current sensor ADC 96   PF1 ( ADC1 ) Analog pin 1 (marked as A1 on PCB, but F1 in code)
+X_UNUSED_PIN$(F1); // 96   PF1 ( ADC1 ) Analog pin 1
 // PH Meter ADC Port  97   PF0 ( ADC0 ) Analog pin 0 (marked as A0 on PCB, but F0 in code)
 // .................. 98   AREF, Analog Reference
 // .................. 99   GND
@@ -439,26 +439,11 @@ X_DS18B20$(ds18b20_case, A1);
 ////////////////////////////////////////////////////////////////////////////////
 // ADC
 
-typedef enum {PHMeterAdcMode = 0, CurrentSensorAdcMode = 1} adc_mode_t;
-
-GLOBAL$() {
-    // PH Meter (ADC0)
-    STATIC_VAR$(u24 ph_adc_accum);
-    STATIC_VAR$(u16 ph_adc_accum_samples);
-
-    // Current sensor (ADC1)
-    STATIC_VAR$(u16 current_sensor_adc_max_value);
-    STATIC_VAR$(u16 current_sensor_adc_samples);
-
-    // Mode
-    STATIC_VAR$(adc_mode_t adc_mode);
-};
-
 X_INIT$(init_adc) {
     // We just use default ADC channel (ADC0 marked as 'A0' on the PCB)
     // No need to change or setup that. But we must select reference voltage for ADC.
     // We use AVCC which is connected to VCC on the board.
-    ADMUX = H(REFS0) + 0;
+    ADMUX = H(REFS0);
 
     // Setup prescaler.
     // Slower we do measurement, better are results.
@@ -471,45 +456,24 @@ X_INIT$(init_adc) {
     ADCSRA |= H(ADSC);
 };
 
+GLOBAL$() {
+    STATIC_VAR$(u24 ph_adc_accum);
+    STATIC_VAR$(u16 ph_adc_accum_samples);
+};
+
 RUNNABLE$(adc_runnable) {
     if (!(ADCSRA & H(ADSC))) {
-        // No conversion is in progress now, read current value and start a new conversion
+        // No conversions are in progress now, read current value and start a new conversion
 
         // First store current value into a temporary variable
-        u16 adc = ADC;
+        u16 current_adc = ADC;
 
-        // Note that we must AVR channel without delays and start conversion
-        // everything else can be done while conversion is in progress.
+        // Start new conversion
+        ADCSRA |= H(ADSC);
 
-        if (adc_mode == PHMeterAdcMode) {
-            // Current mode is PHMeterAdcMode
-            // Immediately switching to CurrentSensorAdcMode
-            ADMUX = H(REFS0) + 1; // ADC1
-
-            // Start new conversion
-            ADCSRA |= H(ADSC);
-
-            adc_mode = CurrentSensorAdcMode;
-
-            // Add current value into accumulator
-            ph_adc_accum += adc;
-            ph_adc_accum_samples += 1;
-        } else {
-            // Current mode is CurrentSensorAdcMode
-            // Immediately switching to PHMeterAdcMode
-            ADMUX = H(REFS0) + 0; // ADC0
-
-            // Start new conversion
-            ADCSRA |= H(ADSC);
-
-            adc_mode = PHMeterAdcMode;
-
-            // We are interested in max value
-            if (current_sensor_adc_max_value < adc) {
-                current_sensor_adc_max_value = adc;
-            }
-            current_sensor_adc_samples += 1;
-        }
+        // Add current value into accumulator
+        ph_adc_accum += current_adc;
+        ph_adc_accum_samples += 1;
     }
 }
 
@@ -582,8 +546,6 @@ THREAD$(usart0_writer, state_type = u8) {
     
     STATIC_VAR$(u24 __ph_adc_accum);
     STATIC_VAR$(u16 __ph_adc_accum_samples);
-    STATIC_VAR$(u24 __current_sensor_adc_max_value);
-    STATIC_VAR$(u16 __current_sensor_adc_samples);
 
     // ---- Subroutines can yield unlike functions
 
@@ -743,25 +705,16 @@ THREAD$(usart0_writer, state_type = u8) {
         // messes up in the middle of the process.
         __ph_adc_accum = ph_adc_accum;
         __ph_adc_accum_samples = ph_adc_accum_samples;
-        __current_sensor_adc_max_value = current_sensor_adc_max_value;
-        __current_sensor_adc_samples = current_sensor_adc_samples;
 
         // Set to zero to start a new oversampling batch
         ph_adc_accum = 0;
         ph_adc_accum_samples = 0;
-        current_sensor_adc_max_value = 0;
-        current_sensor_adc_samples = 0;
 
         // Write Voltage status... this might YIELD
         WRITE_STATUS$("PH Voltage",
                       F,
                       u32 __ph_adc_accum,
                       u16 __ph_adc_accum_samples);
-
-        WRITE_STATUS$("Current sensor voltage",
-                      G,
-                      u16 __current_sensor_adc_max_value,
-                      u16 __current_sensor_adc_samples);
 
         // Protocol version
         byte_to_send = ' '; CALL$(send_byte);

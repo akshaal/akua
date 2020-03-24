@@ -34,5 +34,3 @@ E4: Light: u8 night_light_forced.is_set() ? 1 : 0
 E5: Light: u8 light_forces_since_protection_stat_reset
 F1: PH Voltage: u32 __ph_adc_accum
 F2: PH Voltage: u16 __ph_adc_accum_samples
-G1: Current sensor voltage: u16 __current_sensor_adc_max_value
-G2: Current sensor voltage: u16 __current_sensor_adc_samples
