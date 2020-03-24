@@ -16073,217 +16073,7 @@ F2_unused_t const F2_unused = {.is_set = &is_set__impl
 
 ;
 ; // 95   PF2 ( ADC2 ) Analog pin 2
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} F1_unused__port_t;
-
-extern F1_unused__port_t const F1_unused__port;
-
-static AKAT_FORCE_INLINE void F1_unused__port__set__impl(u8 state) {
-#define set__impl F1_unused__port__set__impl
-
-    if (state) {
-        PORTF |= 1 << 1;  //Set PORTF of F1 to 1
-    } else {
-        PORTF &= ~(1 << 1);  //Set PORTF of F1 to 0
-    }
-
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 F1_unused__port__is_set__impl() {
-#define is_set__impl F1_unused__port__is_set__impl
-#define set__impl F1_unused__port__set__impl
-    return PORTF & (1 << 1);  //Get value of PORTF for F1
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl F1_unused__port__is_set__impl
-#define set__impl F1_unused__port__set__impl
-
-F1_unused__port_t const F1_unused__port = {.set = &set__impl
-                                           ,
-                                           .is_set = &is_set__impl
-                                          };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl F1_unused__port__is_set__impl
-#define set__impl F1_unused__port__set__impl
-
-
-;
-
-#define is_set__impl F1_unused__port__is_set__impl
-#define set__impl F1_unused__port__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} F1_unused__ddr_t;
-
-extern F1_unused__ddr_t const F1_unused__ddr;
-
-static AKAT_FORCE_INLINE void F1_unused__ddr__set__impl(u8 state) {
-#define set__impl F1_unused__ddr__set__impl
-
-    if (state) {
-        DDRF |= 1 << 1;  //Set DDRF of F1 to 1
-    } else {
-        DDRF &= ~(1 << 1);  //Set DDRF of F1 to 0
-    }
-
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 F1_unused__ddr__is_set__impl() {
-#define is_set__impl F1_unused__ddr__is_set__impl
-#define set__impl F1_unused__ddr__set__impl
-    return DDRF & (1 << 1);  //Get value of DDRF for F1
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl F1_unused__ddr__is_set__impl
-#define set__impl F1_unused__ddr__set__impl
-
-F1_unused__ddr_t const F1_unused__ddr = {.set = &set__impl
-                                         ,
-                                         .is_set = &is_set__impl
-                                        };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl F1_unused__ddr__is_set__impl
-#define set__impl F1_unused__ddr__set__impl
-
-
-;
-
-#define is_set__impl F1_unused__ddr__is_set__impl
-#define set__impl F1_unused__ddr__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-typedef struct {
-    void (* const set)(u8 state);
-    u8 (* const is_set)();
-} F1_unused__pin_t;
-
-extern F1_unused__pin_t const F1_unused__pin;
-
-static AKAT_FORCE_INLINE void F1_unused__pin__set__impl(u8 state) {
-#define set__impl F1_unused__pin__set__impl
-
-    if (state) {
-        PINF |= 1 << 1;  //Set PINF of F1 to 1
-    } else {
-        PINF &= ~(1 << 1);  //Set PINF of F1 to 0
-    }
-
-#undef set__impl
-}
-static AKAT_FORCE_INLINE u8 F1_unused__pin__is_set__impl() {
-#define is_set__impl F1_unused__pin__is_set__impl
-#define set__impl F1_unused__pin__set__impl
-    return PINF & (1 << 1);  //Get value of PINF for F1
-#undef is_set__impl
-#undef set__impl
-}
-#define is_set__impl F1_unused__pin__is_set__impl
-#define set__impl F1_unused__pin__set__impl
-
-F1_unused__pin_t const F1_unused__pin = {.set = &set__impl
-                                         ,
-                                         .is_set = &is_set__impl
-                                        };
-
-
-#undef is_set__impl
-#undef set__impl
-#define is_set__impl F1_unused__pin__is_set__impl
-#define set__impl F1_unused__pin__set__impl
-
-
-;
-
-#define is_set__impl F1_unused__pin__is_set__impl
-#define set__impl F1_unused__pin__set__impl
-
-
-
-
-
-#undef is_set__impl
-#undef set__impl
-;
-
-
-
-static AKAT_FORCE_INLINE void F1_unused__init() {
-    F1_unused__ddr.set(0);
-    F1_unused__port.set(1);
-}
-
-;
-
-
-
-
-
-typedef struct {
-    u8 (* const is_set)();
-} F1_unused_t;
-
-extern F1_unused_t const F1_unused;
-
-static AKAT_FORCE_INLINE u8 F1_unused__is_set__impl() {
-#define is_set__impl F1_unused__is_set__impl
-    return F1_unused__pin.is_set();
-#undef is_set__impl
-}
-#define is_set__impl F1_unused__is_set__impl
-
-F1_unused_t const F1_unused = {.is_set = &is_set__impl
-                              };
-
-
-#undef is_set__impl
-#define is_set__impl F1_unused__is_set__impl
-
-
-;
-
-#define is_set__impl F1_unused__is_set__impl
-
-
-
-
-#undef is_set__impl
-;
-
-
-
-;
-; // 96   PF1 ( ADC1 ) Analog pin 1
+// Current sensor ADC 96   PF1 ( ADC1 ) Analog pin 1 (marked as A1 on PCB, but F1 in code)
 // PH Meter ADC Port  97   PF0 ( ADC0 ) Analog pin 0 (marked as A0 on PCB, but F0 in code)
 // .................. 98   AREF, Analog Reference
 // .................. 99   GND
@@ -18706,11 +18496,32 @@ ds18b20_case_t const ds18b20_case = {.get_updated_deciseconds_ago = &get_updated
 ////////////////////////////////////////////////////////////////////////////////
 // ADC
 
+typedef enum {PHMeterAdcMode = 0, CurrentSensorAdcMode = 1} adc_mode_t;
+
+static u24 ph_adc_accum = 0;
+static u16 ph_adc_accum_samples = 0;
+static u16 current_sensor_adc_max_value = 0;
+static u16 current_sensor_adc_samples = 0;
+static adc_mode_t adc_mode = 0;
+
+//PH Meter (ADC0)
+;
+;
+
+//Current sensor (ADC1)
+;
+;
+
+//Mode
+;
+;
+;
+
 static AKAT_FORCE_INLINE void init_adc() {
 //We just use default ADC channel (ADC0 marked as 'A0' on the PCB)
     //No need to change or setup that. But we must select reference voltage for ADC.
     //We use AVCC which is connected to VCC on the board.
-    ADMUX = H(REFS0);
+    ADMUX = H(REFS0) + 0;
     //Setup prescaler.
     //Slower we do measurement, better are results.
     //Higher prescaler means lower frequency of ADC.
@@ -18727,23 +18538,37 @@ static AKAT_FORCE_INLINE void init_adc() {
 
 ;
 
-static u24 ph_adc_accum = 0;
-static u16 ph_adc_accum_samples = 0;
-
-;
-;
-;
-;
-
 static AKAT_FORCE_INLINE void adc_runnable() {
-    if (!(ADCSRA & H(ADSC))) {//No conversions are in progress now, read current value and start a new conversion
+    if (!(ADCSRA & H(ADSC))) {//No conversion is in progress now, read current value and start a new conversion
         //First store current value into a temporary variable
-        u16 current_adc = ADC;
-        //Start new conversion
-        ADCSRA |= H(ADSC);
-        //Add current value into accumulator
-        ph_adc_accum += current_adc;
-        ph_adc_accum_samples += 1;
+        u16 adc = ADC;
+
+        //Note that we must AVR channel without delays and start conversion
+        //everything else can be done while conversion is in progress.
+
+        if (adc_mode == PHMeterAdcMode) {//Current mode is PHMeterAdcMode
+            //Immediately switching to CurrentSensorAdcMode
+            ADMUX = H(REFS0) + 1; //ADC1
+            //Start new conversion
+            ADCSRA |= H(ADSC);
+            adc_mode = CurrentSensorAdcMode;
+            //Add current value into accumulator
+            ph_adc_accum += adc;
+            ph_adc_accum_samples += 1;
+        } else {//Current mode is CurrentSensorAdcMode
+            //Immediately switching to PHMeterAdcMode
+            ADMUX = H(REFS0) + 0; //ADC0
+            //Start new conversion
+            ADCSRA |= H(ADSC);
+            adc_mode = PHMeterAdcMode;
+
+            //We are interested in max value
+            if (current_sensor_adc_max_value < adc) {
+                current_sensor_adc_max_value = adc;
+            }
+
+            current_sensor_adc_samples += 1;
+        }
     }
 }
 
@@ -20074,8 +19899,12 @@ static u16 usart0_writer__u16_to_format_and_send = 0;
 static u32 usart0_writer__u32_to_format_and_send = 0;
 static u24 usart0_writer____ph_adc_accum = 0;
 static u16 usart0_writer____ph_adc_accum_samples = 0;
+static u24 usart0_writer____current_sensor_adc_max_value = 0;
+static u16 usart0_writer____current_sensor_adc_samples = 0;
 static u8 usart0_writer__send_byte__akat_coroutine_state = 0;
 static u8 usart0_writer__send_byte() {
+#define __current_sensor_adc_max_value usart0_writer____current_sensor_adc_max_value
+#define __current_sensor_adc_samples usart0_writer____current_sensor_adc_samples
 #define __ph_adc_accum usart0_writer____ph_adc_accum
 #define __ph_adc_accum_samples usart0_writer____ph_adc_accum_samples
 #define akat_coroutine_state usart0_writer__send_byte__akat_coroutine_state
@@ -20124,6 +19953,8 @@ akat_coroutine_l_2:
     akat_coroutine_state = AKAT_COROUTINE_S_START;
 akat_coroutine_l_end:
     return akat_coroutine_state;
+#undef __current_sensor_adc_max_value
+#undef __current_sensor_adc_samples
 #undef __ph_adc_accum
 #undef __ph_adc_accum_samples
 #undef akat_coroutine_state
@@ -20136,6 +19967,8 @@ akat_coroutine_l_end:
 }
 static u8 usart0_writer__format_and_send_u8__akat_coroutine_state = 0;
 static u8 usart0_writer__format_and_send_u8() {
+#define __current_sensor_adc_max_value usart0_writer____current_sensor_adc_max_value
+#define __current_sensor_adc_samples usart0_writer____current_sensor_adc_samples
 #define __ph_adc_accum usart0_writer____ph_adc_accum
 #define __ph_adc_accum_samples usart0_writer____ph_adc_accum_samples
 #define akat_coroutine_state usart0_writer__format_and_send_u8__akat_coroutine_state
@@ -20205,6 +20038,8 @@ akat_coroutine_l_3:
     akat_coroutine_state = AKAT_COROUTINE_S_START;
 akat_coroutine_l_end:
     return akat_coroutine_state;
+#undef __current_sensor_adc_max_value
+#undef __current_sensor_adc_samples
 #undef __ph_adc_accum
 #undef __ph_adc_accum_samples
 #undef akat_coroutine_state
@@ -20218,6 +20053,8 @@ akat_coroutine_l_end:
 }
 static u8 usart0_writer__format_and_send_u16__akat_coroutine_state = 0;
 static u8 usart0_writer__format_and_send_u16() {
+#define __current_sensor_adc_max_value usart0_writer____current_sensor_adc_max_value
+#define __current_sensor_adc_samples usart0_writer____current_sensor_adc_samples
 #define __ph_adc_accum usart0_writer____ph_adc_accum
 #define __ph_adc_accum_samples usart0_writer____ph_adc_accum_samples
 #define akat_coroutine_state usart0_writer__format_and_send_u16__akat_coroutine_state
@@ -20314,6 +20151,8 @@ akat_coroutine_l_5:
     akat_coroutine_state = AKAT_COROUTINE_S_START;
 akat_coroutine_l_end:
     return akat_coroutine_state;
+#undef __current_sensor_adc_max_value
+#undef __current_sensor_adc_samples
 #undef __ph_adc_accum
 #undef __ph_adc_accum_samples
 #undef akat_coroutine_state
@@ -20328,6 +20167,8 @@ akat_coroutine_l_end:
 }
 static u8 usart0_writer__format_and_send_u32__akat_coroutine_state = 0;
 static u8 usart0_writer__format_and_send_u32() {
+#define __current_sensor_adc_max_value usart0_writer____current_sensor_adc_max_value
+#define __current_sensor_adc_samples usart0_writer____current_sensor_adc_samples
 #define __ph_adc_accum usart0_writer____ph_adc_accum
 #define __ph_adc_accum_samples usart0_writer____ph_adc_accum_samples
 #define akat_coroutine_state usart0_writer__format_and_send_u32__akat_coroutine_state
@@ -20457,6 +20298,8 @@ akat_coroutine_l_7:
     akat_coroutine_state = AKAT_COROUTINE_S_START;
 akat_coroutine_l_end:
     return akat_coroutine_state;
+#undef __current_sensor_adc_max_value
+#undef __current_sensor_adc_samples
 #undef __ph_adc_accum
 #undef __ph_adc_accum_samples
 #undef akat_coroutine_state
@@ -20471,6 +20314,8 @@ akat_coroutine_l_end:
 #undef u8_to_format_and_send
 }
 static AKAT_FORCE_INLINE void usart0_writer() {
+#define __current_sensor_adc_max_value usart0_writer____current_sensor_adc_max_value
+#define __current_sensor_adc_samples usart0_writer____current_sensor_adc_samples
 #define __ph_adc_accum usart0_writer____ph_adc_accum
 #define __ph_adc_accum_samples usart0_writer____ph_adc_accum_samples
 #define akat_coroutine_state usart0_writer__akat_coroutine_state
@@ -20756,6 +20601,21 @@ static AKAT_FORCE_INLINE void usart0_writer() {
 
     case 89:
         goto akat_coroutine_l_89;
+
+    case 90:
+        goto akat_coroutine_l_90;
+
+    case 91:
+        goto akat_coroutine_l_91;
+
+    case 92:
+        goto akat_coroutine_l_92;
+
+    case 93:
+        goto akat_coroutine_l_93;
+
+    case 94:
+        goto akat_coroutine_l_94;
     }
 
 akat_coroutine_l_start:
@@ -20763,6 +20623,8 @@ akat_coroutine_l_start:
 
     do {
         //---- All variable in the thread must be static (green threads requirement)
+        ;
+        ;
         ;
         ;
         ;
@@ -21897,9 +21759,13 @@ akat_coroutine_l_78:
             //messes up in the middle of the process.
             __ph_adc_accum = ph_adc_accum;
             __ph_adc_accum_samples = ph_adc_accum_samples;
+            __current_sensor_adc_max_value = current_sensor_adc_max_value;
+            __current_sensor_adc_samples = current_sensor_adc_samples;
             //Set to zero to start a new oversampling batch
             ph_adc_accum = 0;
             ph_adc_accum_samples = 0;
+            current_sensor_adc_max_value = 0;
+            current_sensor_adc_samples = 0;
             //Write Voltage status... this might YIELD
             byte_to_send = ' ';
 
@@ -21972,7 +21838,6 @@ akat_coroutine_l_83:
 
             ;
             ;
-            //Protocol version
             byte_to_send = ' ';
 
             do {
@@ -21985,11 +21850,83 @@ akat_coroutine_l_84:
             } while (0);
 
             ;
-            u8_to_format_and_send = 0xcb;
+            byte_to_send = 'G';
 
             do {
                 akat_coroutine_state = 85;
 akat_coroutine_l_85:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: G1: Current sensor voltage: u16 __current_sensor_adc_max_value
+              TS_PROTO_TYPE: "u16 __current_sensor_adc_max_value": number,
+              TS_PROTO_ASSIGN: "u16 __current_sensor_adc_max_value": vals["G1"],
+            */
+            u16_to_format_and_send = __current_sensor_adc_max_value;
+
+            do {
+                akat_coroutine_state = 86;
+akat_coroutine_l_86:
+
+                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 87;
+akat_coroutine_l_87:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: G2: Current sensor voltage: u16 __current_sensor_adc_samples
+              TS_PROTO_TYPE: "u16 __current_sensor_adc_samples": number,
+              TS_PROTO_ASSIGN: "u16 __current_sensor_adc_samples": vals["G2"],
+            */
+            u16_to_format_and_send = __current_sensor_adc_samples;
+
+            do {
+                akat_coroutine_state = 88;
+akat_coroutine_l_88:
+
+                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            ;
+            //Protocol version
+            byte_to_send = ' ';
+
+            do {
+                akat_coroutine_state = 89;
+akat_coroutine_l_89:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            u8_to_format_and_send = 0x71;
+
+            do {
+                akat_coroutine_state = 90;
+akat_coroutine_l_90:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -22001,8 +21938,8 @@ akat_coroutine_l_85:
             byte_to_send = ' ';
 
             do {
-                akat_coroutine_state = 86;
-akat_coroutine_l_86:
+                akat_coroutine_state = 91;
+akat_coroutine_l_91:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -22013,8 +21950,8 @@ akat_coroutine_l_86:
             u8_to_format_and_send = crc;
 
             do {
-                akat_coroutine_state = 87;
-akat_coroutine_l_87:
+                akat_coroutine_state = 92;
+akat_coroutine_l_92:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -22026,8 +21963,8 @@ akat_coroutine_l_87:
             byte_to_send = '\r';
 
             do {
-                akat_coroutine_state = 88;
-akat_coroutine_l_88:
+                akat_coroutine_state = 93;
+akat_coroutine_l_93:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -22038,8 +21975,8 @@ akat_coroutine_l_88:
             byte_to_send = '\n';
 
             do {
-                akat_coroutine_state = 89;
-akat_coroutine_l_89:
+                akat_coroutine_state = 94;
+akat_coroutine_l_94:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -22054,6 +21991,8 @@ akat_coroutine_l_89:
     akat_coroutine_state = AKAT_COROUTINE_S_END;
 akat_coroutine_l_end:
     return;
+#undef __current_sensor_adc_max_value
+#undef __current_sensor_adc_samples
 #undef __ph_adc_accum
 #undef __ph_adc_accum_samples
 #undef akat_coroutine_state
@@ -23532,7 +23471,6 @@ AKAT_NO_RETURN void main() {
     F4_unused__init();
     F3_unused__init();
     F2_unused__init();
-    F1_unused__init();
     day_light_switch__output__init();
     day_light_switch__init();
     night_light_switch__output__init();
