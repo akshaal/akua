@@ -5,8 +5,45 @@ import { AveragingWindow } from "./AveragingWindow";
 
 const Ph_SAMPLE_FREQUENCY = 7; // How many measurements per second our AVR performs
 
+interface Solution {
+    a: number;
+    b: number;
+}
+
+interface Calibration {
+    v1: number;
+    ph1: number;
+    v2: number;
+    ph2: number;
+}
+
+// 2020.03.26
+const aqua1Calibration: Calibration = {
+    ph1: 4.01,
+    v1: 3.085,
+    ph2: 6.86,
+    v2: 2.575
+};
+
+// Depends on configuration (environment).
+const calibration = aqua1Calibration;
+
+function findSolution(c: Calibration): Solution {
+    // (%i2) solve ([a*v1 + b = ph1, a*v2 + b = ph2], [a, b]);
+    //                          ph1 - ph2      ph2 v1 - ph1 v2
+    // (%o2)               [[a = ---------, b = ---------------]]
+    //                           v1 - v2           v1 - v2
+    
+    const a = (c.ph1 - c.ph2) / (c.v1 - c.v2);
+    const b = (c.ph2 * c.v1 - c.ph1 * c.v2) / (c.v1 - c.v2);
+
+    return {a, b};
+}
+
+const solution = findSolution(calibration);
+
 function calcPhFromVoltage(voltage: number): number {
-    return 14 - voltage / 5.0 * 14.0; // TODO: Solve equation based upon 3point calibration
+    return solution.a * voltage + solution.b;
 }
 
 // ==========================================================================================
