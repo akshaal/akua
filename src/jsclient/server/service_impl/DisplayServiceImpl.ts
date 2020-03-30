@@ -9,6 +9,8 @@ import type { Nextion } from "server/nextion/nextion";
 
 const port = config.nextion.port;
 
+// Symbols compiled into "Aqua*" fonts: " .0123456789:⇡⇣"
+
 @injectable()
 export default class DisplayServiceImpl extends DisplayService {
     private _nextionP: Promise<Nextion> = openNextionPort(port);
