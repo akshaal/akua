@@ -143,6 +143,10 @@ export class UART extends EventEmitter {
     });
   }
 
+  get isOpen() {
+    return this.port && this.port.isOpen;
+  }
+
   /**
    * Set variable `variableName` to value `value`.
    * Boolean values `true` and `false` become `1` and `0`, respectively.

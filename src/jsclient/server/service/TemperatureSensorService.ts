@@ -9,6 +9,6 @@ export interface Temperature {
 
 @injectable()
 export default abstract class TemperatureSensorService {
-    abstract aquariumTemperature: Temperature | null;
-    abstract caseTemperature: Temperature | null;
+    readonly abstract aquariumTemperature: Temperature | null;
+    readonly abstract caseTemperature: Temperature | null;
 }

@@ -15,11 +15,14 @@ import Co2SensorServiceImpl from "./Co2SensorServiceImpl";
 import Co2SensorService from "server/service/Co2SensorService";
 import PhSensorService from "server/service/PhSensorService";
 import PhSensorServiceImpl from "./PhSensorServiceImpl";
+import DisplayManagerServiceImpl from "./DisplayManagerServiceImpl";
+import DisplayManagerService from "server/service/DisplayManagerService";
 
 function createNewContainer(): Container {
     const container = new Container();
     container.bind(MetricsService).to(MetricsServiceImpl).inSingletonScope();
     container.bind(DisplayService).to(DisplayServiceImpl).inSingletonScope();
+    container.bind(DisplayManagerService).to(DisplayManagerServiceImpl).inSingletonScope();
     container.bind(AvrService).to(AvrServiceImpl).inSingletonScope();
     container.bind(TemperatureSensorService).to(TemperatureSensorServiceImpl).inSingletonScope();
     container.bind(Co2SensorService).to(Co2SensorServiceImpl).inSingletonScope();

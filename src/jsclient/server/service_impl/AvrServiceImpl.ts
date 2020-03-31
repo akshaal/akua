@@ -6,6 +6,7 @@ import logger from "server/logger";
 import { SerialportReadlineParser } from "./ReadlineParser";
 import { avrProtocolVersion, asAvrData, AvrData } from "server/avr/protocol";
 import { Subject } from "rxjs";
+import { recurrent } from "./recurrent";
 
 // We do attempt to reopen the port every this number of milliseconds.
 const AUTO_REOPEN_MILLIS = 1000;
@@ -156,18 +157,6 @@ const serialPortOptions: SerialPort.OpenOptions = {
     baudRate: 9600,
     autoOpen: false
 };
-
-// ==========================================================================================
-
-// Run given function every number of milliseconds
-function recurrent(milliseconds: number, f: () => void): void {
-    function scheduleAndRun(): void {
-        setTimeout(scheduleAndRun, milliseconds);
-        f();
-    }
-
-    scheduleAndRun();
-}
 
 // ==========================================================================================
 

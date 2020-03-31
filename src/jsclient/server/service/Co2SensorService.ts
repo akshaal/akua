@@ -12,5 +12,5 @@ export interface Co2 {
 
 @injectable()
 export default abstract class Co2SensorService {
-    abstract co2: Co2 | null;
+    readonly abstract co2: Co2 | null;
 }

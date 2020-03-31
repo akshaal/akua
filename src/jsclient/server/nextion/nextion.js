@@ -73,6 +73,7 @@ export class Nextion extends EventEmitter {
     })
       .on('disconnected', () => {
         debug('Nextion disconnected!');
+        this.emit('disconnected');
       })
       .bind()
       .then(() => {
@@ -119,6 +120,10 @@ export class Nextion extends EventEmitter {
    */
   getValue (name) {
     return this.uart.getValue(name);
+  }
+
+  get isOpen() {
+    return this.uart && this.uart.isOpen;
   }
 
   /**

@@ -65,7 +65,7 @@ const metrics: MetricsConfig = {
 }
 
 const nextion: NextionConfig = {
-    port: "/dev/ttyAMA0"
+    port: process.env.AKUA_NEXTION_PORT || "/dev/ttyAMA0"
 }
 
 const avr: AvrConfig = {
@@ -83,5 +83,17 @@ export const config: Config = {
 };
 
 // ================================================================================================
+
+var errorsDetected = false;
+
+if (config.avr.port === config.nextion.port) {
+    console.log("::ERROR:: AVR and NEXTION ports configured to the same value: " + config.avr.port);
+    errorsDetected = true;
+}
+
+if (errorsDetected) {
+    console.log("F A T A L  E R R O R S  D E T E C T E D:  E X I S T I N G  N A O!");
+    process.exit(2);
+}
 
 export default config;

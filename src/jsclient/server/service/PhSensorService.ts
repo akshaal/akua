@@ -1,5 +1,6 @@
 import { injectable } from "inversify";
 import { AvrPhState } from "./AvrService";
+import { Observable } from "rxjs";
 
 export interface Ph {
     readonly voltage5s: number | null;
@@ -11,5 +12,6 @@ export interface Ph {
 
 @injectable()
 export default abstract class PhSensorService {
-    abstract ph: Ph | null;
+    readonly abstract ph: Ph | null;
+    readonly abstract ph$: Observable<Ph | null>;
 }
