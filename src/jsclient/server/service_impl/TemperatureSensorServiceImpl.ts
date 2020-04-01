@@ -2,6 +2,7 @@ import { injectable } from "inversify";
 import TemperatureSensorService, { Temperature } from "server/service/TemperatureSensorService";
 import AvrService, { AvrTemperatureSensorState } from "server/service/AvrService";
 import { AveragingWindow } from "./AveragingWindow";
+import { Observable, BehaviorSubject } from "rxjs";
 
 const TEMPERATURE_WINDOW_SPAN_SECONDS = 15;
 const TEMPERATURE_SAMPLE_FREQUENCY = 1; // How many measurements per second our AVR performs
@@ -9,29 +10,27 @@ const TEMPERATURE_SAMPLE_FREQUENCY = 1; // How many measurements per second our 
 // ==========================================================================================
 
 class SensorProcessor {
-    private _prevState: AvrTemperatureSensorState | null = null;
+    readonly values$ = new BehaviorSubject<Temperature | null>(null);
     private _avgWindow = new AveragingWindow(TEMPERATURE_WINDOW_SPAN_SECONDS, TEMPERATURE_SAMPLE_FREQUENCY);
 
     onNewAvrState(newState: AvrTemperatureSensorState) {
-        if (this._prevState && this._prevState.updateId != newState.updateId) {
+        const prevState = this.get()?.lastSensorState;
+
+        if (prevState && prevState.updateId != newState.updateId) {
             if (newState.updatedSecondsAgo < 200 && newState.temperature < 50 && newState.temperature > 0) {
                 this._avgWindow.add(newState.temperature);
+
+                this.values$.next({
+                    value: this._avgWindow.get(),
+                    valueSamples: this._avgWindow.getCount(),
+                    lastSensorState: newState
+                });
             }
         }
-
-        this._prevState = newState;
     }
 
     get(): Temperature | null {
-        if (!this._prevState) {
-            return null;
-        }
-        
-        return {
-            value: this._avgWindow.get(),
-            valueSamples: this._avgWindow.getCount(),
-            lastSensorState: this._prevState
-        };
+        return this.values$.value;
     }
 }
 
@@ -54,5 +53,13 @@ export default class TemperatureSensorServiceImpl extends TemperatureSensorServi
 
     get caseTemperature(): Temperature | null {
         return this._caseSensorProcessor.get();
+    }
+
+    get aquariumTemperature$(): Observable<Temperature | null> {
+        return this._aquariumSensorProcessor.values$;
+    }
+
+    get caseTemperature$(): Observable<Temperature | null> {
+        return this._caseSensorProcessor.values$;
     }
 }
