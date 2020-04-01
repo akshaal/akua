@@ -19,7 +19,6 @@ export default class DisplayManagerServiceImpl extends DisplayManagerService {
     _init() {
         // TODO: Map value after subscribe
         // TODO: Use timeoutWith (60 seconds) to map value to "" if nothing is received within timeout (60 seconds)
-        // TODO: Use debounceOrSomething(60) AFTER timeoutWith to avoid flickering changes
         this._phSensorService.ph$.subscribe(ph => {
             // TODO: !!!!!!!!!!!!!!!!!!!!!!
             const v = ph?.value60s;
