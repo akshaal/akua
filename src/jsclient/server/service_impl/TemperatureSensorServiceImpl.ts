@@ -16,7 +16,7 @@ class SensorProcessor {
     onNewAvrState(newState: AvrTemperatureSensorState) {
         const prevState = this.get()?.lastSensorState;
 
-        if (prevState && prevState.updateId != newState.updateId) {
+        if (!prevState || prevState.updateId != newState.updateId) {
             if (newState.updatedSecondsAgo < 200 && newState.temperature < 50 && newState.temperature > 0) {
                 this._avgWindow.add(newState.temperature);
 

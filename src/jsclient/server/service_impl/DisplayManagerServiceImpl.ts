@@ -2,7 +2,7 @@ import { injectable, postConstruct } from "inversify";
 import DisplayManagerService from "server/service/DisplayManagerService";
 import PhSensorService from "server/service/PhSensorService";
 import DisplayService, { DisplayElement } from "server/service/DisplayService";
-import { Observable, of, combineLatest, timer } from "rxjs";
+import { Observable, of, combineLatest } from "rxjs";
 import { map, timeoutWith, distinctUntilChanged, share, delay, startWith } from 'rxjs/operators';
 import { isPresent } from "./isPresent";
 import TemperatureSensorService from "server/service/TemperatureSensorService";
