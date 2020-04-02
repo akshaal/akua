@@ -2,7 +2,7 @@ import { injectable, postConstruct } from "inversify";
 import DisplayManagerService from "server/service/DisplayManagerService";
 import PhSensorService from "server/service/PhSensorService";
 import DisplayService, { DisplayElement } from "server/service/DisplayService";
-import { Observable, of, combineLatest } from "rxjs";
+import { Observable, of, combineLatest, timer } from "rxjs";
 import { map, timeoutWith, distinctUntilChanged, share, delay, startWith } from 'rxjs/operators';
 import { isPresent } from "./isPresent";
 import TemperatureSensorService from "server/service/TemperatureSensorService";
@@ -58,9 +58,27 @@ export default class DisplayManagerServiceImpl extends DisplayManagerService {
             displayElement: DisplayElement.PH,
             obs$: this._phSensorService.ph$,
             decimals: 2,
-            minDiff: 0.3,
+            minDiff: 0.04,
             diffOffsetHours: 3,
             getValue: ph => ph?.value60s
+        });
+
+        // Clock
+        timer(0, 50).pipe(
+            map(() => {
+                    const d = new Date();
+                    const hh = ("0" + d.getHours()).slice(-2);
+                    const mm = ("0" + d.getMinutes()).slice(-2);
+                    const s = d.getSeconds();
+                    if (s % 2 === 0) {
+                        return hh + ":" + mm + "     ";
+                    } else {
+                        return hh + ":" + mm + ".    ";
+                    }
+            }),
+            distinctUntilChanged()
+        ).subscribe(v => {
+            this._displayService.setText(DisplayElement.CLOCK, v);
         });
     }
 
@@ -73,9 +91,9 @@ export default class DisplayManagerServiceImpl extends DisplayManagerService {
             distinctUntilChanged(),
             share()
         );
-    
+
         const delayedVals$: Observable<number | null | undefined> = vals$.pipe(delay(info.diffOffsetHours * 60 * 60 * 1000));
-    
+
         combineLatest([
             vals$.pipe(startWith(null)),
             delayedVals$.pipe(startWith(null))
@@ -95,5 +113,5 @@ export default class DisplayManagerServiceImpl extends DisplayManagerService {
                 this._displayService.setText(info.displayElement, "");
             }
         });
-    }    
+    }
 }
