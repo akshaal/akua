@@ -78,6 +78,10 @@ function asAvrState(avrData: AvrData): AvrState {
         debugOverflows: avrData["u8 debug_overflow_count"],
         usbRxOverflows: avrData["u8 usart0_rx_overflow_count"],
         co2ValveOpen: !!avrData["u8 co2_switch.is_set() ? 1 : 0"],
+        co2CooldownSeconds: avrData["u32 co2_deciseconds_until_can_turn_on"] / 10,
+        co2IsRequired: !!avrData["u8 required_co2_switch_state.is_set() ? 1 : 0"],
+        co2day: !!avrData["u8 co2_calculated_day ? 1 : 0"],
+        co2forcedOff: !!avrData["u8 co2_force_off.is_set() ? 1 : 0"],
         co2Sensor,
         aquariumTemperatureSensor,
         caseTemperatureSensor,
@@ -114,11 +118,12 @@ function calcCrc(str: string): number {
 function serializeCommands(commands: {
     lightForceMode?: LightForceMode,
     newCo2ValveOpenState?: Co2ValveOpenState,
+    co2ForceOff?: boolean,
     sendClock: boolean,
 }): string {
     var result = "";
 
-    function addValue(id: 'L' | 'A' | 'B' | 'C' | 'G', v?: number): void {
+    function addValue(id: 'L' | 'A' | 'B' | 'C' | 'G' | 'F', v?: number): void {
         if (typeof v === "undefined") {
             return;
         }
@@ -135,6 +140,7 @@ function serializeCommands(commands: {
 
     addValue('L', commands.lightForceMode);
     addValue('G', commands.newCo2ValveOpenState);
+    addValue('F', commands.co2ForceOff === true ? 1 : undefined);
 
     if (commands.sendClock) {
         // Order of commands is important!
@@ -176,7 +182,8 @@ export default class AvrServiceImpl extends AvrService {
     private _canWrite = false;
     private _lightForceMode?: LightForceMode;
     private _sendClockReq: boolean = false;
-    private _newCo2ValveOpenState?: Co2ValveOpenState;
+    private _newCo2RequiredValveOpenState?: Co2ValveOpenState;
+    private _forceCo2Off?: boolean;
 
     @postConstruct()
     _init(): void {
@@ -214,7 +221,8 @@ export default class AvrServiceImpl extends AvrService {
         const text = serializeCommands({
             lightForceMode: this._lightForceMode,
             sendClock: this._sendClockReq,
-            newCo2ValveOpenState: this._newCo2ValveOpenState
+            newCo2ValveOpenState: this._newCo2RequiredValveOpenState,
+            co2ForceOff: this._forceCo2Off
         });
 
         // Don't try to write if there is nothing to write
@@ -223,8 +231,9 @@ export default class AvrServiceImpl extends AvrService {
         }
 
         // Assume that we have sent it...
+        this._forceCo2Off = undefined;
         this._lightForceMode = undefined;
-        this._newCo2ValveOpenState = undefined;
+        this._newCo2RequiredValveOpenState = undefined;
         this._sendClockReq = false;
 
         // Set us into busy mode
@@ -348,7 +357,11 @@ export default class AvrServiceImpl extends AvrService {
         this._lightForceMode = mode;
     }
 
-    public setCo2ValveOpenState(newCo2ValveOpenState: Co2ValveOpenState): void {
-        this._newCo2ValveOpenState = newCo2ValveOpenState;
+    public setCo2RequiredValveOpenState(newCo2RequiredValveOpenState: Co2ValveOpenState): void {
+        this._newCo2RequiredValveOpenState = newCo2RequiredValveOpenState;
+    }
+
+    public forceCo2Off(): void {
+        this._forceCo2Off = true;
     }
 }

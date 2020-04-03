@@ -1,8 +1,14 @@
 ;
 
 // NOTE: Sometimes it's nice to try to see which one is best to have some not low, must try some combinations
-// USE_REG$(global variable name);
 // USE_REG$(global variable name, low);
+
+/* Using register r16 for usart0_writer__akat_coroutine_state */;
+/* Using register r17 for usart0_writer__byte_to_send */;
+/* Using register r3 for usart0_writer__u8_to_format_and_send */;
+/* Using register r4 for co2_writer__send_byte__akat_coroutine_state */;
+/* Using register r5 for ds18b20_thread__akat_coroutine_state */;
+/* Using register r6 for ds18b20_thread__byte_to_send */;
 
 // TUNE_FUNCTION$(function name, pure, no_inline);
 
@@ -371,6 +377,13 @@ static AKAT_UNUSED AKAT_PURE u8 akat_x_tm1637_encode_digit(u8 const digit, u8 co
 #define AK_DAY_START_HOUR 10
 #define AK_DAY_DURATION_HOURS 10
 #define AK_DAY_END_HOUR (AK_DAY_START_HOUR + AK_DAY_DURATION_HOURS)
+
+// CO2-Day interval. Interval when it's allowed to feed CO2 to aquarium
+#define AK_CO2_DAY_START_HOUR (AK_DAY_START_HOUR)
+#define AK_CO2_DAY_END_HOUR (AK_DAY_END_HOUR - 1)
+
+// Minimum hours when CO2 can be turned again after it was turned off
+#define AK_CO2_OFF_HOURS_BEFORE_UNLOCKED 2
 
 // Here is what we are going to use for communication using USB/serial port
 // Frame format is 8N1 (8 bits, no parity, 1 stop bit)
@@ -16373,9 +16386,9 @@ static AKAT_FORCE_INLINE void performance_runnable() {
 static AKAT_FORCE_INLINE void akat_on_every_decisecond();
 
 // Can't use LOW register here!
-/* Using register r16 for akat_every_decisecond_run_required */;
+/* Using register r18 for akat_every_decisecond_run_required */;
 
-register u8 akat_every_decisecond_run_required asm ("r16");
+register u8 akat_every_decisecond_run_required asm ("r18");
 
 ;
 ;
@@ -17201,6 +17214,8 @@ static u8 clock_corrections_since_protection_stat_reset = 0;
 static u8 received_clock0 = 0;
 static u8 received_clock1 = 0;
 static u8 received_clock2 = 255;
+static u24 co2_deciseconds_until_can_turn_on = 0;
+static u8 co2_calculated_day = 0;
 
 //Clock used to calculate state
 ;
@@ -17217,12 +17232,20 @@ static u8 received_clock2 = 255;
 ; //LSByte
 ;
 ; //MSByte. 255 means nothing is received
+
+//CO2 protection - - -
+; //TODO: Change to (AK_CO2_OFF_HOURS_BEFORE_UNLOCKED * 60L * 60L * 10L)
+
+//Whether it's day or not as calculated by AVR's internal algorithm and interval
+;
 ;
 
 
-// Forced states
-static u8 day_light_forced__v = 0;
-static u8 day_light_forced__countdown = 0;
+// State that raspberry pi CO2-controlling algorithm wants to set.
+// It's expected that rpi-controller confirms the state every minute.
+// But we tolerate restart of the rpi-controller within 15 minutes.
+static u8 required_co2_switch_state__v = 0;
+static u8 required_co2_switch_state__countdown = 0;
 
 ;
 ;
@@ -17232,42 +17255,42 @@ static u8 day_light_forced__countdown = 0;
 typedef struct {
     void (* const set)(u8 state);
     u8 (* const is_set)();
-} day_light_forced_t;
+} required_co2_switch_state_t;
 
-extern day_light_forced_t const day_light_forced;
+extern required_co2_switch_state_t const required_co2_switch_state;
 
-static AKAT_FORCE_INLINE void day_light_forced__set__impl(u8 state) {
-#define set__impl day_light_forced__set__impl
-    day_light_forced__v = state;
-    day_light_forced__countdown = 10;
+static AKAT_FORCE_INLINE void required_co2_switch_state__set__impl(u8 state) {
+#define set__impl required_co2_switch_state__set__impl
+    required_co2_switch_state__v = state;
+    required_co2_switch_state__countdown = 15;
 #undef set__impl
 }
-static AKAT_FORCE_INLINE u8 day_light_forced__is_set__impl() {
-#define is_set__impl day_light_forced__is_set__impl
-#define set__impl day_light_forced__set__impl
-    return day_light_forced__v;
+static AKAT_FORCE_INLINE u8 required_co2_switch_state__is_set__impl() {
+#define is_set__impl required_co2_switch_state__is_set__impl
+#define set__impl required_co2_switch_state__set__impl
+    return required_co2_switch_state__v;
 #undef is_set__impl
 #undef set__impl
 }
-#define is_set__impl day_light_forced__is_set__impl
-#define set__impl day_light_forced__set__impl
+#define is_set__impl required_co2_switch_state__is_set__impl
+#define set__impl required_co2_switch_state__set__impl
 
-day_light_forced_t const day_light_forced = {.set = &set__impl
-                                             ,
-                                             .is_set = &is_set__impl
-                                            };
+required_co2_switch_state_t const required_co2_switch_state = {.set = &set__impl
+                                                               ,
+                                                               .is_set = &is_set__impl
+                                                              };
 
 
 #undef is_set__impl
 #undef set__impl
-#define is_set__impl day_light_forced__is_set__impl
-#define set__impl day_light_forced__set__impl
+#define is_set__impl required_co2_switch_state__is_set__impl
+#define set__impl required_co2_switch_state__set__impl
 
 
 ;
 
-#define is_set__impl day_light_forced__is_set__impl
-#define set__impl day_light_forced__set__impl
+#define is_set__impl required_co2_switch_state__is_set__impl
+#define set__impl required_co2_switch_state__set__impl
 
 
 
@@ -17326,6 +17349,83 @@ static AKAT_FORCE_INLINE void akat_every_minute_second_handler() {
 
 ;
 
+
+
+
+
+
+static AKAT_FORCE_INLINE void required_co2_switch_state__reset_checker() {
+    if (required_co2_switch_state__v) {
+        required_co2_switch_state__countdown -= 1;
+
+        if (!required_co2_switch_state__countdown) {
+            required_co2_switch_state__v = 0;
+        }
+    }
+}
+
+;
+
+
+
+;
+
+// Forced states
+static u8 day_light_forced__v = 0;
+static u8 day_light_forced__countdown = 0;
+
+;
+;
+;
+
+
+typedef struct {
+    void (* const set)(u8 state);
+    u8 (* const is_set)();
+} day_light_forced_t;
+
+extern day_light_forced_t const day_light_forced;
+
+static AKAT_FORCE_INLINE void day_light_forced__set__impl(u8 state) {
+#define set__impl day_light_forced__set__impl
+    day_light_forced__v = state;
+    day_light_forced__countdown = 10;
+#undef set__impl
+}
+static AKAT_FORCE_INLINE u8 day_light_forced__is_set__impl() {
+#define is_set__impl day_light_forced__is_set__impl
+#define set__impl day_light_forced__set__impl
+    return day_light_forced__v;
+#undef is_set__impl
+#undef set__impl
+}
+#define is_set__impl day_light_forced__is_set__impl
+#define set__impl day_light_forced__set__impl
+
+day_light_forced_t const day_light_forced = {.set = &set__impl
+                                             ,
+                                             .is_set = &is_set__impl
+                                            };
+
+
+#undef is_set__impl
+#undef set__impl
+#define is_set__impl day_light_forced__is_set__impl
+#define set__impl day_light_forced__set__impl
+
+
+;
+
+#define is_set__impl day_light_forced__is_set__impl
+#define set__impl day_light_forced__set__impl
+
+
+
+
+
+#undef is_set__impl
+#undef set__impl
+;
 
 
 
@@ -17421,6 +17521,81 @@ static AKAT_FORCE_INLINE void night_light_forced__reset_checker() {
 
 
 ;
+static u8 co2_force_off__v = 0;
+static u8 co2_force_off__countdown = 0;
+
+;
+;
+;
+
+
+typedef struct {
+    void (* const set)(u8 state);
+    u8 (* const is_set)();
+} co2_force_off_t;
+
+extern co2_force_off_t const co2_force_off;
+
+static AKAT_FORCE_INLINE void co2_force_off__set__impl(u8 state) {
+#define set__impl co2_force_off__set__impl
+    co2_force_off__v = state;
+    co2_force_off__countdown = 10;
+#undef set__impl
+}
+static AKAT_FORCE_INLINE u8 co2_force_off__is_set__impl() {
+#define is_set__impl co2_force_off__is_set__impl
+#define set__impl co2_force_off__set__impl
+    return co2_force_off__v;
+#undef is_set__impl
+#undef set__impl
+}
+#define is_set__impl co2_force_off__is_set__impl
+#define set__impl co2_force_off__set__impl
+
+co2_force_off_t const co2_force_off = {.set = &set__impl
+                                       ,
+                                       .is_set = &is_set__impl
+                                      };
+
+
+#undef is_set__impl
+#undef set__impl
+#define is_set__impl co2_force_off__is_set__impl
+#define set__impl co2_force_off__set__impl
+
+
+;
+
+#define is_set__impl co2_force_off__is_set__impl
+#define set__impl co2_force_off__set__impl
+
+
+
+
+
+#undef is_set__impl
+#undef set__impl
+;
+
+
+
+
+
+static AKAT_FORCE_INLINE void co2_force_off__reset_checker() {
+    if (co2_force_off__v) {
+        co2_force_off__countdown -= 1;
+
+        if (!co2_force_off__countdown) {
+            co2_force_off__v = 0;
+        }
+    }
+}
+
+;
+
+
+
+;
 
 
 static AKAT_FORCE_INLINE void akat_on_every_hour();
@@ -17491,13 +17666,7 @@ static void force_light(const LightForceMode mode) {
 
 // Called from uart-command-receiver if set-co2 switch command is received from raspberry-pi
 static void update_co2_switch_state(const u8 new_state) {
-//TODO: This is temporary code.
-    //TODO: Implement proper stuff
-    //TODO: Check whether we opened switch this hour and ignore further requests if
-    //TODO: it was opened this hour but now closed and now requested to open again.
-    //TODO: IF the current state is 'open/on' and new_state is the same, then we just
-    //TODO: need to refresh the state in pin (otherwise it will expire).
-    co2_switch.set(new_state);
+    required_co2_switch_state.set(new_state);
 }
 
 ;
@@ -17563,16 +17732,37 @@ static AKAT_FORCE_INLINE void controller_tick() {
     received_clock2 = 255;
     //Finally set clock to new clock value, either corrected or normal one
     clock_deciseconds_since_midnight = new_clock_deciseconds_since_midnight;
+    //- - - - - - - - - - - - - - - -  CO2 - - - - - -
+    //New CO2 state if by default OFF
+    u8 new_co2_state = 0;
+    //Calculate day so it can be used also used for debugging
+    co2_calculated_day =
+        (clock_deciseconds_since_midnight >= (AK_CO2_DAY_START_HOUR * 60L * 60L * 10L))
+        && (clock_deciseconds_since_midnight < (AK_CO2_DAY_END_HOUR * 60L * 60L * 10L));
 
-    //- - - - - - - - - - - - - - - -  STATE CHANGING - - - - - -
+    if (co2_deciseconds_until_can_turn_on) {//We can't feed CO2, because we can't yet... (it was turned off recently)
+        co2_deciseconds_until_can_turn_on -= 1;
+    } else {
+        if (required_co2_switch_state.is_set()) {//New state will be whether it's in co2 day or not
+            new_co2_state = co2_calculated_day && !co2_force_off.is_set();
+        }
+    }//- - - - - - - - - - - - - - - -  STATE CHANGING - - - - - -
 
+    //Light
     if (new_calculated_day_light_state) {
         day_light_switch.set(AKAT_ONE);
         night_light_switch.set(0);
     } else {
         day_light_switch.set(0);
         night_light_switch.set(AKAT_ONE);
+    }//CO2
+
+    if (co2_switch.is_set() && !new_co2_state) {//We are turning CO2 off...
+        //Lock co2 switch so it can't be turned on too soon
+        co2_deciseconds_until_can_turn_on = AK_CO2_OFF_HOURS_BEFORE_UNLOCKED * 60L * 60L * 10L;
     }
+
+    co2_switch.set(new_co2_state);
 }
 
 ;
@@ -19220,7 +19410,7 @@ static AKAT_FORCE_INLINE void co2_ticker() {
 
 static u8 co2_writer__akat_coroutine_state = 0;
 static u8 co2_writer__byte_to_send = 0;
-static u8 co2_writer__send_byte__akat_coroutine_state = 0;
+register u8 co2_writer__send_byte__akat_coroutine_state asm ("r4");
 static u8 co2_writer__send_byte() {
 #define akat_coroutine_state co2_writer__send_byte__akat_coroutine_state
 #define byte_to_send co2_writer__byte_to_send
@@ -20066,10 +20256,10 @@ ISR(USART0_RX_vect) {
 // USART0(USB): This thread continuously writes current status into USART0
 
 // NOTE: Just replace state_type to u16 if we ran out of state space..
-static u8 usart0_writer__akat_coroutine_state = 0;
+register u8 usart0_writer__akat_coroutine_state asm ("r16");
 static u8 usart0_writer__crc = 0;
-static u8 usart0_writer__byte_to_send = 0;
-static u8 usart0_writer__u8_to_format_and_send = 0;
+register u8 usart0_writer__byte_to_send asm ("r17");
+register u8 usart0_writer__u8_to_format_and_send asm ("r3");
 static u16 usart0_writer__u16_to_format_and_send = 0;
 static u32 usart0_writer__u32_to_format_and_send = 0;
 static u24 usart0_writer____ph_adc_accum = 0;
@@ -20756,6 +20946,30 @@ static AKAT_FORCE_INLINE void usart0_writer() {
 
     case 89:
         goto akat_coroutine_l_89;
+
+    case 90:
+        goto akat_coroutine_l_90;
+
+    case 91:
+        goto akat_coroutine_l_91;
+
+    case 92:
+        goto akat_coroutine_l_92;
+
+    case 93:
+        goto akat_coroutine_l_93;
+
+    case 94:
+        goto akat_coroutine_l_94;
+
+    case 95:
+        goto akat_coroutine_l_95;
+
+    case 96:
+        goto akat_coroutine_l_96;
+
+    case 97:
+        goto akat_coroutine_l_97;
     }
 
 akat_coroutine_l_start:
@@ -21732,8 +21946,7 @@ akat_coroutine_l_67:
             } while (0);
 
             ;
-            ;
-            byte_to_send = ' ';
+            byte_to_send = ',';
 
             do {
                 akat_coroutine_state = 68;
@@ -21745,11 +21958,128 @@ akat_coroutine_l_68:
             } while (0);
 
             ;
-            byte_to_send = 'E';
+            /*
+              COMMPROTO: D13: CO2 sensor: u8 co2_calculated_day ? 1 : 0
+              TS_PROTO_TYPE: "u8 co2_calculated_day ? 1 : 0": number,
+              TS_PROTO_ASSIGN: "u8 co2_calculated_day ? 1 : 0": vals["D13"],
+            */
+            u8_to_format_and_send = co2_calculated_day ? 1 : 0;
 
             do {
                 akat_coroutine_state = 69;
 akat_coroutine_l_69:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 70;
+akat_coroutine_l_70:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: D14: CO2 sensor: u8 co2_force_off.is_set() ? 1 : 0
+              TS_PROTO_TYPE: "u8 co2_force_off.is_set() ? 1 : 0": number,
+              TS_PROTO_ASSIGN: "u8 co2_force_off.is_set() ? 1 : 0": vals["D14"],
+            */
+            u8_to_format_and_send = co2_force_off.is_set() ? 1 : 0;
+
+            do {
+                akat_coroutine_state = 71;
+akat_coroutine_l_71:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 72;
+akat_coroutine_l_72:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: D15: CO2 sensor: u8 required_co2_switch_state.is_set() ? 1 : 0
+              TS_PROTO_TYPE: "u8 required_co2_switch_state.is_set() ? 1 : 0": number,
+              TS_PROTO_ASSIGN: "u8 required_co2_switch_state.is_set() ? 1 : 0": vals["D15"],
+            */
+            u8_to_format_and_send = required_co2_switch_state.is_set() ? 1 : 0;
+
+            do {
+                akat_coroutine_state = 73;
+akat_coroutine_l_73:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 74;
+akat_coroutine_l_74:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: D16: CO2 sensor: u32 co2_deciseconds_until_can_turn_on
+              TS_PROTO_TYPE: "u32 co2_deciseconds_until_can_turn_on": number,
+              TS_PROTO_ASSIGN: "u32 co2_deciseconds_until_can_turn_on": vals["D16"],
+            */
+            u32_to_format_and_send = co2_deciseconds_until_can_turn_on;
+
+            do {
+                akat_coroutine_state = 75;
+akat_coroutine_l_75:
+
+                if (format_and_send_u32() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            ;
+            byte_to_send = ' ';
+
+            do {
+                akat_coroutine_state = 76;
+akat_coroutine_l_76:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = 'E';
+
+            do {
+                akat_coroutine_state = 77;
+akat_coroutine_l_77:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21765,8 +22095,8 @@ akat_coroutine_l_69:
             u8_to_format_and_send = day_light_switch.is_set() ? 1 : 0;
 
             do {
-                akat_coroutine_state = 70;
-akat_coroutine_l_70:
+                akat_coroutine_state = 78;
+akat_coroutine_l_78:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21777,8 +22107,8 @@ akat_coroutine_l_70:
             byte_to_send = ',';
 
             do {
-                akat_coroutine_state = 71;
-akat_coroutine_l_71:
+                akat_coroutine_state = 79;
+akat_coroutine_l_79:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21794,8 +22124,8 @@ akat_coroutine_l_71:
             u8_to_format_and_send = night_light_switch.is_set() ? 1 : 0;
 
             do {
-                akat_coroutine_state = 72;
-akat_coroutine_l_72:
+                akat_coroutine_state = 80;
+akat_coroutine_l_80:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21806,8 +22136,8 @@ akat_coroutine_l_72:
             byte_to_send = ',';
 
             do {
-                akat_coroutine_state = 73;
-akat_coroutine_l_73:
+                akat_coroutine_state = 81;
+akat_coroutine_l_81:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21823,8 +22153,8 @@ akat_coroutine_l_73:
             u8_to_format_and_send = day_light_forced.is_set() ? 1 : 0;
 
             do {
-                akat_coroutine_state = 74;
-akat_coroutine_l_74:
+                akat_coroutine_state = 82;
+akat_coroutine_l_82:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21835,8 +22165,8 @@ akat_coroutine_l_74:
             byte_to_send = ',';
 
             do {
-                akat_coroutine_state = 75;
-akat_coroutine_l_75:
+                akat_coroutine_state = 83;
+akat_coroutine_l_83:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21852,8 +22182,8 @@ akat_coroutine_l_75:
             u8_to_format_and_send = night_light_forced.is_set() ? 1 : 0;
 
             do {
-                akat_coroutine_state = 76;
-akat_coroutine_l_76:
+                akat_coroutine_state = 84;
+akat_coroutine_l_84:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21864,8 +22194,8 @@ akat_coroutine_l_76:
             byte_to_send = ',';
 
             do {
-                akat_coroutine_state = 77;
-akat_coroutine_l_77:
+                akat_coroutine_state = 85;
+akat_coroutine_l_85:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21881,8 +22211,8 @@ akat_coroutine_l_77:
             u8_to_format_and_send = light_forces_since_protection_stat_reset;
 
             do {
-                akat_coroutine_state = 78;
-akat_coroutine_l_78:
+                akat_coroutine_state = 86;
+akat_coroutine_l_86:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21904,8 +22234,8 @@ akat_coroutine_l_78:
             byte_to_send = ' ';
 
             do {
-                akat_coroutine_state = 79;
-akat_coroutine_l_79:
+                akat_coroutine_state = 87;
+akat_coroutine_l_87:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21916,8 +22246,8 @@ akat_coroutine_l_79:
             byte_to_send = 'F';
 
             do {
-                akat_coroutine_state = 80;
-akat_coroutine_l_80:
+                akat_coroutine_state = 88;
+akat_coroutine_l_88:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21933,8 +22263,8 @@ akat_coroutine_l_80:
             u32_to_format_and_send = __ph_adc_accum;
 
             do {
-                akat_coroutine_state = 81;
-akat_coroutine_l_81:
+                akat_coroutine_state = 89;
+akat_coroutine_l_89:
 
                 if (format_and_send_u32() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21945,8 +22275,8 @@ akat_coroutine_l_81:
             byte_to_send = ',';
 
             do {
-                akat_coroutine_state = 82;
-akat_coroutine_l_82:
+                akat_coroutine_state = 90;
+akat_coroutine_l_90:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21962,8 +22292,8 @@ akat_coroutine_l_82:
             u16_to_format_and_send = __ph_adc_accum_samples;
 
             do {
-                akat_coroutine_state = 83;
-akat_coroutine_l_83:
+                akat_coroutine_state = 91;
+akat_coroutine_l_91:
 
                 if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21976,8 +22306,8 @@ akat_coroutine_l_83:
             byte_to_send = ' ';
 
             do {
-                akat_coroutine_state = 84;
-akat_coroutine_l_84:
+                akat_coroutine_state = 92;
+akat_coroutine_l_92:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21985,11 +22315,11 @@ akat_coroutine_l_84:
             } while (0);
 
             ;
-            u8_to_format_and_send = 0xcb;
+            u8_to_format_and_send = 0xf7;
 
             do {
-                akat_coroutine_state = 85;
-akat_coroutine_l_85:
+                akat_coroutine_state = 93;
+akat_coroutine_l_93:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -22001,8 +22331,8 @@ akat_coroutine_l_85:
             byte_to_send = ' ';
 
             do {
-                akat_coroutine_state = 86;
-akat_coroutine_l_86:
+                akat_coroutine_state = 94;
+akat_coroutine_l_94:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -22013,8 +22343,8 @@ akat_coroutine_l_86:
             u8_to_format_and_send = crc;
 
             do {
-                akat_coroutine_state = 87;
-akat_coroutine_l_87:
+                akat_coroutine_state = 95;
+akat_coroutine_l_95:
 
                 if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -22026,8 +22356,8 @@ akat_coroutine_l_87:
             byte_to_send = '\r';
 
             do {
-                akat_coroutine_state = 88;
-akat_coroutine_l_88:
+                akat_coroutine_state = 96;
+akat_coroutine_l_96:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -22038,8 +22368,8 @@ akat_coroutine_l_88:
             byte_to_send = '\n';
 
             do {
-                akat_coroutine_state = 89;
-akat_coroutine_l_89:
+                akat_coroutine_state = 97;
+akat_coroutine_l_97:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -22429,6 +22759,10 @@ akat_coroutine_l_2:
             ;
 
             switch (command_code) {
+            case 'F':
+                co2_force_off.set(AKAT_ONE);
+                break;
+
             case 'G':
                 update_co2_switch_state(command_arg);
                 break;
@@ -22511,8 +22845,10 @@ static AKAT_FORCE_INLINE void timer1() {
 
 
 static AKAT_FORCE_INLINE void akat_on_every_minute() {
+    required_co2_switch_state__reset_checker();
     day_light_forced__reset_checker();
     night_light_forced__reset_checker();
+    co2_force_off__reset_checker();
     akat_every_hour_minute_handler();
 }
 
@@ -22547,8 +22883,8 @@ static void ds18b20_ticker() {
 
 
 
-static u8 ds18b20_thread__akat_coroutine_state = 0;
-static u8 ds18b20_thread__byte_to_send = 0;
+register u8 ds18b20_thread__akat_coroutine_state asm ("r5");
+register u8 ds18b20_thread__byte_to_send asm ("r6");
 static u8 ds18b20_thread__command_to_send = 0;
 static u8 ds18b20_thread__receive_idx = 0;
 static AKAT_FORCE_INLINE u8 ds18b20_thread__has_connected_sensors() {
@@ -23457,6 +23793,12 @@ akat_coroutine_l_end:
 
 AKAT_NO_RETURN void main() {
     asm volatile ("EOR r2, r2\nINC r2": "=r"(__akat_one__));
+    usart0_writer__u8_to_format_and_send = 0;
+    co2_writer__send_byte__akat_coroutine_state = 0;
+    ds18b20_thread__akat_coroutine_state = 0;
+    ds18b20_thread__byte_to_send = 0;
+    usart0_writer__akat_coroutine_state = 0;
+    usart0_writer__byte_to_send = 0;
     akat_every_decisecond_run_required = 0;
     G5_unused__init();
     E2_unused__init();

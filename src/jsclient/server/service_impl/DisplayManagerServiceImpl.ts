@@ -60,7 +60,7 @@ export default class DisplayManagerServiceImpl extends DisplayManagerService {
             decimals: 2,
             minDiff: 0.04,
             diffOffsetHours: 3,
-            getValue: ph => ph?.value60s
+            getValue: ph => ph?.value600s
         });
 
         // Clock

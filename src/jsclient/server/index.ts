@@ -9,7 +9,7 @@ import bodyParser from 'body-parser';
 import { IncomingMessage } from "http";
 import { OutgoingMessage } from "http";
 import onFinished from "on-finished";
-import { LightForceMode, Co2ValveOpenState } from "./service/AvrService";
+import { LightForceMode } from "./service/AvrService";
 
 logger.info("============================================================================");
 logger.info("============================================================================");
@@ -79,10 +79,10 @@ expressServer.get("/do-not-force-light", (_, res) => {
 });
 
 // -------------------------------------
-// TEMPORARY COMMANDS
+// CO2 COMMANDS
 
-expressServer.get("/open-co2", (_, res) => {
-    avrService.setCo2ValveOpenState(Co2ValveOpenState.Open);
+expressServer.get("/force-co2-off", (_, res) => {
+    avrService.forceCo2Off();
     res.end("OK");
 });
 

@@ -62,6 +62,10 @@ export interface AvrState {
     readonly light: AvrLightState;
     readonly ph: AvrPhState;
     readonly co2ValveOpen: boolean;
+    readonly co2day: boolean;
+    readonly co2forcedOff: boolean;
+    readonly co2IsRequired: boolean;
+    readonly co2CooldownSeconds: number;
 }
 
 export enum LightForceMode {
@@ -83,5 +87,7 @@ export default abstract class AvrService {
 
     abstract forceLight(mode: LightForceMode): void;
 
-    abstract setCo2ValveOpenState(newCo2ValveOpenState: Co2ValveOpenState): void;
+    abstract setCo2RequiredValveOpenState(newCo2RequiredValveOpenState: Co2ValveOpenState): void;
+
+    abstract forceCo2Off(): void;
 }

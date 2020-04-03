@@ -7,6 +7,8 @@ export interface Ph {
     readonly voltage5sSamples: number;
     readonly value60s: number | null;
     readonly value60sSamples: number;
+    readonly value600s: number | null;
+    readonly value600sSamples: number;
     readonly lastSensorState: AvrPhState | null;
 }
 

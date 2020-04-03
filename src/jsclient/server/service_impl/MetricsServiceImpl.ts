@@ -482,6 +482,16 @@ const ph60sSamplesGauge = new SimpleGauge({
     help: 'Number of samples in ph averaging 60 seconds of values.'
 });
 
+const ph600sGauge = new SimpleGauge({
+    name: 'akua_ph600s',
+    help: 'Current ph averaging 600 seconds of values.'
+});
+
+const ph600sSamplesGauge = new SimpleGauge({
+    name: 'akua_ph600s_samples',
+    help: 'Number of samples in ph averaging 600 seconds of values.'
+});
+
 const phSensorVoltageGauge = new SimpleGauge({
     name: 'akua_ph_sensor_voltage',
     help: 'Last measured voltage from ph sensor as reported by AVR.'
@@ -497,6 +507,26 @@ const phSensorVoltageSamplesGauge = new SimpleGauge({
 const co2ValveOpenGauge = new SimpleGauge({
     name: 'akua_co2_valve_open',
     help: '1 means open (co2 can flow into tank), 0 means closed (no co2).'
+});
+
+const co2ForcedOffGauge = new SimpleGauge({
+    name: 'akua_co2_forced_off',
+    help: '1 means forced, 0 means not-forced.'
+});
+
+const co2RequiredGauge = new SimpleGauge({
+    name: 'akua_co2_required',
+    help: '1 means that rpi wants CO2 feeded to aquarium, 0 there no need of CO2.'
+});
+
+const co2DayGauge = new SimpleGauge({
+    name: 'akua_co2_day',
+    help: '1 means that it is considered that it is CO2-day now (time when CO2 flow is allowed), 0 means that CO2 can\'t be supplied.'
+});
+
+const co2CooldownGauge = new SimpleGauge({
+    name: 'akua_co2_cooldown',
+    help: 'When CO2 turned off, cooldown timer started. This variable show how many seconds left until cooldown. When it reaches zero, then CO2 can be turned on again if other conditions are met.'
 });
 
 const dayLightOnGauge = new SimpleGauge({
@@ -620,6 +650,10 @@ export default class MetricsServiceImpl extends MetricsService {
         co2SensorSGauge.setOrRemove(co2?.lastSensorState?.s);
         co2SensorUGauge.setOrRemove(co2?.lastSensorState?.u);
         co2ValveOpenGauge.setOrRemove(avrServiceState.lastAvrState?.co2ValveOpen);
+        co2CooldownGauge.setOrRemove(avrServiceState.lastAvrState?.co2CooldownSeconds);
+        co2DayGauge.setOrRemove(avrServiceState.lastAvrState?.co2day);
+        co2ForcedOffGauge.setOrRemove(avrServiceState.lastAvrState?.co2forcedOff);
+        co2RequiredGauge.setOrRemove(avrServiceState.lastAvrState?.co2IsRequired);
 
         // Light - - - - 
         const light = avrServiceState.lastAvrState?.light;
@@ -633,6 +667,8 @@ export default class MetricsServiceImpl extends MetricsService {
         const ph = this._phSensorService.ph;
         ph60sGauge.setOrRemove(ph?.value60s);
         ph60sSamplesGauge.setOrRemove(ph?.value60sSamples);
+        ph600sGauge.setOrRemove(ph?.value600s);
+        ph600sSamplesGauge.setOrRemove(ph?.value600sSamples);
         ph5sVoltageGauge.setOrRemove(ph?.voltage5s);
         ph5sVoltageSamplesGauge.setOrRemove(ph?.voltage5sSamples);
         phSensorVoltageGauge.setOrRemove(ph?.lastSensorState?.voltage);

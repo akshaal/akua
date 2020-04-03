@@ -6,6 +6,13 @@
 #define AK_DAY_DURATION_HOURS 10
 #define AK_DAY_END_HOUR (AK_DAY_START_HOUR + AK_DAY_DURATION_HOURS)
 
+// CO2-Day interval. Interval when it's allowed to feed CO2 to aquarium
+#define AK_CO2_DAY_START_HOUR (AK_DAY_START_HOUR)
+#define AK_CO2_DAY_END_HOUR (AK_DAY_END_HOUR - 1)
+
+// Minimum hours when CO2 can be turned again after it was turned off
+#define AK_CO2_OFF_HOURS_BEFORE_UNLOCKED 2
+
 // Here is what we are going to use for communication using USB/serial port
 // Frame format is 8N1 (8 bits, no parity, 1 stop bit)
 #define AK_USART0_BAUD_RATE     9600
@@ -262,11 +269,24 @@ GLOBAL$() {
     STATIC_VAR$(u8 received_clock0); // LSByte
     STATIC_VAR$(u8 received_clock1);
     STATIC_VAR$(u8 received_clock2, initial = 255); // MSByte. 255 means nothing is received
+
+    // CO2 protection - - - 
+    STATIC_VAR$(u24 co2_deciseconds_until_can_turn_on,
+                initial = 0); // TODO: Change to (AK_CO2_OFF_HOURS_BEFORE_UNLOCKED * 60L * 60L * 10L)
+
+    // Whether it's day or not as calculated by AVR's internal algorithm and interval
+    STATIC_VAR$(u8 co2_calculated_day, initial = 0);
 }
+
+// State that raspberry pi CO2-controlling algorithm wants to set.
+// It's expected that rpi-controller confirms the state every minute.
+// But we tolerate restart of the rpi-controller within 15 minutes.
+X_FLAG_WITH_TIMEOUT$(required_co2_switch_state, timeout = 15, unit = minutes);
 
 // Forced states
 X_FLAG_WITH_TIMEOUT$(day_light_forced, timeout = 10, unit = minutes);
 X_FLAG_WITH_TIMEOUT$(night_light_forced, timeout = 10, unit = minutes);
+X_FLAG_WITH_TIMEOUT$(co2_force_off, timeout = 10, unit = minutes);
 
 X_EVERY_HOUR$(reset_protection_stats) {
     light_forces_since_protection_stat_reset = 0;
@@ -301,13 +321,7 @@ FUNCTION$(void force_light(const LightForceMode mode)) {
 
 // Called from uart-command-receiver if set-co2 switch command is received from raspberry-pi
 FUNCTION$(void update_co2_switch_state(const u8 new_state)) {
-    // TODO: This is temporary code.
-    // TODO: Implement proper stuff
-    // TODO: Check whether we opened switch this hour and ignore further requests if
-    // TODO: it was opened this hour but now closed and now requested to open again.
-    // TODO: IF the current state is 'open/on' and new_state is the same, then we just
-    // TODO: need to refresh the state in pin (otherwise it will expire).
-    co2_switch.set(new_state);
+    required_co2_switch_state.set(new_state);
 }
 
 // - - - - - - - - - - - -  - - - - - - - ---- - - -- - - - -  - - - -
@@ -366,8 +380,29 @@ X_EVERY_DECISECOND$(controller_tick) {
     // Finally set clock to new clock value, either corrected or normal one
     clock_deciseconds_since_midnight = new_clock_deciseconds_since_midnight;
 
+    // - - - - - - - - - - - - - - - -  CO2 - - - - - - 
+
+    // New CO2 state if by default OFF
+    u8 new_co2_state = 0;
+
+    // Calculate day so it can be used also used for debugging
+    co2_calculated_day =
+        (clock_deciseconds_since_midnight >= (AK_CO2_DAY_START_HOUR * 60L * 60L * 10L))
+            && (clock_deciseconds_since_midnight < (AK_CO2_DAY_END_HOUR * 60L * 60L * 10L));
+
+    if (co2_deciseconds_until_can_turn_on) {
+        // We can't feed CO2, because we can't yet... (it was turned off recently)
+        co2_deciseconds_until_can_turn_on -= 1;
+    } else {
+        if (required_co2_switch_state.is_set()) {
+            // New state will be whether it's in co2 day or not
+            new_co2_state = co2_calculated_day && !co2_force_off.is_set();
+        }
+    }
+
     // - - - - - - - - - - - - - - - -  STATE CHANGING - - - - - - 
 
+    // Light
     if (new_calculated_day_light_state) {
         day_light_switch.set(AKAT_ONE);
         night_light_switch.set(0);
@@ -375,6 +410,14 @@ X_EVERY_DECISECOND$(controller_tick) {
         day_light_switch.set(0);
         night_light_switch.set(AKAT_ONE);
     }
+
+    // CO2
+    if (co2_switch.is_set() && !new_co2_state) {
+        // We are turning CO2 off...
+        // Lock co2 switch so it can't be turned on too soon
+        co2_deciseconds_until_can_turn_on = AK_CO2_OFF_HOURS_BEFORE_UNLOCKED * 60L * 60L * 10L;
+    }
+    co2_switch.set(new_co2_state);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -689,7 +732,11 @@ THREAD$(usart0_writer, state_type = u8) {
                       u16 co2.get_u(),
                       u8 co2.get_update_id(),
                       u8 co2.get_updated_deciseconds_ago(),
-                      u8 co2_switch.is_set() ? 1 : 0);
+                      u8 co2_switch.is_set() ? 1 : 0,
+                      u8 co2_calculated_day ? 1 : 0,
+                      u8 co2_force_off.is_set() ? 1 : 0,
+                      u8 required_co2_switch_state.is_set() ? 1 : 0,
+                      u32 co2_deciseconds_until_can_turn_on);
 
         WRITE_STATUS$("Light",
                       E,
@@ -819,6 +866,10 @@ THREAD$(usart0_reader) {
         CALL$(read_command);
 
         switch(command_code) {
+        case 'F':
+            co2_force_off.set(AKAT_ONE);
+            break;
+
         case 'G':
             update_co2_switch_state(command_arg);
             break;
