@@ -11,7 +11,7 @@
 #define AK_CO2_DAY_END_HOUR (AK_DAY_END_HOUR - 1)
 
 // Minimum hours when CO2 can be turned again after it was turned off
-#define AK_CO2_OFF_HOURS_BEFORE_UNLOCKED 2
+#define AK_CO2_OFF_HOURS_BEFORE_UNLOCKED 1
 
 // Here is what we are going to use for communication using USB/serial port
 // Frame format is 8N1 (8 bits, no parity, 1 stop bit)
