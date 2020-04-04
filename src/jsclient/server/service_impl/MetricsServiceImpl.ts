@@ -521,7 +521,7 @@ const co2ForcedOffGauge = new SimpleGauge({
 
 const co2RequiredGauge = new SimpleGauge({
     name: 'akua_co2_required',
-    help: '1 means that rpi wants CO2 feeded to aquarium, 0 there no need of CO2.'
+    help: '1 means that rpi wants CO2 feeded to aquarium, 0 there is no need of CO2.'
 });
 
 const co2DayGauge = new SimpleGauge({
