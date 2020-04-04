@@ -1,0 +1,8 @@
+#!/bin/sh
+
+export AKUA_VERSION=$(git describe --tags --always)
+
+cd `dirname "$0"`
+cd src/jsclient
+
+npm test

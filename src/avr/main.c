@@ -7,7 +7,7 @@
 #define AK_DAY_END_HOUR (AK_DAY_START_HOUR + AK_DAY_DURATION_HOURS)
 
 // CO2-Day interval. Interval when it's allowed to feed CO2 to aquarium
-#define AK_CO2_DAY_START_HOUR (AK_DAY_START_HOUR)
+#define AK_CO2_DAY_START_HOUR (AK_DAY_START_HOUR - 1)
 #define AK_CO2_DAY_END_HOUR (AK_DAY_END_HOUR - 1)
 
 // Minimum hours when CO2 can be turned again after it was turned off

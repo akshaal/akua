@@ -1,4 +1,7 @@
 {
+    "mochaExplorer.files": "**/*.spec.ts",
+    "mochaExplorer.require": ["ts-node/register", "tsconfig-paths/register"],
+    "mochaExplorer.cwd": "src/jsclient",
     "typescript.tsdk": "src/jsclient/node_modules/typescript/lib",
     "cSpell.words": [
         "ADMUX",
@@ -37,6 +40,7 @@
         "deciseconds",
         "gargs",
         "maxsize",
+        "mockito",
         "pify",
         "printf",
         "sourcecode",

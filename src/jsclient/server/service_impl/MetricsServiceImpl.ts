@@ -487,6 +487,11 @@ const ph600sGauge = new SimpleGauge({
     help: 'Current ph averaging 600 seconds of values.'
 });
 
+const phBasedCo2Gauge = new SimpleGauge({
+    name: 'akua_ph_based_co2',
+    help: 'Current CO2 PPM as calculated from KH and PH values.'
+});
+
 const ph600sSamplesGauge = new SimpleGauge({
     name: 'akua_ph600s_samples',
     help: 'Number of samples in ph averaging 600 seconds of values.'
@@ -673,5 +678,6 @@ export default class MetricsServiceImpl extends MetricsService {
         ph5sVoltageSamplesGauge.setOrRemove(ph?.voltage5sSamples);
         phSensorVoltageGauge.setOrRemove(ph?.lastSensorState?.voltage);
         phSensorVoltageSamplesGauge.setOrRemove(ph?.lastSensorState?.voltageSamples);
+        phBasedCo2Gauge.setOrRemove(ph?.phBasedCo2);
     }
 }

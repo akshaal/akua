@@ -9,7 +9,7 @@ import AvrService, { Co2ValveOpenState } from "server/service/AvrService";
 const SEND_REQUIREMENTS_TO_AVR_EVERY_MS = 60_000;
 
 // Lower PH, more dissolved CO2
-const MIN_PH_FOR_CO2 = 6.82;
+const MIN_PH_FOR_CO2 = 6.8;
 
 @injectable()
 export default class Co2ControllerServiceImpl extends Co2ControllerService {
