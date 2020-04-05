@@ -68,8 +68,8 @@ export default class DisplayManagerServiceImpl extends DisplayManagerService {
             displayElement: DisplayElement.PH,
             obs$: this._phSensorService.ph$,
             decimals: 2,
-            minDiff: 0.04,
-            diffOffsetHours: 1,
+            minDiff: 0.03,
+            diffOffsetHours: 0.25, // 15 minutes
             getValue: ph => ph?.value600s
         });
 
