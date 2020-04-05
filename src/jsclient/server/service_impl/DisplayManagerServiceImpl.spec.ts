@@ -121,8 +121,8 @@ describe('DisplayManagerServiceImpl', () => {
             phValues: {
                 a: {
                     phBasedCo2: 9.271,
-                    voltage5s: 3.123,
-                    voltage5sSamples: 1000,
+                    voltage60s: 3.123,
+                    voltage60sSamples: 1000,
                     value60s: 7.123,
                     value60sSamples: 1000,
                     value600s: 7.277,
@@ -131,8 +131,8 @@ describe('DisplayManagerServiceImpl', () => {
                 },
                 b: {
                     phBasedCo2: 9.121,
-                    voltage5s: 3.143,
-                    voltage5sSamples: 1000,
+                    voltage60s: 3.143,
+                    voltage60sSamples: 1000,
                     value60s: 7.513,
                     value60sSamples: 1000,
                     value600s: 7.917,
@@ -167,8 +167,8 @@ describe('DisplayManagerServiceImpl', () => {
             phValues: {
                 a: {
                     phBasedCo2: 9.271,
-                    voltage5s: 3.123,
-                    voltage5sSamples: 1000,
+                    voltage60s: 3.123,
+                    voltage60sSamples: 1000,
                     value60s: 7.123,
                     value60sSamples: 1000,
                     value600s: 7.277,
@@ -177,8 +177,8 @@ describe('DisplayManagerServiceImpl', () => {
                 },
                 b: {
                     phBasedCo2: 9.121,
-                    voltage5s: 3.143,
-                    voltage5sSamples: 1000,
+                    voltage60s: 3.143,
+                    voltage60sSamples: 1000,
                     value60s: 7.513,
                     value60sSamples: 1000,
                     value600s: 7.917,
@@ -211,8 +211,8 @@ describe('DisplayManagerServiceImpl', () => {
             phValues: {
                 a: {
                     phBasedCo2: 9.271,
-                    voltage5s: 3.123,
-                    voltage5sSamples: 1000,
+                    voltage60s: 3.123,
+                    voltage60sSamples: 1000,
                     value60s: 7.123,
                     value60sSamples: 1000,
                     value600s: 7.277,

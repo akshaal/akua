@@ -462,14 +462,14 @@ const co2SensorUGauge = new SimpleGauge({
 // ==========================================================================================
 // PH meter
 
-const ph5sVoltageGauge = new SimpleGauge({
-    name: 'akua_ph5s_voltage',
-    help: 'Current ph averaging 5 seconds of values.'
+const ph60sVoltageGauge = new SimpleGauge({
+    name: 'akua_ph60s_voltage',
+    help: 'Current ph voltage averaging 60 seconds of values.'
 });
 
-const ph5sVoltageSamplesGauge = new SimpleGauge({
-    name: 'akua_ph5s_voltage_samples',
-    help: 'Number of samples in ph averaging 5 seconds of values.'
+const ph60sVoltageSamplesGauge = new SimpleGauge({
+    name: 'akua_ph60s_voltage_samples',
+    help: 'Number of voltage samples in ph averaging 60 seconds of values.'
 });
 
 const ph60sGauge = new SimpleGauge({
@@ -674,8 +674,8 @@ export default class MetricsServiceImpl extends MetricsService {
         ph60sSamplesGauge.setOrRemove(ph?.value60sSamples);
         ph600sGauge.setOrRemove(ph?.value600s);
         ph600sSamplesGauge.setOrRemove(ph?.value600sSamples);
-        ph5sVoltageGauge.setOrRemove(ph?.voltage5s);
-        ph5sVoltageSamplesGauge.setOrRemove(ph?.voltage5sSamples);
+        ph60sVoltageGauge.setOrRemove(ph?.voltage60s);
+        ph60sVoltageSamplesGauge.setOrRemove(ph?.voltage60sSamples);
         phSensorVoltageGauge.setOrRemove(ph?.lastSensorState?.voltage);
         phSensorVoltageSamplesGauge.setOrRemove(ph?.lastSensorState?.voltageSamples);
         phBasedCo2Gauge.setOrRemove(ph?.phBasedCo2);

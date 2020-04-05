@@ -52,30 +52,27 @@ function calcPhFromVoltage(voltage: number): number {
 
 class SensorProcessor {
     readonly values$ = new BehaviorSubject<Ph | null>(null);
-    private _avg5sWindow = new AveragingWindow(5, PH_SAMPLE_FREQUENCY);
-    private _avg60sWindow = new AveragingWindow(60, PH_SAMPLE_FREQUENCY);
-    private _avg600sWindow = new AveragingWindow(600, PH_SAMPLE_FREQUENCY);
+    private _voltage60sWindow = new AveragingWindow(60, PH_SAMPLE_FREQUENCY);
+    private _voltage600sWindow = new AveragingWindow(600, PH_SAMPLE_FREQUENCY);
 
     onNewAvrState(newState: AvrPhState) {
         if (newState.voltage < 5 && newState.voltage >= 0) {
-            this._avg5sWindow.add(newState.voltage);
-            this._avg60sWindow.add(newState.voltage);
-            this._avg600sWindow.add(newState.voltage);
+            this._voltage60sWindow.add(newState.voltage);
+            this._voltage600sWindow.add(newState.voltage);
 
-            const avg5s = this._avg5sWindow.get();
-            const avg60s = this._avg60sWindow.get();
-            const avg600s = this._avg600sWindow.get();
+            const voltage60s = this._voltage60sWindow.get();
+            const voltage600s = this._voltage600sWindow.get();
 
-            const value600s = avg600s ? Math.round(calcPhFromVoltage(avg600s) * 1000) / 1000.0 : avg600s;
+            const phValue600s = voltage600s ? Math.round(calcPhFromVoltage(voltage600s) * 1000) / 1000.0 : voltage600s;
 
             this.values$.next({
-                voltage5s: avg5s ? Math.round(avg5s * 100) / 100.0 : avg5s,
-                voltage5sSamples: this._avg5sWindow.getCount(),
-                value60s: avg60s ? Math.round(calcPhFromVoltage(avg60s) * 1000) / 1000.0 : avg60s,
-                value60sSamples: this._avg60sWindow.getCount(),
-                value600s: value600s,
-                value600sSamples: this._avg600sWindow.getCount(),
-                phBasedCo2: value600s ? (3.0 * KH * (10 ** (7.00 - value600s))) : null,
+                voltage60s: voltage60s,
+                voltage60sSamples: this._voltage60sWindow.getCount(),
+                value60s: voltage60s ? Math.round(calcPhFromVoltage(voltage60s) * 1000) / 1000.0 : voltage60s,
+                value60sSamples: this._voltage60sWindow.getCount(),
+                value600s: phValue600s,
+                value600sSamples: this._voltage600sWindow.getCount(),
+                phBasedCo2: phValue600s ? (3.0 * KH * (10 ** (7.00 - phValue600s))) : null,
                 lastSensorState: newState
             });
         }
