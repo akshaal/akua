@@ -3,7 +3,7 @@ import DisplayManagerService from "server/service/DisplayManagerService";
 import PhSensorService from "server/service/PhSensorService";
 import DisplayService, { DisplayElement } from "server/service/DisplayService";
 import { Observable, of, combineLatest, timer, SchedulerLike } from "rxjs";
-import { map, timeoutWith, distinctUntilChanged, share, delay, startWith } from 'rxjs/operators';
+import { map, timeoutWith, distinctUntilChanged, share, delay, startWith, repeat, skip } from 'rxjs/operators';
 import { isPresent } from "./isPresent";
 import TemperatureSensorService from "server/service/TemperatureSensorService";
 import { Subscriptions } from "./Subscriptions";
@@ -99,8 +99,10 @@ export default class DisplayManagerServiceImpl extends DisplayManagerService {
     // the 'info'.
     private _formatFromObservable<T>(info: FormatInfo<T>): void {
         const vals$: Observable<number | null | undefined> = info.obs$.pipe(
+            skip(1),
             map(info.getValue),
             timeoutWith(TIMEOUT_MS, of(null), this._scheduler),
+            repeat(),
             distinctUntilChanged(),
             share()
         );

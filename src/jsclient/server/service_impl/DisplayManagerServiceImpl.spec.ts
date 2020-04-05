@@ -19,7 +19,7 @@ interface TestCaseSpec {
 }
 
 class TestCase {
-    readonly testScheduler: TestScheduler = new TestScheduler((actual, expected) => assert.deepEqual(actual, expected));
+    readonly testScheduler: TestScheduler = new TestScheduler((actual, expected) => expect(actual).toStrictEqual(expected));
 
     readonly displayServiceMock: DisplayService = mock<DisplayService>();
     readonly temperatureSensorServiceMock: TemperatureSensorService = mock<TemperatureSensorService>(4);
@@ -33,19 +33,19 @@ class TestCase {
     constructor(private _spec: TestCaseSpec) { }
 
     runFrames(maxFrames: number): void {
-        this.testScheduler.run(({ cold }) => {
+        this.testScheduler.run(({ hot }) => {
             // Setup mocks using test spec
 
             when(this.temperatureSensorServiceMock.aquariumTemperature$).thenReturn(
-                cold(this._spec.aquariumTemperatureSpec, this._spec.aquariumTemperatureValues)
+                hot(this._spec.aquariumTemperatureSpec, this._spec.aquariumTemperatureValues)
             );
 
             when(this.temperatureSensorServiceMock.caseTemperature$).thenReturn(
-                cold(this._spec.caseTemperatureSpec, this._spec.caseTemperatureValues)
+                hot(this._spec.caseTemperatureSpec, this._spec.caseTemperatureValues)
             );
 
             when(this.phSensorServiceMock.ph$).thenReturn(
-                cold(this._spec.phSpec, this._spec.phValues)
+                hot(this._spec.phSpec, this._spec.phValues)
             );
 
             when(this.displayServiceMock.setText(DisplayElement.CLOCK, anyString())).thenCall((_, str) => {
@@ -147,6 +147,86 @@ describe('DisplayManagerServiceImpl', () => {
         expect(testCase.aquaTemps).toStrictEqual(['', '25.4', '24.2']);
         expect(testCase.caseTemps).toStrictEqual(['', '31.8', '30.1']);
         expect(testCase.phs).toStrictEqual(['', '7.28', '7.92']);
+    });
+
+    it('should display empty string on timeout, but go back if value comes again', () => {
+        const testCase = new TestCase({
+            aquariumTemperatureSpec: "aa 90s bb",
+            aquariumTemperatureValues: {
+                a: { value: 25.421, valueSamples: 100, lastSensorState: null },
+                b: { value: 24.152, valueSamples: 100, lastSensorState: null }
+            },
+
+            caseTemperatureSpec: "aa 90s bb",
+            caseTemperatureValues: {
+                a: { value: 31.775, valueSamples: 110, lastSensorState: null },
+                b: { value: 30.121, valueSamples: 110, lastSensorState: null }
+            },
+
+            phSpec: "aa 90s bb",
+            phValues: {
+                a: {
+                    phBasedCo2: 9.271,
+                    voltage5s: 3.123,
+                    voltage5sSamples: 1000,
+                    value60s: 7.123,
+                    value60sSamples: 1000,
+                    value600s: 7.277,
+                    value600sSamples: 10000,
+                    lastSensorState: null
+                },
+                b: {
+                    phBasedCo2: 9.121,
+                    voltage5s: 3.143,
+                    voltage5sSamples: 1000,
+                    value60s: 7.513,
+                    value60sSamples: 1000,
+                    value600s: 7.917,
+                    value600sSamples: 10000,
+                    lastSensorState: null
+                }
+            },
+        });
+
+        testCase.runFrames(100000);
+
+        expect(testCase.aquaTemps).toStrictEqual(['', '25.4', '', '24.2']);
+        expect(testCase.caseTemps).toStrictEqual(['', '31.8', '', '30.1']);
+        expect(testCase.phs).toStrictEqual(['', '7.28', '', '7.92']);
+    });
+
+    it('skip first value in order to avoid hot/behavior observables in sensor implementation', () => {
+        const testCase = new TestCase({
+            aquariumTemperatureSpec: "a",
+            aquariumTemperatureValues: {
+                a: { value: 25.421, valueSamples: 100, lastSensorState: null },
+            },
+
+            caseTemperatureSpec: "a",
+            caseTemperatureValues: {
+                a: { value: 31.775, valueSamples: 110, lastSensorState: null },
+            },
+
+            phSpec: "a",
+            phValues: {
+                a: {
+                    phBasedCo2: 9.271,
+                    voltage5s: 3.123,
+                    voltage5sSamples: 1000,
+                    value60s: 7.123,
+                    value60sSamples: 1000,
+                    value600s: 7.277,
+                    value600sSamples: 10000,
+                    lastSensorState: null
+                }
+            },
+        });
+
+        testCase.runFrames(100);
+
+        expect(testCase.aquaTemps).toStrictEqual(['']);
+        expect(testCase.caseTemps).toStrictEqual(['']);
+        expect(testCase.phs).toStrictEqual(['']);
     });
 });
 
