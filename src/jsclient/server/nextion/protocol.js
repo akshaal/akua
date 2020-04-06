@@ -157,6 +157,10 @@ class EventResult extends Result {
      */
     this.data = data;
   }
+
+  get type() {
+    return "event";
+  }
 }
 
 /**
@@ -182,6 +186,10 @@ class ResponseResult extends Result {
      * @type {*|void}
      */
     this.data = data;
+  }
+
+  get type() {
+    return "response";
   }
 }
 

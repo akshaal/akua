@@ -3,11 +3,13 @@ import DisplayManagerService from "server/service/DisplayManagerService";
 import PhSensorService from "server/service/PhSensorService";
 import DisplayService, { DisplayTextElement, DisplayPicElement, DisplayPic } from "server/service/DisplayService";
 import { Observable, of, combineLatest, timer, SchedulerLike } from "rxjs";
-import { map, timeoutWith, distinctUntilChanged, share, delay, startWith, repeat, skip } from 'rxjs/operators';
+import { map, timeoutWith, distinctUntilChanged, share, delay, startWith, repeat, skip, filter, debounceTime, switchMap } from 'rxjs/operators';
 import { isPresent } from "./isPresent";
 import TemperatureSensorService from "server/service/TemperatureSensorService";
 import { Subscriptions } from "./Subscriptions";
-import AvrService, { AvrState, AvrServiceState } from "server/service/AvrService";
+import AvrService, { AvrState, AvrServiceState, LightForceMode } from "server/service/AvrService";
+import config, { ValueDisplayConfig } from "server/config";
+import logger from "server/logger";
 
 // Symbols compiled into "Aqua*" fonts: " .0123456789:⇡⇣"
 
@@ -19,6 +21,7 @@ interface FormatInfo<T> {
     readonly displayElement: DisplayTextElement;
     readonly minDiff: number;
     readonly diffOffsetHours: number;
+    readonly valueDisplayConfig: ValueDisplayConfig;
 
     getValue(t: T): number | null | undefined;
 }
@@ -57,6 +60,48 @@ function asIconsState(avrState?: AvrState, avrServiceState?: AvrServiceState): I
     };
 }
 
+// - - - - - - - - - - - - - -  - - - - - - - - - - - - - - - - - - - -- - - - - - - -
+
+function getColor(value: number | undefined | null, valueDisplayConfig: ValueDisplayConfig): Readonly<[number, number, number]> {
+    if (!isPresent(value)) {
+        return valueDisplayConfig.comfortRgbPcts;
+    }
+
+    if (value >= valueDisplayConfig.lowComfort && value <= valueDisplayConfig.highComfort) {
+        return valueDisplayConfig.comfortRgbPcts;
+    }
+
+    if (value <= valueDisplayConfig.lowTolerable) {
+        return valueDisplayConfig.lowRgbPcts;
+    }
+
+    if (value >= valueDisplayConfig.highTolerable) {
+        return valueDisplayConfig.highRgbPcts;
+    }
+
+    if (value <= valueDisplayConfig.lowComfort) {
+        const len = valueDisplayConfig.lowComfort - valueDisplayConfig.lowTolerable;
+        const distToLowTolerable = value - valueDisplayConfig.lowTolerable;
+        const t = distToLowTolerable / len;
+        return [
+            valueDisplayConfig.lowRgbPcts[0] + (valueDisplayConfig.comfortRgbPcts[0] - valueDisplayConfig.lowRgbPcts[0]) * t,
+            valueDisplayConfig.lowRgbPcts[1] + (valueDisplayConfig.comfortRgbPcts[1] - valueDisplayConfig.lowRgbPcts[1]) * t,
+            valueDisplayConfig.lowRgbPcts[2] + (valueDisplayConfig.comfortRgbPcts[2] - valueDisplayConfig.lowRgbPcts[2]) * t
+        ];
+    }
+
+    const len = valueDisplayConfig.highTolerable - valueDisplayConfig.highComfort;
+    const distToHighComfort = value - valueDisplayConfig.highComfort;
+    const t = distToHighComfort / len;
+    return [
+        valueDisplayConfig.comfortRgbPcts[0] + (valueDisplayConfig.highRgbPcts[0] - valueDisplayConfig.comfortRgbPcts[0]) * t,
+        valueDisplayConfig.comfortRgbPcts[1] + (valueDisplayConfig.highRgbPcts[1] - valueDisplayConfig.comfortRgbPcts[1]) * t,
+        valueDisplayConfig.comfortRgbPcts[2] + (valueDisplayConfig.highRgbPcts[2] - valueDisplayConfig.comfortRgbPcts[2]) * t
+    ];
+}
+
+// - - - - - - - - - - - - - -  - - - - - - - - - - - - - - - - - - - -- - - - - - - -
+
 @injectable()
 export default class DisplayManagerServiceImpl extends DisplayManagerService {
     private _subs = new Subscriptions();
@@ -86,6 +131,7 @@ export default class DisplayManagerServiceImpl extends DisplayManagerService {
             decimals: 1,
             minDiff: 0.15,
             diffOffsetHours: 1,
+            valueDisplayConfig: config.aquaTemperatureDisplay,
             getValue: t => t?.value
         });
 
@@ -96,6 +142,7 @@ export default class DisplayManagerServiceImpl extends DisplayManagerService {
             decimals: 1,
             minDiff: 0.1,
             diffOffsetHours: 1,
+            valueDisplayConfig: config.caseTemperatureDisplay,
             getValue: t => t?.value
         });
 
@@ -106,6 +153,7 @@ export default class DisplayManagerServiceImpl extends DisplayManagerService {
             decimals: 2,
             minDiff: 0.03,
             diffOffsetHours: 0.25, // 15 minutes
+            valueDisplayConfig: config.phDisplay,
             getValue: ph => ph?.value600s
         });
 
@@ -116,6 +164,7 @@ export default class DisplayManagerServiceImpl extends DisplayManagerService {
             decimals: 0,
             minDiff: 1,
             diffOffsetHours: 0.25, // 15 minutes
+            valueDisplayConfig: config.co2Display,
             getValue: ph => ph?.phBasedCo2
         });
 
@@ -143,7 +192,7 @@ export default class DisplayManagerServiceImpl extends DisplayManagerService {
         // Icons
         this._subs.add(
             this._avrService.avrState$.pipe(
-                skip(1),
+                skip(1), // to avoid hot value
                 timeoutWith(TIMEOUT_MS, of(undefined), this._scheduler),
                 map(avrState => asIconsState(avrState, this._avrService.getServiceState())),
                 repeat(),
@@ -183,6 +232,30 @@ export default class DisplayManagerServiceImpl extends DisplayManagerService {
                 }
             })
         );
+
+        // Touch events
+        this._subs.add(
+            this._displayService.touchEvents$.pipe(
+                filter(event => event.isRelease),
+                debounceTime(500),
+                switchMap( () =>
+                    this._avrService.avrState$.pipe(
+                        skip(1), // to avoid hot values
+                        timeoutWith(1000, of(null))
+                    )
+                )
+            ).subscribe(avrState => {
+                if (isPresent(avrState)) {
+                    if (avrState.light.dayLightForced || avrState.light.nightLightForced) {
+                        this._avrService.forceLight(LightForceMode.NotForced);
+                    } else if (avrState.light.dayLightOn) {
+                        this._avrService.forceLight(LightForceMode.Night);
+                    } else if (avrState.light.nightLightOn) {
+                        this._avrService.forceLight(LightForceMode.Day);
+                    }
+                }
+            })
+        );
     }
 
     // Subscribes to the observable given in 'info' and formats its value using instructions from
@@ -217,6 +290,7 @@ export default class DisplayManagerServiceImpl extends DisplayManagerService {
                     }
 
                     this._displayService.setText(info.displayElement, str);
+                    this._displayService.setTextColor(info.displayElement, getColor(val, info.valueDisplayConfig));
                 } else {
                     this._displayService.setText(info.displayElement, "");
                 }

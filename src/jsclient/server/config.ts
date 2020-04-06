@@ -24,6 +24,16 @@ export interface AvrConfig {
     readonly port: string;
 }
 
+export interface ValueDisplayConfig {
+    readonly lowComfort: number;
+    readonly highComfort: number;
+    readonly lowTolerable: number;
+    readonly highTolerable: number;
+    readonly comfortRgbPcts: Readonly<[number, number, number]>;
+    readonly lowRgbPcts: Readonly<[number, number, number]>;
+    readonly highRgbPcts: Readonly<[number, number, number]>;
+}
+
 export interface Config {
     readonly version: string;
     readonly isProd: boolean;
@@ -32,6 +42,10 @@ export interface Config {
     readonly metrics: MetricsConfig;
     readonly nextion: NextionConfig;
     readonly avr: AvrConfig;
+    readonly caseTemperatureDisplay: ValueDisplayConfig;
+    readonly aquaTemperatureDisplay: ValueDisplayConfig;
+    readonly phDisplay: ValueDisplayConfig;
+    readonly co2Display: ValueDisplayConfig;
 }
 
 // ================================================================================================
@@ -62,15 +76,55 @@ const metrics: MetricsConfig = {
     autocleanupNotActiveForSeconds: 60 * 60 * 24 * 7, // one week
     autocleanupIntervalSeconds: 60 * 60,
     sessionsCountingIntervalSeconds: 15,
-}
+};
 
 const nextion: NextionConfig = {
     port: process.env.AKUA_NEXTION_PORT || "/dev/ttyAMA0"
-}
+};
 
 const avr: AvrConfig = {
     port: process.env.AKUA_PORT || "/dev/ttyUSB0"
-}
+};
+
+const aquaTemperatureDisplay: ValueDisplayConfig = {
+    lowComfort: 23.6,
+    highComfort: 24.5,
+    lowTolerable: 22,
+    highTolerable: 27,
+    comfortRgbPcts: [100, 100, 100],
+    lowRgbPcts: [0, 0, 100],
+    highRgbPcts: [100, 0, 0],
+};
+
+const caseTemperatureDisplay: ValueDisplayConfig = {
+    lowComfort: 17.5,
+    highComfort: 40,
+    lowTolerable: 10,
+    highTolerable: 50,
+    comfortRgbPcts: [100, 100, 100],
+    lowRgbPcts: [0, 0, 100],
+    highRgbPcts: [100, 0, 0],
+};
+
+const phDisplay: ValueDisplayConfig = {
+    lowComfort: 6.8,
+    highComfort: 7.2,
+    lowTolerable: 6.5,
+    highTolerable: 8,
+    comfortRgbPcts: [100, 100, 100],
+    lowRgbPcts: [100, 0, 0],
+    highRgbPcts: [0, 0, 100],
+};
+
+const co2Display: ValueDisplayConfig = {
+    lowComfort: 15,
+    highComfort: 22,
+    lowTolerable: 1,
+    highTolerable: 30,
+    comfortRgbPcts: [100, 100, 100],
+    lowRgbPcts: [100, 100, 0],
+    highRgbPcts: [100, 0, 0],
+};
 
 export const config: Config = {
     isDev,
@@ -79,7 +133,11 @@ export const config: Config = {
     bindOptions,
     metrics,
     nextion,
-    avr
+    avr,
+    caseTemperatureDisplay,
+    aquaTemperatureDisplay,
+    phDisplay,
+    co2Display
 };
 
 // ================================================================================================

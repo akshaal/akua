@@ -5,7 +5,8 @@ import { config } from "server/config";
 import { openNextionPort } from "server/nextion";
 import type { Nextion } from "server/nextion/nextion";
 import { recurrent } from "./recurrent";
-import { DisplayTextElement, DisplayPicElement, DisplayPic } from "server/service/DisplayService";
+import { DisplayTextElement, DisplayPicElement, DisplayPic, TouchEvent } from "server/service/DisplayService";
+import { Subject } from "rxjs";
 
 // We do attempt to reopen the port every this number of milliseconds.
 const AUTO_REOPEN_MILLIS = 1000;
@@ -15,6 +16,20 @@ const AUTO_WRITE = 1000;
 
 // Refresh display value to help with display disconnects
 const AUTO_REFRESH = 1000;
+
+function pct2clrComp(pct: number, bits: number): number {
+    if (pct < 0) {
+        return 0;
+    }
+
+    const m = (1 << bits) - 1;
+
+    if (pct > 100) {
+        return m;
+    }
+
+    return Math.round(pct * m / 100);
+}
 
 // ==========================================================================================
 
@@ -30,7 +45,9 @@ export default class DisplayServiceImpl extends DisplayService {
 
     // Let us maintain map from value name to the value itself.
     // This let us write newest version of value...
-    private _values: {[key: string]: number | string} = {};
+    private _values: { [key: string]: number | string } = {};
+
+    readonly touchEvents$ = new Subject<TouchEvent>();
 
     @postConstruct()
     _init(): void {
@@ -65,6 +82,12 @@ export default class DisplayServiceImpl extends DisplayService {
         });
     }
 
+    setTextColor(element: DisplayTextElement, rgbPcts: Readonly<[number, number, number]>): void {
+        const color16bit = (pct2clrComp(rgbPcts[0], 5) << 11) + (pct2clrComp(rgbPcts[1], 6) << 5) + pct2clrComp(rgbPcts[2], 5);
+        console.log(color16bit);
+        this._setValueIfChanged(element + ".pco", color16bit);
+    }
+
     setText(element: DisplayTextElement, value: string): void {
         this._setValueIfChanged(element + ".txt", value);
     }
@@ -91,6 +114,13 @@ export default class DisplayServiceImpl extends DisplayService {
         nextion.on("disconnected", () => {
             logger.error("Display: Nextion disconnected");
             this._reconnect();
+        });
+
+        // On touch event
+        nextion.on("touchEvent", data => {
+            this.touchEvents$.next({
+                isRelease: data.releaseEvent
+            });
         });
 
         // Allow write
@@ -150,7 +180,7 @@ export default class DisplayServiceImpl extends DisplayService {
 
         this._canWrite = false;
         this._nextion.setValue(name, value).then(() => {
-            logger.debug("Display: done writing", {name, value});
+            logger.debug("Display: done writing", { name, value });
 
             // Remove from list of values to write
             // Note, that we don't remove from map of value, because we might use it later

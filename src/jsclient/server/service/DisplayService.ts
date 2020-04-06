@@ -1,4 +1,5 @@
 import { injectable } from "inversify";
+import { Observable } from "rxjs";
 
 export enum DisplayTextElement {
     AQUA_TEMP = "t0",
@@ -25,8 +26,15 @@ export enum DisplayPic {
     FORCE = 7
 };
 
+export interface TouchEvent {
+    readonly isRelease: boolean;
+};
+
 @injectable()
 export default abstract class DisplayService {
+    abstract readonly touchEvents$: Observable<TouchEvent>;
+
+    abstract setTextColor(element: DisplayTextElement, rgbPcts: Readonly<[number, number, number]>): void;
     abstract setText(element: DisplayTextElement, value: string): void;
     abstract setPic(element: DisplayPicElement, pic: DisplayPic): void;
 }
