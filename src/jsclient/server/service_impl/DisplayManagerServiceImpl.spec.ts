@@ -2,7 +2,7 @@ import "reflect-metadata";
 import DisplayManagerServiceImpl from "./DisplayManagerServiceImpl";
 import PhSensorService, { Ph } from "server/service/PhSensorService";
 import TemperatureSensorService, { Temperature } from "server/service/TemperatureSensorService";
-import DisplayService, { DisplayElement } from "server/service/DisplayService";
+import DisplayService, { DisplayTextElement } from "server/service/DisplayService";
 import { mock, when, instance, anyString } from "ts-mockito";
 import { TestScheduler } from "rxjs/testing";
 import expect from "expect";
@@ -29,6 +29,7 @@ class TestCase {
     readonly phs: string[] = [];
     readonly caseTemps: string[] = [];
     readonly aquaTemps: string[] = [];
+    readonly co2s: string[] = [];
 
     constructor(private _spec: TestCaseSpec) { }
 
@@ -48,20 +49,24 @@ class TestCase {
                 hot(this._spec.phSpec, this._spec.phValues)
             );
 
-            when(this.displayServiceMock.setText(DisplayElement.CLOCK, anyString())).thenCall((_, str) => {
+            when(this.displayServiceMock.setText(DisplayTextElement.CLOCK, anyString())).thenCall((_, str) => {
                 this.clocks.push(str);
             });
 
-            when(this.displayServiceMock.setText(DisplayElement.AQUA_TEMP, anyString())).thenCall((_, str) => {
+            when(this.displayServiceMock.setText(DisplayTextElement.AQUA_TEMP, anyString())).thenCall((_, str) => {
                 this.aquaTemps.push(str);
             });
 
-            when(this.displayServiceMock.setText(DisplayElement.CASE_TEMP, anyString())).thenCall((_, str) => {
+            when(this.displayServiceMock.setText(DisplayTextElement.CASE_TEMP, anyString())).thenCall((_, str) => {
                 this.caseTemps.push(str);
             });
 
-            when(this.displayServiceMock.setText(DisplayElement.PH, anyString())).thenCall((_, str) => {
+            when(this.displayServiceMock.setText(DisplayTextElement.PH, anyString())).thenCall((_, str) => {
                 this.phs.push(str);
+            });
+
+            when(this.displayServiceMock.setText(DisplayTextElement.CO2, anyString())).thenCall((_, str) => {
+                this.co2s.push(str);
             });
 
             // Create service using mocks
@@ -99,6 +104,7 @@ describe('DisplayManagerServiceImpl', () => {
         expect(testCase.aquaTemps).toStrictEqual([""]);
         expect(testCase.caseTemps).toStrictEqual([""]);
         expect(testCase.phs).toStrictEqual([""]);
+        expect(testCase.co2s).toStrictEqual([""]);
         expect(testCase.clocks).toHaveLength(1);
         expect(testCase.clocks[0]).toMatch(/^\d\d:\d\d\.? +$/);
     });
@@ -130,7 +136,7 @@ describe('DisplayManagerServiceImpl', () => {
                     lastSensorState: null
                 },
                 b: {
-                    phBasedCo2: 9.121,
+                    phBasedCo2: 9.821,
                     voltage60s: 3.143,
                     voltage60sSamples: 1000,
                     value60s: 7.513,
@@ -147,6 +153,7 @@ describe('DisplayManagerServiceImpl', () => {
         expect(testCase.aquaTemps).toStrictEqual(['', '25.4', '24.2']);
         expect(testCase.caseTemps).toStrictEqual(['', '31.8', '30.1']);
         expect(testCase.phs).toStrictEqual(['', '7.28', '7.92']);
+        expect(testCase.co2s).toStrictEqual(['', '9', '10']);
     });
 
     it('should display empty string on timeout, but go back if value comes again', () => {
@@ -193,6 +200,7 @@ describe('DisplayManagerServiceImpl', () => {
         expect(testCase.aquaTemps).toStrictEqual(['', '25.4', '', '24.2']);
         expect(testCase.caseTemps).toStrictEqual(['', '31.8', '', '30.1']);
         expect(testCase.phs).toStrictEqual(['', '7.28', '', '7.92']);
+        expect(testCase.co2s).toStrictEqual(['', '9', '', '9']);
     });
 
     it('skip first value in order to avoid hot/behavior observables in sensor implementation', () => {
@@ -227,6 +235,7 @@ describe('DisplayManagerServiceImpl', () => {
         expect(testCase.aquaTemps).toStrictEqual(['']);
         expect(testCase.caseTemps).toStrictEqual(['']);
         expect(testCase.phs).toStrictEqual(['']);
+        expect(testCase.co2s).toStrictEqual(['']);
     });
 });
 

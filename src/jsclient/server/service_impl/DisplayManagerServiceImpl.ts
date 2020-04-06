@@ -1,7 +1,7 @@
 import { injectable, postConstruct, optional, inject } from "inversify";
 import DisplayManagerService from "server/service/DisplayManagerService";
 import PhSensorService from "server/service/PhSensorService";
-import DisplayService, { DisplayElement } from "server/service/DisplayService";
+import DisplayService, { DisplayTextElement } from "server/service/DisplayService";
 import { Observable, of, combineLatest, timer, SchedulerLike } from "rxjs";
 import { map, timeoutWith, distinctUntilChanged, share, delay, startWith, repeat, skip } from 'rxjs/operators';
 import { isPresent } from "./isPresent";
@@ -15,7 +15,7 @@ const TIMEOUT_MS = 60_000;
 interface FormatInfo<T> {
     readonly obs$: Observable<T>;
     readonly decimals: number;
-    readonly displayElement: DisplayElement;
+    readonly displayElement: DisplayTextElement;
     readonly minDiff: number;
     readonly diffOffsetHours: number;
 
@@ -45,7 +45,7 @@ export default class DisplayManagerServiceImpl extends DisplayManagerService {
     _init() {
         // Aquarium temperature
         this._formatFromObservable({
-            displayElement: DisplayElement.AQUA_TEMP,
+            displayElement: DisplayTextElement.AQUA_TEMP,
             obs$: this._temperatureSensorService.aquariumTemperature$,
             decimals: 1,
             minDiff: 0.15,
@@ -55,7 +55,7 @@ export default class DisplayManagerServiceImpl extends DisplayManagerService {
 
         // Case temperature
         this._formatFromObservable({
-            displayElement: DisplayElement.CASE_TEMP,
+            displayElement: DisplayTextElement.CASE_TEMP,
             obs$: this._temperatureSensorService.caseTemperature$,
             decimals: 1,
             minDiff: 0.1,
@@ -65,12 +65,22 @@ export default class DisplayManagerServiceImpl extends DisplayManagerService {
 
         // PH
         this._formatFromObservable({
-            displayElement: DisplayElement.PH,
+            displayElement: DisplayTextElement.PH,
             obs$: this._phSensorService.ph$,
             decimals: 2,
             minDiff: 0.03,
             diffOffsetHours: 0.25, // 15 minutes
             getValue: ph => ph?.value600s
+        });
+
+        // CO2
+        this._formatFromObservable({
+            displayElement: DisplayTextElement.CO2,
+            obs$: this._phSensorService.ph$,
+            decimals: 0,
+            minDiff: 1,
+            diffOffsetHours: 0.25, // 15 minutes
+            getValue: ph => ph?.phBasedCo2
         });
 
         // Clock
@@ -90,7 +100,7 @@ export default class DisplayManagerServiceImpl extends DisplayManagerService {
                 }),
                 distinctUntilChanged()
             ).subscribe(v => {
-                this._displayService.setText(DisplayElement.CLOCK, v);
+                this._displayService.setText(DisplayTextElement.CLOCK, v);
             })
         );
     }
