@@ -120,8 +120,8 @@ X_UNUSED_PIN$(L6); // 41   PL6 Digital pin 43
 X_UNUSED_PIN$(L7); // 42   PL7 Digital pin 42
 X_UNUSED_PIN$(D0); // 43   PD0 ( SCL/INT0 ) Digital pin 21 (SCL)
 X_UNUSED_PIN$(D1); // 44   PD1 ( SDA/INT1 ) Digital pin 20 (SDA)
-// USART1 / CO2 ..... 45   PD2 ( RXDI/INT2 ) Digital pin 19 (RX1)
-// USART1 / CO2 ..... 46   PD3 ( TXD1/INT3 ) Digital pin 18 (TX1)
+X_UNUSED_PIN$(D2); // 45   PD2 ( RXDI/INT2 ) Digital pin 19 (RX1)
+X_UNUSED_PIN$(D3); // 46   PD3 ( TXD1/INT3 ) Digital pin 18 (TX1)
 X_UNUSED_PIN$(D4); // 47   PD4 ( ICP1 )
 X_UNUSED_PIN$(D5); // 48   PD5 ( XCK1 )
 X_UNUSED_PIN$(D6); // 49   PD6 ( T1 )
@@ -272,7 +272,7 @@ GLOBAL$() {
 
     // CO2 protection - - - 
     STATIC_VAR$(u24 co2_deciseconds_until_can_turn_on,
-                initial = 0); // TODO: Change to (AK_CO2_OFF_HOURS_BEFORE_UNLOCKED * 60L * 60L * 10L)
+                initial = AK_CO2_OFF_HOURS_BEFORE_UNLOCKED * 60L * 60L * 10L / 2L);
 
     // Whether it's day or not as calculated by AVR's internal algorithm and interval
     STATIC_VAR$(u8 co2_calculated_day, initial = 0);
@@ -304,7 +304,6 @@ FUNCTION$(void force_light(const LightForceMode mode)) {
     }
 
     if (light_forces_since_protection_stat_reset >= AK_MAX_LIGHT_FORCES_WITHIN_ONE_HOUR) {
-        // TODO: Add statistics about how many forces was ignored!
         return;
     }
 
@@ -524,15 +523,6 @@ RUNNABLE$(adc_runnable) {
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-// USART1 - MH-Z19 CO2 Module
-
-// Add for debug: debug = add_debug_byte
-X_MHZ19$(co2, uart = 1, use_abc = 0);
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
 // USART0 - Serial interface over USB Connection
 
 X_INIT$(usart0_init) {
@@ -719,19 +709,8 @@ THREAD$(usart0_writer, state_type = u8) {
                       u8 ds18b20_case.get_update_id(),
                       u8 ds18b20_case.get_updated_deciseconds_ago());
 
-        WRITE_STATUS$("CO2 sensor",
+        WRITE_STATUS$("CO2",
                       D,
-                      u8 co2.get_rx_overflow_count(),
-                      u8 co2.get_crc_errors(),
-                      u16 co2.get_abc_setups(),
-                      u16 co2.get_raw_concentration(),
-                      u16 co2.get_clamped_concentration(),
-                      u16 co2.get_concentration(),
-                      u8 co2.get_temperature(),
-                      u8 co2.get_s(),
-                      u16 co2.get_u(),
-                      u8 co2.get_update_id(),
-                      u8 co2.get_updated_deciseconds_ago(),
                       u8 co2_switch.is_set() ? 1 : 0,
                       u8 co2_calculated_day ? 1 : 0,
                       u8 co2_force_off.is_set() ? 1 : 0,

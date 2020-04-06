@@ -6,7 +6,6 @@ import { getInfoCount, getErrorCount, getWarningCount } from "server/logger";
 import MetricsService from "server/service/MetricsService";
 import AvrService from "server/service/AvrService";
 import TemperatureSensorService, { Temperature } from "server/service/TemperatureSensorService";
-import Co2SensorService from "server/service/Co2SensorService";
 import PhSensorService from "server/service/PhSensorService";
 
 // Use constants for labels to avoid typos and to be consistent about names.
@@ -382,84 +381,6 @@ const temperatureSensorDisconnectsGauge = new TargetedCounter({
 });
 
 // ==========================================================================================
-// CO2 sensor
-
-const co2Gauge = new SimpleGauge({
-    name: 'akua_co2',
-    help: 'Current average CO2.'
-});
-
-const co2SamplesGauge = new SimpleGauge({
-    name: 'akua_co2_samples',
-    help: 'Current CO2 samples count.'
-});
-
-const co2SensorConcentrationGauge = new SimpleGauge({
-    name: 'akua_co2_sensor_concentration',
-    help: 'Last measured concentration as reported by the sensor.'
-});
-
-const co2SensorClampedConcentrationGauge = new SimpleGauge({
-    name: 'akua_co2_sensor_clamped_concentration',
-    help: 'Last measured clamped concentration as reported by the sensor.'
-});
-
-const co2SensorRawConcentrationGauge = new SimpleGauge({
-    name: 'akua_co2_sensor_raw_concentration',
-    help: 'Last measured raw concentration as reported by the sensor.'
-});
-
-const co2SensorUpdatedSecondsAgoGauge = new SimpleGauge({
-    name: 'akua_co2_sensor_updated_seconds_ago',
-    help: 'Freshness of last data when it was received from AVR.'
-});
-
-const co2SensorUptimeSecondsGauge = new SimpleGauge({
-    name: 'akua_co2_sensor_uptime_seconds',
-    help: 'Number of seconds since the sensor started.'
-});
-
-const co2SensorBootGauge = new SimpleGauge({
-    name: 'akua_co2_sensor_boot',
-    help: '1 means sensor is booting, 0 means it is started.'
-});
-
-const co2WarmupGauge = new SimpleGauge({
-    name: 'akua_co2_warmup',
-    help: '1 means we ignore current co2 values and waiting for sensor or AVR to warm up.'
-});
-
-const co2SensorCrcErrorsGauge = new SimpleCounter({
-    name: 'akua_co2_sensor_crc_errors',
-    help: 'Number of CRC errors during communication of AVR with CO2 sensor.'
-});
-
-const co2SensorRxOverflowsGauge = new SimpleCounter({
-    name: 'akua_co2_sensor_rx_overflows',
-    help: 'Number of rx overflows during communication of AVR with CO2 sensor.'
-});
-
-const co2SensorAbcSetupsGauge = new SimpleCounter({
-    name: 'akua_co2_sensor_abc_setups',
-    help: 'How many times AVR has turned off/on ABC in CO2 sensor.'
-});
-
-const co2SensorTemperatureGauge = new SimpleGauge({
-    name: 'akua_co2_sensor_temperature',
-    help: 'Temperature of CO2 sensor.'
-});
-
-const co2SensorSGauge = new SimpleGauge({
-    name: 'akua_co2_sensor_s',
-    help: 'Parameter S of MH-Z19 CO2 sensor.'
-});
-
-const co2SensorUGauge = new SimpleGauge({
-    name: 'akua_co2_sensor_u',
-    help: 'Parameter U of MH-Z19 CO2 sensor.'
-});
-
-// ==========================================================================================
 // PH meter
 
 const ph60sVoltageGauge = new SimpleGauge({
@@ -566,7 +487,6 @@ export default class MetricsServiceImpl extends MetricsService {
     constructor(
         private _avrService: AvrService,
         private _temperatureSensorService: TemperatureSensorService,
-        private _co2SensorService: Co2SensorService,
         private _phSensorService: PhSensorService
     ) {
         super();
@@ -638,22 +558,6 @@ export default class MetricsServiceImpl extends MetricsService {
         handleTemperature("case", this._temperatureSensorService.caseTemperature);
 
         // CO2 - - - -
-        const co2 = this._co2SensorService.co2;
-        co2Gauge.setOrRemove(co2?.value);
-        co2SamplesGauge.setOrRemove(co2?.valueSamples);
-        co2WarmupGauge.setOrRemove(co2?.warmup);
-        co2SensorBootGauge.setOrRemove(co2?.sensorBoot);
-        co2SensorUptimeSecondsGauge.setOrRemove(co2?.sensorUptimeSeconds);
-        co2SensorConcentrationGauge.setOrRemove(co2?.lastSensorState?.concentration);
-        co2SensorRawConcentrationGauge.setOrRemove(co2?.lastSensorState?.rawConcentration);
-        co2SensorClampedConcentrationGauge.setOrRemove(co2?.lastSensorState?.clampedConcentration);
-        co2SensorUpdatedSecondsAgoGauge.setOrRemove(co2?.lastSensorState?.updatedSecondsAgo);
-        co2SensorCrcErrorsGauge.setOrRemove(co2?.lastSensorState?.crcErrors);
-        co2SensorAbcSetupsGauge.setOrRemove(co2?.lastSensorState?.abcSetups);
-        co2SensorRxOverflowsGauge.setOrRemove(co2?.lastSensorState?.rxOverflows);
-        co2SensorTemperatureGauge.setOrRemove(co2?.lastSensorState?.temperature);
-        co2SensorSGauge.setOrRemove(co2?.lastSensorState?.s);
-        co2SensorUGauge.setOrRemove(co2?.lastSensorState?.u);
         co2ValveOpenGauge.setOrRemove(avrServiceState.lastAvrState?.co2ValveOpen);
         co2CooldownGauge.setOrRemove(avrServiceState.lastAvrState?.co2CooldownSeconds);
         co2DayGauge.setOrRemove(avrServiceState.lastAvrState?.co2day);

@@ -34,20 +34,6 @@ export interface AvrTemperatureSensorState {
     readonly updatedSecondsAgo: number;
 }
 
-export interface AvrCo2SensorState {
-    readonly updateId: number;
-    readonly crcErrors: number;
-    readonly abcSetups: number;
-    readonly concentration: number;
-    readonly rawConcentration: number;
-    readonly clampedConcentration: number;
-    readonly temperature: number;
-    readonly s: number;
-    readonly u: number;
-    readonly updatedSecondsAgo: number;
-    readonly rxOverflows: number;
-}
-
 export interface AvrState {
     readonly mainLoopIterationsInLastDecisecond: number;
     readonly uptimeSeconds: number;
@@ -56,7 +42,6 @@ export interface AvrState {
     readonly clockSecondsSinceMidnight: number;
     readonly debugOverflows: number;
     readonly usbRxOverflows: number;
-    readonly co2Sensor: AvrCo2SensorState;
     readonly aquariumTemperatureSensor: AvrTemperatureSensorState;
     readonly caseTemperatureSensor: AvrTemperatureSensorState;
     readonly light: AvrLightState;

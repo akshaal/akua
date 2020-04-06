@@ -1,5 +1,5 @@
 import { injectable, postConstruct } from "inversify";
-import AvrService, { AvrServiceState, AvrState, AvrCo2SensorState, AvrTemperatureSensorState, LightForceMode, AvrLightState, Co2ValveOpenState, AvrPhState } from "server/service/AvrService";
+import AvrService, { AvrServiceState, AvrState, AvrTemperatureSensorState, LightForceMode, AvrLightState, Co2ValveOpenState, AvrPhState } from "server/service/AvrService";
 import SerialPort from "serialport";
 import config from "server/config";
 import logger from "server/logger";
@@ -20,20 +20,6 @@ const CLOCK_UPDATE_MILLIS = 3000;
 // ==========================================================================================
 
 function asAvrState(avrData: AvrData): AvrState {
-    const co2Sensor: AvrCo2SensorState = {
-        updateId: avrData["u8 co2.get_update_id()"],
-        crcErrors: avrData["u8 co2.get_crc_errors()"],
-        abcSetups: avrData["u16 co2.get_abc_setups()"],
-        concentration: avrData["u16 co2.get_concentration()"],
-        rawConcentration: avrData["u16 co2.get_raw_concentration()"],
-        clampedConcentration: avrData["u16 co2.get_clamped_concentration()"],
-        temperature: avrData["u8 co2.get_temperature()"],
-        s: avrData["u8 co2.get_s()"],
-        u: avrData["u16 co2.get_u()"],
-        updatedSecondsAgo: avrData["u8 co2.get_updated_deciseconds_ago()"] / 10.0,
-        rxOverflows: avrData["u8 co2.get_rx_overflow_count()"],
-    };
-
     const aquariumTemperatureSensor: AvrTemperatureSensorState = {
         updateId: avrData["u8 ds18b20_aqua.get_update_id()"],
         crcErrors: avrData["u8 ds18b20_aqua.get_crc_errors()"],
@@ -82,7 +68,6 @@ function asAvrState(avrData: AvrData): AvrState {
         co2IsRequired: !!avrData["u8 required_co2_switch_state.is_set() ? 1 : 0"],
         co2day: !!avrData["u8 co2_calculated_day ? 1 : 0"],
         co2forcedOff: !!avrData["u8 co2_force_off.is_set() ? 1 : 0"],
-        co2Sensor,
         aquariumTemperatureSensor,
         caseTemperatureSensor,
         light,

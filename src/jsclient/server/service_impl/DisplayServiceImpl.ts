@@ -7,8 +7,6 @@ import type { Nextion } from "server/nextion/nextion";
 import { recurrent } from "./recurrent";
 import { DisplayTextElement, DisplayPicElement, DisplayPic } from "server/service/DisplayService";
 
-// TODO: Statistics
-
 // We do attempt to reopen the port every this number of milliseconds.
 const AUTO_REOPEN_MILLIS = 1000;
 

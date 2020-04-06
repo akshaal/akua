@@ -11,8 +11,6 @@ import AvrService from "server/service/AvrService";
 import AvrServiceImpl from "./AvrServiceImpl";
 import TemperatureSensorServiceImpl from "./TemperatureSensorServiceImpl";
 import TemperatureSensorService from "server/service/TemperatureSensorService";
-import Co2SensorServiceImpl from "./Co2SensorServiceImpl";
-import Co2SensorService from "server/service/Co2SensorService";
 import PhSensorService from "server/service/PhSensorService";
 import PhSensorServiceImpl from "./PhSensorServiceImpl";
 import DisplayManagerServiceImpl from "./DisplayManagerServiceImpl";
@@ -27,7 +25,6 @@ function createNewContainer(): Container {
     container.bind(DisplayManagerService).to(DisplayManagerServiceImpl).inSingletonScope();
     container.bind(AvrService).to(AvrServiceImpl).inSingletonScope();
     container.bind(TemperatureSensorService).to(TemperatureSensorServiceImpl).inSingletonScope();
-    container.bind(Co2SensorService).to(Co2SensorServiceImpl).inSingletonScope();
     container.bind(PhSensorService).to(PhSensorServiceImpl).inSingletonScope();
     container.bind(Co2ControllerService).to(Co2ControllerServiceImpl).inSingletonScope();
     container.bind(ServerServices).toSelf().inSingletonScope();

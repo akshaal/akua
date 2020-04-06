@@ -16,7 +16,6 @@ const debug = debug_('nextion:Nextion');
  * @private
  */
 const applyDefaults = _.defaults({
-  // XXX: does nothing yet
   enhanced: true
 });
 
