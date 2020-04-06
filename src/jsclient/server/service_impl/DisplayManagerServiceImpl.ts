@@ -183,11 +183,6 @@ export default class DisplayManagerServiceImpl extends DisplayManagerService {
                 }
             })
         );
-
-        this._displayService.setPic(DisplayPicElement.ICON_0, DisplayPic.DAY);
-        this._displayService.setPic(DisplayPicElement.ICON_1, DisplayPic.CO2_ON);
-        this._displayService.setPic(DisplayPicElement.ICON_2, DisplayPic.FORCE);
-        this._displayService.setPic(DisplayPicElement.ICON_3, DisplayPic.ERROR);
     }
 
     // Subscribes to the observable given in 'info' and formats its value using instructions from
