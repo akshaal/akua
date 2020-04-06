@@ -3,7 +3,7 @@ import DisplayManagerService from "server/service/DisplayManagerService";
 import PhSensorService from "server/service/PhSensorService";
 import DisplayService, { DisplayTextElement, DisplayPicElement, DisplayPic } from "server/service/DisplayService";
 import { Observable, of, combineLatest, timer, SchedulerLike } from "rxjs";
-import { map, timeoutWith, distinctUntilChanged, share, delay, startWith, repeat, skip, filter, debounceTime, switchMap } from 'rxjs/operators';
+import { map, timeoutWith, distinctUntilChanged, share, delay, startWith, repeat, skip, filter, debounceTime, switchMap, take } from 'rxjs/operators';
 import { isPresent } from "./isPresent";
 import TemperatureSensorService from "server/service/TemperatureSensorService";
 import { Subscriptions } from "./Subscriptions";
@@ -241,6 +241,7 @@ export default class DisplayManagerServiceImpl extends DisplayManagerService {
                 switchMap( () =>
                     this._avrService.avrState$.pipe(
                         skip(1), // to avoid hot values
+                        take(1), // We don't need many results
                         timeoutWith(1000, of(null))
                     )
                 )
