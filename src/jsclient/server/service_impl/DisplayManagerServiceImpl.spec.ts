@@ -6,6 +6,7 @@ import DisplayService, { DisplayTextElement } from "server/service/DisplayServic
 import { mock, when, instance, anyString } from "ts-mockito";
 import { TestScheduler } from "rxjs/testing";
 import expect from "expect";
+import AvrService from "server/service/AvrService";
 
 interface TestCaseSpec {
     readonly aquariumTemperatureSpec: string;
@@ -24,6 +25,7 @@ class TestCase {
     readonly displayServiceMock: DisplayService = mock<DisplayService>();
     readonly temperatureSensorServiceMock: TemperatureSensorService = mock<TemperatureSensorService>(4);
     readonly phSensorServiceMock: PhSensorService = mock<PhSensorService>();
+    readonly avrServiceMock: AvrService = mock<AvrService>();
 
     readonly clocks: string[] = [];
     readonly phs: string[] = [];
@@ -74,6 +76,7 @@ class TestCase {
                 instance(this.temperatureSensorServiceMock),
                 instance(this.displayServiceMock),
                 instance(this.phSensorServiceMock),
+                instance(this.avrServiceMock),
                 this.testScheduler
             );
 

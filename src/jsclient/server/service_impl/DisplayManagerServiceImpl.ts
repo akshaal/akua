@@ -1,12 +1,13 @@
 import { injectable, postConstruct, optional, inject } from "inversify";
 import DisplayManagerService from "server/service/DisplayManagerService";
 import PhSensorService from "server/service/PhSensorService";
-import DisplayService, { DisplayTextElement } from "server/service/DisplayService";
+import DisplayService, { DisplayTextElement, DisplayPicElement, DisplayPic } from "server/service/DisplayService";
 import { Observable, of, combineLatest, timer, SchedulerLike } from "rxjs";
 import { map, timeoutWith, distinctUntilChanged, share, delay, startWith, repeat, skip } from 'rxjs/operators';
 import { isPresent } from "./isPresent";
 import TemperatureSensorService from "server/service/TemperatureSensorService";
 import { Subscriptions } from "./Subscriptions";
+import AvrService, { AvrState, AvrServiceState } from "server/service/AvrService";
 
 // Symbols compiled into "Aqua*" fonts: " .0123456789:⇡⇣"
 
@@ -22,14 +23,49 @@ interface FormatInfo<T> {
     getValue(t: T): number | null | undefined;
 }
 
+interface IconsState {
+    error: boolean;
+    forced: boolean;
+    co2: 'on' | 'off' | 'waiting';
+    light: 'day' | 'night' | 'unknown';
+}
+
+function nextIconSlot(slot: DisplayPicElement): DisplayPicElement | undefined {
+    return (
+        slot === DisplayPicElement.ICON_0 ? DisplayPicElement.ICON_1 :
+            slot === DisplayPicElement.ICON_1 ? DisplayPicElement.ICON_2 :
+                slot === DisplayPicElement.ICON_2 ? DisplayPicElement.ICON_3 : undefined
+    );
+}
+
+function asIconsState(avrState?: AvrState, avrServiceState?: AvrServiceState): IconsState {
+    const co2 =
+        avrState?.co2ValveOpen ? 'on' :
+            (avrState?.co2IsRequired && avrState?.co2day && avrState?.co2CooldownSeconds) ? 'waiting' : 'off';
+
+    const light =
+        avrState?.light?.dayLightOn ? 'day' :
+            avrState?.light?.nightLightOn ? 'night' : 'unknown';
+
+    const error = (avrServiceState?.protocolVersionMismatch !== 0) || (avrServiceState?.serialPortIsOpen !== 1);
+
+    return {
+        forced: !!(avrState?.light.dayLightForced || avrState?.light.nightLightForced),
+        error,
+        co2,
+        light
+    };
+}
+
 @injectable()
 export default class DisplayManagerServiceImpl extends DisplayManagerService {
     private _subs = new Subscriptions();
 
     constructor(
-        private _temperatureSensorService: TemperatureSensorService,
+        private readonly _temperatureSensorService: TemperatureSensorService,
         private readonly _displayService: DisplayService,
         private readonly _phSensorService: PhSensorService,
+        private readonly _avrService: AvrService,
         @optional() @inject("scheduler") private readonly _scheduler: SchedulerLike
     ) {
         super();
@@ -103,6 +139,55 @@ export default class DisplayManagerServiceImpl extends DisplayManagerService {
                 this._displayService.setText(DisplayTextElement.CLOCK, v);
             })
         );
+
+        // Icons
+        this._subs.add(
+            this._avrService.avrState$.pipe(
+                skip(1),
+                timeoutWith(TIMEOUT_MS, of(undefined), this._scheduler),
+                map(avrState => asIconsState(avrState, this._avrService.getServiceState())),
+                repeat(),
+                distinctUntilChanged(),
+                share()
+            ).subscribe(iconsState => {
+                let iconSlot: DisplayPicElement | undefined = DisplayPicElement.ICON_0;
+                if (iconsState?.light === 'day') {
+                    this._displayService.setPic(iconSlot, DisplayPic.DAY);
+                    iconSlot = nextIconSlot(iconSlot);
+                } else if (iconsState?.light === 'night') {
+                    this._displayService.setPic(iconSlot, DisplayPic.NIGHT);
+                    iconSlot = nextIconSlot(iconSlot);
+                }
+
+                if (iconSlot && iconsState?.co2 === 'on') {
+                    this._displayService.setPic(iconSlot, DisplayPic.CO2_ON);
+                    iconSlot = nextIconSlot(iconSlot);
+                } else if (iconSlot && iconsState?.co2 === 'waiting') {
+                    this._displayService.setPic(iconSlot, DisplayPic.CO2_COOLDOWN);
+                    iconSlot = nextIconSlot(iconSlot);
+                }
+
+                if (iconSlot && iconsState?.forced) {
+                    this._displayService.setPic(iconSlot, DisplayPic.FORCE);
+                    iconSlot = nextIconSlot(iconSlot);
+                }
+
+                if (iconSlot && iconsState?.error) {
+                    this._displayService.setPic(iconSlot, DisplayPic.ERROR);
+                    iconSlot = nextIconSlot(iconSlot);
+                }
+
+                while (isPresent(iconSlot)) {
+                    this._displayService.setPic(iconSlot, DisplayPic.BLANK);
+                    iconSlot = nextIconSlot(iconSlot);
+                }
+            })
+        );
+
+        this._displayService.setPic(DisplayPicElement.ICON_0, DisplayPic.DAY);
+        this._displayService.setPic(DisplayPicElement.ICON_1, DisplayPic.CO2_ON);
+        this._displayService.setPic(DisplayPicElement.ICON_2, DisplayPic.FORCE);
+        this._displayService.setPic(DisplayPicElement.ICON_3, DisplayPic.ERROR);
     }
 
     // Subscribes to the observable given in 'info' and formats its value using instructions from

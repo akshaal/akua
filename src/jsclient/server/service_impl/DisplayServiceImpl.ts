@@ -5,7 +5,7 @@ import { config } from "server/config";
 import { openNextionPort } from "server/nextion";
 import type { Nextion } from "server/nextion/nextion";
 import { recurrent } from "./recurrent";
-import { DisplayTextElement } from "server/service/DisplayService";
+import { DisplayTextElement, DisplayPicElement, DisplayPic } from "server/service/DisplayService";
 
 // TODO: Statistics
 
@@ -69,6 +69,10 @@ export default class DisplayServiceImpl extends DisplayService {
 
     setText(element: DisplayTextElement, value: string): void {
         this._setValueIfChanged(element + ".txt", value);
+    }
+
+    setPic(element: DisplayPicElement, pic: DisplayPic): void {
+        this._setValueIfChanged(element + ".pic", pic);
     }
 
     private _setup_nextion(): void {
