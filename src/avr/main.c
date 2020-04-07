@@ -272,7 +272,7 @@ GLOBAL$() {
 
     // CO2 protection - - - 
     STATIC_VAR$(u24 co2_deciseconds_until_can_turn_on,
-                initial = AK_CO2_OFF_HOURS_BEFORE_UNLOCKED * 60L * 60L * 10L / 2L);
+                initial = AK_CO2_OFF_HOURS_BEFORE_UNLOCKED * 60L * 60L * 10L / 6L);
 
     // Whether it's day or not as calculated by AVR's internal algorithm and interval
     STATIC_VAR$(u8 co2_calculated_day, initial = 0);

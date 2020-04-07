@@ -3,13 +3,12 @@ import DisplayManagerService from "server/service/DisplayManagerService";
 import PhSensorService from "server/service/PhSensorService";
 import DisplayService, { DisplayTextElement, DisplayPicElement, DisplayPic } from "server/service/DisplayService";
 import { Observable, of, combineLatest, timer, SchedulerLike } from "rxjs";
-import { map, timeoutWith, distinctUntilChanged, share, delay, startWith, repeat, skip, filter, debounceTime, switchMap, take } from 'rxjs/operators';
+import { map, timeoutWith, distinctUntilChanged, share, delay, startWith, repeat, skip, filter, switchMap, take, throttleTime } from 'rxjs/operators';
 import { isPresent } from "./isPresent";
 import TemperatureSensorService from "server/service/TemperatureSensorService";
 import { Subscriptions } from "./Subscriptions";
 import AvrService, { AvrState, AvrServiceState, LightForceMode } from "server/service/AvrService";
 import config, { ValueDisplayConfig } from "server/config";
-import logger from "server/logger";
 
 // Symbols compiled into "Aqua*" fonts: " .0123456789:⇡⇣"
 
@@ -237,7 +236,7 @@ export default class DisplayManagerServiceImpl extends DisplayManagerService {
         this._subs.add(
             this._displayService.touchEvents$.pipe(
                 filter(event => event.isRelease),
-                debounceTime(500),
+                throttleTime(500),
                 switchMap( () =>
                     this._avrService.avrState$.pipe(
                         skip(1), // to avoid hot values

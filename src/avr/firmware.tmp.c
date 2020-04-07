@@ -17635,7 +17635,7 @@ static u8 clock_corrections_since_protection_stat_reset = 0;
 static u8 received_clock0 = 0;
 static u8 received_clock1 = 0;
 static u8 received_clock2 = 255;
-static u24 co2_deciseconds_until_can_turn_on = AK_CO2_OFF_HOURS_BEFORE_UNLOCKED * 60L * 60L * 10L / 2L;
+static u24 co2_deciseconds_until_can_turn_on = AK_CO2_OFF_HOURS_BEFORE_UNLOCKED * 60L * 60L * 10L / 6L;
 static u8 co2_calculated_day = 0;
 
 //Clock used to calculate state

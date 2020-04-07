@@ -2,13 +2,16 @@ import { injectable, postConstruct } from "inversify";
 import PhSensorService from "server/service/PhSensorService";
 import Co2ControllerService from "server/service/Co2ControllerService";
 import { combineLatest, timer } from "rxjs";
-import { map, distinctUntilChanged, startWith } from "rxjs/operators";
+import { map, distinctUntilChanged, startWith, throttleTime } from "rxjs/operators";
 import AvrService, { Co2ValveOpenState } from "server/service/AvrService";
 import { isPresent } from "./isPresent";
 import config from "server/config";
 
 // AVR is expecting that we notify it every minute
 const SEND_REQUIREMENTS_TO_AVR_EVERY_MS = 60_000;
+
+// Give value actuation a chance....
+const THROTTLE_TIME_MS = 5_000;
 
 // Decide whether we must turn ph on or not
 function isCo2Required(state: { ph?: number | null, co2ValveOpen?: boolean | null }): boolean {
@@ -44,9 +47,12 @@ export default class Co2ControllerServiceImpl extends Co2ControllerService {
                 startWith(undefined)
             ),
             timer(0, SEND_REQUIREMENTS_TO_AVR_EVERY_MS)
-        ]).subscribe(([ph, co2ValveOpen]) => {
+        ]).pipe(
+            map(([ph, co2ValveOpen]) => isCo2Required({ ph, co2ValveOpen })),
+            throttleTime(THROTTLE_TIME_MS)
+        ).subscribe(required => {
             this._avrService.setCo2RequiredValveOpenState(
-                isCo2Required({ ph, co2ValveOpen }) ? Co2ValveOpenState.Open : Co2ValveOpenState.Closed
+                required ? Co2ValveOpenState.Open : Co2ValveOpenState.Closed
             );
         });
     }
