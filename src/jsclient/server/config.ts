@@ -34,6 +34,11 @@ export interface ValueDisplayConfig {
     readonly highRgbPcts: Readonly<[number, number, number]>;
 }
 
+export interface PhControllerConfig {
+    readonly phToTurnOff: number;
+    readonly phToTurnOn: number;
+}
+
 export interface Config {
     readonly version: string;
     readonly isProd: boolean;
@@ -45,6 +50,7 @@ export interface Config {
     readonly caseTemperatureDisplay: ValueDisplayConfig;
     readonly aquaTemperatureDisplay: ValueDisplayConfig;
     readonly phDisplay: ValueDisplayConfig;
+    readonly phController: PhControllerConfig;
     readonly co2Display: ValueDisplayConfig;
 }
 
@@ -126,6 +132,11 @@ const co2Display: ValueDisplayConfig = {
     highRgbPcts: [100, 0, 0],
 };
 
+const phController: PhControllerConfig = {
+    phToTurnOff: 6.8,
+    phToTurnOn: 6.9
+};
+
 export const config: Config = {
     isDev,
     version,
@@ -137,7 +148,8 @@ export const config: Config = {
     caseTemperatureDisplay,
     aquaTemperatureDisplay,
     phDisplay,
-    co2Display
+    co2Display,
+    phController
 };
 
 // ================================================================================================
