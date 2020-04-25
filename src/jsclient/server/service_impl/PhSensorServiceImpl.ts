@@ -1,7 +1,7 @@
 import { injectable } from "inversify";
 import PhSensorService, { Ph } from "server/service/PhSensorService";
 import AvrService, { AvrPhState } from "server/service/AvrService";
-import { AveragingWindow } from "./AveragingWindow";
+import { AveragingWindow } from "../misc/AveragingWindow";
 import { Observable, BehaviorSubject } from "rxjs";
 
 const KH = 4;

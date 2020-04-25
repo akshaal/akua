@@ -4,7 +4,7 @@ import Co2ControllerService from "server/service/Co2ControllerService";
 import { combineLatest, timer } from "rxjs";
 import { map, distinctUntilChanged, startWith, throttleTime } from "rxjs/operators";
 import AvrService, { Co2ValveOpenState } from "server/service/AvrService";
-import { isPresent } from "./isPresent";
+import { isPresent } from "../misc/isPresent";
 import config from "server/config";
 
 // AVR is expecting that we notify it every minute

@@ -43,8 +43,12 @@
         "maxsize",
         "mockito",
         "pify",
+        "prefetch",
         "printf",
+        "relu",
         "sourcecode",
+        "tensorflow",
+        "tfjs",
         "ubrr",
         "vals",
         "vect"
