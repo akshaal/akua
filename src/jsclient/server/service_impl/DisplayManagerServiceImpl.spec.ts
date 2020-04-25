@@ -2,11 +2,11 @@ import "reflect-metadata";
 import DisplayManagerServiceImpl from "./DisplayManagerServiceImpl";
 import PhSensorService, { Ph } from "server/service/PhSensorService";
 import TemperatureSensorService, { Temperature } from "server/service/TemperatureSensorService";
-import DisplayService, { DisplayTextElement } from "server/service/DisplayService";
+import DisplayService, { DisplayTextElement, TouchEvent } from "server/service/DisplayService";
 import { mock, when, instance, anyString } from "ts-mockito";
 import { TestScheduler } from "rxjs/testing";
 import expect from "expect";
-import AvrService from "server/service/AvrService";
+import AvrService, { AvrState } from "server/service/AvrService";
 
 interface TestCaseSpec {
     readonly aquariumTemperatureSpec: string;
@@ -17,6 +17,12 @@ interface TestCaseSpec {
 
     readonly phSpec: string;
     readonly phValues: { [letter: string]: Ph };
+
+    readonly avrStateSpec: string;
+    readonly avrStateValues: { [letter: string]: AvrState };
+
+    readonly displayTouchEventSpec: string;
+    readonly displayTouchEventValues: { [letter: string]: TouchEvent };
 }
 
 class TestCase {
@@ -49,6 +55,14 @@ class TestCase {
 
             when(this.phSensorServiceMock.ph$).thenReturn(
                 hot(this._spec.phSpec, this._spec.phValues)
+            );
+
+            when(this.avrServiceMock.avrState$).thenReturn(
+                hot(this._spec.avrStateSpec, this._spec.avrStateValues)
+            );
+
+            when(this.displayServiceMock.touchEvents$).thenReturn(
+                hot(this._spec.displayTouchEventSpec, this._spec.displayTouchEventValues)
             );
 
             when(this.displayServiceMock.setText(DisplayTextElement.CLOCK, anyString())).thenCall((_, str) => {
@@ -100,6 +114,12 @@ describe('DisplayManagerServiceImpl', () => {
 
             phSpec: "",
             phValues: {},
+
+            avrStateSpec: "",
+            avrStateValues: {},
+
+            displayTouchEventSpec: "",
+            displayTouchEventValues: {},
         });
 
         testCase.runFrames(0);
@@ -149,6 +169,12 @@ describe('DisplayManagerServiceImpl', () => {
                     lastSensorState: null
                 }
             },
+
+            avrStateSpec: "",
+            avrStateValues: {},
+
+            displayTouchEventSpec: "",
+            displayTouchEventValues: {},
         });
 
         testCase.runFrames(10);
@@ -196,6 +222,12 @@ describe('DisplayManagerServiceImpl', () => {
                     lastSensorState: null
                 }
             },
+
+            avrStateSpec: "",
+            avrStateValues: {},
+
+            displayTouchEventSpec: "",
+            displayTouchEventValues: {},
         });
 
         testCase.runFrames(100000);
@@ -231,6 +263,12 @@ describe('DisplayManagerServiceImpl', () => {
                     lastSensorState: null
                 }
             },
+
+            avrStateSpec: "",
+            avrStateValues: {},
+
+            displayTouchEventSpec: "",
+            displayTouchEventValues: {},
         });
 
         testCase.runFrames(100);
