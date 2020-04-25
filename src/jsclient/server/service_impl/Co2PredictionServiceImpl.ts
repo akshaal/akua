@@ -16,7 +16,7 @@ export default class Co2PredictionServiceImpl {
     async test() {
         const window_size = 10;
 
-        const data = Array.from({ length: 100 }, (_, i) => i);
+        const data = Array.from({ length: 200 }, (_, i) => i);
         const windows = slidingWindow(data, window_size + 1);
 
         const inputOutputTensors = windows.map(k => ({
@@ -24,7 +24,9 @@ export default class Co2PredictionServiceImpl {
             ys: tf.tensor1d(k.slice(-1)),
         }));
 
-        const dataset = tf.data.array(inputOutputTensors).shuffle(1000).batch(64).prefetch(1);
+        const datasetFull = tf.data.array(inputOutputTensors).shuffle(1000);
+        const dataset = datasetFull.take(100).batch(64).prefetch(1);
+        const validDataset = datasetFull.skip(100).batch(64).prefetch(1);
 
         const model = tf.sequential({
             layers: [
@@ -35,7 +37,7 @@ export default class Co2PredictionServiceImpl {
         });
 
         model.compile({ loss: "meanSquaredError", optimizer: tf.train.momentum(8e-6, 0.9) });
-        await model.fitDataset(dataset, { epochs: 1000, verbose: 1 });
+        await model.fitDataset(dataset, { epochs: 10000, verbose: 1, validationData: validDataset });
 
         (model.predict(tf.tensor2d([[210, 211, 212, 213, 214, 215, 216, 217, 218, 219]])) as tf.Tensor).print();
     }
