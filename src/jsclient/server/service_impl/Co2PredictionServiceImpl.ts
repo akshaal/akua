@@ -2,24 +2,28 @@ import { injectable, postConstruct } from "inversify";
 
 import * as tf from '@tensorflow/tfjs-node'
 import slidingWindow from "server/misc/sliding-window";
-import { writeFileSync } from "fs";
+import { writeFileSync, readFileSync } from "fs";
+import logger from "server/logger";
 
 // API: https://js.tensorflow.org/api/latest/
 
 // TODO: Note: Work with TF must be done in a worker thread to avoid blocking main thread!
 
-enum TrainingSampleVersion {
+type Co2ClosingStateTfData = { xs: tf.Tensor1D, ys: tf.Tensor1D };
+type Co2ClosingStateTfDataset = tf.data.Dataset<Co2ClosingStateTfData>;
+
+enum Co2ClosingStateVersion {
     V0 = 0
 };
 
-enum TrainingSampleOrigin {
+enum Co2ClosingStateOrigin {
     ThisInstance = 0,
     OtherInstance = 1
 };
 
-interface TrainingSample {
-    origin: TrainingSampleOrigin,
-    version: TrainingSampleVersion,
+interface Co2ClosingState {
+    origin: Co2ClosingStateOrigin,
+    version: Co2ClosingStateVersion,
 
     // State at the moment of close operation
     closeTime: number;
@@ -38,7 +42,7 @@ export default class Co2PredictionServiceImpl {
     }
 
     prepareData() {
-        const result: TrainingSample[] = [];
+        const result: Co2ClosingState[] = [];
 
         const ph600Map: { [k: number]: number } = {};
         const ph60Map: { [k: number]: number } = {};
@@ -110,6 +114,11 @@ export default class Co2PredictionServiceImpl {
             } else {
                 // Valve is just opened
                 if (valveCloseK) {
+                    if (k - valveCloseK < 600) {
+                        console.log("Too short interval");
+                        continue;
+                    }
+
                     var bad = false;
 
                     // norm between 6 and 8
@@ -118,7 +127,7 @@ export default class Co2PredictionServiceImpl {
                     const histPh600 = [];
                     const histPh60 = [];
 
-                    for (var m = 1; m < 10; m += 1) {
+                    for (var m = 1; m < 11; m += 1) {
                         const ph600AtM = ph600Map[valveCloseK - 60 * m];
                         const ph60AtM = ph60Map[valveCloseK - 60 * m];
 
@@ -133,15 +142,15 @@ export default class Co2PredictionServiceImpl {
                         console.log("Bad data in interval");
                     } else {
                         result.push({
-                            origin: TrainingSampleOrigin.ThisInstance,
-                            version: TrainingSampleVersion.V0,
+                            origin: Co2ClosingStateOrigin.ThisInstance,
+                            version: Co2ClosingStateVersion.V0,
 
                             // State at the moment of close operation
                             closeTime: valveCloseK,
                             ph600AtClose: ph600AtClose,
                             ph600OffsetsBeforeClose: histPh600,
                             ph60OffsetsBeforeClose: histPh60,
-                        
+
                             // Close-action output (result of close operation)
                             minPh600OffsetAfterClose: minPh600 - ph600AtClose
                         });
@@ -159,32 +168,133 @@ export default class Co2PredictionServiceImpl {
 
     // ---------------------------------------------------------------
 
+    prepareCo2ClosingStateTfDataset(): Co2ClosingStateTfDataset {
+        const stateCo2ClosingDatasetJson: Co2ClosingState[] = JSON.parse(readFileSync("server/static-ui/training-set.json").toString("UTF-8"));
+
+        function scalePh(ph: number): number {
+            if (ph > 8) {
+                return 1;
+            }
+
+            if (ph < 6) {
+                return 0;
+            }
+
+            return (ph - 6) / 2.0;
+        }
+
+        function scalePhOffset(diff: number): number {
+            const rescaled = (diff + 1) / 2;
+
+            if (rescaled < 0) {
+                return 0;
+            }
+
+            if (rescaled > 1) {
+                return 1;
+            }
+
+            return rescaled;
+        }
+
+        const dataArray: Co2ClosingStateTfData[] = [];
+
+        stateLoop:
+        for (const state of stateCo2ClosingDatasetJson) {
+            // Validate state data
+
+            if (state.version !== Co2ClosingStateVersion.V0) {
+                logger.error("Co2Predict: Unknown state version in co2-closing-dataset", { state });
+                continue;
+            }
+
+            if (!state.closeTime) {
+                logger.error("Co2Predict: Missing close-time in co2-closing-dataset", { state });
+                continue;
+            }
+
+            if (state.origin !== Co2ClosingStateOrigin.OtherInstance && state.origin !== Co2ClosingStateOrigin.ThisInstance) {
+                logger.error("Co2Predict: Unknown origin in co2-closing-dataset", { state });
+                continue;
+            }
+
+            if (state.minPh600OffsetAfterClose > 4 || state.minPh600OffsetAfterClose < -4 || typeof state.minPh600OffsetAfterClose != "number") {
+                logger.error("Co2Predict: Strange min-ph-600-offset-after-close in co2-closing-dataset", { state });
+                continue;
+            }
+
+            if (state.ph600AtClose > 8 || state.ph600AtClose < 4) {
+                logger.error("Co2Predict: Strange ph-600-at-close", { state });
+                continue;
+            }
+
+            if (state.ph600OffsetsBeforeClose.length != 10) {
+                logger.error("Co2Predict: Strange ph600-offset-before-close", { state });
+                continue;
+            }
+
+            if (state.ph60OffsetsBeforeClose.length != 10) {
+                logger.error("Co2Predict: Strange ph60-offset-before-close", { state });
+                continue;
+            }
+
+            for (var i = 0; i < 10; i++) {
+                const ph600Offset = state.ph600OffsetsBeforeClose[i];
+                if (ph600Offset < -4 || ph600Offset > 4 || typeof ph600Offset != "number") {
+                    logger.error("Co2Predict: Strange value in ph600-offset-before-close", { state });
+                    continue stateLoop;
+                }
+
+                const ph60Offset = state.ph60OffsetsBeforeClose[i];
+                if (ph60Offset < -4 || ph60Offset > 4 || typeof ph60Offset != "number") {
+                    logger.error("Co2Predict: Strange value in ph60-offset-before-close", { state });
+                    continue stateLoop;
+                }
+            }
+
+            // Add validated state into data array that will be used to create dataset for tensorflow
+            const scaledPh600OffsetBeforeClose = state.ph600OffsetsBeforeClose.map(scalePhOffset);
+            const scaledPh60OffsetBeforeClose = state.ph60OffsetsBeforeClose.map(scalePhOffset);
+
+            // XS: "Features" or "Input for neural network"
+            const xsArray = [
+                ...scaledPh600OffsetBeforeClose,
+                ...scaledPh60OffsetBeforeClose,
+                scalePh(state.ph600AtClose)
+            ];
+
+            // YS: "Labels" or "Output for neural network"
+            const ysArray = [scalePhOffset(state.minPh600OffsetAfterClose)];
+
+            dataArray.push({
+                xs: tf.tensor1d(xsArray),
+                ys: tf.tensor1d(ysArray),
+            });
+        }
+
+        console.log("Dataset size: ", dataArray.length);
+
+        return tf.data.array(dataArray).shuffle(1000);
+    }
+
+    // ---------------------------------------------------------------
+
     async test() {
-        const window_size = 10;
-
-        const data = Array.from({ length: 200 }, (_, i) => i);
-        const windows = slidingWindow(data, window_size + 1);
-
-        const inputOutputTensors = windows.map(k => ({
-            xs: tf.tensor1d(k.slice(0, -1)),
-            ys: tf.tensor1d(k.slice(-1)),
-        }));
-
-        const datasetFull = tf.data.array(inputOutputTensors).shuffle(1000);
-        const dataset = datasetFull.take(100).batch(64).prefetch(1);
-        const validDataset = datasetFull.skip(100).batch(64).prefetch(1);
+        const datasetFull = this.prepareCo2ClosingStateTfDataset();
+        const trainDataset = datasetFull.take(80).batch(4).prefetch(1);
+        const validDataset = datasetFull.skip(80).batch(4).prefetch(1);
 
         const model = tf.sequential({
             layers: [
-                tf.layers.dense({ units: 10, inputDim: window_size, activation: "relu" }),
-                tf.layers.dense({ units: 10, activation: "relu" }),
+                tf.layers.dense({ units: 10, inputDim: 21, activation: "tanh" }),
+                tf.layers.dense({ units: 10, activation: "tanh" }),
                 tf.layers.dense({ units: 1 })
             ]
         });
 
         model.compile({ loss: "meanSquaredError", optimizer: tf.train.momentum(8e-6, 0.9) });
-        await model.fitDataset(dataset, { epochs: 10000, verbose: 1, validationData: validDataset });
+        await model.fitDataset(trainDataset, { epochs: 10000, verbose: 1, validationData: validDataset });
 
-        (model.predict(tf.tensor2d([[210, 211, 212, 213, 214, 215, 216, 217, 218, 219]])) as tf.Tensor).print();
+        //(model.predict(tf.tensor2d([[210, 211, 212, 213, 214, 215, 216, 217, 218, 219]])) as tf.Tensor).print();
     }
 }
