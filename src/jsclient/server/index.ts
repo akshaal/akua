@@ -87,6 +87,11 @@ expressServer.get("/force-co2-off", (_, res) => {
 });
 
 // -------------------------------------
+// SIMPLE UI
+
+expressServer.use('/ui', express.static('server/static-ui'));
+
+// -------------------------------------
 // Create HTTP server using express framework
 http.createServer(expressServer).listen(config.bindOptions, (): void => {
     const bindUrl = asUrl(config.bindOptions);
