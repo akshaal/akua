@@ -405,8 +405,8 @@ export default class Co2PredictionServiceImpl {
 
     async test() {
         const datasetFull = this.prepareCo2ClosingStateTfDataset();
-        const trainDataset = datasetFull.take(80).batch(4).prefetch(1);
-        const validDataset = datasetFull.skip(80).batch(4).prefetch(1);
+        const trainDataset = datasetFull.take(100).batch(4).prefetch(1);
+        const validDataset = datasetFull.skip(100).batch(4).prefetch(1);
 
         const model = tf.sequential({
             layers: [
@@ -417,8 +417,12 @@ export default class Co2PredictionServiceImpl {
         });
 
         model.compile({ loss: "meanSquaredError", optimizer: tf.train.momentum(8e-6, 0.9) });
-        await model.fitDataset(trainDataset, { epochs: 4000, verbose: 1, validationData: validDataset });
+        await model.fitDataset(trainDataset, { epochs: 10000, verbose: 1, validationData: validDataset });
+
+        await model.save('file://server/static-ui/model.dump');
 
         this.testModel(model);
+
+        
     }
 }
