@@ -383,8 +383,8 @@ static AKAT_UNUSED AKAT_PURE u8 akat_x_tm1637_encode_digit(u8 const digit, u8 co
 #define AK_CO2_DAY_START_HOUR (AK_DAY_START_HOUR - 2)
 #define AK_CO2_DAY_END_HOUR (AK_DAY_END_HOUR - 0)
 
-// Minimum hours when CO2 can be turned again after it was turned off
-#define AK_CO2_OFF_HOURS_BEFORE_UNLOCKED 1
+// Minimum minutes when CO2 can be turned again after it was turned off
+#define AK_CO2_OFF_MINUTES_BEFORE_UNLOCKED 15
 
 // Here is what we are going to use for communication using USB/serial port
 // Frame format is 8N1 (8 bits, no parity, 1 stop bit)
@@ -17635,7 +17635,7 @@ static u8 clock_corrections_since_protection_stat_reset = 0;
 static u8 received_clock0 = 0;
 static u8 received_clock1 = 0;
 static u8 received_clock2 = 255;
-static u24 co2_deciseconds_until_can_turn_on = AK_CO2_OFF_HOURS_BEFORE_UNLOCKED * 60L * 60L * 10L / 6L;
+static u24 co2_deciseconds_until_can_turn_on = AK_CO2_OFF_MINUTES_BEFORE_UNLOCKED * 60L * 10L;
 static u8 co2_calculated_day = 0;
 
 //Clock used to calculate state
@@ -18180,7 +18180,7 @@ static AKAT_FORCE_INLINE void controller_tick() {
 
     if (co2_switch.is_set() && !new_co2_state) {//We are turning CO2 off...
         //Lock co2 switch so it can't be turned on too soon
-        co2_deciseconds_until_can_turn_on = AK_CO2_OFF_HOURS_BEFORE_UNLOCKED * 60L * 60L * 10L;
+        co2_deciseconds_until_can_turn_on = AK_CO2_OFF_MINUTES_BEFORE_UNLOCKED * 60L * 10L;
     }
 
     co2_switch.set(new_co2_state);

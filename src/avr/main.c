@@ -10,8 +10,8 @@
 #define AK_CO2_DAY_START_HOUR (AK_DAY_START_HOUR - 2)
 #define AK_CO2_DAY_END_HOUR (AK_DAY_END_HOUR - 0)
 
-// Minimum hours when CO2 can be turned again after it was turned off
-#define AK_CO2_OFF_HOURS_BEFORE_UNLOCKED 1
+// Minimum minutes when CO2 can be turned again after it was turned off
+#define AK_CO2_OFF_MINUTES_BEFORE_UNLOCKED 15
 
 // Here is what we are going to use for communication using USB/serial port
 // Frame format is 8N1 (8 bits, no parity, 1 stop bit)
@@ -272,7 +272,7 @@ GLOBAL$() {
 
     // CO2 protection - - - 
     STATIC_VAR$(u24 co2_deciseconds_until_can_turn_on,
-                initial = AK_CO2_OFF_HOURS_BEFORE_UNLOCKED * 60L * 60L * 10L / 6L);
+                initial = AK_CO2_OFF_MINUTES_BEFORE_UNLOCKED * 60L * 10L);
 
     // Whether it's day or not as calculated by AVR's internal algorithm and interval
     STATIC_VAR$(u8 co2_calculated_day, initial = 0);
@@ -414,7 +414,7 @@ X_EVERY_DECISECOND$(controller_tick) {
     if (co2_switch.is_set() && !new_co2_state) {
         // We are turning CO2 off...
         // Lock co2 switch so it can't be turned on too soon
-        co2_deciseconds_until_can_turn_on = AK_CO2_OFF_HOURS_BEFORE_UNLOCKED * 60L * 60L * 10L;
+        co2_deciseconds_until_can_turn_on = AK_CO2_OFF_MINUTES_BEFORE_UNLOCKED * 60L * 10L;
     }
     co2_switch.set(new_co2_state);
 }
