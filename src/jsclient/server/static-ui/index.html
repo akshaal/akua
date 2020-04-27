@@ -48,7 +48,7 @@
 
                     const openItems = openV.data.result[0].values.map(v => ({
                         x: v[0],
-                        y: v[1] * 8.6,
+                        y: v[1] == 0 ? 6.7 : 7,
                         group: 2
                     }));
 
