@@ -1,7 +1,6 @@
 import { injectable, postConstruct } from "inversify";
 
 import * as tf from '@tensorflow/tfjs-node'
-import slidingWindow from "server/misc/sliding-window";
 import { writeFileSync, readFileSync } from "fs";
 import logger from "server/logger";
 
@@ -293,7 +292,7 @@ export default class Co2PredictionServiceImpl {
         });
 
         model.compile({ loss: "meanSquaredError", optimizer: tf.train.momentum(8e-6, 0.9) });
-        await model.fitDataset(trainDataset, { epochs: 10000, verbose: 1, validationData: validDataset });
+        await model.fitDataset(trainDataset, { epochs: 100, verbose: 1, validationData: validDataset });
 
         //(model.predict(tf.tensor2d([[210, 211, 212, 213, 214, 215, 216, 217, 218, 219]])) as tf.Tensor).print();
     }
