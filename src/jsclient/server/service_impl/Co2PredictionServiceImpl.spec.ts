@@ -5,7 +5,7 @@ describe('Co2PredictionServiceImpl', async () => {
     it('do something', async () => {
         const service = new Co2PredictionServiceImpl();
         service._init();
-        service.prepareData();
-        //await service.test();
+        //service.prepareData();
+        await service.test();
     }).timeout(10000);
 });

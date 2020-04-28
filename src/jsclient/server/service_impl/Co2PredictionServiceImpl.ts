@@ -398,7 +398,6 @@ export default class Co2PredictionServiceImpl {
                 // TODO: Sync? Get statistics and stuff
                 const predicatedScaledDiff = (((model.predict(tf.tensor2d([featuresAndLabels.xs])) as tf.Tensor).arraySync()) as any)[0][0];
                 const predictedPh = ph600Map[k] + predicatedScaledDiff * 2 - 1;
-                console.log(k, ph600Map[k], predictedPh);
 
                 result.push({ x: k, y: predictedPh, group: 3 });
             }
@@ -445,8 +444,8 @@ export default class Co2PredictionServiceImpl {
             // Train
 
             const datasetFull = this.prepareCo2ClosingStateTfDataset();
-            const trainDataset = datasetFull.take(100).batch(4).prefetch(1);
-            const validDataset = datasetFull.skip(100).batch(4).prefetch(1);
+            const trainDataset = datasetFull.take(108).batch(4).prefetch(1);
+            const validDataset = datasetFull.skip(108).batch(4).prefetch(1);
 
             model = tf.sequential({
                 layers: [
