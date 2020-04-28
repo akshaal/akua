@@ -11,18 +11,24 @@ import logger from "server/logger";
 type Co2ClosingStateTfData = { xs: tf.Tensor1D, ys: tf.Tensor1D };
 type Co2ClosingStateTfDataset = tf.data.Dataset<Co2ClosingStateTfData>;
 
-enum Co2ClosingStateVersion {
-    V0 = 0
-};
-
+/**
+ * Origin of the data sample. We can initially train using data from other instance
+ * and then gradually replace them by data from this instance..
+ */
 enum Co2ClosingStateOrigin {
     ThisInstance = 0,
     OtherInstance = 1
 };
 
+/**
+ * Information about state at the moment of CO-closing event.
+ * It contains information about PH related values right before
+ * the moment when CO2-valve was closed as well as the minimum
+ * reached PH between the close-event and the moment when CO2-valve 
+ * was opened again.
+ */
 interface Co2ClosingState {
     origin: Co2ClosingStateOrigin,
-    version: Co2ClosingStateVersion,
 
     // State at the moment of close operation
     closeTime: number;
@@ -34,6 +40,9 @@ interface Co2ClosingState {
     minPh600OffsetAfterClose: number;
 };
 
+/**
+ * Rescale PH value to a normalized value that is used in TensorFlow network.
+ */
 function scalePh(ph: number): number {
     if (ph > 8) {
         return 1;
@@ -46,6 +55,9 @@ function scalePh(ph: number): number {
     return (ph - 6) / 2.0;
 }
 
+/**
+ * Rescale PH difference to a normalized value that is used in TensorFlow network.
+ */
 function scalePhOffset(diff: number): number {
     const rescaled = (diff + 1) / 2;
 
@@ -62,15 +74,12 @@ function scalePhOffset(diff: number): number {
 
 // ========================================================================================
 
-// Translates state into features (inputs) and labels (outputs)
-// returns null if data is invalid
+/**
+ * Translates state into features (inputs) and labels (outputs)
+ * returns null if data is invalid
+ */
 function createCo2ClosingStateFeaturesAndLabels(state: Co2ClosingState): null | { xs: number[], ys: number[] } {
     // Validate state data
-
-    if (state.version !== Co2ClosingStateVersion.V0) {
-        logger.error("Co2Predict: Unknown state version in co2-closing-dataset", { state });
-        return null;
-    }
 
     if (!state.closeTime) {
         logger.error("Co2Predict: Missing close-time in co2-closing-dataset", { state });
@@ -92,23 +101,25 @@ function createCo2ClosingStateFeaturesAndLabels(state: Co2ClosingState): null | 
         return null;
     }
 
-    if (state.ph600OffsetsBeforeClose.length != 10) {
+    if (state.ph600OffsetsBeforeClose.length != 18) {
         logger.error("Co2Predict: Strange ph600-offset-before-close", { state });
         return null;
     }
 
-    if (state.ph60OffsetsBeforeClose.length != 10) {
+    if (state.ph60OffsetsBeforeClose.length != 19) {
         logger.error("Co2Predict: Strange ph60-offset-before-close", { state });
         return null;
     }
 
-    for (var i = 0; i < 10; i++) {
+    for (var i = 0; i < 18; i++) {
         const ph600Offset = state.ph600OffsetsBeforeClose[i];
         if (ph600Offset < -4 || ph600Offset > 4 || typeof ph600Offset != "number") {
             logger.error("Co2Predict: Strange value in ph600-offset-before-close", { state });
             return null;
         }
+    }
 
+    for (var i = 0; i < 19; i++) {
         const ph60Offset = state.ph60OffsetsBeforeClose[i];
         if (ph60Offset < -4 || ph60Offset > 4 || typeof ph60Offset != "number") {
             logger.error("Co2Predict: Strange value in ph60-offset-before-close", { state });
@@ -131,6 +142,73 @@ function createCo2ClosingStateFeaturesAndLabels(state: Co2ClosingState): null | 
     const ys = [scalePhOffset(state.minPh600OffsetAfterClose)];
 
     return { xs, ys };
+}
+
+// ========================================================================================
+
+/**
+ * Attempts to create Co2ClosingState for the time t.
+ */
+function createCo2ClosingState(params: {
+    tClose: number,
+    minPh600: number,
+    origin: Co2ClosingStateOrigin,
+    getPh600(t: number): number,
+    getPh60(t: number): number,
+}): Co2ClosingState | null {
+    const { tClose, getPh600, getPh60, origin, minPh600 } = params;
+
+    const ph600AtTClose = getPh600(tClose);
+
+    const histPh600 = [];
+    const histPh60 = [];
+
+    // Use Ph60 values: 0 seconds ago, 15, 30 and 45 seconds ago
+    // Use Ph600 values: 15, 30 and 45 seconds ago
+    // (we don't use ph600 0 seconds ago because offset will be zero from the ph600AtTClose)
+    for (var s = 0; s < 4; s += 1) {
+        const ph60AtM = getPh60(tClose - 15 * s);
+        histPh60.unshift(ph60AtM - ph600AtTClose);
+
+        if (ph60AtM === undefined || ph60AtM < 5 || ph60AtM > 9) {
+            return null;
+        }
+
+        if (s !== 0) {
+            const ph600AtM = getPh600(tClose - 15 * s);
+            histPh600.unshift(ph600AtM - ph600AtTClose);
+
+            if (ph600AtM === undefined || ph600AtM < 5 || ph600AtM > 9) {
+                return null;
+            }
+        }
+    }
+
+    // Use Ph60/Ph600 values: every minutes for 15 minutes back (15 values)
+    for (var m = 1; m < 16; m += 1) {
+        const ph600AtM = getPh600(tClose - 60 * m);
+        const ph60AtM = getPh60(tClose - 60 * m);
+
+        histPh600.unshift(ph600AtM - ph600AtTClose);
+        histPh60.unshift(ph60AtM - ph600AtTClose);
+
+        if (ph600AtM === undefined || ph600AtM < 5 || ph600AtM > 9) {
+            return null;
+        }
+
+        if (ph60AtM === undefined || ph60AtM < 5 || ph60AtM > 9) {
+            return null;
+        }
+    }
+
+    return {
+        origin,
+        closeTime: tClose,
+        ph600AtClose: ph600AtTClose,
+        ph600OffsetsBeforeClose: histPh600,
+        ph60OffsetsBeforeClose: histPh60,
+        minPh600OffsetAfterClose: minPh600 - ph600AtTClose
+    };
 }
 
 // ========================================================================================
@@ -219,41 +297,18 @@ export default class Co2PredictionServiceImpl {
                         continue;
                     }
 
-                    var bad = false;
+                    const state = createCo2ClosingState({
+                        tClose: valveCloseK,
+                        minPh600: minPh600,
+                        origin: Co2ClosingStateOrigin.ThisInstance,
+                        getPh600: (t: number) => ph600Map[t],
+                        getPh60: (t: number) => ph60Map[t],
+                    });
 
-                    // norm between 6 and 8
-                    const ph600AtClose = ph600Map[valveCloseK];
-
-                    const histPh600 = [];
-                    const histPh60 = [];
-
-                    for (var m = 1; m < 11; m += 1) {
-                        const ph600AtM = ph600Map[valveCloseK - 60 * m];
-                        const ph60AtM = ph60Map[valveCloseK - 60 * m];
-
-                        histPh600.unshift(ph600AtM - ph600AtClose);
-                        histPh60.unshift(ph60AtM - ph600AtClose);
-
-                        bad = bad || (ph600AtM === undefined || ph600AtM < 5 || ph600AtM > 9);
-                        bad = bad || (ph60AtM === undefined || ph60AtM < 5 || ph60AtM > 9);
-                    }
-
-                    if (bad) {
-                        console.log("Bad data in interval");
+                    if (state) {
+                        result.push(state);
                     } else {
-                        result.push({
-                            origin: Co2ClosingStateOrigin.ThisInstance,
-                            version: Co2ClosingStateVersion.V0,
-
-                            // State at the moment of close operation
-                            closeTime: valveCloseK,
-                            ph600AtClose: ph600AtClose,
-                            ph600OffsetsBeforeClose: histPh600,
-                            ph60OffsetsBeforeClose: histPh60,
-
-                            // Close-action output (result of close operation)
-                            minPh600OffsetAfterClose: minPh600 - ph600AtClose
-                        });
+                        console.log("Bad data in interval");
                     }
                 }
 
@@ -267,7 +322,7 @@ export default class Co2PredictionServiceImpl {
     }
 
     testModel(model: tf.LayersModel) {
-        const result: {x: number, y: number, group: 3}[] = [];
+        const result: { x: number, y: number, group: 3 }[] = [];
 
         const ph600Map: { [k: number]: number } = {};
         const ph60Map: { [k: number]: number } = {};
@@ -324,42 +379,17 @@ export default class Co2PredictionServiceImpl {
                 continue;
             }
 
-            var bad = false;
+            const state = createCo2ClosingState({
+                tClose: k,
+                minPh600: ph600Map[k],
+                origin: Co2ClosingStateOrigin.ThisInstance,
+                getPh600: (t: number) => ph600Map[t],
+                getPh60: (t: number) => ph60Map[t],
+            });
 
-            // Pretend we are closing now and se what value will be predicted by the model
-            const ph600AtClose = ph600Map[k];
-
-            const histPh600 = [];
-            const histPh60 = [];
-
-            for (var m = 1; m < 11; m += 1) {
-                const ph600AtM = ph600Map[k - 60 * m];
-                const ph60AtM = ph60Map[k - 60 * m];
-
-                histPh600.unshift(ph600AtM - ph600AtClose);
-                histPh60.unshift(ph60AtM - ph600AtClose);
-
-                bad = bad || (ph600AtM === undefined || ph600AtM < 5 || ph600AtM > 9);
-                bad = bad || (ph60AtM === undefined || ph60AtM < 5 || ph60AtM > 9);
-            }
-
-            if (bad) {
+            if (!state) {
                 console.log("Bad data in interval");
             } else {
-                const state: Co2ClosingState = {
-                    origin: Co2ClosingStateOrigin.ThisInstance,
-                    version: Co2ClosingStateVersion.V0,
-
-                    // State at the moment of close operation
-                    closeTime: k,
-                    ph600AtClose: ph600AtClose,
-                    ph600OffsetsBeforeClose: histPh600,
-                    ph60OffsetsBeforeClose: histPh60,
-
-                    // Close-action output (result of close operation)
-                    minPh600OffsetAfterClose: 0
-                };
-
                 const featuresAndLabels = createCo2ClosingStateFeaturesAndLabels(state);
                 if (!featuresAndLabels) {
                     continue;
@@ -367,10 +397,10 @@ export default class Co2PredictionServiceImpl {
 
                 // TODO: Sync? Get statistics and stuff
                 const predicatedScaledDiff = (((model.predict(tf.tensor2d([featuresAndLabels.xs])) as tf.Tensor).arraySync()) as any)[0][0];
-                const predictedPh = ph600AtClose + predicatedScaledDiff * 2 - 1;
-                console.log(k, ph600AtClose, predictedPh);
+                const predictedPh = ph600Map[k] + predicatedScaledDiff * 2 - 1;
+                console.log(k, ph600Map[k], predictedPh);
 
-                result.push({x: k, y: predictedPh, group: 3});
+                result.push({ x: k, y: predictedPh, group: 3 });
             }
         }
 
@@ -404,25 +434,34 @@ export default class Co2PredictionServiceImpl {
     // ---------------------------------------------------------------
 
     async test() {
-        const datasetFull = this.prepareCo2ClosingStateTfDataset();
-        const trainDataset = datasetFull.take(100).batch(4).prefetch(1);
-        const validDataset = datasetFull.skip(100).batch(4).prefetch(1);
+        const modelLocation = 'file://server/static-ui/model.dump';
+        const load = true;
+        var model: tf.LayersModel;
 
-        const model = tf.sequential({
-            layers: [
-                tf.layers.dense({ units: 10, inputDim: 21, activation: "tanh" }),
-                tf.layers.dense({ units: 10, activation: "tanh" }),
-                tf.layers.dense({ units: 1 })
-            ]
-        });
+        if (load) {
+            // Load existing
+            model = await tf.loadLayersModel(modelLocation + "/model.json");
+        } else {
+            // Train
 
-        model.compile({ loss: "meanAbsoluteError", optimizer: tf.train.momentum(8e-6, 0.9) });
-        await model.fitDataset(trainDataset, { epochs: 10000, verbose: 1, validationData: validDataset });
+            const datasetFull = this.prepareCo2ClosingStateTfDataset();
+            const trainDataset = datasetFull.take(100).batch(4).prefetch(1);
+            const validDataset = datasetFull.skip(100).batch(4).prefetch(1);
 
-        await model.save('file://server/static-ui/model.dump');
+            model = tf.sequential({
+                layers: [
+                    tf.layers.dense({ units: 10, inputDim: 38, activation: "tanh" }),
+                    tf.layers.dense({ units: 10, activation: "tanh" }),
+                    tf.layers.dense({ units: 1 })
+                ]
+            });
+
+            model.compile({ loss: "meanAbsoluteError", optimizer: tf.train.momentum(8e-6, 0.9) });
+            await model.fitDataset(trainDataset, { epochs: 10000, verbose: 1, validationData: validDataset });
+
+            await model.save(modelLocation);
+        }
 
         this.testModel(model);
-
-        
     }
 }
