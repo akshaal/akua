@@ -416,7 +416,7 @@ export default class Co2PredictionServiceImpl {
             ]
         });
 
-        model.compile({ loss: "meanSquaredError", optimizer: tf.train.momentum(8e-6, 0.9) });
+        model.compile({ loss: "meanAbsoluteError", optimizer: tf.train.momentum(8e-6, 0.9) });
         await model.fitDataset(trainDataset, { epochs: 10000, verbose: 1, validationData: validDataset });
 
         await model.save('file://server/static-ui/model.dump');
