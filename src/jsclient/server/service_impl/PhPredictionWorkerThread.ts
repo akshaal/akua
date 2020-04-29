@@ -386,7 +386,7 @@ function onPhPredictionRequest(request: PhPredictionRequest) {
         // TODO: Move it to a function! it's also used from testModel as well.
         const predictedPh = request.co2ClosingState.ph600AtClose + predicatedScaledDiff * 2 - 1;
 
-        // TODO: Send predicatedPh back...
+        // TODO: Send predictedPh back...
     });
 }
 
