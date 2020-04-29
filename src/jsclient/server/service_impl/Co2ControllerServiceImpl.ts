@@ -7,6 +7,10 @@ import AvrService, { Co2ValveOpenState } from "server/service/AvrService";
 import { isPresent } from "../misc/isPresent";
 import config from "server/config";
 
+// TODO: Use prediction
+// TODO: Don't let CO2 valve be open longe than 1 hour
+// TODO: Gradually change turning point from 6.8 to 7.2 during the day
+
 // AVR is expecting that we notify it every minute
 const SEND_REQUIREMENTS_TO_AVR_EVERY_MS = 60_000;
 
