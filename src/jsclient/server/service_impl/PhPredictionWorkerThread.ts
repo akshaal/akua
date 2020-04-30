@@ -17,7 +17,6 @@ import config, { asUrl } from 'server/config';
 
 // TODO: Move to config.
 const minPhPredictionModelLocation = asUrl(config.bindOptions) + "/ui/model.dump";
-console.log(minPhPredictionModelLocation);
 
 // Log startup event if we are in a worker thread
 if (parentPort) {

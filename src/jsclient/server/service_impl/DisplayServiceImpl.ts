@@ -84,7 +84,6 @@ export default class DisplayServiceImpl extends DisplayService {
 
     setTextColor(element: DisplayTextElement, rgbPcts: Readonly<[number, number, number]>): void {
         const color16bit = (pct2clrComp(rgbPcts[0], 5) << 11) + (pct2clrComp(rgbPcts[1], 6) << 5) + pct2clrComp(rgbPcts[2], 5);
-        console.log(color16bit);
         this._setValueIfChanged(element + ".pco", color16bit);
     }
 
