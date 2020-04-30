@@ -44,6 +44,8 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
         // React on messages from worker thread
         this._worker.on('message', (message: MessageFromPhPredictionWorker) => {
             if (message.type === 'min-ph-prediction-response') {
+                logger.info("TEMP: resp-message", { message });
+
                 this.minClosingPhPrediction$.next(message.minPhPrediction);
                 this.minClosingPhPrediction$.next(getElapsedSecondsSince(message.requestTimestamp));
             } else {
@@ -114,6 +116,8 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
 
     // Called by timer to request prediction from the working thread
     private _requestPrediction(): void {
+        logger.info("TEMP: prediction requested");
+
         const emitLastMinPhPrediction = () => {
             if (this._lastMinPhPrediction) {
                 this.minClosingPhPrediction$.next(this._lastMinPhPrediction);
@@ -123,6 +127,7 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
 
         // Just emit previous value if CO2 Valve is closed
         if (!this._co2ValveOpen) {
+            logger.info("TEMP: valve not open");
             emitLastMinPhPrediction();
             return;
         }
@@ -137,6 +142,8 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
                 getPh600: (t: number) => this._ph600sMap[t],
                 getPh60: (t: number) => this._ph60sMap[t],
             });
+
+        logger.info("TEMP: co2ClosingState", { co2ClosingState });
 
         // Just emit previous prediction if we don't have enough information yet
         if (!co2ClosingState) {
