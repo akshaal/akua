@@ -7,6 +7,8 @@ import MetricsService from "server/service/MetricsService";
 import AvrService from "server/service/AvrService";
 import TemperatureSensorService, { Temperature } from "server/service/TemperatureSensorService";
 import PhSensorService from "server/service/PhSensorService";
+import PhPredictionService from "server/service/PhPredictionService";
+import { Subscriptions } from "server/misc/Subscriptions";
 
 // Use constants for labels to avoid typos and to be consistent about names.
 const L_GC_TYPE = 'gc_type';
@@ -428,6 +430,16 @@ const phSensorVoltageSamplesGauge = new SimpleGauge({
     help: 'Number of ADC samples used by AVR to calculate voltage.'
 });
 
+const minClosingPhPredictionGauge = new SimpleGauge({
+    name: 'akua_ph_min_closing_prediction',
+    help: 'Predicted value for minimum PH that we would get after closing CO2 valve now.'
+});
+
+const minClosingPhPredictionTimeUsedGauge = new SimpleGauge({
+    name: 'akua_ph_min_closing_prediction_time_used',
+    help: 'How many seconds we used to predict one value of akua_ph_min_closing_prediction.'
+});
+
 // ==========================================================================================
 
 const co2ValveOpenGauge = new SimpleGauge({
@@ -484,10 +496,13 @@ const lightForcesSinceProtectionStatResetGauge = new SimpleGauge({
 
 @injectable()
 export default class MetricsServiceImpl extends MetricsService {
+    private readonly _subs = new Subscriptions();
+
     constructor(
-        private _avrService: AvrService,
-        private _temperatureSensorService: TemperatureSensorService,
-        private _phSensorService: PhSensorService
+        private readonly _avrService: AvrService,
+        private readonly _temperatureSensorService: TemperatureSensorService,
+        private readonly _phSensorService: PhSensorService,
+        private readonly _phPredictionService: PhPredictionService
     ) {
         super();
     }
@@ -497,13 +512,32 @@ export default class MetricsServiceImpl extends MetricsService {
         // Update summaries
         var lastObservedUptime: number | undefined;
 
-        this._avrService.avrState$.subscribe(avrState => {
-            // Observe data that's really updated every decisecond
-            if (lastObservedUptime != avrState.uptimeSeconds) {
-                avrMainLoopDecisecondIterationsSummary.observe(avrState.mainLoopIterationsInLastDecisecond);
-                lastObservedUptime = avrState.uptimeSeconds;
-            }
-        });
+        this._subs.add(
+            this._avrService.avrState$.subscribe(avrState => {
+                // Observe data that's really updated every decisecond
+                if (lastObservedUptime != avrState.uptimeSeconds) {
+                    avrMainLoopDecisecondIterationsSummary.observe(avrState.mainLoopIterationsInLastDecisecond);
+                    lastObservedUptime = avrState.uptimeSeconds;
+                }
+            })
+        );
+
+        this._subs.add(
+            this._phPredictionService.minClosingPhPrediction$.subscribe(minClosingPhPrediction => {
+                minClosingPhPredictionGauge.set(minClosingPhPrediction);
+            })
+        );
+
+        this._subs.add(
+            this._phPredictionService.minClosingPhPredictionTimeUsed$.subscribe(minClosingPhPredictionTimeUsed => {
+                minClosingPhPredictionTimeUsedGauge.set(minClosingPhPredictionTimeUsed);
+            })
+        );
+    }
+
+    // Used in unit testing
+    _destroy(): void {
+        this._subs.unsubscribeAll();
     }
 
     public observeSimpleMeasurement(target: string, delta: [number, number]): void {

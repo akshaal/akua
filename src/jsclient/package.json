@@ -8,7 +8,7 @@
     "build": "NODE_ENV=production tsc --project tsconfig.json",
     "start": "NODE_ENV=production NODE_PATH=./dist node ./dist/server/index.js",
     "clean": "rimraf dist",
-    "test": "ts-mocha --paths -p ./tsconfig.json **/*.spec.ts"
+    "test": "NODE_PATH=./dist ts-mocha --paths -p ./tsconfig.json **/*.spec.ts"
   },
   "keywords": [],
   "author": "",

@@ -1,11 +1,26 @@
 import * as tf from '@tensorflow/tfjs-node'
 import { writeFileSync, readFileSync } from "fs";
 import logger from "server/logger";
-import { Co2ClosingState, Co2ClosingStateOrigin, createCo2ClosingState, MessageToPhPredictionWorker, PhPredictionRequest } from './PhPrediction';
+
+import {
+    Co2ClosingState,
+    Co2ClosingStateOrigin,
+    createCo2ClosingState,
+    MessageToPhPredictionWorker,
+    MinPhPredictionRequest,
+    MinPhPredictionResponse
+} from './PhPrediction';
+
 import { parentPort } from 'worker_threads';
+import { newTimestamp } from 'server/misc/new-timestamp';
 
 // TODO: Move to config.
-const modelLocation = 'file://server/static-ui/model.dump';
+const minPhPredictionModelLocation = 'file://server/static-ui/model.dump';
+
+// Log startup event if we are in a worker thread
+if (parentPort) {
+    logger.info("PhPredict: Started worker thread for PH predictions");
+}
 
 // TODO: !!! Export training set to be able to draw it and see what NN
 // TODO: !!! actually see and decide what info it needs to import quality of prediction
@@ -16,8 +31,13 @@ const modelLocation = 'file://server/static-ui/model.dump';
 
 // API: https://js.tensorflow.org/api/latest/
 
-// TODO: Describe
-var globalModelPromise: Promise<tf.LayersModel> = tf.loadLayersModel(modelLocation + "/model.json");
+/**
+ * Promise of currently used min-ph prediction model.
+ * Initial promise is not resolved.
+ * In tests we need to call loadModelFromFIle to load the model from file obviously.
+ * If this file is opened as a worker thread, then the call is done automatically.
+ */
+var minPhPredictionModelPromise: Promise<tf.LayersModel> = new Promise(() => { });
 
 type Co2ClosingStateTfData = { xs: tf.Tensor1D, ys: tf.Tensor1D };
 type Co2ClosingStateTfDataset = tf.data.Dataset<Co2ClosingStateTfData>;
@@ -52,6 +72,13 @@ function scalePhOffset(diff: number): number {
     }
 
     return rescaled;
+}
+
+/**
+ * Reverse scalePhOffset operation. Convert from value prepared to NN back to normal PH difference.
+ */
+function descalePhOffset(scaledDiff: number): number {
+    return 0 + scaledDiff * 2 - 1;
 }
 
 // ========================================================================================
@@ -128,6 +155,7 @@ function createCo2ClosingStateFeaturesAndLabels(state: Co2ClosingState): null | 
 
 // ========================================================================================
 
+// TODO: Review, give better name
 export function prepareData() {
     const result: Co2ClosingState[] = [];
 
@@ -230,8 +258,11 @@ export function prepareData() {
     writeFileSync("server/static-ui/training-set.json", JSON.stringify(result));
 }
 
+// =======================================================================================
+
+// TODO: This is for test only.....
 export async function testModel() {
-    const model = await globalModelPromise;
+    const model = await minPhPredictionModelPromise;
 
     const result: { x: number, y: number, group: 3 }[] = [];
 
@@ -363,40 +394,65 @@ export async function retrainModelFromDataset() {
     model.compile({ loss: "meanAbsoluteError", optimizer: tf.train.momentum(8e-6, 0.9) });
     await model.fitDataset(trainDataset, { epochs: 10000, verbose: 1, validationData: validDataset });
 
-    await model.save(modelLocation);
+    await model.save(minPhPredictionModelLocation);
 
-    globalModelPromise = Promise.resolve(model);
+    minPhPredictionModelPromise = Promise.resolve(model);
 }
 
 // ================================================================
 
-function onPhPredictionRequest(request: PhPredictionRequest) {
-    // TODO: Don't be this crappy! More tests, controls, statistics and error handling!
+export function loadModelFromFile() {
+    minPhPredictionModelPromise = tf.loadLayersModel(minPhPredictionModelLocation + "/model.json");
+    logger.info("PhPredict: Loading min-PH prediction model from " + minPhPredictionModelLocation);
+}
+
+if (parentPort) {
+    loadModelFromFile();
+}
+
+// ================================================================
+
+/**
+ * Called from onMessageToPhPredictionWorker to handle this kind of messages.
+ * Must predict PH and send the PhPredictionResponse o main thread via using parentPort object.
+ * 
+ * @param request predication request
+ */
+function onPhPredictionRequest(request: MinPhPredictionRequest) {
+    const requestTimestamp = newTimestamp();
 
     const featuresAndLabels = createCo2ClosingStateFeaturesAndLabels(request.co2ClosingState);
     if (!featuresAndLabels) {
-        logger.error("PhPredictionWorker: Wrong request co2closingSTate", { request });
+        logger.error("PhPredict: Wrong request co2closingSTate", { request });
         return;
     }
 
-    globalModelPromise.then(model => {
-        // TODO: Don't do sync here!
-        const predicatedScaledDiff = (((model.predict(tf.tensor2d([featuresAndLabels.xs])) as tf.Tensor).arraySync()) as any)[0][0];
+    minPhPredictionModelPromise.then(model => {
+        const tfPrediction = model.predict(tf.tensor2d([featuresAndLabels.xs])) as tf.Tensor;
 
-        // TODO: Move it to a function! it's also used from testModel as well.
-        const predictedPh = request.co2ClosingState.ph600AtClose + predicatedScaledDiff * 2 - 1;
+        tfPrediction.array().then((tfPredictionArray: any) => {
+            const predicatedScaledDiff = tfPredictionArray[0][0];
 
-        // TODO: Send predictedPh back...
+            const predictedMinPh = request.co2ClosingState.ph600AtClose + descalePhOffset(predicatedScaledDiff);
+
+            const response: MinPhPredictionResponse = {
+                type: 'min-ph-prediction-response',
+                minPhPrediction: predictedMinPh,
+                requestTimestamp
+            };
+
+            parentPort?.postMessage(response);
+        });
     });
 }
 
 // ================================================================
 
 export function onMessageToPhPredictionWorker(message: MessageToPhPredictionWorker) {
-    if (message.type === 'ph-prediction-request') {
+    if (message.type === 'min-ph-prediction-request') {
         onPhPredictionRequest(message);
     } else {
-        logger.error("PhPredictionWorker: Unknown message: ", { message });
+        logger.error("PhPredict: Unknown message: ", { message });
     }
 }
 

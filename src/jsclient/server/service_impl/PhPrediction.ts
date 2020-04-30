@@ -2,24 +2,24 @@ import { Timestamp } from "server/misc/Timestamp";
 
 /**
  * Message that is sent from PhPredictionServiceImpl to PhPredictionWorkerThread
- * and indicates that a prediction is needed for the given closing state.
+ * and indicates that a prediction of min-ph is needed for the given closing state.
  */
-export interface PhPredictionRequest {
-    type: 'ph-prediction-request';
+export interface MinPhPredictionRequest {
+    type: 'min-ph-prediction-request';
     co2ClosingState: Co2ClosingState;
 }
 
 /**
  * Possible messages that PhPredictionServiceImpl can send to PhPredictionWorkerThread.
  */
-export type MessageToPhPredictionWorker = PhPredictionRequest;
+export type MessageToPhPredictionWorker = MinPhPredictionRequest;
 
 /**
  * Message that is sent from PhPredictionWorkerThread to PhPredictionServiceImpl
  * and indicates that a prediction is done with the given value.
  */
-export interface PhPredictionResponse {
-    type: 'ph-prediction-response';
+export interface MinPhPredictionResponse {
+    type: 'min-ph-prediction-response';
     minPhPrediction: number;
     requestTimestamp: Timestamp;
 }
@@ -27,7 +27,7 @@ export interface PhPredictionResponse {
 /**
  * Possible messages that PhPredictionWorkerThread can send to PhPredictionServiceImpl.
  */
-export type MessageFromPhPredictionWorker = PhPredictionResponse;
+export type MessageFromPhPredictionWorker = MinPhPredictionResponse;
 
 /**
  * Origin of the data sample. We can initially train using data from other instance
