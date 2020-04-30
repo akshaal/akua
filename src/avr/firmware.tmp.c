@@ -376,7 +376,7 @@ static AKAT_UNUSED AKAT_PURE u8 akat_x_tm1637_encode_digit(u8 const digit, u8 co
 
 // Day interval. Affects day-light and night light modes.
 #define AK_DAY_START_HOUR 10
-#define AK_DAY_DURATION_HOURS 12
+#define AK_DAY_DURATION_HOURS 13
 #define AK_DAY_END_HOUR (AK_DAY_START_HOUR + AK_DAY_DURATION_HOURS)
 
 // CO2-Day interval. Interval when it's allowed to feed CO2 to aquarium
