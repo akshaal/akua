@@ -38,7 +38,7 @@ function isCo2Required(
         return false;
     }
 
-    if ((state.co2ValveOpenSeconds * 60) > CO2_MAX_OPEN_MINUTES) {
+    if (state.co2ValveOpenSeconds > (CO2_MAX_OPEN_MINUTES * 60)) {
         return false;
     }
 
