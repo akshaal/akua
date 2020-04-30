@@ -87,7 +87,7 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
         // Perform cleanup of used map at night (we check it every 10 minutes).
         this._subs.add(
             timer(0, 600_000, this._scheduler).subscribe(() => {
-                const date = new Date(this._timeService.nowRoundedSeconds());
+                const date = new Date(this._timeService.nowRoundedSeconds() * 1000.0);
                 const hours = date.getHours();
                 if (hours > 0 && hours < 3) {
                     this._cleanupHistoryMaps();
