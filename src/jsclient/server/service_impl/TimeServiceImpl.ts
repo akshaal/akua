@@ -10,6 +10,6 @@ export default class TimeServiceImpl extends TimeService {
     }
 
     nowRoundedSeconds(): number {
-        return Math.round(new Date().getTime());
+        return Math.round(new Date().getTime() / 1000.0);
     }
 }
