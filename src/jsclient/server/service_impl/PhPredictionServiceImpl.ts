@@ -75,9 +75,9 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
             })
         );
 
-        // Perform prediction every 5 seconds.
+        // Perform prediction every 2 seconds.
         this._subs.add(
-            timer(0, 5000, this._scheduler).subscribe(() => {
+            timer(0, 2000, this._scheduler).subscribe(() => {
                 this._requestPrediction();
             })
         );
