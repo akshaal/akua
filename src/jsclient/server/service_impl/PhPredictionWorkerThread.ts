@@ -1,4 +1,4 @@
-import * as tf from '@tensorflow/tfjs-node'
+import * as tf from '@tensorflow/tfjs'
 import { writeFileSync, readFileSync } from "fs";
 import logger from "server/logger";
 
@@ -13,9 +13,11 @@ import {
 
 import { parentPort } from 'worker_threads';
 import { newTimestamp } from 'server/misc/new-timestamp';
+import config, { asUrl } from 'server/config';
 
 // TODO: Move to config.
-const minPhPredictionModelLocation = 'file://server/static-ui/model.dump';
+const minPhPredictionModelLocation = asUrl(config.bindOptions) + "/ui/model.dump";
+console.log(minPhPredictionModelLocation);
 
 // Log startup event if we are in a worker thread
 if (parentPort) {
