@@ -3,7 +3,7 @@
 
 // Day interval. Affects day-light and night light modes.
 #define AK_DAY_START_HOUR 10
-#define AK_DAY_DURATION_HOURS 13
+#define AK_DAY_DURATION_HOURS 10
 #define AK_DAY_END_HOUR (AK_DAY_START_HOUR + AK_DAY_DURATION_HOURS)
 
 // CO2-Day interval. Interval when it's allowed to feed CO2 to aquarium
