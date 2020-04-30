@@ -8,11 +8,12 @@
     "build": "NODE_ENV=production tsc --project tsconfig.json",
     "start": "NODE_ENV=production NODE_PATH=./dist node ./dist/server/index.js",
     "clean": "rimraf dist",
-    "test": "ts-mocha --paths -p ./tsconfig.json **/*.spec.ts"
+    "test": "NODE_PATH=./dist ts-mocha --paths -p ./tsconfig.json **/*.spec.ts"
   },
   "keywords": [],
   "author": "",
   "dependencies": {
+    "@tensorflow/tfjs-node": "1.7.3",
     "bin-protocol": "^3.1.1",
     "debug": "^4.1.1",
     "express": "^4.17.1",

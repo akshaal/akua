@@ -4,7 +4,7 @@ import logger from "server/logger";
 import { config } from "server/config";
 import { openNextionPort } from "server/nextion";
 import type { Nextion } from "server/nextion/nextion";
-import { recurrent } from "./recurrent";
+import { recurrent } from "../misc/recurrent";
 import { DisplayTextElement, DisplayPicElement, DisplayPic, TouchEvent } from "server/service/DisplayService";
 import { Subject } from "rxjs";
 

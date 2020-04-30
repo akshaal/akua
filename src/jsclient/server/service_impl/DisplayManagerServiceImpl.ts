@@ -4,9 +4,9 @@ import PhSensorService from "server/service/PhSensorService";
 import DisplayService, { DisplayTextElement, DisplayPicElement, DisplayPic } from "server/service/DisplayService";
 import { Observable, of, combineLatest, timer, SchedulerLike } from "rxjs";
 import { map, timeoutWith, distinctUntilChanged, share, delay, startWith, repeat, skip, filter, switchMap, take, throttleTime } from 'rxjs/operators';
-import { isPresent } from "./isPresent";
+import { isPresent } from "../misc/isPresent";
 import TemperatureSensorService from "server/service/TemperatureSensorService";
-import { Subscriptions } from "./Subscriptions";
+import { Subscriptions } from "../misc/Subscriptions";
 import AvrService, { AvrState, AvrServiceState, LightForceMode } from "server/service/AvrService";
 import config, { ValueDisplayConfig } from "server/config";
 

@@ -17,6 +17,10 @@ import DisplayManagerServiceImpl from "./DisplayManagerServiceImpl";
 import DisplayManagerService from "server/service/DisplayManagerService";
 import Co2ControllerServiceImpl from "./Co2ControllerServiceImpl";
 import Co2ControllerService from "server/service/Co2ControllerService";
+import PhPredictionServiceImpl from "./PhPredictionServiceImpl";
+import PhPredictionService from "server/service/PhPredictionService";
+import TimeServiceImpl from "./TimeServiceImpl";
+import TimeService from "server/service/TimeService";
 
 function createNewContainer(): Container {
     const container = new Container();
@@ -26,7 +30,9 @@ function createNewContainer(): Container {
     container.bind(AvrService).to(AvrServiceImpl).inSingletonScope();
     container.bind(TemperatureSensorService).to(TemperatureSensorServiceImpl).inSingletonScope();
     container.bind(PhSensorService).to(PhSensorServiceImpl).inSingletonScope();
+    container.bind(PhPredictionService).to(PhPredictionServiceImpl).inSingletonScope();
     container.bind(Co2ControllerService).to(Co2ControllerServiceImpl).inSingletonScope();
+    container.bind(TimeService).to(TimeServiceImpl).inSingletonScope();
     container.bind(ServerServices).toSelf().inSingletonScope();
 
     if (process.env.NODE_ENV === "development") {

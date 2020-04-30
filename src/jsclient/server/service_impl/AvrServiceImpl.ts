@@ -6,7 +6,7 @@ import logger from "server/logger";
 import { SerialportReadlineParser } from "./ReadlineParser";
 import { avrProtocolVersion, asAvrData, AvrData } from "server/avr/protocol";
 import { Subject } from "rxjs";
-import { recurrent } from "./recurrent";
+import { recurrent } from "../misc/recurrent";
 
 // We do attempt to reopen the port every this number of milliseconds.
 const AUTO_REOPEN_MILLIS = 1000;

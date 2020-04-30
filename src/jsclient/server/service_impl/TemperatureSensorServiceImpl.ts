@@ -1,7 +1,7 @@
 import { injectable } from "inversify";
 import TemperatureSensorService, { Temperature } from "server/service/TemperatureSensorService";
 import AvrService, { AvrTemperatureSensorState } from "server/service/AvrService";
-import { AveragingWindow } from "./AveragingWindow";
+import { AveragingWindow } from "../misc/AveragingWindow";
 import { Observable, BehaviorSubject } from "rxjs";
 
 const TEMPERATURE_WINDOW_SPAN_SECONDS = 15;
