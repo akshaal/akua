@@ -47,7 +47,7 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
                 logger.info("TEMP: resp-message", { message });
 
                 this.minClosingPhPrediction$.next(message.minPhPrediction);
-                this.minClosingPhPrediction$.next(getElapsedSecondsSince(message.requestTimestamp));
+                this.minClosingPhPredictionTimeUsed$.next(getElapsedSecondsSince(message.requestTimestamp));
             } else {
                 logger.error("PhPredictService: Unknown message type", { message });
             }
