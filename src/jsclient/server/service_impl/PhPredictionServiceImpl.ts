@@ -3,7 +3,7 @@ import { Worker } from "worker_threads";
 import { Subscriptions } from "server/misc/Subscriptions";
 import { MessageFromPhPredictionWorker, MinPhPredictionRequest, createCo2ClosingState, Co2ClosingStateOrigin } from "./PhPrediction";
 import logger from "server/logger";
-import PhPredictionService from "server/service/PhPredictionService";
+import PhPredictionService, { MinClosingPhPrediction } from "server/service/PhPredictionService";
 import { Subject, SchedulerLike, timer } from "rxjs";
 import { getElapsedSecondsSince } from "server/misc/get-elapsed-seconds-since";
 import PhSensorService from "server/service/PhSensorService";
@@ -12,8 +12,7 @@ import TimeService from "server/service/TimeService";
 
 @injectable()
 export default class PhPredictionServiceImpl extends PhPredictionService {
-    readonly minClosingPhPrediction$ = new Subject<number>();;
-    readonly minClosingPhPredictionTimeUsed$ = new Subject<number>();
+    readonly minClosingPhPrediction$ = new Subject<MinClosingPhPrediction>();;
 
     // Key is rounded time (Math.round). Value is a PH at the given time.
     // These maps are cleanup up at midnight.
@@ -44,8 +43,11 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
         // React on messages from worker thread
         this._worker.on('message', (message: MessageFromPhPredictionWorker) => {
             if (message.type === 'min-ph-prediction-response') {
-                this.minClosingPhPrediction$.next(message.minPhPrediction);
-                this.minClosingPhPredictionTimeUsed$.next(getElapsedSecondsSince(message.requestTimestamp));
+                this.minClosingPhPrediction$.next({
+                    predictedMinPh: message.minPhPrediction,
+                    secondsUsedOnPrediction: getElapsedSecondsSince(message.requestTimestamp),
+                    valveIsAlreadyClosed: false
+                });
             } else {
                 logger.error("PhPredictService: Unknown message type", { message });
             }
@@ -114,16 +116,15 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
 
     // Called by timer to request prediction from the working thread
     private _requestPrediction(): void {
-        const emitLastMinPhPrediction = () => {
-            if (this._lastMinPhPrediction) {
-                this.minClosingPhPrediction$.next(this._lastMinPhPrediction);
-                this.minClosingPhPredictionTimeUsed$.next(0);
-            }
-        };
-
         // Just emit previous value if CO2 Valve is closed
         if (!this._co2ValveOpen) {
-            emitLastMinPhPrediction();
+            if (this._lastMinPhPrediction) {
+                this.minClosingPhPrediction$.next({
+                    predictedMinPh: this._lastMinPhPrediction,
+                    secondsUsedOnPrediction: 0,
+                    valveIsAlreadyClosed: true
+                });
+            }
             return;
         }
 
@@ -140,7 +141,6 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
 
         // Just emit previous prediction if we don't have enough information yet
         if (!co2ClosingState) {
-            emitLastMinPhPrediction();
             return;
         }
 

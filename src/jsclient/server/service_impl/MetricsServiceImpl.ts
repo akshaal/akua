@@ -435,10 +435,13 @@ const minClosingPhPredictionGauge = new SimpleGauge({
     help: 'Predicted value for minimum PH that we would get after closing CO2 valve now.'
 });
 
-const minClosingPhPredictionTimeUsedGauge = new SimpleGauge({
-    name: 'akua_ph_min_closing_prediction_time_used',
-    help: 'How many seconds we used to predict one value of akua_ph_min_closing_prediction.'
-});
+const minClosingPhPredictionSecondsUsedSummary = new Summary({
+    name: 'akua_ph_min_closing_prediction_seconds_used',
+    help: 'How many seconds we used to predict one value of akua_ph_min_closing_prediction.',
+    maxAgeSeconds: 600,
+    ageBuckets: 5,
+    percentiles: [0.1, 0.25, 0.5, 0.75, 0.9, 0.99, 0.999]
+})
 
 // ==========================================================================================
 
@@ -524,13 +527,8 @@ export default class MetricsServiceImpl extends MetricsService {
 
         this._subs.add(
             this._phPredictionService.minClosingPhPrediction$.subscribe(minClosingPhPrediction => {
-                minClosingPhPredictionGauge.set(minClosingPhPrediction);
-            })
-        );
-
-        this._subs.add(
-            this._phPredictionService.minClosingPhPredictionTimeUsed$.subscribe(minClosingPhPredictionTimeUsed => {
-                minClosingPhPredictionTimeUsedGauge.set(minClosingPhPredictionTimeUsed);
+                minClosingPhPredictionGauge.set(minClosingPhPrediction.predictedMinPh);
+                minClosingPhPredictionSecondsUsedSummary.observe(minClosingPhPrediction.secondsUsedOnPrediction);
             })
         );
     }

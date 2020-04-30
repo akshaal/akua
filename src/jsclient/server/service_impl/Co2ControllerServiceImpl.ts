@@ -24,7 +24,7 @@ const SEND_REQUIREMENTS_TO_AVR_EVERY_MS = 60_000;
 const THROTTLE_TIME_MS = 5_000;
 
 // Don't allow it be open for too long to avoid overheating and stuff
-const CO2_MAX_OPEN_MINUTES = 30;
+const CO2_MAX_OPEN_MINUTES = 15; // TODO: Change it to 1 hour!!!!!!!!!!!!!!!!!!!!!!
 
 // Decide whether we must turn ph on or not
 function isCo2Required(
