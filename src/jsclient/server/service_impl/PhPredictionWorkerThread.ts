@@ -422,8 +422,6 @@ if (parentPort) {
 function onPhPredictionRequest(request: MinPhPredictionRequest) {
     const requestTimestamp = newTimestamp();
 
-    logger.info("TempREqWrk", {request});
-
     const featuresAndLabels = createCo2ClosingStateFeaturesAndLabels(request.co2ClosingState);
     if (!featuresAndLabels) {
         logger.error("PhPredict: Wrong request co2closingSTate", { request });
@@ -431,11 +429,7 @@ function onPhPredictionRequest(request: MinPhPredictionRequest) {
     }
 
     minPhPredictionModelPromise.then(model => {
-        logger.info("model-obtained");
-
         const tfPrediction = model.predict(tf.tensor2d([featuresAndLabels.xs])) as tf.Tensor;
-
-        logger.info("predict");
 
         tfPrediction.array().then((tfPredictionArray: any) => {
             const predicatedScaledDiff = tfPredictionArray[0][0];
@@ -447,8 +441,6 @@ function onPhPredictionRequest(request: MinPhPredictionRequest) {
                 minPhPrediction: predictedMinPh,
                 requestTimestamp
             };
-
-            logger.info("resp", { response });
 
             parentPort?.postMessage(response);
         });
