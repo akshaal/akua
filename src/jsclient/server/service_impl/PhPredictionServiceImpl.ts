@@ -118,6 +118,8 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
     private _requestPrediction(): void {
         logger.info("TEMP: prediction requested");
 
+        logger.info("TEMP: co2ClosingState", { ph600: this._ph600sMap, ph60: this._ph60sMap });
+
         const emitLastMinPhPrediction = () => {
             if (this._lastMinPhPrediction) {
                 this.minClosingPhPrediction$.next(this._lastMinPhPrediction);

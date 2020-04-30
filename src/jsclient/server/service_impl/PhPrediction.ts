@@ -1,4 +1,5 @@
 import { Timestamp } from "server/misc/Timestamp";
+import logger from "server/logger";
 
 /**
  * Message that is sent from PhPredictionServiceImpl to PhPredictionWorkerThread
@@ -83,6 +84,7 @@ export function createCo2ClosingState(params: {
         histPh60.unshift(ph60AtM - ph600AtTClose);
 
         if (ph60AtM === undefined || ph60AtM < 5 || ph60AtM > 9) {
+            logger.info("b1", tClose - 15 * s);
             return null;
         }
 
@@ -91,6 +93,7 @@ export function createCo2ClosingState(params: {
             histPh600.unshift(ph600AtM - ph600AtTClose);
 
             if (ph600AtM === undefined || ph600AtM < 5 || ph600AtM > 9) {
+                logger.info("b2", tClose - 15 * s);
                 return null;
             }
         }
@@ -105,10 +108,12 @@ export function createCo2ClosingState(params: {
         histPh60.unshift(ph60AtM - ph600AtTClose);
 
         if (ph600AtM === undefined || ph600AtM < 5 || ph600AtM > 9) {
+            logger.info("b3", tClose - 60 * m);
             return null;
         }
 
         if (ph60AtM === undefined || ph60AtM < 5 || ph60AtM > 9) {
+            logger.info("b4", tClose - 60 * m);
             return null;
         }
     }
