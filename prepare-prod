@@ -2,4 +2,4 @@
 
 cd `dirname "$0"`
 
-./prepare && cp .git-tag .prepared-git-tag
+./prepare "$@" && cp .git-tag .prepared-git-tag

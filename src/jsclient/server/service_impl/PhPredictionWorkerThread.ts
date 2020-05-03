@@ -1,4 +1,4 @@
-import * as tf from '@tensorflow/tfjs'
+import * as tf from './tf';
 import { writeFileSync, readFileSync } from "fs";
 import logger from "server/logger";
 

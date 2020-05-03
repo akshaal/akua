@@ -3,4 +3,37 @@
 cd `dirname "$0"`
 cd src/jsclient
 
+############################################################################
+# TENSORFLOW BACKEND
+
+tf_backend="TF-JS"
+tf_module=""
+
+if cat /proc/cpuinfo | grep AVX 2>/dev/null >/dev/null; then
+    tf_backend="TF-NODE"
+
+    if lspci | grep VGA | grep NVIDIA 2>/dev/null >/dev/null; then
+        tf_backend="TF-GPU"
+    fi
+fi
+
+if test "$tf_backend" = "TF-NODE"; then
+    tf_module='tfjs-node'
+elif test "$tf_backend" = "TF-GPU"; then
+    tf_module='tfjs-node-gpu'
+elif test "$tf_backend" = "TF-JS"; then
+    tf_module='tfjs'
+fi
+
+echo "export * from '@tensorflow/$tf_module';" > server/service_impl/tf.ts
+
+cat package.json | sed -r "s/^(.*\")@tensorflow.*(\":.*)$/\\1@tensorflow\\/$tf_module\\2/g" > package.json-new || exit 2
+mv package.json-new package.json
+
+echo ""
+echo "USING $tf_backend (@tensorflow/$tf_module) AS BACKEND FOR TENSORFLOW."
+echo ""
+
+#######################################################################
+
 npm install

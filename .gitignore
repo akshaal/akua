@@ -2,6 +2,7 @@ src/jsclient/node_modules/
 src/jsclient/package-lock.json
 src/jsclient/.next
 src/jsclient/dist
+src/jsclient/server/service_impl/tf.ts
 logs
 package-lock.json
 .#*

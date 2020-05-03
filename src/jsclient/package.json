@@ -13,7 +13,7 @@
   "keywords": [],
   "author": "",
   "dependencies": {
-    "@tensorflow/tfjs": "1.7.3",
+    "@tensorflow/tfjs": "1.7.4",
     "bin-protocol": "^3.1.1",
     "debug": "^4.1.1",
     "express": "^4.17.1",
