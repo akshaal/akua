@@ -9,12 +9,12 @@ cd src/jsclient
 tf_backend="TF-JS"
 tf_module=""
 
-if cat /proc/cpuinfo | grep AVX 2>/dev/null >/dev/null; then
+if cat /proc/cpuinfo | grep avx 2>/dev/null >/dev/null; then
     tf_backend="TF-NODE"
 
-    if lspci | grep VGA | grep NVIDIA 2>/dev/null >/dev/null; then
-        tf_backend="TF-GPU"
-    fi
+    #if lspci | grep VGA | grep NVIDIA 2>/dev/null >/dev/null; then
+    #    tf_backend="TF-GPU"
+    #fi
 fi
 
 if test "$tf_backend" = "TF-NODE"; then
