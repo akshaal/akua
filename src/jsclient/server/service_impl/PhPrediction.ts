@@ -48,13 +48,17 @@ export enum Co2ClosingStateOrigin {
 export interface Co2ClosingState {
     origin: Co2ClosingStateOrigin,
 
-    // State at the moment of close operation
+    // State at the moment of close operation - - - - - - - -
+
+    // Time (unix, seconds).
     closeTime: number;
+
+    // Ph values
     ph600AtClose: number;
     ph600OffsetsBeforeClose: number[];
     ph60OffsetsBeforeClose: number[];
 
-    // Close-action output (result of close operation)
+    // Close-action output (result of close operation) - - - - - - - 
     minPh600OffsetAfterClose: number;
 };
 

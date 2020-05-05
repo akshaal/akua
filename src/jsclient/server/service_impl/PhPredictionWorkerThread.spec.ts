@@ -1,6 +1,5 @@
 import "reflect-metadata";
-//import expect from "expect";
-//import { testModel, retrainModelFromDataset, prepareData, loadModelFromFile } from "./PhPredictionWorkerThread";
+import { testModel, retrainModelFromDataset, prepareData, loadModelFromFile } from "./PhPredictionWorkerThread";
 import { Worker } from "worker_threads";
 import { MinPhPredictionRequest, createCo2ClosingState, Co2ClosingStateOrigin, MessageFromPhPredictionWorker } from "./PhPrediction";
 //import expectExport from "expect";
@@ -8,13 +7,12 @@ import { MinPhPredictionRequest, createCo2ClosingState, Co2ClosingStateOrigin, M
 // TODO: Need a way to provide parentPort
 
 describe('PhPredictionWorkerThread', () => {
-    /*
     it('do manually defined stuff (not a real test)', async () => {
-        //loadModelFromFile();
+        loadModelFromFile();
         //prepareData();
         //await retrainModelFromDataset();
-        //await testModel();
-    }).timeout(10000);*/
+        await testModel();
+    }).timeout(10000000000);
 
     it('can start as worker and predict min-ph', (done) => {
         const worker = new Worker("./dist/server/service_impl/PhPredictionWorkerThread.js");

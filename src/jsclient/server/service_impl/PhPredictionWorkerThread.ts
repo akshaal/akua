@@ -16,7 +16,8 @@ import { newTimestamp } from 'server/misc/new-timestamp';
 import config, { asUrl } from 'server/config';
 
 // TODO: Move to config.
-const minPhPredictionModelLocation = asUrl(config.bindOptions) + "/ui/model.dump";
+const minPhPredictionModelLoadLocation = asUrl(config.bindOptions) + "/ui/model.dump";
+const minPhPredictionModelSaveLocation = 'file://server/static-ui/model.dump';
 
 // Log startup event if we are in a worker thread
 if (parentPort) {
@@ -141,11 +142,16 @@ function createCo2ClosingStateFeaturesAndLabels(state: Co2ClosingState): null | 
     const scaledPh600OffsetBeforeClose = state.ph600OffsetsBeforeClose.map(scalePhOffset);
     const scaledPh60OffsetBeforeClose = state.ph60OffsetsBeforeClose.map(scalePhOffset);
 
+    // This might affect forecast
+    const closedTimeDate = new Date(state.closeTime * 1000);
+    const scaledMinutesSinceDayStart = (closedTimeDate.getUTCHours() * 60 + closedTimeDate.getUTCMinutes()) / (60.0 * 24.0);
+
     // XS: "Features" or "Input for neural network"
     const xs = [
         ...scaledPh600OffsetBeforeClose,
         ...scaledPh60OffsetBeforeClose,
-        scalePh(state.ph600AtClose)
+        scalePh(state.ph600AtClose),
+        scaledMinutesSinceDayStart
     ];
 
     // YS: "Labels" or "Output for neural network"
@@ -380,14 +386,22 @@ export async function retrainModelFromDataset() {
 
     // TODO: Cleanup.... and describe and so on
 
+    const trainSetPercentage = 0.85;
+    const batchSize = 8;
+
     const datasetFull = prepareCo2ClosingStateTfDataset();
-    const trainDataset = datasetFull.take(120).batch(4).prefetch(1);
-    const validDataset = datasetFull.skip(120).batch(4).prefetch(1);
+
+    const trainSize = Math.round(datasetFull.size * trainSetPercentage / batchSize) * batchSize;
+
+    const trainDataset = datasetFull.take(trainSize).batch(batchSize).prefetch(1);
+    const validDataset = datasetFull.skip(trainSize).batch(batchSize).prefetch(1);
+
+    logger.info(`PhPredict: Training set size ${trainSize}. Validation dataset size ${datasetFull.size - trainSize}`);
 
     const model = tf.sequential({
         layers: [
-            tf.layers.dense({ units: 10, inputDim: 38, activation: "tanh" }),
-            tf.layers.dense({ units: 10, activation: "tanh" }),
+            tf.layers.dense({ units: 20, inputDim: 39, activation: "tanh" }),
+            tf.layers.dense({ units: 20, activation: "tanh" }),
             tf.layers.dense({ units: 1 })
         ]
     });
@@ -395,7 +409,7 @@ export async function retrainModelFromDataset() {
     model.compile({ loss: "meanAbsoluteError", optimizer: tf.train.momentum(8e-6, 0.9) });
     await model.fitDataset(trainDataset, { epochs: 10000, verbose: 1, validationData: validDataset });
 
-    await model.save(minPhPredictionModelLocation);
+    await model.save(minPhPredictionModelSaveLocation);
 
     minPhPredictionModelPromise = Promise.resolve(model);
 }
@@ -403,8 +417,8 @@ export async function retrainModelFromDataset() {
 // ================================================================
 
 export function loadModelFromFile() {
-    minPhPredictionModelPromise = tf.loadLayersModel(minPhPredictionModelLocation + "/model.json");
-    logger.info("PhPredict: Loading min-PH prediction model from " + minPhPredictionModelLocation);
+    minPhPredictionModelPromise = tf.loadLayersModel(minPhPredictionModelLoadLocation + "/model.json");
+    logger.info("PhPredict: Loading min-PH prediction model from " + minPhPredictionModelLoadLocation);
 }
 
 if (parentPort) {
