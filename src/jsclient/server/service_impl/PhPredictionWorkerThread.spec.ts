@@ -8,11 +8,11 @@ import { MinPhPredictionRequest, createCo2ClosingState, Co2ClosingStateOrigin, M
 
 describe('PhPredictionWorkerThread', () => {
     it('do manually defined stuff (not a real test)', async () => {
-        loadModelFromFile();
+        //loadModelFromFile();
         //prepareData();
-        //await retrainModelFromDataset();
+        await retrainModelFromDataset();
         await testModel();
-    }).timeout(10000000000);
+    }).timeout(1000000000000000);
 
     it('can start as worker and predict min-ph', (done) => {
         const worker = new Worker("./dist/server/service_impl/PhPredictionWorkerThread.js");
