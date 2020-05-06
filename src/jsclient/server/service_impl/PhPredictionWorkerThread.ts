@@ -381,7 +381,7 @@ function prepareCo2ClosingStateTfDataset(): Co2ClosingStateTfDataset {
 
 // ---------------------------------------------------------------
 
-export async function retrainModelFromDataset() {
+export async function retrainModelFromDataset(params: { retrain: boolean }) {
     // Train
 
     // TODO: Cleanup.... and describe and so on
@@ -398,16 +398,31 @@ export async function retrainModelFromDataset() {
 
     logger.info(`PhPredict: Training set size ${trainSize}. Validation dataset size ${datasetFull.size - trainSize}`);
 
-    const model = tf.sequential({
-        layers: [
-            tf.layers.dense({ units: 20, inputDim: 39, activation: "tanh" }),
-            tf.layers.dense({ units: 20, activation: "tanh" }),
-            tf.layers.dense({ units: 1 })
-        ]
-    });
+    const optimizer = tf.train.momentum(8e-6, 0.9);
 
-    model.compile({ loss: "meanAbsoluteError", optimizer: tf.train.momentum(8e-6, 0.9) });
-    await model.fitDataset(trainDataset, { epochs: 10000, verbose: 1, validationData: validDataset });
+    var model;
+
+    if (params.retrain) {
+        logger.info("Doing retrain");
+
+        model = tf.sequential({
+            layers: [
+                tf.layers.dense({ units: 20, inputDim: 39, activation: "tanh" }),
+                tf.layers.dense({ units: 20, activation: "tanh" }),
+                tf.layers.dense({ units: 1 })
+            ]
+        });
+
+    } else {
+        logger.info("Training existing model");
+
+        loadModelFromFile();
+        model = await minPhPredictionModelPromise;
+    }
+
+    model.compile({ loss: "meanAbsoluteError", optimizer });
+
+    await model.fitDataset(trainDataset, { epochs: 100000, verbose: 1, validationData: validDataset });
 
     await model.save(minPhPredictionModelSaveLocation);
 
@@ -416,7 +431,7 @@ export async function retrainModelFromDataset() {
 
 // ================================================================
 
-export function loadModelFromFile() {
+export function loadModelFromFile(): void {
     minPhPredictionModelPromise = tf.loadLayersModel(minPhPredictionModelLoadLocation + "/model.json");
     logger.info("PhPredict: Loading min-PH prediction model from " + minPhPredictionModelLoadLocation);
 }
