@@ -3,7 +3,7 @@
 
 // Day interval. Affects day-light and night light modes.
 #define AK_DAY_START_HOUR 10
-#define AK_DAY_DURATION_HOURS 10
+#define AK_DAY_DURATION_HOURS 14
 #define AK_DAY_END_HOUR (AK_DAY_START_HOUR + AK_DAY_DURATION_HOURS)
 
 // CO2-Day interval. Interval when it's allowed to feed CO2 to aquarium
@@ -270,7 +270,7 @@ GLOBAL$() {
     STATIC_VAR$(u8 received_clock1);
     STATIC_VAR$(u8 received_clock2, initial = 255); // MSByte. 255 means nothing is received
 
-    // CO2 protection - - - 
+    // CO2 protection - - -
     STATIC_VAR$(u24 co2_deciseconds_until_can_turn_on,
                 initial = AK_CO2_OFF_MINUTES_BEFORE_UNLOCKED * 60L * 10L);
 
@@ -294,7 +294,7 @@ X_EVERY_HOUR$(reset_protection_stats) {
 }
 
 // Called from uart-command-receiver if force-light command is received from raspberry-pi
-// Note that if we force something, then it will be automatically reset by 
+// Note that if we force something, then it will be automatically reset by
 // X_FLAG_WITH_TIMEOUT after some interval. See above.
 FUNCTION$(void force_light(const LightForceMode mode)) {
     if (mode == NotForced) {
@@ -341,7 +341,7 @@ FUNCTION$(u8 is_day(const u24 deciseconds_since_midnight)) {
 }
 
 X_EVERY_DECISECOND$(controller_tick) {
-    // - - - - - - - - - - - - - - - -  CLOCK CORRECTION - - - - - - 
+    // - - - - - - - - - - - - - - - -  CLOCK CORRECTION - - - - - -
     u24 new_clock_deciseconds_since_midnight = clock_deciseconds_since_midnight + 1;
     if (new_clock_deciseconds_since_midnight >= AK_NUMBER_DECISECONDS_IN_DAY) {
         new_clock_deciseconds_since_midnight = 0;
@@ -379,7 +379,7 @@ X_EVERY_DECISECOND$(controller_tick) {
     // Finally set clock to new clock value, either corrected or normal one
     clock_deciseconds_since_midnight = new_clock_deciseconds_since_midnight;
 
-    // - - - - - - - - - - - - - - - -  CO2 - - - - - - 
+    // - - - - - - - - - - - - - - - -  CO2 - - - - - -
 
     // New CO2 state if by default OFF
     u8 new_co2_state = 0;
@@ -399,7 +399,7 @@ X_EVERY_DECISECOND$(controller_tick) {
         }
     }
 
-    // - - - - - - - - - - - - - - - -  STATE CHANGING - - - - - - 
+    // - - - - - - - - - - - - - - - -  STATE CHANGING - - - - - -
 
     // Light
     if (new_calculated_day_light_state) {
@@ -576,7 +576,7 @@ THREAD$(usart0_writer, state_type = u8) {
     STATIC_VAR$(u8 u8_to_format_and_send);
     STATIC_VAR$(u16 u16_to_format_and_send);
     STATIC_VAR$(u32 u32_to_format_and_send);
-    
+
     STATIC_VAR$(u24 __ph_adc_accum);
     STATIC_VAR$(u16 __ph_adc_accum_samples);
 
