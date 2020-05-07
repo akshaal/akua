@@ -409,7 +409,7 @@ export async function retrainModelFromDataset(params: { retrain: boolean }) {
             layers: [
                 tf.layers.dense({ units: 20, inputDim: 39, activation: "tanh" }),
                 tf.layers.dense({ units: 20, activation: "tanh" }),
-                tf.layers.dense({ units: 1 })
+                tf.layers.dense({ units: 1, activation: "sigmoid" })
             ]
         });
 
