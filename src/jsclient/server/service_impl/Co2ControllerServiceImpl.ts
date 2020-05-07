@@ -1,8 +1,8 @@
-import { injectable, postConstruct } from "inversify";
+import { injectable, postConstruct, optional, inject } from "inversify";
 import PhSensorService from "server/service/PhSensorService";
 import Co2ControllerService from "server/service/Co2ControllerService";
-import { combineLatest, timer } from "rxjs";
-import { map, distinctUntilChanged, startWith, throttleTime } from "rxjs/operators";
+import { combineLatest, timer, of, SchedulerLike } from "rxjs";
+import { map, distinctUntilChanged, startWith, throttleTime, skip, timeoutWith, repeat } from "rxjs/operators";
 import AvrService, { Co2ValveOpenState } from "server/service/AvrService";
 import { isPresent } from "../misc/isPresent";
 import config from "server/config";
@@ -10,8 +10,7 @@ import { Timestamp } from "server/misc/Timestamp";
 import { Subscriptions } from "server/misc/Subscriptions";
 import TimeService from "server/service/TimeService";
 import { getElapsedSecondsSince } from "server/misc/get-elapsed-seconds-since";
-
-// TODO: Use prediction
+import PhPredictionService from "server/service/PhPredictionService";
 
 // TODO: Gradually change closing point:
 // TODO:   From 8:00 to 10:00 it must be change over time from 7.2 to 6.9 using exponential formula
@@ -24,14 +23,18 @@ const SEND_REQUIREMENTS_TO_AVR_EVERY_MS = 60_000;
 const THROTTLE_TIME_MS = 5_000;
 
 // Don't allow it be open for too long to avoid overheating and stuff
-const CO2_MAX_OPEN_MINUTES = 15; // TODO: Change it to 1 hour!!!!!!!!!!!!!!!!!!!!!!
+const CO2_MAX_OPEN_MINUTES = 20; // TODO: Change it to 1 hour!!!!!!!!!!!!!!!!!!!!!!
+
+// Timeout for values form upstream observables
+const OBS_TIMEOUT_MS = 60_000;
 
 // Decide whether we must turn ph on or not
 function isCo2Required(
     state: {
         ph?: number | null,
         co2ValveOpen?: boolean | null,
-        co2ValveOpenSeconds: number
+        co2ValveOpenSeconds: number,
+        predictedMinPh?: number
     }
 ): boolean {
     if (!isPresent(state.ph) || !isPresent(state.co2ValveOpen)) {
@@ -43,6 +46,13 @@ function isCo2Required(
     }
 
     if (state.co2ValveOpen) {
+        if (state.predictedMinPh && state.predictedMinPh <= config.phController.phToTurnOff) {
+            // Turn of, because we predict that if we turn it off now, then
+            // we will go under the limit or to the min-level-limit anyway, so it is best
+            // to turn the valve off now and not wait until it will be worse
+            return false; // CO2 is no longer required
+        }
+
         return state.ph > config.phController.phToTurnOff;
     } else {
         return state.ph >= config.phController.phToTurnOn;
@@ -57,7 +67,9 @@ export default class Co2ControllerServiceImpl extends Co2ControllerService {
     constructor(
         private readonly _phSensorService: PhSensorService,
         private readonly _avrService: AvrService,
-        private readonly _timeService: TimeService
+        private readonly _timeService: TimeService,
+        private readonly _phPredictionService: PhPredictionService,
+        @optional() @inject("scheduler") private readonly _scheduler: SchedulerLike
     ) {
         super();
     }
@@ -81,24 +93,41 @@ export default class Co2ControllerServiceImpl extends Co2ControllerService {
         this._subs.add(
             combineLatest([
                 this._phSensorService.ph$.pipe(
+                    skip(1), // to avoid hot value
+                    timeoutWith(OBS_TIMEOUT_MS, of(undefined), this._scheduler), // protect against stale data
+                    repeat(), // resubscribe in case of timeout or error
                     map(ph => ph?.value600s),
                     distinctUntilChanged(),
                     startWith(undefined)
                 ),
                 this._avrService.avrState$.pipe(
-                    map(avrState => avrState.co2ValveOpen),
+                    skip(1), // to avoid hot value
+                    timeoutWith(OBS_TIMEOUT_MS, of(undefined), this._scheduler), // protect against stale data
+                    repeat(), // resubscribe in case of timeout or error
+                    map(avrState => avrState?.co2ValveOpen),
+                    distinctUntilChanged(),
+                    startWith(undefined)
+                ),
+                this._phPredictionService.minClosingPhPrediction$.pipe(
+                    skip(1), // to avoid hot value
+                    timeoutWith(OBS_TIMEOUT_MS, of(undefined), this._scheduler), // protect against stale data
+                    repeat(), // resubscribe in case of timeout or error
+                    map(prediction =>
+                        isPresent(prediction) && !prediction.valveIsAlreadyClosed ? prediction.predictedMinPh : undefined
+                    ),
                     distinctUntilChanged(),
                     startWith(undefined)
                 ),
                 timer(0, SEND_REQUIREMENTS_TO_AVR_EVERY_MS)
             ]).pipe(
-                map(([ph, co2ValveOpen]) => {
+                map(([ph, co2ValveOpen, predictedMinPh]) => {
                     const co2ValveOpenSeconds = this._co2ValveOpenT ? getElapsedSecondsSince(this._co2ValveOpenT) : 0;
 
                     return isCo2Required({
                         ph,
                         co2ValveOpen,
-                        co2ValveOpenSeconds
+                        co2ValveOpenSeconds,
+                        predictedMinPh
                     });
                 }),
                 throttleTime(THROTTLE_TIME_MS)
