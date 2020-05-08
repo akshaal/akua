@@ -8,9 +8,9 @@ import { MinPhPredictionRequest, createCo2ClosingState, Co2ClosingStateOrigin, M
 
 describe('PhPredictionWorkerThread', () => {
     it('do manually defined stuff (not a real test)', async () => {
-        loadModelFromFile();
+        //loadModelFromFile();
         //prepareData();
-        await retrainModelFromDataset({ retrain: false });
+        await retrainModelFromDataset({ retrain: true });
         await testModel();
     }).timeout(1000000000000000);
 

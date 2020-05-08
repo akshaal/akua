@@ -386,7 +386,7 @@ export async function retrainModelFromDataset(params: { retrain: boolean }) {
 
     // TODO: Cleanup.... and describe and so on
 
-    const trainSetPercentage = 0.85;
+    const trainSetPercentage = 0.95;
     const batchSize = 8;
 
     const datasetFull = prepareCo2ClosingStateTfDataset();
@@ -398,7 +398,7 @@ export async function retrainModelFromDataset(params: { retrain: boolean }) {
 
     logger.info(`PhPredict: Training set size ${trainSize}. Validation dataset size ${datasetFull.size - trainSize}`);
 
-    const optimizer = tf.train.momentum(8e-6, 0.9);
+    const optimizer = tf.train.adam();
 
     var model;
 
@@ -407,8 +407,9 @@ export async function retrainModelFromDataset(params: { retrain: boolean }) {
 
         model = tf.sequential({
             layers: [
-                tf.layers.dense({ units: 20, inputDim: 39, activation: "tanh" }),
+                tf.layers.dense({ units: 30, inputDim: 39, activation: "tanh" }),
                 tf.layers.dense({ units: 20, activation: "tanh" }),
+                tf.layers.dense({ units: 10, activation: "tanh" }),
                 tf.layers.dense({ units: 1, activation: "sigmoid" })
             ]
         });
@@ -420,9 +421,9 @@ export async function retrainModelFromDataset(params: { retrain: boolean }) {
         model = await minPhPredictionModelPromise;
     }
 
-    model.compile({ loss: "meanAbsoluteError", optimizer });
+    model.compile({ loss: "meanSquaredError", optimizer });
 
-    await model.fitDataset(trainDataset, { epochs: 50000, verbose: 1, validationData: validDataset });
+    await model.fitDataset(trainDataset, { epochs: 10000, verbose: 1, validationData: validDataset });
 
     await model.save(minPhPredictionModelSaveLocation);
 
