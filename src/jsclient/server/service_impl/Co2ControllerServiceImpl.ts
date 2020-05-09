@@ -25,6 +25,10 @@ const THROTTLE_TIME_MS = 5_000;
 // Don't allow it be open for too long to avoid overheating and stuff
 const CO2_MAX_OPEN_MINUTES = 20; // TODO: Change it to 1 hour!!!!!!!!!!!!!!!!!!!!!!
 
+// Don't believe in predictions based upon first 30 seconds! It might be plain wrong.
+// (we also have resolutions of 15 seconds based upon data from grafana)
+const CO2_MIN_OPEN_SECONDS_TO_TRUST_PREDICTIONS = 30;
+
 // Timeout for values form upstream observables
 const OBS_TIMEOUT_MS = 60_000;
 
@@ -47,10 +51,13 @@ function isCo2Required(
 
     if (state.co2ValveOpen) {
         if (state.predictedMinPh && state.predictedMinPh <= config.phController.phToTurnOff) {
-            // Turn of, because we predict that if we turn it off now, then
-            // we will go under the limit or to the min-level-limit anyway, so it is best
-            // to turn the valve off now and not wait until it will be worse
-            return false; // CO2 is no longer required
+            // Avoid trusting pessimistic predictions based upon insufficient data
+            if (state.co2ValveOpenSeconds > CO2_MIN_OPEN_SECONDS_TO_TRUST_PREDICTIONS) {
+                // Turn of, because we predict that if we turn it off now, then
+                // we will go under the limit or to the min-level-limit anyway, so it is best
+                // to turn the valve off now and not wait until it will be worse
+                return false; // CO2 is no longer required
+            }
         }
 
         return state.ph > config.phController.phToTurnOff;

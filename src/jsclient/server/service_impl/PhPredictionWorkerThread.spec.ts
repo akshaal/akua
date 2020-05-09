@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { testModel, retrainModelFromDataset, prepareData, loadModelFromFile } from "./PhPredictionWorkerThread";
+import { testModel, retrainModelFromDataset, prepareData } from "./PhPredictionWorkerThread";
 import { Worker } from "worker_threads";
 import { MinPhPredictionRequest, createCo2ClosingState, Co2ClosingStateOrigin, MessageFromPhPredictionWorker } from "./PhPrediction";
 //import expectExport from "expect";
@@ -8,9 +8,8 @@ import { MinPhPredictionRequest, createCo2ClosingState, Co2ClosingStateOrigin, M
 
 describe('PhPredictionWorkerThread', () => {
     it('do manually defined stuff (not a real test)', async () => {
-        //loadModelFromFile();
         //prepareData();
-        await retrainModelFromDataset({ retrain: true });
+        await retrainModelFromDataset({ retrain: false });
         await testModel();
     }).timeout(1000000000000000);
 
@@ -21,6 +20,7 @@ describe('PhPredictionWorkerThread', () => {
             type: 'min-ph-prediction-request',
             co2ClosingState: createCo2ClosingState({
                 tClose: now,
+                openedSecondsAgo: 15,
                 minPh600: 7, // doesn't matter
                 origin: Co2ClosingStateOrigin.ThisInstance,
                 getPh600: (t: number) => 7.2 - (now - t) / 600,

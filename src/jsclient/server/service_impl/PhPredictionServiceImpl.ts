@@ -9,6 +9,8 @@ import { getElapsedSecondsSince } from "server/misc/get-elapsed-seconds-since";
 import PhSensorService from "server/service/PhSensorService";
 import AvrService from "server/service/AvrService";
 import TimeService from "server/service/TimeService";
+import { Timestamp } from "server/misc/Timestamp";
+import { isPresent } from "server/misc/isPresent";
 
 @injectable()
 export default class PhPredictionServiceImpl extends PhPredictionService {
@@ -21,6 +23,7 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
 
     // Last known state of CO2-valve switch
     private _co2ValveOpen: boolean = false;
+    private _co2ValveOpenT?: Timestamp;
 
     private readonly _subs = new Subscriptions();
     private _worker?: Worker;
@@ -73,13 +76,21 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
         // We need CO2 valve switch state
         this._subs.add(
             this._avrService.avrState$.subscribe(avrState => {
+                if (this._co2ValveOpen && !avrState.co2ValveOpen) {
+                    // Going from open to closed
+                    this._co2ValveOpenT = undefined;
+                } else if (!this._co2ValveOpen && avrState.co2ValveOpen) {
+                    // Going from closed to open. Remember this moment
+                    this._co2ValveOpenT = this._timeService.nowTimestamp();
+                }
+
                 this._co2ValveOpen = avrState.co2ValveOpen;
             })
         );
 
-        // Perform prediction every 2 seconds.
+        // Perform prediction every second.
         this._subs.add(
-            timer(0, 2000, this._scheduler).subscribe(() => {
+            timer(0, 1000, this._scheduler).subscribe(() => {
                 this._requestPrediction();
             })
         );
@@ -117,7 +128,7 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
     // Called by timer to request prediction from the working thread
     private _requestPrediction(): void {
         // Just emit previous value if CO2 Valve is closed
-        if (!this._co2ValveOpen) {
+        if (!this._co2ValveOpen || !isPresent(this._co2ValveOpenT)) {
             if (this._lastMinPhPrediction) {
                 this.minClosingPhPrediction$.next({
                     predictedMinPh: this._lastMinPhPrediction,
@@ -133,6 +144,7 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
         const co2ClosingState =
             createCo2ClosingState({
                 tClose: this._timeService.nowRoundedSeconds(),
+                openedSecondsAgo: getElapsedSecondsSince(this._co2ValveOpenT),
                 minPh600: 7, // doesn't matter
                 origin: Co2ClosingStateOrigin.ThisInstance,
                 getPh600: (t: number) => this._ph600sMap[t],

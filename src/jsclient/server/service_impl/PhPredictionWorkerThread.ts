@@ -14,6 +14,7 @@ import {
 import { parentPort } from 'worker_threads';
 import { newTimestamp } from 'server/misc/new-timestamp';
 import config, { asUrl } from 'server/config';
+import { isPresent } from 'server/misc/isPresent';
 
 // TODO: Move to config.
 const minPhPredictionModelLoadLocation = asUrl(config.bindOptions) + "/ui/model.dump";
@@ -112,12 +113,12 @@ function createCo2ClosingStateFeaturesAndLabels(state: Co2ClosingState): null | 
         return null;
     }
 
-    if (state.ph600OffsetsBeforeClose.length != 18) {
+    if (state.ph600OffsetsBeforeClose.length != 21) {
         logger.error("PhPredict: Strange ph600-offset-before-close", { state });
         return null;
     }
 
-    if (state.ph60OffsetsBeforeClose.length != 19) {
+    if (state.ph60OffsetsBeforeClose.length != 22) {
         logger.error("PhPredict: Strange ph60-offset-before-close", { state });
         return null;
     }
@@ -146,12 +147,18 @@ function createCo2ClosingStateFeaturesAndLabels(state: Co2ClosingState): null | 
     const closedTimeDate = new Date(state.closeTime * 1000);
     const scaledMinutesSinceDayStart = (closedTimeDate.getUTCHours() * 60 + closedTimeDate.getUTCMinutes()) / (60.0 * 24.0);
 
+    var scaledOpenedSecondsAgo = state.openedSecondsAgo / (60 * 60 * 2);
+    if (scaledOpenedSecondsAgo > 1.0) {
+        scaledOpenedSecondsAgo = 1; // long time ago
+    }
+
     // XS: "Features" or "Input for neural network"
     const xs = [
         ...scaledPh600OffsetBeforeClose,
         ...scaledPh60OffsetBeforeClose,
         scalePh(state.ph600AtClose),
-        scaledMinutesSinceDayStart
+        scaledMinutesSinceDayStart,
+        scaledOpenedSecondsAgo
     ];
 
     // YS: "Labels" or "Output for neural network"
@@ -212,6 +219,8 @@ export function prepareData() {
 
     var prevValveOpen = openMap[keys[0]];
     var valveCloseK: number = 0;
+    var valveOpenedSecondsBeforeClose: number = 0;
+    var valveOpenK: number = 0;
     var minPh600: number = 0;
 
     for (const k of keys) {
@@ -229,20 +238,42 @@ export function prepareData() {
             continue;
         }
 
+        prevValveOpen = valveOpen;
+
         if (valveOpen === 0) {
             // Valve is just closed
             valveCloseK = k;
             minPh600 = ph600Map[k];
+            valveOpenedSecondsBeforeClose = k - valveOpenK;
+            valveOpenK = 0;
         } else {
+            valveOpenK = k;
+
             // Valve is just opened
             if (valveCloseK) {
                 if (k - valveCloseK < 600) {
-                    console.log("Too short interval");
+                    console.log("Too short closed interval", k - valveCloseK);
+                    continue;
+                }
+
+                if (k - valveCloseK > (6 * 60 * 60)) {
+                    console.log("Too long closed interval", (k - valveCloseK) / 60 / 60, "hours @ ", new Date(k * 1000).getHours(), "o'clock");
+                    continue;
+                }
+
+                if (valveOpenedSecondsBeforeClose < 0) {
+                    console.log("Negative open interval", valveOpenedSecondsBeforeClose);
+                    continue;
+                }
+
+                if (valveOpenedSecondsBeforeClose > (60 * 60 * 12)) {
+                    console.log("Unreal open interval", valveOpenedSecondsBeforeClose);
                     continue;
                 }
 
                 const state = createCo2ClosingState({
                     tClose: valveCloseK,
+                    openedSecondsAgo: valveOpenedSecondsBeforeClose,
                     minPh600: minPh600,
                     origin: Co2ClosingStateOrigin.ThisInstance,
                     getPh600: (t: number) => ph600Map[t],
@@ -258,8 +289,6 @@ export function prepareData() {
 
             valveCloseK = 0;
         }
-
-        prevValveOpen = valveOpen;
     }
 
     writeFileSync("server/static-ui/training-set.json", JSON.stringify(result));
@@ -317,6 +346,8 @@ export async function testModel() {
     // ---------------------------------------------------------------------------
     // Find points of valve turn-off
 
+    var openK: number | undefined;
+
     for (const k of keys) {
         //if (result.length > 100) {
         //    break;
@@ -325,11 +356,17 @@ export async function testModel() {
         const valveOpen = openMap[k];
 
         if (valveOpen === 0) {
+            openK = undefined;
             continue;
+        } else {
+            if (!isPresent(openK)) {
+                openK = k;
+            }
         }
 
         const state = createCo2ClosingState({
             tClose: k,
+            openedSecondsAgo: k - openK,
             minPh600: ph600Map[k],
             origin: Co2ClosingStateOrigin.ThisInstance,
             getPh600: (t: number) => ph600Map[t],
@@ -387,11 +424,12 @@ export async function retrainModelFromDataset(params: { retrain: boolean }) {
     // TODO: Cleanup.... and describe and so on
 
     const trainSetPercentage = 0.95;
-    const batchSize = 8;
 
     const datasetFull = prepareCo2ClosingStateTfDataset();
 
-    const trainSize = Math.round(datasetFull.size * trainSetPercentage / batchSize) * batchSize;
+    const trainSize = Math.floor(datasetFull.size * trainSetPercentage);
+
+    const batchSize = trainSize; // TODO: Temp
 
     const trainDataset = datasetFull.take(trainSize).batch(batchSize).prefetch(1);
     const validDataset = datasetFull.skip(trainSize).batch(batchSize).prefetch(1);
@@ -407,9 +445,10 @@ export async function retrainModelFromDataset(params: { retrain: boolean }) {
 
         model = tf.sequential({
             layers: [
-                tf.layers.dense({ units: 30, inputDim: 39, activation: "tanh" }),
+                tf.layers.dense({ units: 40, inputDim: 46, activation: "tanh" }),
+                tf.layers.dense({ units: 30, activation: "tanh" }),
                 tf.layers.dense({ units: 20, activation: "tanh" }),
-                tf.layers.dense({ units: 10, activation: "tanh" }),
+                tf.layers.dense({ units: 5, activation: "tanh" }),
                 tf.layers.dense({ units: 1, activation: "sigmoid" })
             ]
         });
@@ -423,7 +462,7 @@ export async function retrainModelFromDataset(params: { retrain: boolean }) {
 
     model.compile({ loss: "meanSquaredError", optimizer });
 
-    await model.fitDataset(trainDataset, { epochs: 10000, verbose: 1, validationData: validDataset });
+    await model.fitDataset(trainDataset, { epochs: 200000, verbose: 1, validationData: validDataset });
 
     await model.save(minPhPredictionModelSaveLocation);
 

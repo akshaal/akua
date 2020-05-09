@@ -50,8 +50,15 @@ export interface Co2ClosingState {
 
     // State at the moment of close operation - - - - - - - -
 
-    // Time (unix, seconds).
+    /**
+     * Time (unix, seconds).
+     */
     closeTime: number;
+
+    /**
+     * How many seconds value has been open.
+     */
+    openedSecondsAgo: number;
 
     // Ph values
     ph600AtClose: number;
@@ -59,6 +66,10 @@ export interface Co2ClosingState {
     ph60OffsetsBeforeClose: number[];
 
     // Close-action output (result of close operation) - - - - - - - 
+
+    /**
+     * Minimum PH reached after the CO2-valve was closed.
+     */
     minPh600OffsetAfterClose: number;
 };
 
@@ -67,22 +78,23 @@ export interface Co2ClosingState {
  */
 export function createCo2ClosingState(params: {
     tClose: number,
+    openedSecondsAgo: number,
     minPh600: number,
     origin: Co2ClosingStateOrigin,
     getPh600(t: number): number,
     getPh60(t: number): number,
 }): Co2ClosingState | null {
-    const { tClose, getPh600, getPh60, origin, minPh600 } = params;
+    const { tClose, openedSecondsAgo, getPh600, getPh60, origin, minPh600 } = params;
 
     const ph600AtTClose = getPh600(tClose);
 
     const histPh600 = [];
     const histPh60 = [];
 
-    // Use Ph60 values: 0 seconds ago, 15, 30 and 45 seconds ago
-    // Use Ph600 values: 15, 30 and 45 seconds ago
+    // Use Ph60 values: 0, 15, 30, 45,  60, 75, 90, 105 seconds ago
+    // Use Ph600 values: 15, 30, 45,  60, 75, 90, 105 seconds ago
     // (we don't use ph600 0 seconds ago because offset will be zero from the ph600AtTClose)
-    for (var s = 0; s < 4; s += 1) {
+    for (var s = 0; s < 8; s += 1) {
         const ph60AtM = getPh60(tClose - 15 * s);
         histPh60.unshift(ph60AtM - ph600AtTClose);
 
@@ -100,8 +112,8 @@ export function createCo2ClosingState(params: {
         }
     }
 
-    // Use Ph60/Ph600 values: every minutes for 15 minutes back (15 values)
-    for (var m = 1; m < 16; m += 1) {
+    // Use Ph60/Ph600 values: every minutes for 15 minutes back (14 values, skipping first 1 minute)
+    for (var m = 2; m < 16; m += 1) {
         const ph600AtM = getPh600(tClose - 60 * m);
         const ph60AtM = getPh60(tClose - 60 * m);
 
@@ -119,6 +131,7 @@ export function createCo2ClosingState(params: {
 
     return {
         origin,
+        openedSecondsAgo,
         closeTime: tClose,
         ph600AtClose: ph600AtTClose,
         ph600OffsetsBeforeClose: histPh600,
