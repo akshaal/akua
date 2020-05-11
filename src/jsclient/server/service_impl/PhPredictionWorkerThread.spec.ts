@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { testModel, retrainModelFromDataset, prepareData } from "./PhPredictionWorkerThread";
+import { testModel, retrainModelFromDataset } from "./PhPredictionWorkerThread";
 import { Worker } from "worker_threads";
 import { MinPhPredictionRequest, createCo2ClosingState, Co2ClosingStateOrigin, MessageFromPhPredictionWorker } from "../service/PhPrediction";
 //import expectExport from "expect";
@@ -8,7 +8,7 @@ import { MinPhPredictionRequest, createCo2ClosingState, Co2ClosingStateOrigin, M
 
 describe('PhPredictionWorkerThread', () => {
     it('do manually defined stuff (not a real test)', async () => {
-        prepareData();
+        //prepareData();
         await retrainModelFromDataset({ retrain: false });
         await testModel();
     }).timeout(1000000000000000);

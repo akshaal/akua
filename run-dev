@@ -4,7 +4,7 @@ export AKUA_VERSION=$(git describe --tags --always)
 
 cd `dirname "$0"`
 
-mkdir -f temp/db
+mkdir -p temp/db
 
 cd src/jsclient
 
