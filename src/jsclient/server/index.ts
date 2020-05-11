@@ -1,7 +1,6 @@
 import "reflect-metadata";
 import logger from "./logger";
 import config, { asUrl } from "./config";
-import createNewServerServicesImpl from "./service_impl/ServerServicesImpl";
 import process from "process";
 import express, { NextFunction } from "express";
 import http from "http";
@@ -10,6 +9,8 @@ import { IncomingMessage } from "http";
 import { OutgoingMessage } from "http";
 import onFinished from "on-finished";
 import { LightForceMode } from "./service/AvrService";
+import { createNewContainer } from "./service_impl/ServerServicesImpl";
+import ServerServices from "./service/ServerServices";
 
 logger.info("============================================================================");
 logger.info("============================================================================");
@@ -26,7 +27,7 @@ const expressServer = express();
 expressServer.set('trust proxy', true);
 
 // Create an instance of server services
-const serverServices = createNewServerServicesImpl()
+const serverServices = createNewContainer('express-server').get(ServerServices);
 
 // Our custom middleware to measure requests in express.
 function measure(target: string) {

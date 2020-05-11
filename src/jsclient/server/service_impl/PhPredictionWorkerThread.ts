@@ -9,7 +9,7 @@ import {
     MessageToPhPredictionWorker,
     MinPhPredictionRequest,
     MinPhPredictionResponse
-} from './PhPrediction';
+} from '../service/PhPrediction';
 
 import { parentPort } from 'worker_threads';
 import { newTimestamp } from 'server/misc/new-timestamp';

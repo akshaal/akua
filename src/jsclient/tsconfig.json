@@ -25,7 +25,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "module": "commonjs",
-    "outDir": "dist/server",
+    "outDir": "dist",
     "target": "es2017",
     "isolatedModules": false,
     "noEmit": false,
@@ -40,6 +40,8 @@
   ],
   "include": [
     "server/**/*.ts",
-    "server/**/*.js"
+    "server/**/*.js",
+    "cli-utils/**/*.ts",
+    "cli-utils/**/*.js"
   ]
 }

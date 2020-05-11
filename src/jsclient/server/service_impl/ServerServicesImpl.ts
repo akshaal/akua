@@ -1,7 +1,5 @@
 import { Container } from "inversify";
-import { InversifyTracer, ReturnInfo, CallInfo } from "inversify-tracer";
 
-import logger from "../logger";
 import MetricsServiceImpl from "./MetricsServiceImpl";
 import MetricsService from "server/service/MetricsService";
 import ServerServices from "server/service/ServerServices";
@@ -21,37 +19,32 @@ import PhPredictionServiceImpl from "./PhPredictionServiceImpl";
 import PhPredictionService from "server/service/PhPredictionService";
 import TimeServiceImpl from "./TimeServiceImpl";
 import TimeService from "server/service/TimeService";
+import DatabaseService from "server/service/DatabaseService";
+import DatabaseServiceImpl from "./DatabaseServiceImpl";
+import logger from "server/logger";
 
-function createNewContainer(): Container {
+type ContainerMode = 'cli-utils' | 'express-server';
+
+export function createNewContainer(mode: ContainerMode): Container {
     const container = new Container();
-    container.bind(MetricsService).to(MetricsServiceImpl).inSingletonScope();
-    container.bind(DisplayService).to(DisplayServiceImpl).inSingletonScope();
-    container.bind(DisplayManagerService).to(DisplayManagerServiceImpl).inSingletonScope();
-    container.bind(AvrService).to(AvrServiceImpl).inSingletonScope();
-    container.bind(TemperatureSensorService).to(TemperatureSensorServiceImpl).inSingletonScope();
-    container.bind(PhSensorService).to(PhSensorServiceImpl).inSingletonScope();
-    container.bind(PhPredictionService).to(PhPredictionServiceImpl).inSingletonScope();
-    container.bind(Co2ControllerService).to(Co2ControllerServiceImpl).inSingletonScope();
+
     container.bind(TimeService).to(TimeServiceImpl).inSingletonScope();
-    container.bind(ServerServices).toSelf().inSingletonScope();
+    container.bind(DatabaseService).to(DatabaseServiceImpl).inSingletonScope();
 
-    if (process.env.NODE_ENV === "development") {
-        const tracer = new InversifyTracer();
+    logger.info("Injection container created in '" + mode + "' mode.");
 
-        tracer.on('call', (callInfo: CallInfo) => {
-            logger.debug(`${callInfo.className} ${callInfo.methodName} called with: `, callInfo.parameters);
-        });
-
-        tracer.on('return', (returnInfo: ReturnInfo) => {
-            logger.debug(`${returnInfo.className} ${returnInfo.methodName} returned in ${returnInfo.executionTime}ms:`, returnInfo.result);
-        });
-
-        tracer.apply(container);
+    if (mode == 'express-server') {
+        container.bind(MetricsService).to(MetricsServiceImpl).inSingletonScope();
+        container.bind(DisplayService).to(DisplayServiceImpl).inSingletonScope();
+        container.bind(DisplayManagerService).to(DisplayManagerServiceImpl).inSingletonScope();
+        container.bind(AvrService).to(AvrServiceImpl).inSingletonScope();
+        container.bind(TemperatureSensorService).to(TemperatureSensorServiceImpl).inSingletonScope();
+        container.bind(PhSensorService).to(PhSensorServiceImpl).inSingletonScope();
+        container.bind(PhPredictionService).to(PhPredictionServiceImpl).inSingletonScope();
+        container.bind(Co2ControllerService).to(Co2ControllerServiceImpl).inSingletonScope();
+        container.bind(ServerServices).toSelf().inSingletonScope();
     }
 
     return container;
 }
 
-export default function createNewInstance(): ServerServices {
-    return createNewContainer().get(ServerServices);
-}

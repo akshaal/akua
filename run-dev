@@ -3,6 +3,9 @@
 export AKUA_VERSION=$(git describe --tags --always)
 
 cd `dirname "$0"`
+
+mkdir -f temp/db
+
 cd src/jsclient
 
 echo "Use environment variable AKUA_PORT to override AVR USB port in dev environment."

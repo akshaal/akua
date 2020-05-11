@@ -1,7 +1,7 @@
 import { injectable, postConstruct, optional, inject } from "inversify";
 import { Worker } from "worker_threads";
 import { Subscriptions } from "server/misc/Subscriptions";
-import { MessageFromPhPredictionWorker, MinPhPredictionRequest, createCo2ClosingState, Co2ClosingStateOrigin } from "./PhPrediction";
+import { MessageFromPhPredictionWorker, MinPhPredictionRequest, createCo2ClosingState, Co2ClosingStateOrigin } from "../service/PhPrediction";
 import logger from "server/logger";
 import PhPredictionService, { MinClosingPhPrediction } from "server/service/PhPredictionService";
 import { Subject, SchedulerLike, timer } from "rxjs";

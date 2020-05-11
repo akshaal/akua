@@ -39,6 +39,11 @@ export interface PhControllerConfig {
     readonly phToTurnOn: number;
 }
 
+export interface DatabaseConfig {
+    readonly baseDirectory: string;
+    readonly phClosingStateDbFileName: string;
+}
+
 export interface Config {
     readonly version: string;
     readonly isProd: boolean;
@@ -52,6 +57,7 @@ export interface Config {
     readonly phDisplay: ValueDisplayConfig;
     readonly phController: PhControllerConfig;
     readonly co2Display: ValueDisplayConfig;
+    readonly database: DatabaseConfig;
 }
 
 // ================================================================================================
@@ -137,6 +143,11 @@ const phController: PhControllerConfig = {
     phToTurnOn: 6.9
 };
 
+const database: DatabaseConfig = {
+    baseDirectory: isDev ? "../../temp/db" : "/var/akua/db",
+    phClosingStateDbFileName: "ph-closing-state.db"
+};
+
 export const config: Config = {
     isDev,
     version,
@@ -149,7 +160,8 @@ export const config: Config = {
     aquaTemperatureDisplay,
     phDisplay,
     co2Display,
-    phController
+    phController,
+    database
 };
 
 // ================================================================================================

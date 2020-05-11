@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { testModel, retrainModelFromDataset, prepareData } from "./PhPredictionWorkerThread";
 import { Worker } from "worker_threads";
-import { MinPhPredictionRequest, createCo2ClosingState, Co2ClosingStateOrigin, MessageFromPhPredictionWorker } from "./PhPrediction";
+import { MinPhPredictionRequest, createCo2ClosingState, Co2ClosingStateOrigin, MessageFromPhPredictionWorker } from "../service/PhPrediction";
 //import expectExport from "expect";
 
 // TODO: Need a way to provide parentPort

@@ -6,3 +6,4 @@ src/jsclient/server/service_impl/tf.ts
 logs
 package-lock.json
 .#*
+temp

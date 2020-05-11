@@ -1,0 +1,10 @@
+#!/bin/sh
+
+cd `dirname "$0"`
+
+mkdir -f temp/db
+
+cd src/jsclient
+
+npm run build
+npm run trainco2
