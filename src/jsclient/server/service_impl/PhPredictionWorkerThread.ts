@@ -462,7 +462,7 @@ export async function retrainModelFromDataset(params: { retrain: boolean }) {
 
     model.compile({ loss: "meanSquaredError", optimizer });
 
-    await model.fitDataset(trainDataset, { epochs: 600000, verbose: 1, validationData: validDataset });
+    await model.fitDataset(trainDataset, { epochs: 1200000, verbose: 1, validationData: validDataset });
 
     await model.save(minPhPredictionModelSaveLocation);
 
