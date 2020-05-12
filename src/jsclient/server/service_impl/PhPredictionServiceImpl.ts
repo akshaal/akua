@@ -1,7 +1,7 @@
 import { injectable, postConstruct, optional, inject } from "inversify";
 import { Worker } from "worker_threads";
 import { Subscriptions } from "server/misc/Subscriptions";
-import { MessageFromPhPredictionWorker, MinPhPredictionRequest, createCo2ClosingState, Co2ClosingStateOrigin } from "../service/PhPrediction";
+import { MessageFromPhPredictionWorker, MinPhPredictionRequest, createCo2ClosingState, Co2ClosingStateOrigin, Co2ClosingState } from "../service/PhPrediction";
 import logger from "server/logger";
 import PhPredictionService, { MinClosingPhPrediction } from "server/service/PhPredictionService";
 import { Subject, SchedulerLike, timer } from "rxjs";
@@ -11,6 +11,9 @@ import AvrService from "server/service/AvrService";
 import TimeService from "server/service/TimeService";
 import { Timestamp } from "server/misc/Timestamp";
 import { isPresent } from "server/misc/isPresent";
+import DatabaseService from "server/service/DatabaseService";
+
+// TODO: More comments and tests!
 
 @injectable()
 export default class PhPredictionServiceImpl extends PhPredictionService {
@@ -29,10 +32,14 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
     private _worker?: Worker;
     private _lastMinPhPrediction?: number;
 
+    private _lastCo2ClosingStateForDatabaseSaving?: Co2ClosingState | null;
+    private _minPhAfterCloseForDatabaseSaving?: number;
+
     constructor(
         private readonly _timeService: TimeService,
         private readonly _phSensorService: PhSensorService,
         private readonly _avrService: AvrService,
+        private readonly _databaseService: DatabaseService,
         @optional() @inject("scheduler") private readonly _scheduler: SchedulerLike
     ) {
         super();
@@ -70,18 +77,54 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
                 if (ph60s) {
                     this._ph60sMap[t] = ph60s;
                 }
+
+                if (this._lastCo2ClosingStateForDatabaseSaving && ph600s) {
+                    if (!this._minPhAfterCloseForDatabaseSaving || this._minPhAfterCloseForDatabaseSaving > ph600s) {
+                        this._minPhAfterCloseForDatabaseSaving = ph600s
+                    }
+                }
             })
         );
 
         // We need CO2 valve switch state
+        // We also use this one to save predictions and stuff
+        // TODO: Simplify and move to some other place, tests....
         this._subs.add(
             this._avrService.avrState$.subscribe(avrState => {
                 if (this._co2ValveOpen && !avrState.co2ValveOpen) {
                     // Going from open to closed
                     this._co2ValveOpenT = undefined;
+
+                    // Prevent using stale stuff
+                    if (this._lastCo2ClosingStateForDatabaseSaving) {
+                        const createdSecondsAgo = this._timeService.nowRoundedSeconds() - this._lastCo2ClosingStateForDatabaseSaving.closeTime;
+                        if (createdSecondsAgo > 10) {
+                            logger.error("Stale lastCo2ClosingStateForDatabaseSaving!", { state: this._lastCo2ClosingStateForDatabaseSaving });
+                            this._lastCo2ClosingStateForDatabaseSaving = undefined;
+                        }
+                    }
                 } else if (!this._co2ValveOpen && avrState.co2ValveOpen) {
                     // Going from closed to open. Remember this moment
                     this._co2ValveOpenT = this._timeService.nowTimestamp();
+
+                    // Save co2 closing state and its outcome in the database
+                    if (this._lastCo2ClosingStateForDatabaseSaving && this._minPhAfterCloseForDatabaseSaving) {
+                        const createdSecondsAgo = this._timeService.nowRoundedSeconds() - this._lastCo2ClosingStateForDatabaseSaving.closeTime;
+
+                        // TODO: Move to config
+                        if (createdSecondsAgo < (7 * 60 * 60)) {
+                            const minPh600OffsetAfterClose =
+                                this._minPhAfterCloseForDatabaseSaving - this._lastCo2ClosingStateForDatabaseSaving.ph600AtClose;
+
+                            this._databaseService.insertCo2ClosingState({
+                                ...this._lastCo2ClosingStateForDatabaseSaving,
+                                minPh600OffsetAfterClose
+                            });
+                        }
+                    }
+
+                    this._minPhAfterCloseForDatabaseSaving = undefined;
+                    this._lastCo2ClosingStateForDatabaseSaving = undefined;
                 }
 
                 this._co2ValveOpen = avrState.co2ValveOpen;
@@ -140,16 +183,19 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
         }
 
         // Create CO2 Closing state which will be used by working thread to do prediction
-        // TODO: Remember this request somewhere as lastRequest so it can be used for training
+        const tClose = this._timeService.nowRoundedSeconds();
         const co2ClosingState =
             createCo2ClosingState({
-                tClose: this._timeService.nowRoundedSeconds(),
+                tClose,
                 openedSecondsAgo: getElapsedSecondsSince(this._co2ValveOpenT),
                 minPh600: 7, // doesn't matter
                 origin: Co2ClosingStateOrigin.ThisInstance,
                 getPh600: (t: number) => this._ph600sMap[t],
                 getPh60: (t: number) => this._ph60sMap[t],
             });
+
+        this._lastCo2ClosingStateForDatabaseSaving = co2ClosingState;
+        this._minPhAfterCloseForDatabaseSaving = this._ph600sMap[tClose];
 
         // Just emit previous prediction if we don't have enough information yet
         if (!co2ClosingState) {

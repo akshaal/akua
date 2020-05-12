@@ -91,6 +91,7 @@ expressServer.get("/force-co2-off", (_, res) => {
 // SIMPLE UI
 
 expressServer.use('/ui', express.static('server/static-ui'));
+expressServer.use('/db', express.static(config.database.baseDirectory));
 
 // -------------------------------------
 // Create HTTP server using express framework
