@@ -27,8 +27,7 @@ const CO2_MAX_OPEN_MINUTES = 20; // TODO: Change it to 1 hour!!!!!!!!!!!!!!!!!!!
 
 // Don't believe in predictions based upon first 30 seconds! It might be plain wrong.
 // (we also have resolutions of 15 seconds based upon data from grafana)
-// TODO: Decrease to 2
-const CO2_MIN_OPEN_SECONDS_TO_TRUST_PREDICTIONS = 10;
+const CO2_MIN_OPEN_SECONDS_TO_TRUST_PREDICTIONS = 2;
 
 // Timeout for values form upstream observables
 const OBS_TIMEOUT_MS = 60_000;

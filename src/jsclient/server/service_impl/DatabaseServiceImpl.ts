@@ -46,6 +46,20 @@ function run(db: sqlite3.Database, sql: string, params: any): Promise<void> {
     });
 }
 
+function all(db: sqlite3.Database, sql: string, params: any): Promise<Readonly<any[]>> {
+    return new Promise(function (resolve, reject) {
+        db.all(sql, params,
+            (err, rows) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            }
+        )
+    });
+}
+
 async function initDb(fileName: string, ...sqls: string[]): Promise<sqlite3.Database> {
     const db = await connectToDatabase(fileName);
 
@@ -76,5 +90,12 @@ export default class DatabaseServiceImpl extends DatabaseService {
                 "$bson": BSON.serialize(newState)
             }
         );
+    }
+
+    async findCo2ClosingStates(): Promise<Readonly<Co2ClosingState[]>> {
+        const co2ClosingStateDb = await this.co2ClosingStateDbPromise;
+        const rows = await all(co2ClosingStateDb, "SELECT * FROM states", {});
+
+        return rows.map(r => BSON.deserialize(r.bson));
     }
 }

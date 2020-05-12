@@ -1,11 +1,9 @@
 import * as tf from './tf';
-import { writeFileSync, readFileSync } from "fs";
 import logger from "server/logger";
 
 import {
     Co2ClosingState,
     Co2ClosingStateOrigin,
-    createCo2ClosingState,
     MessageToPhPredictionWorker,
     MinPhPredictionRequest,
     MinPhPredictionResponse
@@ -14,16 +12,9 @@ import {
 import { parentPort } from 'worker_threads';
 import { newTimestamp } from 'server/misc/new-timestamp';
 import config, { asUrl } from 'server/config';
-import { isPresent } from 'server/misc/isPresent';
 
-// TODO: Move to config.
+// TODO: Move to config.... and some other place, not ui!
 const minPhPredictionModelLoadLocation = asUrl(config.bindOptions) + "/ui/model.dump";
-const minPhPredictionModelSaveLocation = 'file://server/static-ui/model.dump';
-
-// Log startup event if we are in a worker thread
-if (parentPort) {
-    logger.info("PhPredict: Started worker thread for PH predictions");
-}
 
 // TODO: !!! Export training set to be able to draw it and see what NN
 // TODO: !!! actually see and decide what info it needs to import quality of prediction
@@ -40,10 +31,7 @@ if (parentPort) {
  * In tests we need to call loadModelFromFIle to load the model from file obviously.
  * If this file is opened as a worker thread, then the call is done automatically.
  */
-var minPhPredictionModelPromise: Promise<tf.LayersModel> = new Promise(() => { });
-
-type Co2ClosingStateTfData = { xs: tf.Tensor1D, ys: tf.Tensor1D };
-type Co2ClosingStateTfDataset = tf.data.Dataset<Co2ClosingStateTfData>;
+const minPhPredictionModelPromise: Promise<tf.LayersModel> = parentPort ? loadModelFromFile() : new Promise(() => { });
 
 /**
  * Rescale PH value to a normalized value that is used in TensorFlow network.
@@ -90,7 +78,7 @@ function descalePhOffset(scaledDiff: number): number {
  * Translates state into features (inputs) and labels (outputs)
  * returns null if data is invalid
  */
-function createCo2ClosingStateFeaturesAndLabels(state: Co2ClosingState): null | { xs: number[], ys: number[] } {
+export function createCo2ClosingStateFeaturesAndLabels(state: Co2ClosingState): null | { xs: number[], ys: number[] } {
     // Validate state data
 
     if (!state.closeTime) {
@@ -167,192 +155,11 @@ function createCo2ClosingStateFeaturesAndLabels(state: Co2ClosingState): null | 
     return { xs, ys };
 }
 
-// =======================================================================================
-
-// TODO: This is for test only.....
-export async function testModel() {
-    const model = await minPhPredictionModelPromise;
-
-    const result: { x: number, y: number, group: 3 }[] = [];
-
-    const ph600Map: { [k: number]: number } = {};
-    const ph60Map: { [k: number]: number } = {};
-    const openMap: { [k: number]: number } = {};
-    const keys: number[] = [];
-
-    const ph600sJson = require("server/static-ui/ph600s.json");
-    const ph60sJson = require("server/static-ui/ph60s.json");
-    const openJson = require("server/static-ui/open.json");
-
-    ph600sJson.data.result[0].values.map((v: [number, string]) => {
-        const k = Math.round(v[0]);
-        ph600Map[k] = parseFloat(v[1]);
-        keys.push(k);
-    });
-
-    console.log("Time points in ph600-map:", Object.keys(ph600Map).length);
-
-    ph60sJson.data.result[0].values.map((v: [number, string]) => {
-        const k = Math.round(v[0]);
-        ph60Map[k] = parseFloat(v[1]);
-    });
-
-    console.log("Time points in ph60-map:", Object.keys(ph60Map).length);
-
-    openJson.data.result[0].values.map((v: [number, string]) => {
-        const k = Math.round(v[0]);
-        openMap[k] = parseFloat(v[1]);
-    });
-
-    console.log("Time points in open-map:", Object.keys(openMap).length);
-
-    for (const k of [...keys]) {
-        if (ph600Map[k] === undefined || ph60Map[k] === undefined || openMap[k] === undefined) {
-            const kI = keys.indexOf(k);
-            console.log(kI);
-            keys.splice(kI, 1);
-        }
-    }
-
-    console.log("Common time points:", keys.length);
-
-    // ---------------------------------------------------------------------------
-    // Find points of valve turn-off
-
-    var openK: number | undefined;
-
-    for (const k of keys) {
-        //if (result.length > 100) {
-        //    break;
-        //}
-
-        const valveOpen = openMap[k];
-
-        if (valveOpen === 0) {
-            openK = undefined;
-            continue;
-        } else {
-            if (!isPresent(openK)) {
-                openK = k;
-            }
-        }
-
-        const state = createCo2ClosingState({
-            tClose: k,
-            openedSecondsAgo: k - openK,
-            minPh600: ph600Map[k],
-            origin: Co2ClosingStateOrigin.ThisInstance,
-            getPh600: (t: number) => ph600Map[t],
-            getPh60: (t: number) => ph60Map[t],
-        });
-
-        if (!state) {
-            console.log("Bad data in interval");
-        } else {
-            const featuresAndLabels = createCo2ClosingStateFeaturesAndLabels(state);
-            if (!featuresAndLabels) {
-                continue;
-            }
-
-            // TODO: Get statistics and stuff
-            const predicatedScaledDiff = (((model.predict(tf.tensor2d([featuresAndLabels.xs])) as tf.Tensor).arraySync()) as any)[0][0];
-            const predictedPh = ph600Map[k] + predicatedScaledDiff * 2 - 1;
-
-            result.push({ x: k, y: predictedPh, group: 3 });
-        }
-    }
-
-    writeFileSync("server/static-ui/predictions.json", JSON.stringify(result));
-}
-
-// ---------------------------------------------------------------
-
-function prepareCo2ClosingStateTfDataset(): Co2ClosingStateTfDataset {
-    const stateCo2ClosingDatasetJson: Co2ClosingState[] = JSON.parse(readFileSync("server/static-ui/training-set.json").toString("UTF-8"));
-
-    console.log(stateCo2ClosingDatasetJson.length);
-
-    const dataArray: Co2ClosingStateTfData[] = [];
-
-    for (const state of stateCo2ClosingDatasetJson) {
-        const featuresAndLabels = createCo2ClosingStateFeaturesAndLabels(state);
-        if (!featuresAndLabels) {
-            continue;
-        }
-
-        dataArray.push({
-            xs: tf.tensor1d(featuresAndLabels.xs),
-            ys: tf.tensor1d(featuresAndLabels.ys),
-        });
-    }
-
-    console.log("Dataset size: ", dataArray.length);
-
-    return tf.data.array(dataArray).shuffle(1000);
-}
-
-// ---------------------------------------------------------------
-
-export async function retrainModelFromDataset(params: { retrain: boolean }) {
-    // Train
-
-    // TODO: Cleanup.... and describe and so on
-
-    const trainSetPercentage = 0.95;
-
-    const datasetFull = prepareCo2ClosingStateTfDataset();
-
-    const trainSize = Math.floor(datasetFull.size * trainSetPercentage);
-
-    const batchSize = trainSize; // TODO: Temp
-
-    const trainDataset = datasetFull.take(trainSize).batch(batchSize).prefetch(1);
-    const validDataset = datasetFull.skip(trainSize).batch(batchSize).prefetch(1);
-
-    logger.info(`PhPredict: Training set size ${trainSize}. Validation dataset size ${datasetFull.size - trainSize}`);
-
-    const optimizer = tf.train.adam();
-
-    var model;
-
-    if (params.retrain) {
-        logger.info("Doing retrain");
-
-        model = tf.sequential({
-            layers: [
-                tf.layers.dense({ units: 40, inputDim: 46, activation: "tanh" }),
-                tf.layers.dense({ units: 30, activation: "tanh" }),
-                tf.layers.dense({ units: 20, activation: "tanh" }),
-                tf.layers.dense({ units: 5, activation: "tanh" }),
-                tf.layers.dense({ units: 1, activation: "sigmoid" })
-            ]
-        });
-
-    } else {
-        logger.info("Training existing model");
-
-        loadModelFromFile();
-        model = await minPhPredictionModelPromise;
-    }
-
-    model.compile({ loss: "meanSquaredError", optimizer });
-
-    await model.fitDataset(trainDataset, { epochs: 1200000, verbose: 1, validationData: validDataset });
-
-    await model.save(minPhPredictionModelSaveLocation);
-
-    minPhPredictionModelPromise = Promise.resolve(model);
-}
-
 // ================================================================
 
-export function loadModelFromFile(): void {
-    minPhPredictionModelPromise = tf.loadLayersModel(minPhPredictionModelLoadLocation + "/model.json");
+export function loadModelFromFile(): Promise<tf.LayersModel> {
     logger.info("PhPredict: Loading min-PH prediction model from " + minPhPredictionModelLoadLocation);
-}
-
-if (parentPort) {
-    loadModelFromFile();
+    return tf.loadLayersModel(minPhPredictionModelLoadLocation + "/model.json");
 }
 
 // ================================================================
@@ -406,5 +213,6 @@ export function onMessageToPhPredictionWorker(message: MessageToPhPredictionWork
 
 // This class might be also opened from a test (spec), where parentPort is not available
 if (parentPort) {
+    logger.info("PhPredict: Started worker thread for PH predictions");
     parentPort.on('message', onMessageToPhPredictionWorker);
 }
