@@ -79,7 +79,10 @@ export async function trainModelFromDataset(states: Readonly<Co2ClosingState[]>,
 
     logger.info(`PhPredict: Training set size ${trainSize}. Validation dataset size ${datasetFull.size - trainSize}`);
 
-    const optimizer = tf.train.adam();
+    const learningRate = 5e-5;
+    const optimizer = tf.train.adam(learningRate);
+
+    console.log("Optimizer config: ", optimizer.getConfig());
 
     var model;
 
@@ -106,6 +109,8 @@ export async function trainModelFromDataset(states: Readonly<Co2ClosingState[]>,
 
     await model.fitDataset(trainDataset, { epochs: 200000, verbose: 1, validationData: validDataset });
 
+    console.log("Optimizer config: ", optimizer.getConfig());
+
     await model.save(minPhPredictionModelSaveLocation);
 }
 
@@ -114,7 +119,6 @@ export async function trainModelFromDataset(states: Readonly<Co2ClosingState[]>,
 async function train() {
     const states = await databaseService.findCo2ClosingStates();
 
-    console.log(states);
     for (var state of states) {
         const date = new Date(state.closeTime * 1000).toLocaleString("nb");
         console.log(date + ": Offset after close: " + state.minPh600OffsetAfterClose + "  (i.e. " + (state.minPh600OffsetAfterClose + state.ph600AtClose) + ")");
