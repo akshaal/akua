@@ -4,7 +4,7 @@ import config from "server/config";
 import { exit } from "process";
 import { createNewContainer } from "server/service_impl/ServerServicesImpl";
 import { Co2ClosingState } from "server/service/PhPrediction";
-import DatabaseService from "server/service/DatabaseService";
+import DatabaseService, { Co2ClosingStateType } from "server/service/DatabaseService";
 import * as tf from 'server/service_impl/tf';
 import { createCo2ClosingStateFeaturesAndLabels, loadModelFromFile } from "server/service_impl/PhPredictionWorkerThread";
 
@@ -79,7 +79,7 @@ export async function trainModelFromDataset(states: Readonly<Co2ClosingState[]>,
 
     logger.info(`PhPredict: Training set size ${trainSize}. Validation dataset size ${datasetFull.size - trainSize}`);
 
-    const learningRate = 5e-5;
+    const learningRate = 5e-4;
     const optimizer = tf.train.adam(learningRate);
 
     console.log("Optimizer config: ", optimizer.getConfig());
@@ -117,7 +117,7 @@ export async function trainModelFromDataset(states: Readonly<Co2ClosingState[]>,
 // ---------------------------------------------------------------
 
 async function train() {
-    const states = await databaseService.findCo2ClosingStates();
+    const states = await databaseService.findCo2ClosingStates(Co2ClosingStateType.ANY);
 
     for (var state of states) {
         const date = new Date(state.closeTime * 1000).toLocaleString("nb");

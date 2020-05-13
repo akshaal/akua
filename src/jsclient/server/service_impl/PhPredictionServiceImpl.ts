@@ -11,7 +11,9 @@ import AvrService from "server/service/AvrService";
 import TimeService from "server/service/TimeService";
 import { Timestamp } from "server/misc/Timestamp";
 import { isPresent } from "server/misc/isPresent";
-import DatabaseService from "server/service/DatabaseService";
+import DatabaseService, { Co2ClosingStateType } from "server/service/DatabaseService";
+import config from "server/config";
+import _ from "lodash";
 
 // TODO: More comments and tests!
 
@@ -119,6 +121,9 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
                             this._databaseService.insertCo2ClosingState({
                                 ...this._lastCo2ClosingStateForDatabaseSaving,
                                 minPh600OffsetAfterClose
+                            }).then(() => {
+                                // Make sure data is split into test data and validation.
+                                this.maintainDataset();
                             });
                         }
                     }
@@ -148,10 +153,30 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
                 }
             })
         );
+
+        // Perform maintenance at start / initialization
+        this.maintainDataset();
+    }
+
+    /**
+     * Maintain database. Make sure we do split data into training and validation/testing dataset.
+     * This will make it possible to have a stable way to compare NN-performance / NN-algorithms / etc.
+     */
+    private async maintainDataset(): Promise<void> {
+        const totalSize = await this._databaseService.countCo2ClosingStates(Co2ClosingStateType.ANY);
+        const currentValidationSize = await this._databaseService.countCo2ClosingStates(Co2ClosingStateType.VALIDATION);
+        const expectedValidationSize = Math.floor(totalSize * (1 - config.phClosingPrediction.trainDatasetPercentage));
+        const numberOfStatesToConvertToTraining = currentValidationSize - expectedValidationSize;
+
+        if (numberOfStatesToConvertToTraining > 0) {
+            const validationStateTimes = await this._databaseService.findCo2ClosingTimes(Co2ClosingStateType.VALIDATION);
+            const statesToConvertToTraining = _.take(_.shuffle(validationStateTimes), numberOfStatesToConvertToTraining);
+            await this._databaseService.markCo2ClosingStatesAsTraining(statesToConvertToTraining);
+        }
     }
 
     // Called at night to cleanup maps so we don't run out of memory
-    _cleanupHistoryMaps(): void {
+    private _cleanupHistoryMaps(): void {
         // It's not a problem to just remove everything from the map
         // because we need the history only at CO2-day time and only for last 15 or so minutes.
         this._ph600sMap = {};

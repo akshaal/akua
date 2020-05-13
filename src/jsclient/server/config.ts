@@ -39,6 +39,13 @@ export interface PhControllerConfig {
     readonly phToTurnOn: number;
 }
 
+export interface PhClosingPredictionConfig {
+    /**
+     * Defines how we split dataset into training and test (validation).
+     */
+    readonly trainDatasetPercentage: number;
+}
+
 export interface DatabaseConfig {
     readonly baseDirectory: string;
     readonly phClosingStateDbFileName: string;
@@ -48,6 +55,7 @@ export interface Config {
     readonly version: string;
     readonly isProd: boolean;
     readonly isDev: boolean;
+    readonly instanceName: string;
     readonly bindOptions: ProtoHostPort;
     readonly metrics: MetricsConfig;
     readonly nextion: NextionConfig;
@@ -58,6 +66,7 @@ export interface Config {
     readonly phController: PhControllerConfig;
     readonly co2Display: ValueDisplayConfig;
     readonly database: DatabaseConfig;
+    readonly phClosingPrediction: PhClosingPredictionConfig;
 }
 
 // ================================================================================================
@@ -75,6 +84,8 @@ export function asUrl(options: ProtoHostPort): string {
 }
 
 // ================================================================================================
+
+const instanceName = process.env.AKUA_INSTANCE || "unknown";
 
 const version = process.env.AKUA_VERSION || "unknown";
 const bindOptions: ProtoHostPort = {
@@ -140,7 +151,11 @@ const co2Display: ValueDisplayConfig = {
 
 const phController: PhControllerConfig = {
     phToTurnOff: 6.8,
-    phToTurnOn: 6.9
+    phToTurnOn: 6.9,
+};
+
+const phClosingPrediction: PhClosingPredictionConfig = {
+    trainDatasetPercentage: 0.95,
 };
 
 const database: DatabaseConfig = {
@@ -152,6 +167,7 @@ export const config: Config = {
     isDev,
     version,
     isProd: !isDev,
+    instanceName,
     bindOptions,
     metrics,
     nextion,
@@ -161,6 +177,7 @@ export const config: Config = {
     phDisplay,
     co2Display,
     phController,
+    phClosingPrediction,
     database
 };
 

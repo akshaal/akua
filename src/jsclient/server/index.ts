@@ -14,7 +14,7 @@ import ServerServices from "./service/ServerServices";
 
 logger.info("============================================================================");
 logger.info("============================================================================");
-logger.info(`Starting version ${config.version} in ${config.isProd ? 'production' : 'development'} mode.`);
+logger.info(`Starting version ${config.version} in ${config.isProd ? 'production' : 'development'} mode on instance ${config.instanceName}.`);
 
 if (config.isDev) {
     logger.debug("Obtained configuration:", config);

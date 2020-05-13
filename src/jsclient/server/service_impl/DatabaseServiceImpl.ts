@@ -1,19 +1,103 @@
 import { injectable } from "inversify";
-import DatabaseService from "server/service/DatabaseService";
+import DatabaseService, { Co2ClosingStateType } from "server/service/DatabaseService";
 import { Co2ClosingState } from "server/service/PhPrediction";
 
 import * as sqlite3 from "sqlite3";
 import config from "server/config";
 import logger from "server/logger";
 import * as BSON from "bson";
+import _ from "lodash";
 
-const sqlCreatePhClosingStatesTable: string = `
-    CREATE TABLE IF NOT EXISTS states (
-        close_time INTEGER NOT NULL PRIMARY KEY,
-        origin INTEGER NOT NULL ,
-        bson BLOB NOT NULL
-    )
-`;
+@injectable()
+export default class DatabaseServiceImpl extends DatabaseService {
+    private readonly co2ClosingStateDbPromise =
+        initDb(
+            config.database.phClosingStateDbFileName,
+            `
+                CREATE TABLE IF NOT EXISTS states (
+                    close_time INTEGER NOT NULL PRIMARY KEY,
+                    origin INTEGER NOT NULL ,
+                    bson BLOB NOT NULL
+                )
+            `,
+            "ALTER TABLE states ADD is_validation INTEGER NOT NULL DEFAULT 1"
+        );
+
+    async insertCo2ClosingState(newState: Co2ClosingState): Promise<void> {
+        const co2ClosingStateDb = await this.co2ClosingStateDbPromise;
+
+        return run(
+            co2ClosingStateDb,
+            "INSERT INTO states (close_time, origin, bson) VALUES ($closeTime, $origin, $bson)",
+            {
+                "$closeTime": newState.closeTime,
+                "$origin": newState.origin,
+                "$bson": BSON.serialize(newState)
+            }
+        );
+    }
+
+    async markCo2ClosingStatesAsTraining(stateTimes: Readonly<number[]>): Promise<void> {
+        if (!stateTimes.length) {
+            return;
+        }
+
+        const co2ClosingStateDb = await this.co2ClosingStateDbPromise;
+        const stateTimesCSL = _.join(stateTimes, ",");
+
+        return run(
+            co2ClosingStateDb,
+            `UPDATE states SET is_validation = 0 WHERE close_time IN (${stateTimesCSL})`,
+            {}
+        )
+    }
+
+    async findCo2ClosingStates(type: Co2ClosingStateType): Promise<Readonly<Co2ClosingState[]>> {
+        const co2ClosingStateDb = await this.co2ClosingStateDbPromise;
+        const rows = await all(co2ClosingStateDb, "SELECT * FROM states " + asCo2ClosingStateWhereClause(type), {});
+        return rows.map(r => BSON.deserialize(r.bson));
+    }
+
+    async findCo2ClosingTimes(type: Co2ClosingStateType): Promise<number[]> {
+        const co2ClosingStateDb = await this.co2ClosingStateDbPromise;
+        const rows = await all(co2ClosingStateDb, "SELECT close_time FROM states " + asCo2ClosingStateWhereClause(type), {});
+        return rows.map(r => r.close_time);
+    }
+
+    async countCo2ClosingStates(type: Co2ClosingStateType): Promise<number> {
+        const co2ClosingStateDb = await this.co2ClosingStateDbPromise;
+        const row = await get(co2ClosingStateDb, "SELECT count(*) AS cnt FROM states " + asCo2ClosingStateWhereClause(type), {});
+        return row.cnt;
+    }
+}
+
+function asCo2ClosingStateWhereClause(type: Co2ClosingStateType): string {
+    switch (type) {
+        case Co2ClosingStateType.ANY: return "";
+        case Co2ClosingStateType.TRAINING: return "WHERE is_validation = 0";
+        case Co2ClosingStateType.VALIDATION: return "WHERE is_validation = 1";
+    };
+}
+
+async function initDb(fileName: string, ...sqls: string[]): Promise<sqlite3.Database> {
+    const db = await connectToDatabase(fileName);
+
+    const dbVersion = (await get(db, "PRAGMA user_version", {})).user_version;
+
+    var v = 0;
+
+    for (var sql of sqls) {
+        v += 1;
+
+        if (v > dbVersion) {
+            logger.info(`Performing upgrade of database ${fileName} to version ${v}`);
+            await run(db, sql, {});
+            await run(db, `PRAGMA user_version = ${v}`, {});
+        }
+    }
+
+    return db;
+}
 
 function connectToDatabase(fileName: string): Promise<sqlite3.Database> {
     return new Promise(function (resolve, reject) {
@@ -60,42 +144,17 @@ function all(db: sqlite3.Database, sql: string, params: any): Promise<Readonly<a
     });
 }
 
-async function initDb(fileName: string, ...sqls: string[]): Promise<sqlite3.Database> {
-    const db = await connectToDatabase(fileName);
-
-    for (var sql of sqls) {
-        await run(db, sql, {});
-    }
-
-    return db;
-}
-
-@injectable()
-export default class DatabaseServiceImpl extends DatabaseService {
-    private readonly co2ClosingStateDbPromise =
-        initDb(
-            config.database.phClosingStateDbFileName,
-            sqlCreatePhClosingStatesTable
-        );
-
-    async insertCo2ClosingState(newState: Co2ClosingState): Promise<void> {
-        const co2ClosingStateDb = await this.co2ClosingStateDbPromise;
-
-        return run(
-            co2ClosingStateDb,
-            "INSERT INTO states (close_time, origin, bson) VALUES ($closeTime, $origin, $bson)",
-            {
-                "$closeTime": newState.closeTime,
-                "$origin": newState.origin,
-                "$bson": BSON.serialize(newState)
+function get(db: sqlite3.Database, sql: string, params: any): Promise<any> {
+    return new Promise(function (resolve, reject) {
+        db.get(sql, params,
+            (err, row) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(row);
+                }
             }
-        );
-    }
-
-    async findCo2ClosingStates(): Promise<Readonly<Co2ClosingState[]>> {
-        const co2ClosingStateDb = await this.co2ClosingStateDbPromise;
-        const rows = await all(co2ClosingStateDb, "SELECT * FROM states", {});
-
-        return rows.map(r => BSON.deserialize(r.bson));
-    }
+        )
+    });
 }
+
