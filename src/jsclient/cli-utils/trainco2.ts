@@ -101,7 +101,7 @@ export async function trainModelFromDataset(states: Readonly<Co2ClosingState[]>,
 
     model.compile({ loss: "meanSquaredError", optimizer });
 
-    await model.fitDataset(trainDataset, { epochs: 1200000, verbose: 1, validationData: validDataset });
+    await model.fitDataset(trainDataset, { epochs: 1000000, verbose: 1, validationData: validDataset });
 
     await model.save(minPhPredictionModelSaveLocation);
 }
