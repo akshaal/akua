@@ -63,6 +63,9 @@ export async function trainModelFromDataset(states: Readonly<Co2ClosingState[]>,
 
     // TODO: Cleanup.... and describe and so on
 
+    // TODO: We need to use a stable set of test data.
+    // TODO: I.e. we must decide whether the given item is train or test data when we insert it into the database
+
     const trainSetPercentage = 0.95;
 
     const datasetFull = prepareCo2ClosingStateTfDataset(states);
@@ -101,7 +104,7 @@ export async function trainModelFromDataset(states: Readonly<Co2ClosingState[]>,
 
     model.compile({ loss: "meanSquaredError", optimizer });
 
-    await model.fitDataset(trainDataset, { epochs: 1000000, verbose: 1, validationData: validDataset });
+    await model.fitDataset(trainDataset, { epochs: 200000, verbose: 1, validationData: validDataset });
 
     await model.save(minPhPredictionModelSaveLocation);
 }
