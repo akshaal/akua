@@ -129,7 +129,12 @@ async function train() {
 
     await sleep(3000);
 
-    await trainModelFromDataset({ trainingStates, validationStates, retrain: true });
+    await trainModelFromDataset({
+        trainingStates,
+        validationStates,
+        retrain:
+        false
+    });
 
     exit(0);
 }
