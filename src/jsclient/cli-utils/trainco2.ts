@@ -51,35 +51,29 @@ function prepareCo2ClosingStateTfDataset(states: Readonly<Co2ClosingState[]>): C
         });
     }
 
-    console.log("Dataset size: ", dataArray.length);
-
     return tf.data.array(dataArray).shuffle(1000);
 }
 
 // ---------------------------------------------------------------
 
-export async function trainModelFromDataset(states: Readonly<Co2ClosingState[]>, params: { retrain: boolean }) {
+export async function trainModelFromDataset(
+    params: {
+        retrain: boolean,
+        trainingStates: Readonly<Co2ClosingState[]>,
+        validationStates: Readonly<Co2ClosingState[]>
+    }
+) {
     // Train
 
     // TODO: Cleanup.... and describe and so on
 
-    // TODO: We need to use a stable set of test data.
-    // TODO: I.e. we must decide whether the given item is train or test data when we insert it into the database
+    // TODO: Crappy code... tune batch sizes and stuff... move it to prepare code... blah blah blah
+    const trainDataset = prepareCo2ClosingStateTfDataset(params.trainingStates).batch(params.trainingStates.length).prefetch(1);
+    const validDataset = prepareCo2ClosingStateTfDataset(params.validationStates).batch(params.validationStates.length).prefetch(1);
 
-    const trainSetPercentage = 0.95;
+    //const learningRate = 5e-4;
+    const learningRate = undefined;
 
-    const datasetFull = prepareCo2ClosingStateTfDataset(states);
-
-    const trainSize = Math.floor(datasetFull.size * trainSetPercentage);
-
-    const batchSize = trainSize; // TODO: Temp
-
-    const trainDataset = datasetFull.take(trainSize).batch(batchSize).prefetch(1);
-    const validDataset = datasetFull.skip(trainSize).batch(batchSize).prefetch(1);
-
-    logger.info(`PhPredict: Training set size ${trainSize}. Validation dataset size ${datasetFull.size - trainSize}`);
-
-    const learningRate = 5e-4;
     const optimizer = tf.train.adam(learningRate);
 
     console.log("Optimizer config: ", optimizer.getConfig());
@@ -107,9 +101,7 @@ export async function trainModelFromDataset(states: Readonly<Co2ClosingState[]>,
 
     model.compile({ loss: "meanSquaredError", optimizer });
 
-    await model.fitDataset(trainDataset, { epochs: 200000, verbose: 1, validationData: validDataset });
-
-    console.log("Optimizer config: ", optimizer.getConfig());
+    await model.fitDataset(trainDataset, { epochs: 800000, verbose: 1, validationData: validDataset });
 
     await model.save(minPhPredictionModelSaveLocation);
 }
@@ -117,18 +109,27 @@ export async function trainModelFromDataset(states: Readonly<Co2ClosingState[]>,
 // ---------------------------------------------------------------
 
 async function train() {
-    const states = await databaseService.findCo2ClosingStates(Co2ClosingStateType.ANY);
+    const trainingStates = await databaseService.findCo2ClosingStates(Co2ClosingStateType.TRAINING);
+    const validationStates = await databaseService.findCo2ClosingStates(Co2ClosingStateType.VALIDATION);
 
-    for (var state of states) {
-        const date = new Date(state.closeTime * 1000).toLocaleString("nb");
-        console.log(date + ": Offset after close: " + state.minPh600OffsetAfterClose + "  (i.e. " + (state.minPh600OffsetAfterClose + state.ph600AtClose) + ")");
+    function dumpStates(name: string, states: Readonly<Co2ClosingState[]>) {
+        console.log("\n==============================================================");
+        console.log(name + "\n");
+
+        for (var state of states) {
+            const date = new Date(state.closeTime * 1000).toLocaleString("nb");
+            console.log(date + ": Offset after close: " + state.minPh600OffsetAfterClose + "  (i.e. " + (state.minPh600OffsetAfterClose + state.ph600AtClose) + ")");
+        }
     }
 
-    console.log("Total records: " + states.length);
+    dumpStates("Training states", trainingStates);
+    dumpStates("Validation states", validationStates);
+
+    console.log("Training states: " + trainingStates.length + ".  Validation states: " + validationStates.length + ".");
 
     await sleep(3000);
 
-    await trainModelFromDataset(states, { retrain: false });
+    await trainModelFromDataset({ trainingStates, validationStates, retrain: true });
 
     exit(0);
 }
