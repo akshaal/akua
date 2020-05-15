@@ -12,6 +12,7 @@ import { writeFileSync } from "fs";
 // TODO: Need comments and cleanup!
 
 // TODO: Use config!
+// TODO: Rename to minPhPredictionModelLocationForCli
 const minPhPredictionModelSaveLocation = 'file://server/static-ui/model.dump';
 
 type Co2ClosingStateTfData = { xs: tf.Tensor1D, ys: tf.Tensor1D };
@@ -98,6 +99,7 @@ export async function trainModelFromDataset(
     } else {
         logger.info("Training existing model");
 
+        // TODO: Use tf.loadLayersModel(minPhPredictionModelLocationForCli);
         model = await loadModelFromFile();
     }
 
