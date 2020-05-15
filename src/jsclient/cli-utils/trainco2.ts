@@ -72,8 +72,8 @@ export async function trainModelFromDataset(
     const trainDataset = prepareCo2ClosingStateTfDataset(params.trainingStates).batch(params.trainingStates.length).prefetch(1);
     const validDataset = prepareCo2ClosingStateTfDataset(params.validationStates).batch(params.validationStates.length).prefetch(1);
 
-    //const learningRate = 5e-4;
-    const learningRate = undefined;
+    const learningRate = 1e-4;
+    //const learningRate = undefined;
 
     const optimizer = tf.train.adam(learningRate);
 
