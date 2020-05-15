@@ -2,7 +2,7 @@ import type { Timestamp } from "./Timestamp";
 import { getElapsedSecondsSince } from "./get-elapsed-seconds-since";
 import { newTimestamp } from "./new-timestamp";
 
-const MIN_PERCENT = 70;
+const MIN_PERCENT = 50;
 const FORCE_FILTER_EVERY_SECS = 0.3;
 
 interface Record {
@@ -50,7 +50,6 @@ export class AveragingWindow {
 
     add(v: number): void {
         this._dirty = true;
-        this._sum += v;
         this._records.push({
             t: newTimestamp(),
             v

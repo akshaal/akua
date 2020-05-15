@@ -3,6 +3,7 @@ import PhSensorService, { Ph } from "server/service/PhSensorService";
 import AvrService, { AvrPhState } from "server/service/AvrService";
 import { AveragingWindow } from "../misc/AveragingWindow";
 import { Observable, BehaviorSubject } from "rxjs";
+import { throws } from "assert";
 
 const KH = 4;
 const PH_SAMPLE_FREQUENCY = 7; // How many measurements per second our AVR performs
@@ -54,27 +55,43 @@ class SensorProcessor {
     readonly values$ = new BehaviorSubject<Ph | null>(null);
     private _voltage60sWindow = new AveragingWindow(60, PH_SAMPLE_FREQUENCY);
     private _voltage600sWindow = new AveragingWindow(600, PH_SAMPLE_FREQUENCY);
+    private _pendingAvrPhState?: AvrPhState;
 
     onNewAvrState(newState: AvrPhState) {
-        if (newState.voltage < 4 && newState.voltage >= 1) {
-            this._voltage60sWindow.add(newState.voltage);
-            this._voltage600sWindow.add(newState.voltage);
+        const thisVoltageIsGood = newState.voltage < 4 && newState.voltage > 1 && !newState.badSamples;
 
-            const voltage60s = this._voltage60sWindow.get();
-            const voltage600s = this._voltage600sWindow.get();
+        if (thisVoltageIsGood) {
+            // This voltage is in the interval and doesn't contain averages values adjacent to bad samples
 
-            const phValue600s = voltage600s ? Math.round(calcPhFromVoltage(voltage600s) * 1000) / 1000.0 : voltage600s;
+            if (this._pendingAvrPhState) {
+                // We must add pending PH value because we know it's not adjacent to the invalid one
 
-            this.values$.next({
-                voltage60s: voltage60s,
-                voltage60sSamples: this._voltage60sWindow.getCount(),
-                value60s: voltage60s ? Math.round(calcPhFromVoltage(voltage60s) * 1000) / 1000.0 : voltage60s,
-                value60sSamples: this._voltage60sWindow.getCount(),
-                value600s: phValue600s,
-                value600sSamples: this._voltage600sWindow.getCount(),
-                phBasedCo2: phValue600s ? (3.0 * KH * (10 ** (7.00 - phValue600s))) : null,
-                lastSensorState: newState
-            });
+                this._voltage60sWindow.add(this._pendingAvrPhState.voltage);
+                this._voltage600sWindow.add(this._pendingAvrPhState.voltage);
+    
+                const voltage60s = this._voltage60sWindow.get();
+                const voltage600s = this._voltage600sWindow.get();
+    
+                const phValue600s = voltage600s ? Math.round(calcPhFromVoltage(voltage600s) * 1000) / 1000.0 : voltage600s;
+    
+                this.values$.next({
+                    voltage60s: voltage60s,
+                    voltage60sSamples: this._voltage60sWindow.getCount(),
+                    value60s: voltage60s ? Math.round(calcPhFromVoltage(voltage60s) * 1000) / 1000.0 : voltage60s,
+                    value60sSamples: this._voltage60sWindow.getCount(),
+                    value600s: phValue600s,
+                    value600sSamples: this._voltage600sWindow.getCount(),
+                    phBasedCo2: phValue600s ? (3.0 * KH * (10 ** (7.00 - phValue600s))) : null,
+                    lastSensorState: this._pendingAvrPhState
+                });
+            }
+
+            // Set new avr ph state as pending, because we must know that the next state is valid one
+            this._pendingAvrPhState = newState;
+        } else {
+            // This case is invalid one. Thus we invalidate the previous one (instead of using it)
+            // and completely ignore this one
+            this._pendingAvrPhState = undefined;
         }
     }
 
