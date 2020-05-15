@@ -157,7 +157,7 @@ export function createCo2ClosingStateFeaturesAndLabels(state: Co2ClosingState): 
 
 // ================================================================
 
-export function loadModelFromFile(): Promise<tf.LayersModel> {
+function loadModelFromFile(): Promise<tf.LayersModel> {
     logger.info("PhPredict: Loading min-PH prediction model from " + minPhPredictionModelLoadLocation);
     return tf.loadLayersModel(minPhPredictionModelLoadLocation + "/model.json");
 }

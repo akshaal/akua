@@ -6,14 +6,13 @@ import { createNewContainer } from "server/service_impl/ServerServicesImpl";
 import { Co2ClosingState } from "server/service/PhPrediction";
 import DatabaseService, { Co2ClosingStateType } from "server/service/DatabaseService";
 import * as tf from 'server/service_impl/tf';
-import { createCo2ClosingStateFeaturesAndLabels, loadModelFromFile } from "server/service_impl/PhPredictionWorkerThread";
+import { createCo2ClosingStateFeaturesAndLabels } from "server/service_impl/PhPredictionWorkerThread";
 import { writeFileSync } from "fs";
 
 // TODO: Need comments and cleanup!
 
 // TODO: Use config!
-// TODO: Rename to minPhPredictionModelLocationForCli
-const minPhPredictionModelSaveLocation = 'file://server/static-ui/model.dump';
+const minPhPredictionModelLocationForCli = 'file://server/static-ui/model.dump';
 
 type Co2ClosingStateTfData = { xs: tf.Tensor1D, ys: tf.Tensor1D };
 type Co2ClosingStateTfDataset = tf.data.Dataset<Co2ClosingStateTfData>;
@@ -98,16 +97,14 @@ export async function trainModelFromDataset(
 
     } else {
         logger.info("Training existing model");
-
-        // TODO: Use tf.loadLayersModel(minPhPredictionModelLocationForCli);
-        model = await loadModelFromFile();
+        model = await tf.loadLayersModel(minPhPredictionModelLocationForCli + "/model.json");
     }
 
     model.compile({ loss: "meanSquaredError", optimizer });
 
-    const result = await model.fitDataset(trainDataset, { epochs: 1000000, verbose: 1, validationData: validDataset });
+    const result = await model.fitDataset(trainDataset, { epochs: 400_000, verbose: 1, validationData: validDataset });
 
-    await model.save(minPhPredictionModelSaveLocation);
+    await model.save(minPhPredictionModelLocationForCli);
 
     // Save learning history to plot it later
     var historyFileContent = "";
