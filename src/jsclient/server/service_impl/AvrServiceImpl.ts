@@ -38,7 +38,8 @@ function asAvrState(avrData: AvrData): AvrState {
 
     const ph: AvrPhState = {
         voltage: avrData["u32 __ph_adc_accum"] / (avrData["u16 __ph_adc_accum_samples"] || 1) * 5.0 / 1024.0,
-        voltageSamples: avrData["u16 __ph_adc_accum_samples"]
+        voltageSamples: avrData["u16 __ph_adc_accum_samples"],
+        badSamples: avrData["u16 __ph_adc_bad_samples"]
     };
 
     const light: AvrLightState = {

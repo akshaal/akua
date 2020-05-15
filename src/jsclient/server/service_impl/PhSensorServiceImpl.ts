@@ -56,7 +56,7 @@ class SensorProcessor {
     private _voltage600sWindow = new AveragingWindow(600, PH_SAMPLE_FREQUENCY);
 
     onNewAvrState(newState: AvrPhState) {
-        if (newState.voltage < 5 && newState.voltage >= 0) {
+        if (newState.voltage < 4 && newState.voltage >= 1) {
             this._voltage60sWindow.add(newState.voltage);
             this._voltage600sWindow.add(newState.voltage);
 

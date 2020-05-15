@@ -425,6 +425,11 @@ const phSensorVoltageGauge = new SimpleGauge({
     help: 'Last measured voltage from ph sensor as reported by AVR.'
 });
 
+const avrPhBadSamplesGauge = new SimpleCounter({
+    name: 'akua_avr_ph_bad_samples',
+    help: 'Number of bad ADC values for ph sensor (outside of allowed interval).'
+});
+
 const phSensorVoltageSamplesGauge = new SimpleGauge({
     name: 'akua_ph_sensor_voltage_samples',
     help: 'Number of ADC samples used by AVR to calculate voltage.'
@@ -441,7 +446,7 @@ const minClosingPhPredictionSecondsUsedSummary = new Summary({
     maxAgeSeconds: 600,
     ageBuckets: 5,
     percentiles: [0.1, 0.25, 0.5, 0.75, 0.9, 0.99, 0.999]
-})
+});
 
 // ==========================================================================================
 
@@ -522,6 +527,8 @@ export default class MetricsServiceImpl extends MetricsService {
                     avrMainLoopDecisecondIterationsSummary.observe(avrState.mainLoopIterationsInLastDecisecond);
                     lastObservedUptime = avrState.uptimeSeconds;
                 }
+
+                avrPhBadSamplesGauge.inc(avrState.ph.badSamples);
             })
         );
 

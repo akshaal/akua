@@ -13,6 +13,11 @@
 // Minimum minutes when CO2 can be turned again after it was turned off
 #define AK_CO2_OFF_MINUTES_BEFORE_UNLOCKED 15
 
+// Possible interval for PH sensor voltages (1..4 volts).
+// Everything outside of the interval is impulse-noise ('bad values').
+#define AK_PH_SENSOR_MIN_ADC 204
+#define AK_PH_SENSOR_MAX_ADC 820
+
 // Here is what we are going to use for communication using USB/serial port
 // Frame format is 8N1 (8 bits, no parity, 1 stop bit)
 #define AK_USART0_BAUD_RATE     9600
@@ -501,6 +506,7 @@ X_INIT$(init_adc) {
 GLOBAL$() {
     STATIC_VAR$(u24 ph_adc_accum);
     STATIC_VAR$(u16 ph_adc_accum_samples);
+    STATIC_VAR$(u16 ph_adc_bad_samples);
 };
 
 RUNNABLE$(adc_runnable) {
@@ -514,8 +520,12 @@ RUNNABLE$(adc_runnable) {
         ADCSRA |= H(ADSC);
 
         // Add current value into accumulator
-        ph_adc_accum += current_adc;
-        ph_adc_accum_samples += 1;
+        if (current_adc < AK_PH_SENSOR_MIN_ADC || current_adc > AK_PH_SENSOR_MAX_ADC) {
+            ph_adc_bad_samples += 1;
+        } else {
+            ph_adc_accum += current_adc;
+            ph_adc_accum_samples += 1;
+        }
     }
 }
 
@@ -579,6 +589,7 @@ THREAD$(usart0_writer, state_type = u8) {
 
     STATIC_VAR$(u24 __ph_adc_accum);
     STATIC_VAR$(u16 __ph_adc_accum_samples);
+    STATIC_VAR$(u16 __ph_adc_bad_samples);
 
     // ---- Subroutines can yield unlike functions
 
@@ -731,16 +742,19 @@ THREAD$(usart0_writer, state_type = u8) {
         // messes up in the middle of the process.
         __ph_adc_accum = ph_adc_accum;
         __ph_adc_accum_samples = ph_adc_accum_samples;
+        __ph_adc_bad_samples = ph_adc_bad_samples;
 
         // Set to zero to start a new oversampling batch
         ph_adc_accum = 0;
         ph_adc_accum_samples = 0;
+        ph_adc_bad_samples = 0;
 
         // Write Voltage status... this might YIELD
         WRITE_STATUS$("PH Voltage",
                       F,
                       u32 __ph_adc_accum,
-                      u16 __ph_adc_accum_samples);
+                      u16 __ph_adc_accum_samples,
+                      u16 __ph_adc_bad_samples);
 
         // Protocol version
         byte_to_send = ' '; CALL$(send_byte);

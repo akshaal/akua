@@ -386,6 +386,11 @@ static AKAT_UNUSED AKAT_PURE u8 akat_x_tm1637_encode_digit(u8 const digit, u8 co
 // Minimum minutes when CO2 can be turned again after it was turned off
 #define AK_CO2_OFF_MINUTES_BEFORE_UNLOCKED 15
 
+// Possible interval for PH sensor voltages (1..4 volts).
+// Everything outside of the interval is impulse-noise ('bad values').
+#define AK_PH_SENSOR_MIN_ADC 204
+#define AK_PH_SENSOR_MAX_ADC 820
+
 // Here is what we are going to use for communication using USB/serial port
 // Frame format is 8N1 (8 bits, no parity, 1 stop bit)
 #define AK_USART0_BAUD_RATE     9600
@@ -19340,7 +19345,9 @@ static AKAT_FORCE_INLINE void init_adc() {
 
 static u24 ph_adc_accum = 0;
 static u16 ph_adc_accum_samples = 0;
+static u16 ph_adc_bad_samples = 0;
 
+;
 ;
 ;
 ;
@@ -19352,9 +19359,14 @@ static AKAT_FORCE_INLINE void adc_runnable() {
         u16 current_adc = ADC;
         //Start new conversion
         ADCSRA |= H(ADSC);
+
         //Add current value into accumulator
-        ph_adc_accum += current_adc;
-        ph_adc_accum_samples += 1;
+        if (current_adc < AK_PH_SENSOR_MIN_ADC || current_adc > AK_PH_SENSOR_MAX_ADC) {
+            ph_adc_bad_samples += 1;
+        } else {
+            ph_adc_accum += current_adc;
+            ph_adc_accum_samples += 1;
+        }
     }
 }
 
@@ -19432,10 +19444,12 @@ static u16 usart0_writer__u16_to_format_and_send = 0;
 static u32 usart0_writer__u32_to_format_and_send = 0;
 static u24 usart0_writer____ph_adc_accum = 0;
 static u16 usart0_writer____ph_adc_accum_samples = 0;
+static u16 usart0_writer____ph_adc_bad_samples = 0;
 register u8 usart0_writer__send_byte__akat_coroutine_state asm ("r7");
 static u8 usart0_writer__send_byte() {
 #define __ph_adc_accum usart0_writer____ph_adc_accum
 #define __ph_adc_accum_samples usart0_writer____ph_adc_accum_samples
+#define __ph_adc_bad_samples usart0_writer____ph_adc_bad_samples
 #define akat_coroutine_state usart0_writer__send_byte__akat_coroutine_state
 #define byte_to_send usart0_writer__byte_to_send
 #define crc usart0_writer__crc
@@ -19484,6 +19498,7 @@ akat_coroutine_l_end:
     return akat_coroutine_state;
 #undef __ph_adc_accum
 #undef __ph_adc_accum_samples
+#undef __ph_adc_bad_samples
 #undef akat_coroutine_state
 #undef byte_to_send
 #undef crc
@@ -19496,6 +19511,7 @@ static u8 usart0_writer__format_and_send_u8__akat_coroutine_state = 0;
 static u8 usart0_writer__format_and_send_u8() {
 #define __ph_adc_accum usart0_writer____ph_adc_accum
 #define __ph_adc_accum_samples usart0_writer____ph_adc_accum_samples
+#define __ph_adc_bad_samples usart0_writer____ph_adc_bad_samples
 #define akat_coroutine_state usart0_writer__format_and_send_u8__akat_coroutine_state
 #define byte_to_send usart0_writer__byte_to_send
 #define crc usart0_writer__crc
@@ -19565,6 +19581,7 @@ akat_coroutine_l_end:
     return akat_coroutine_state;
 #undef __ph_adc_accum
 #undef __ph_adc_accum_samples
+#undef __ph_adc_bad_samples
 #undef akat_coroutine_state
 #undef byte_to_send
 #undef crc
@@ -19578,6 +19595,7 @@ static u8 usart0_writer__format_and_send_u16__akat_coroutine_state = 0;
 static u8 usart0_writer__format_and_send_u16() {
 #define __ph_adc_accum usart0_writer____ph_adc_accum
 #define __ph_adc_accum_samples usart0_writer____ph_adc_accum_samples
+#define __ph_adc_bad_samples usart0_writer____ph_adc_bad_samples
 #define akat_coroutine_state usart0_writer__format_and_send_u16__akat_coroutine_state
 #define byte_to_send usart0_writer__byte_to_send
 #define crc usart0_writer__crc
@@ -19674,6 +19692,7 @@ akat_coroutine_l_end:
     return akat_coroutine_state;
 #undef __ph_adc_accum
 #undef __ph_adc_accum_samples
+#undef __ph_adc_bad_samples
 #undef akat_coroutine_state
 #undef byte_to_send
 #undef crc
@@ -19688,6 +19707,7 @@ static u8 usart0_writer__format_and_send_u32__akat_coroutine_state = 0;
 static u8 usart0_writer__format_and_send_u32() {
 #define __ph_adc_accum usart0_writer____ph_adc_accum
 #define __ph_adc_accum_samples usart0_writer____ph_adc_accum_samples
+#define __ph_adc_bad_samples usart0_writer____ph_adc_bad_samples
 #define akat_coroutine_state usart0_writer__format_and_send_u32__akat_coroutine_state
 #define byte_to_send usart0_writer__byte_to_send
 #define crc usart0_writer__crc
@@ -19817,6 +19837,7 @@ akat_coroutine_l_end:
     return akat_coroutine_state;
 #undef __ph_adc_accum
 #undef __ph_adc_accum_samples
+#undef __ph_adc_bad_samples
 #undef akat_coroutine_state
 #undef byte_to_send
 #undef crc
@@ -19831,6 +19852,7 @@ akat_coroutine_l_end:
 static AKAT_FORCE_INLINE void usart0_writer() {
 #define __ph_adc_accum usart0_writer____ph_adc_accum
 #define __ph_adc_accum_samples usart0_writer____ph_adc_accum_samples
+#define __ph_adc_bad_samples usart0_writer____ph_adc_bad_samples
 #define akat_coroutine_state usart0_writer__akat_coroutine_state
 #define byte_to_send usart0_writer__byte_to_send
 #define crc usart0_writer__crc
@@ -20072,6 +20094,12 @@ static AKAT_FORCE_INLINE void usart0_writer() {
 
     case 75:
         goto akat_coroutine_l_75;
+
+    case 76:
+        goto akat_coroutine_l_76;
+
+    case 77:
+        goto akat_coroutine_l_77;
     }
 
 akat_coroutine_l_start:
@@ -20079,6 +20107,7 @@ akat_coroutine_l_start:
 
     do {
         //---- All variable in the thread must be static (green threads requirement)
+        ;
         ;
         ;
         ;
@@ -21010,9 +21039,11 @@ akat_coroutine_l_64:
             //messes up in the middle of the process.
             __ph_adc_accum = ph_adc_accum;
             __ph_adc_accum_samples = ph_adc_accum_samples;
+            __ph_adc_bad_samples = ph_adc_bad_samples;
             //Set to zero to start a new oversampling batch
             ph_adc_accum = 0;
             ph_adc_accum_samples = 0;
+            ph_adc_bad_samples = 0;
             //Write Voltage status... this might YIELD
             byte_to_send = ' ';
 
@@ -21084,9 +21115,7 @@ akat_coroutine_l_69:
             } while (0);
 
             ;
-            ;
-            //Protocol version
-            byte_to_send = ' ';
+            byte_to_send = ',';
 
             do {
                 akat_coroutine_state = 70;
@@ -21098,19 +21127,25 @@ akat_coroutine_l_70:
             } while (0);
 
             ;
-            u8_to_format_and_send = 0xc8;
+            /*
+              COMMPROTO: F3: PH Voltage: u16 __ph_adc_bad_samples
+              TS_PROTO_TYPE: "u16 __ph_adc_bad_samples": number,
+              TS_PROTO_ASSIGN: "u16 __ph_adc_bad_samples": vals["F3"],
+            */
+            u16_to_format_and_send = __ph_adc_bad_samples;
 
             do {
                 akat_coroutine_state = 71;
 akat_coroutine_l_71:
 
-                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
 
             ;
-            //Done writing status, send: CRC\r\n
+            ;
+            //Protocol version
             byte_to_send = ' ';
 
             do {
@@ -21123,7 +21158,7 @@ akat_coroutine_l_72:
             } while (0);
 
             ;
-            u8_to_format_and_send = crc;
+            u8_to_format_and_send = 0x21;
 
             do {
                 akat_coroutine_state = 73;
@@ -21135,8 +21170,8 @@ akat_coroutine_l_73:
             } while (0);
 
             ;
-            //Newline
-            byte_to_send = '\r';
+            //Done writing status, send: CRC\r\n
+            byte_to_send = ' ';
 
             do {
                 akat_coroutine_state = 74;
@@ -21148,11 +21183,36 @@ akat_coroutine_l_74:
             } while (0);
 
             ;
-            byte_to_send = '\n';
+            u8_to_format_and_send = crc;
 
             do {
                 akat_coroutine_state = 75;
 akat_coroutine_l_75:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            //Newline
+            byte_to_send = '\r';
+
+            do {
+                akat_coroutine_state = 76;
+akat_coroutine_l_76:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = '\n';
+
+            do {
+                akat_coroutine_state = 77;
+akat_coroutine_l_77:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21169,6 +21229,7 @@ akat_coroutine_l_end:
     return;
 #undef __ph_adc_accum
 #undef __ph_adc_accum_samples
+#undef __ph_adc_bad_samples
 #undef akat_coroutine_state
 #undef byte_to_send
 #undef crc

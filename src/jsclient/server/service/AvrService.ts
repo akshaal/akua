@@ -24,6 +24,7 @@ export interface AvrLightState {
 export interface AvrPhState {
     readonly voltage: number;
     readonly voltageSamples: number;
+    readonly badSamples: number;
 }
 
 export interface AvrTemperatureSensorState {
