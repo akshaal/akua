@@ -7,6 +7,7 @@ import { Co2ClosingState } from "server/service/PhPrediction";
 import DatabaseService, { Co2ClosingStateType } from "server/service/DatabaseService";
 import * as tf from 'server/service_impl/tf';
 import { createCo2ClosingStateFeaturesAndLabels, loadModelFromFile } from "server/service_impl/PhPredictionWorkerThread";
+import { writeFileSync } from "fs";
 
 // TODO: Need comments and cleanup!
 
@@ -85,7 +86,8 @@ export async function trainModelFromDataset(
 
         model = tf.sequential({
             layers: [
-                tf.layers.dense({ units: 40, inputDim: 46, activation: "tanh" }),
+                tf.layers.dense({ units: 60, inputDim: 46, activation: "tanh" }),
+                tf.layers.dropout({ rate: 0.4 }),
                 tf.layers.dense({ units: 30, activation: "tanh" }),
                 tf.layers.dense({ units: 20, activation: "tanh" }),
                 tf.layers.dense({ units: 5, activation: "tanh" }),
@@ -101,9 +103,20 @@ export async function trainModelFromDataset(
 
     model.compile({ loss: "meanSquaredError", optimizer });
 
-    await model.fitDataset(trainDataset, { epochs: 800000, verbose: 1, validationData: validDataset });
+    const result = await model.fitDataset(trainDataset, { epochs: 1000000, verbose: 1, validationData: validDataset });
 
     await model.save(minPhPredictionModelSaveLocation);
+
+    // Save learning history to plot it later
+    var historyFileContent = "";
+
+    for (var epoch of result.epoch) {
+        const loss = result.history.loss[epoch];
+        const val_loss = result.history.val_loss[epoch];
+        historyFileContent += `${epoch} ${loss} ${val_loss}\n`;
+    }
+
+    writeFileSync("../../temp/train-co2-log.dat", historyFileContent);
 }
 
 // ---------------------------------------------------------------
