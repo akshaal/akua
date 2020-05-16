@@ -3,7 +3,6 @@ import PhSensorService, { Ph } from "server/service/PhSensorService";
 import AvrService, { AvrPhState } from "server/service/AvrService";
 import { AveragingWindow } from "../misc/AveragingWindow";
 import { Observable, BehaviorSubject } from "rxjs";
-import { throws } from "assert";
 
 const KH = 4;
 const PH_SAMPLE_FREQUENCY = 7; // How many measurements per second our AVR performs
