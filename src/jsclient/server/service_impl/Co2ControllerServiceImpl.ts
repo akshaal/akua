@@ -22,8 +22,8 @@ const SEND_REQUIREMENTS_TO_AVR_EVERY_MS = 60_000;
 // Give value actuation a chance....
 const THROTTLE_TIME_MS = 5_000;
 
-// Don't allow it be open for too long to avoid overheating and stuff
-const CO2_MAX_OPEN_MINUTES = 20; // TODO: Change it to 1 hour!!!!!!!!!!!!!!!!!!!!!!
+// Don't allow it be open for too long to avoid overheating/"over-ventilation" and stuff
+const CO2_MAX_OPEN_MINUTES = 20;
 
 // Don't believe in predictions based upon first 30 seconds! It might be plain wrong.
 // (we also have resolutions of 15 seconds based upon data from grafana)

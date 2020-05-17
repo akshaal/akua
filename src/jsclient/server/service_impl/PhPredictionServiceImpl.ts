@@ -118,8 +118,6 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
                             const minPh600OffsetAfterClose =
                                 this._minPhAfterCloseForDatabaseSaving - this._lastCo2ClosingStateForDatabaseSaving.ph600AtClose;
 
-                            // TODO: Implement a formula that decides immediately whether this is a dev or test item...
-                            // TODO: In such a way that we don't evict old items from the validation set
                             this._databaseService.insertCo2ClosingState({
                                 ...this._lastCo2ClosingStateForDatabaseSaving,
                                 minPh600OffsetAfterClose
