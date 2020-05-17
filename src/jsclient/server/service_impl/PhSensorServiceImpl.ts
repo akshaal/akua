@@ -19,12 +19,13 @@ interface Calibration {
     ph2: number;
 }
 
-// 2020.03.26
+// 2020.03.26: 4.01=3.08v,             6.86=2.575
+// 2020.05.17: 4.01=3.09559736896566v, 6.86=2.5856278083541535
 const aqua1Calibration: Calibration = {
     ph1: 4.01,
-    v1: 3.085,
+    v1: 3.09559736896566,
     ph2: 6.86,
-    v2: 2.575
+    v2: 2.5856278083541535
 };
 
 // Depends on configuration (environment).
