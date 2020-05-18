@@ -11,6 +11,9 @@ import { Subscriptions } from "server/misc/Subscriptions";
 import TimeService from "server/service/TimeService";
 import { getElapsedSecondsSince } from "server/misc/get-elapsed-seconds-since";
 import PhPredictionService from "server/service/PhPredictionService";
+import RandomNumberService from "server/service/RandomNumberService";
+
+// TODO: Move constants to config!
 
 // TODO: Gradually change closing point:
 // TODO:   From 8:00 to 10:00 it must be change over time from 7.2 to 6.9 using exponential formula
@@ -23,7 +26,7 @@ const SEND_REQUIREMENTS_TO_AVR_EVERY_MS = 60_000;
 const THROTTLE_TIME_MS = 5_000;
 
 // Don't allow it be open for too long to avoid overheating/"over-ventilation" and stuff
-const CO2_MAX_OPEN_MINUTES = 20;
+const CO2_MAX_OPEN_MINUTES = 30;
 
 // Don't believe in predictions based upon first 30 seconds! It might be plain wrong.
 // (we also have resolutions of 15 seconds based upon data from grafana)
@@ -38,18 +41,30 @@ function isCo2Required(
         ph?: number | null,
         co2ValveOpen?: boolean | null,
         co2ValveOpenSeconds: number,
-        predictedMinPh?: number
+        predictedMinPh?: number,
+        co2MaxOpenSecondsForExplorationReason: number
     }
 ): boolean {
     if (!isPresent(state.ph) || !isPresent(state.co2ValveOpen)) {
         return false;
     }
 
-    if (state.co2ValveOpenSeconds > (CO2_MAX_OPEN_MINUTES * 60)) {
-        return false;
-    }
-
     if (state.co2ValveOpen) {
+        // CO2 Valve is currently open (CO2 is supplied into the tank)
+
+        // Hard limit on number of seconds
+        if (state.co2ValveOpenSeconds > (CO2_MAX_OPEN_MINUTES * 60)) {
+            return false;
+        }
+
+        // Give our AI some exploration space.. close the valve at some random times.
+        // This helps us have more diverse data. IF we close too soon, it's not a problem
+        // because the valve will soon be opened again.
+        if (state.co2MaxOpenSecondsForExplorationReason && state.co2ValveOpenSeconds > state.co2MaxOpenSecondsForExplorationReason) {
+            return false;
+        }
+
+        // Check predicted ph if present
         if (state.predictedMinPh && state.predictedMinPh <= config.phController.phToTurnOff) {
             // Avoid trusting pessimistic predictions based upon insufficient data
             if (state.co2ValveOpenSeconds > CO2_MIN_OPEN_SECONDS_TO_TRUST_PREDICTIONS) {
@@ -60,8 +75,12 @@ function isCo2Required(
             }
         }
 
+        // Keep open if current ph is greater than the configured ph-to-turn-off
         return state.ph > config.phController.phToTurnOff;
     } else {
+        // CO2 Valve is currently closed (CO2 is NOT supplied into the tank)
+
+        // Open if current ph is greater or equal to the configured ph-to-turn-on
         return state.ph >= config.phController.phToTurnOn;
     }
 }
@@ -71,10 +90,15 @@ export default class Co2ControllerServiceImpl extends Co2ControllerService {
     private readonly _subs = new Subscriptions();
     private _co2ValveOpenT?: Timestamp;
 
+    // How many seconds we can keep co2 valve open. This value is reconfigured
+    // each time we open CO2 valve. See _init method.
+    private _co2MaxOpenSecondsForExplorationReason: number = 0;
+
     constructor(
         private readonly _phSensorService: PhSensorService,
         private readonly _avrService: AvrService,
         private readonly _timeService: TimeService,
+        private readonly _randomNumberService: RandomNumberService,
         private readonly _phPredictionService: PhPredictionService,
         @optional() @inject("scheduler") private readonly _scheduler: SchedulerLike
     ) {
@@ -92,6 +116,9 @@ export default class Co2ControllerServiceImpl extends Co2ControllerService {
                 } else if (!this._co2ValveOpenT && avrState.co2ValveOpen) {
                     // Going from closed to open. Remember this moment
                     this._co2ValveOpenT = this._timeService.nowTimestamp();
+
+                    // Reconfigure the limit to some random value
+                    this._co2MaxOpenSecondsForExplorationReason = 1 + this._randomNumberService.next() * CO2_MAX_OPEN_MINUTES * 60;
                 }
             })
         );
@@ -134,7 +161,8 @@ export default class Co2ControllerServiceImpl extends Co2ControllerService {
                         ph,
                         co2ValveOpen,
                         co2ValveOpenSeconds,
-                        predictedMinPh
+                        predictedMinPh,
+                        co2MaxOpenSecondsForExplorationReason: this._co2MaxOpenSecondsForExplorationReason
                     });
                 }),
                 throttleTime(THROTTLE_TIME_MS)

@@ -22,6 +22,8 @@ import TimeService from "server/service/TimeService";
 import DatabaseService from "server/service/DatabaseService";
 import DatabaseServiceImpl from "./DatabaseServiceImpl";
 import logger from "server/logger";
+import RandomNumberService from "server/service/RandomNumberService";
+import RandomNumberServiceImpl from "./RandomNumberServiceImpl";
 
 type ContainerMode = 'cli-utils' | 'express-server';
 
@@ -29,6 +31,7 @@ export function createNewContainer(mode: ContainerMode): Container {
     const container = new Container();
 
     container.bind(TimeService).to(TimeServiceImpl).inSingletonScope();
+    container.bind(RandomNumberService).to(RandomNumberServiceImpl).inSingletonScope();
     container.bind(DatabaseService).to(DatabaseServiceImpl).inSingletonScope();
 
     logger.info("Injection container created in '" + mode + "' mode.");
