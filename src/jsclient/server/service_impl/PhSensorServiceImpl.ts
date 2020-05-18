@@ -58,6 +58,8 @@ class SensorProcessor {
     private _voltage600sWindow = new AveragingWindow(600, PH_SAMPLE_FREQUENCY);
     private _pendingAvrPhState?: AvrPhState;
 
+    // TODO: We also must skip next sample if the current one is a bad one!
+
     onNewAvrState(newState: AvrPhState) {
         const thisVoltageIsGood = newState.voltage < 4 && newState.voltage > 1 && !newState.badSamples;
 
