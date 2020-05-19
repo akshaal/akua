@@ -135,10 +135,12 @@ export function createCo2ClosingStateFeaturesAndLabels(state: Co2ClosingState): 
     const closedTimeDate = new Date(state.closeTime * 1000);
     const scaledMinutesSinceDayStart = (closedTimeDate.getUTCHours() * 60 + closedTimeDate.getUTCMinutes()) / (60.0 * 24.0);
 
-    var scaledOpenedSecondsAgo = state.openedSecondsAgo / (60 * 60 * 2);
-    if (scaledOpenedSecondsAgo > 1.0) {
-        scaledOpenedSecondsAgo = 1; // long time ago
-    }
+    // Commented out to avoid over-fitting to this particular value
+    // TODO: Re-enable it later when we have larger training set.
+    // var scaledOpenedSecondsAgo = state.openedSecondsAgo / (60 * 60 * 2);
+    // if (scaledOpenedSecondsAgo > 1.0) {
+    //    scaledOpenedSecondsAgo = 1; // long time ago
+    //}
 
     // XS: "Features" or "Input for neural network"
     const xs = [
@@ -146,7 +148,7 @@ export function createCo2ClosingStateFeaturesAndLabels(state: Co2ClosingState): 
         ...scaledPh60OffsetBeforeClose,
         scalePh(state.ph600AtClose),
         scaledMinutesSinceDayStart,
-        scaledOpenedSecondsAgo
+        //scaledOpenedSecondsAgo
     ];
 
     // YS: "Labels" or "Output for neural network"
