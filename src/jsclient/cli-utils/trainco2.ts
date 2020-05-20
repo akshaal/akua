@@ -72,7 +72,7 @@ export async function trainModelFromDataset(
     const trainDataset = prepareCo2ClosingStateTfDataset(params.trainingStates).batch(params.trainingStates.length).prefetch(1);
     const validDataset = prepareCo2ClosingStateTfDataset(params.validationStates).batch(params.validationStates.length).prefetch(1);
 
-    const learningRate = 5e-4;
+    const learningRate = 1e-5;
     //const learningRate = undefined;
 
     const optimizer = tf.train.adam(learningRate);
@@ -86,7 +86,8 @@ export async function trainModelFromDataset(
 
         model = tf.sequential({
             layers: [
-                tf.layers.dense({ units: 2, inputDim: 45, activation: "selu", kernelInitializer: 'leCunNormal' }),
+                tf.layers.dense({ units: 4, inputDim: 45, activation: "selu", kernelInitializer: 'leCunNormal' }),
+                tf.layers.dense({ units: 2, activation: "selu", kernelInitializer: 'leCunNormal' }),
                 tf.layers.dense({ units: 1, activation: "selu", kernelInitializer: 'leCunNormal' })
             ]
         });
@@ -140,7 +141,7 @@ async function train() {
     await trainModelFromDataset({
         trainingStates,
         validationStates,
-        retrain: false
+        retrain: true
     });
 
     exit(0);
