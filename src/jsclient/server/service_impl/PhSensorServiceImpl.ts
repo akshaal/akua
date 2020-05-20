@@ -8,7 +8,7 @@ import { Observable, BehaviorSubject } from "rxjs";
 const PH_SAMPLE_FREQUENCY = 7;
 
 // How many adjacent measurements to skip before and after the one marked as 'bad' (with noise in it).
-const PH_BAD_VALUE_ADJ_SKIPS = 10;
+const PH_BAD_VALUE_ADJ_SKIPS = 20;
 
 // TODO: Move to config
 const KH = 4;
