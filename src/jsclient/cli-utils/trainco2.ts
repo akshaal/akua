@@ -86,8 +86,10 @@ export async function trainModelFromDataset(
 
         model = tf.sequential({
             layers: [
-                tf.layers.dense({ units: 4, inputDim: 45, activation: "selu", kernelInitializer: 'leCunNormal' }),
-                tf.layers.dense({ units: 2, activation: "selu", kernelInitializer: 'leCunNormal' }),
+                tf.layers.dense({ units: 10, inputDim: 45, activation: "selu", kernelInitializer: 'leCunNormal' }),
+                tf.layers.dense({ units: 6, activation: "selu", kernelInitializer: 'leCunNormal' }),
+                tf.layers.dense({ units: 6, activation: "selu", kernelInitializer: 'leCunNormal' }),
+                tf.layers.dense({ units: 3, activation: "selu", kernelInitializer: 'leCunNormal' }),
                 tf.layers.dense({ units: 1, activation: "selu", kernelInitializer: 'leCunNormal' })
             ]
         });
@@ -141,7 +143,7 @@ async function train() {
     await trainModelFromDataset({
         trainingStates,
         validationStates,
-        retrain: true
+        retrain: false
     });
 
     exit(0);
