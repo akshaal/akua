@@ -517,6 +517,9 @@ export default class MetricsServiceImpl extends MetricsService {
 
     @postConstruct()
     _init() {
+        // Start with no value here!
+        minClosingPhPredictionGauge.remove();
+
         // Update summaries
         var lastObservedUptime: number | undefined;
 
@@ -534,7 +537,7 @@ export default class MetricsServiceImpl extends MetricsService {
 
         this._subs.add(
             this._phPredictionService.minClosingPhPrediction$.subscribe(minClosingPhPrediction => {
-                minClosingPhPredictionGauge.set(minClosingPhPrediction.predictedMinPh);
+                minClosingPhPredictionGauge.setOrRemove(minClosingPhPrediction.predictedMinPh);
                 minClosingPhPredictionSecondsUsedSummary.observe(minClosingPhPrediction.secondsUsedOnPrediction);
             })
         );
