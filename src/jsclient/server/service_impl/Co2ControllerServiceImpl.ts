@@ -14,6 +14,7 @@ import PhPredictionService from "server/service/PhPredictionService";
 import RandomNumberService from "server/service/RandomNumberService";
 
 // TODO: Move constants to config!
+// TODO: Implement safety check on ph60s to limit it to 6.5!
 
 // AVR is expecting that we notify it every minute
 const SEND_REQUIREMENTS_TO_AVR_EVERY_MS = 60_000;
@@ -43,7 +44,7 @@ export interface MinPhEquationParams {
 }
 
 export function calcMinPhEquationParams(phControllerConfig: PhControllerConfig): MinPhEquationParams {
-    // See above for a way to find this in 'Mixima'.
+    // See above for a way to find this in 'Maxima'.
     const t1 = phControllerConfig.dayPrepareHour;
     const t2 = phControllerConfig.dayStartHour;
     const t3 = phControllerConfig.dayEndHour;
