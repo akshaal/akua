@@ -9,6 +9,7 @@ import TemperatureSensorService, { Temperature } from "server/service/Temperatur
 import PhSensorService from "server/service/PhSensorService";
 import PhPredictionService from "server/service/PhPredictionService";
 import { Subscriptions } from "server/misc/Subscriptions";
+import Co2ControllerService from "server/service/Co2ControllerService";
 
 // Use constants for labels to avoid typos and to be consistent about names.
 const L_GC_TYPE = 'gc_type';
@@ -448,6 +449,16 @@ const minClosingPhPredictionSecondsUsedSummary = new Summary({
     percentiles: [0.1, 0.25, 0.5, 0.75, 0.9, 0.99, 0.999]
 });
 
+const phToTurnCo2OffGauge = new SimpleGauge({
+    name: 'akua_ph_to_turn_co2_off',
+    help: 'Minimum ph when co2 is allowed.'
+});
+
+const phToTurnCo2OnGauge = new SimpleGauge({
+    name: 'akua_ph_to_turn_co2_on',
+    help: 'Minimum ph when co2 can be turned on.'
+});
+
 // ==========================================================================================
 
 const co2ValveOpenGauge = new SimpleGauge({
@@ -510,7 +521,8 @@ export default class MetricsServiceImpl extends MetricsService {
         private readonly _avrService: AvrService,
         private readonly _temperatureSensorService: TemperatureSensorService,
         private readonly _phSensorService: PhSensorService,
-        private readonly _phPredictionService: PhPredictionService
+        private readonly _phPredictionService: PhPredictionService,
+        private readonly _co2ControllerService: Co2ControllerService
     ) {
         super();
     }
@@ -625,5 +637,9 @@ export default class MetricsServiceImpl extends MetricsService {
         phSensorVoltageGauge.setOrRemove(ph?.lastSensorState?.voltage);
         phSensorVoltageSamplesGauge.setOrRemove(ph?.lastSensorState?.voltageSamples);
         phBasedCo2Gauge.setOrRemove(ph?.phBasedCo2);
+
+        const phControlRange = this._co2ControllerService.getPhControlRange();
+        phToTurnCo2OffGauge.setOrRemove(phControlRange.phToTurnOff);
+        phToTurnCo2OnGauge.setOrRemove(phControlRange.phToTurnOn);
     }
 }

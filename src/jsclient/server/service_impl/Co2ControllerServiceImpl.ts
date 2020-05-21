@@ -1,11 +1,11 @@
 import { injectable, postConstruct, optional, inject } from "inversify";
 import PhSensorService from "server/service/PhSensorService";
-import Co2ControllerService from "server/service/Co2ControllerService";
+import Co2ControllerService, { PhControlRange } from "server/service/Co2ControllerService";
 import { combineLatest, timer, of, SchedulerLike } from "rxjs";
 import { map, distinctUntilChanged, startWith, throttleTime, skip, timeoutWith, repeat } from "rxjs/operators";
 import AvrService, { Co2ValveOpenState } from "server/service/AvrService";
 import { isPresent } from "../misc/isPresent";
-import config from "server/config";
+import config, { PhControllerConfig } from "server/config";
 import { Timestamp } from "server/misc/Timestamp";
 import { Subscriptions } from "server/misc/Subscriptions";
 import TimeService from "server/service/TimeService";
@@ -15,14 +15,10 @@ import RandomNumberService from "server/service/RandomNumberService";
 
 // TODO: Move constants to config!
 
-// TODO: Gradually change closing point:
-// TODO:   From 8:00 to 10:00 it must be change over time from 7.2 to 6.9 using exponential formula
-// TODO:   From 10 to 20:00 it must be change over time from 7.2 to 6.8 using exponential formula
-
 // AVR is expecting that we notify it every minute
 const SEND_REQUIREMENTS_TO_AVR_EVERY_MS = 60_000;
 
-// Give value actuation a chance....
+// Give value-actuation a chance....
 const THROTTLE_TIME_MS = 5_000;
 
 // Don't allow it be open for too long to avoid overheating/"over-ventilation" and stuff
@@ -35,6 +31,63 @@ const CO2_MIN_OPEN_SECONDS_TO_TRUST_PREDICTIONS = 2;
 // Timeout for values form upstream observables
 const OBS_TIMEOUT_MS = 60_000;
 
+// Solution (a, b, c , d) for the following equations, given f(t1) = ph1, f(t2) = ph2, f(t3) = ph3:
+// Maxima:
+//   optimize(solve([a * e^(100 / t1) + b = ph1, a * e^(100 / t2) + b = ph2], [a, b]));
+//   optimize(solve([c * e^(t2 / 2) + d = ph2, c * e^(t3 / 2) + d = ph3], [c, d]));
+export interface MinPhEquationParams {
+    a: number;
+    b: number;
+    c: number;
+    d: number;
+}
+
+export function calcMinPhEquationParams(phControllerConfig: PhControllerConfig): MinPhEquationParams {
+    // See above for a way to find this in 'Mixima'.
+    const t1 = phControllerConfig.dayPrepareHour;
+    const t2 = phControllerConfig.dayStartHour;
+    const t3 = phControllerConfig.dayEndHour;
+    const ph1 = phControllerConfig.dayEndPh;
+    const ph2 = phControllerConfig.dayStartPh;
+    const ph3 = phControllerConfig.dayEndPh;
+
+    const l1 = Math.exp(100 / t1);
+    const l2 = Math.exp(100 / t2);
+    const l3 = 1 / (l1 - l2);
+    const a = l3 * (ph1 - ph2);
+    const b = -l3 * (l2 * ph1 - l1 * ph2);
+
+    const m1 = Math.exp(t2 / 2);
+    const m2 = Math.exp(t3 / 2);
+    const m3 = 1 / (m1 - m2);
+    const c = m3 * (ph2 - ph3);
+    const d = -m3 * (m2 * ph2 - m1 * ph3);
+
+    return { a, b, c, d };
+}
+
+export function calcMinPh(config: PhControllerConfig, solution: MinPhEquationParams, hour: number): number | undefined {
+    // See above (about Maxima stuff)
+
+    if (hour < config.dayPrepareHour || hour > config.dayEndHour) {
+        return undefined;
+    }
+
+    if (hour < config.dayStartHour) {
+        return solution.a * Math.exp(100 / hour) + solution.b;
+    }
+
+    return solution.c * Math.exp(hour / 2) + solution.d;
+}
+
+const minPhEquationSolution = calcMinPhEquationParams(config.phController);
+
+function calcCurrentMinPh(): number | undefined {
+    const date = new Date();
+    const hour = date.getHours() + date.getMinutes() / 60 + date.getSeconds() / 3600;
+    return calcMinPh(config.phController, minPhEquationSolution, hour);
+}
+
 // Decide whether we must turn ph on or not
 function isCo2Required(
     state: {
@@ -45,9 +98,13 @@ function isCo2Required(
         co2MaxOpenSecondsForExplorationReason: number
     }
 ): boolean {
-    if (!isPresent(state.ph) || !isPresent(state.co2ValveOpen)) {
+    const phToTurnOff = calcCurrentMinPh();
+
+    if (!isPresent(state.ph) || !isPresent(state.co2ValveOpen) || !isPresent(phToTurnOff)) {
         return false;
     }
+
+    const phToTurnOn = phToTurnOff + config.phController.phTurnOnOffMargin;
 
     if (state.co2ValveOpen) {
         // CO2 Valve is currently open (CO2 is supplied into the tank)
@@ -64,8 +121,14 @@ function isCo2Required(
             return false;
         }
 
+        // Check against safe ph
+        if (state.ph <= config.phController.minSafePh) {
+            // Close
+            return false;
+        }
+
         // Check predicted ph if present
-        if (state.predictedMinPh && state.predictedMinPh <= config.phController.phToTurnOff) {
+        if (state.predictedMinPh && state.predictedMinPh <= phToTurnOff) {
             // Avoid trusting pessimistic predictions based upon insufficient data
             if (state.co2ValveOpenSeconds > CO2_MIN_OPEN_SECONDS_TO_TRUST_PREDICTIONS) {
                 // Turn of, because we predict that if we turn it off now, then
@@ -76,12 +139,12 @@ function isCo2Required(
         }
 
         // Keep open if current ph is greater than the configured ph-to-turn-off
-        return state.ph > config.phController.phToTurnOff;
+        return state.ph > phToTurnOff;
     } else {
         // CO2 Valve is currently closed (CO2 is NOT supplied into the tank)
 
         // Open if current ph is greater or equal to the configured ph-to-turn-on
-        return state.ph >= config.phController.phToTurnOn;
+        return state.ph >= phToTurnOn;
     }
 }
 
@@ -172,6 +235,14 @@ export default class Co2ControllerServiceImpl extends Co2ControllerService {
                 );
             })
         );
+    }
+
+    getPhControlRange(): PhControlRange {
+        const minPh = calcCurrentMinPh();
+        return {
+            phToTurnOff: minPh,
+            phToTurnOn: isPresent(minPh) ? (minPh + config.phController.phTurnOnOffMargin) : undefined
+        };
     }
 
     // Used in unit testing

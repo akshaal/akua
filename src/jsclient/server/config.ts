@@ -35,8 +35,13 @@ export interface ValueDisplayConfig {
 }
 
 export interface PhControllerConfig {
-    readonly phToTurnOff: number;
-    readonly phToTurnOn: number;
+    readonly minSafePh: number,
+    readonly phTurnOnOffMargin: number,
+    readonly dayPrepareHour: number,
+    readonly dayStartHour: number,
+    readonly dayEndHour: number,
+    readonly dayStartPh: number,
+    readonly dayEndPh: number,
 }
 
 export interface PhClosingPredictionConfig {
@@ -149,9 +154,15 @@ const co2Display: ValueDisplayConfig = {
     highRgbPcts: [100, 0, 0],
 };
 
+// TODO: Use data from AVR config! (the same way we do for protocol!)
 const phController: PhControllerConfig = {
-    phToTurnOff: 6.8,
-    phToTurnOn: 6.9,
+    phTurnOnOffMargin: 0.1,
+    minSafePh: 6.8,
+    dayPrepareHour: 8,
+    dayStartHour: 10,
+    dayEndHour: 22,
+    dayStartPh: 6.8,
+    dayEndPh: 7.2,
 };
 
 const phClosingPrediction: PhClosingPredictionConfig = {
