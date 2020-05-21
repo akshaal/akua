@@ -101,7 +101,7 @@ export async function trainModelFromDataset(
 
     model.compile({ loss: "meanSquaredError", optimizer });
 
-    const result = await model.fitDataset(trainDataset, { epochs: 400_000, verbose: 1, validationData: validDataset });
+    const result = await model.fitDataset(trainDataset, { epochs: 100_000, verbose: 1, validationData: validDataset });
 
     await model.save(minPhPredictionModelLocationForCli);
 
