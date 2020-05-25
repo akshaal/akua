@@ -11,12 +11,15 @@ describe('PhPredictionWorkerThread', () => {
         const request: MinPhPredictionRequest = {
             type: 'min-ph-prediction-request',
             co2ClosingState: createCo2ClosingState({
-                tClose: now,
+                closeTime: now,
                 openedSecondsAgo: 15,
                 minPh600: 7, // doesn't matter
                 origin: Co2ClosingStateOrigin.ThisInstance,
                 getPh600: (t: number) => 7.2 - (now - t) / 600,
                 getPh60: (t: number) => 7.18 - (now - t) / 600,
+                getTemperature: (_t: number) => undefined,  // TODO: !!!!!!!!!
+                isDayLightOn: (_t: number) => undefined,  // TODO: !!!!!!!!!
+                isCo2ValveOpen: (_t: number) => undefined,  // TODO: !!!!!!!!!
             }) as any
         };
 

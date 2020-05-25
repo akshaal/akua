@@ -1,4 +1,11 @@
 import { Timestamp } from "server/misc/Timestamp";
+import { isPresent } from "server/misc/isPresent";
+
+// More minutes, slower training
+export const PH_PREDICTION_WINDOW_MINUTES = 15;
+
+// 4 samples per minute (to match be able to used data fetched from prometheus)
+export const PH_PREDICTION_WINDOW_LENGTH = 4 * PH_PREDICTION_WINDOW_MINUTES;
 
 /**
  * Message that is sent from PhPredictionServiceImpl to PhPredictionWorkerThread
@@ -60,10 +67,12 @@ export interface Co2ClosingState {
      */
     openedSecondsAgo: number;
 
-    // Ph values
+    // values
     ph600AtClose: number;
-    ph600OffsetsBeforeClose: number[];
-    ph60OffsetsBeforeClose: number[];
+    ph60Offset15sInterval: number[];
+    temperature15sInterval: number[];
+    dayLightOn15sInterval: boolean[];
+    co2ValveOpen15sInterval: boolean[];
 
     // Close-action output (result of close operation) - - - - - - - 
 
@@ -77,66 +86,73 @@ export interface Co2ClosingState {
  * Attempts to create Co2ClosingState for the time t.
  */
 export function createCo2ClosingState(params: {
-    tClose: number,
+    closeTime: number,
     openedSecondsAgo: number,
     minPh600: number,
     origin: Co2ClosingStateOrigin,
-    getPh600(t: number): number,
-    getPh60(t: number): number,
+    getPh600(t: number): number | null | undefined,
+    getPh60(t: number): number | null | undefined,
+    getTemperature(t: number): number | null | undefined,
+    isDayLightOn(t: number): boolean | null | undefined,
+    isCo2ValveOpen(t: number): boolean | null | undefined,
 }): Co2ClosingState | null {
-    const { tClose, openedSecondsAgo, getPh600, getPh60, origin, minPh600 } = params;
+    const {
+        closeTime,
+        openedSecondsAgo,
+        getPh600,
+        getPh60,
+        origin,
+        minPh600,
+        getTemperature,
+        isDayLightOn,
+        isCo2ValveOpen
+    } = params;
 
-    const ph600AtTClose = getPh600(tClose);
-
-    const histPh600 = [];
-    const histPh60 = [];
-
-    // Use Ph60 values: 0, 15, 30, 45,  60, 75, 90, 105 seconds ago
-    // Use Ph600 values: 15, 30, 45,  60, 75, 90, 105 seconds ago
-    // (we don't use ph600 0 seconds ago because offset will be zero from the ph600AtTClose)
-    for (var s = 0; s < 8; s += 1) {
-        const ph60AtM = getPh60(tClose - 15 * s);
-        histPh60.unshift(ph60AtM - ph600AtTClose);
-
-        if (ph60AtM === undefined || ph60AtM < 5 || ph60AtM > 9) {
-            return null;
-        }
-
-        if (s !== 0) {
-            const ph600AtM = getPh600(tClose - 15 * s);
-            histPh600.unshift(ph600AtM - ph600AtTClose);
-
-            if (ph600AtM === undefined || ph600AtM < 5 || ph600AtM > 9) {
-                return null;
-            }
-        }
+    const ph600AtClose = getPh600(closeTime);
+    if (!isPresent(ph600AtClose)) {
+        return null;
     }
 
-    // Use Ph60/Ph600 values: every minutes for 15 minutes back (14 values, skipping first 1 minute)
-    for (var m = 2; m < 16; m += 1) {
-        const ph600AtM = getPh600(tClose - 60 * m);
-        const ph60AtM = getPh60(tClose - 60 * m);
+    const ph60Offset15sInterval: number[] = [];
+    const temperature15sInterval: number[] = [];
+    const dayLightOn15sInterval: boolean[] = [];
+    const co2ValveOpen15sInterval: boolean[] = [];
 
-        histPh600.unshift(ph600AtM - ph600AtTClose);
-        histPh60.unshift(ph60AtM - ph600AtTClose);
+    for (var s = 0; s < PH_PREDICTION_WINDOW_LENGTH; s += 1) {
+        const m = closeTime - 15 * s;
+        const ph60AtM = getPh60(m);
+        const tempAtM = getTemperature(m);
+        const dayLightOnAtM = isDayLightOn(m);
+        const co2ValveOpenAtM = isCo2ValveOpen(m);
 
-        if (ph600AtM === undefined || ph600AtM < 5 || ph600AtM > 9) {
+        if (!isPresent(ph60AtM) || ph60AtM < 5 || ph60AtM > 9) {
             return null;
         }
 
-        if (ph60AtM === undefined || ph60AtM < 5 || ph60AtM > 9) {
+        if (!isPresent(tempAtM) || tempAtM < 10 || tempAtM > 40) {
             return null;
         }
+
+        if (!isPresent(co2ValveOpenAtM) || !isPresent(dayLightOnAtM)) {
+            return null;
+        }
+
+        ph60Offset15sInterval.unshift(ph60AtM - ph600AtClose);
+        temperature15sInterval.unshift(tempAtM);
+        dayLightOn15sInterval.unshift(dayLightOnAtM);
+        co2ValveOpen15sInterval.unshift(co2ValveOpenAtM);
     }
 
     return {
         origin,
         openedSecondsAgo,
-        closeTime: tClose,
-        ph600AtClose: ph600AtTClose,
-        ph600OffsetsBeforeClose: histPh600,
-        ph60OffsetsBeforeClose: histPh60,
-        minPh600OffsetAfterClose: minPh600 - ph600AtTClose
+        closeTime,
+        ph600AtClose,
+        ph60Offset15sInterval,
+        temperature15sInterval,
+        dayLightOn15sInterval,
+        co2ValveOpen15sInterval,
+        minPh600OffsetAfterClose: minPh600 - ph600AtClose
     };
 }
 

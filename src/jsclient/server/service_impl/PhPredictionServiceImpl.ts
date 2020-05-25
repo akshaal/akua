@@ -211,12 +211,15 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
         const tClose = this._timeService.nowRoundedSeconds();
         const co2ClosingState =
             createCo2ClosingState({
-                tClose,
+                closeTime: tClose,
                 openedSecondsAgo: getElapsedSecondsSince(this._co2ValveOpenT),
                 minPh600: 7, // doesn't matter
                 origin: Co2ClosingStateOrigin.ThisInstance,
                 getPh600: (t: number) => this._ph600sMap[t],
                 getPh60: (t: number) => this._ph60sMap[t],
+                getTemperature: (_t: number) => undefined,  // TODO: !!!!!!!!!
+                isDayLightOn: (_t: number) => undefined,  // TODO: !!!!!!!!!
+                isCo2ValveOpen: (_t: number) => undefined,  // TODO: !!!!!!!!!
             });
 
         this._lastCo2ClosingStateForDatabaseSaving = co2ClosingState;
