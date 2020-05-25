@@ -31,11 +31,11 @@ if (!config.isDev) {
 const container = createNewContainer('cli-utils');
 const databaseService = container.get(DatabaseService);
 
-function sleep(ms: number) {
+/*function sleep(ms: number) {
     return new Promise((resolve) => {
         setTimeout(resolve, ms);
     });
-}
+}*/
 
 // ========================================================================================
 
@@ -237,11 +237,14 @@ export async function trainModelFromDataset(
     // TODO: Cleanup.... and describe and so on
 
     // TODO: Crappy code... tune batch sizes and stuff... move it to prepare code... blah blah blah
-    const trainDataset = prepareCo2ClosingStateTfDataset(params.trainingStates).batch(params.trainingStates.length).prefetch(1);
+    const trainBatchSize = params.trainingStates.length;
+
+    const trainDataset = prepareCo2ClosingStateTfDataset(params.trainingStates).batch(trainBatchSize).prefetch(1);
     const validDataset = prepareCo2ClosingStateTfDataset(params.validationStates).batch(params.validationStates.length).prefetch(1);
 
-    const learningRate = 4e-4;
-    //const learningRate = 1e-5;
+    //const learningRate = 5e-4;
+    const learningRate = 8e-5;
+    //const learningRate = 5e-5;
     //const learningRate = undefined;
 
     const optimizer = tf.train.adam(learningRate);
@@ -255,12 +258,11 @@ export async function trainModelFromDataset(
 
         model = tf.sequential({
             layers: [
-                tf.layers.lstm({
+                tf.layers.gru({
                     units: 8,
                     activation: "selu",
                     kernelInitializer: 'leCunNormal',
-                    inputShape: [PH_PREDICTION_WINDOW_LENGTH, 5],
-                    unitForgetBias: true
+                    inputShape: [PH_PREDICTION_WINDOW_LENGTH, 5]
                 }),
                 tf.layers.dense({ units: 3, activation: "selu", kernelInitializer: 'leCunNormal' }),
                 tf.layers.dense({ units: 1, activation: "selu", kernelInitializer: 'leCunNormal' })
@@ -275,7 +277,7 @@ export async function trainModelFromDataset(
     model.compile({ loss: "meanSquaredError", optimizer });
     model.summary();
 
-    const result = await model.fitDataset(trainDataset, { epochs: 3_000, verbose: 1, validationData: validDataset });
+    const result = await model.fitDataset(trainDataset, { epochs: 5_000, verbose: 1, validationData: validDataset });
 
     await model.save(minPhPredictionModelLocationForCli);
 
@@ -312,7 +314,7 @@ async function train() {
 
     console.log("Training states: " + trainingStates.length + ".  Validation states: " + validationStates.length + ".");
 
-    await sleep(3000);
+    //await sleep(3000);
 
     await trainModelFromDataset({
         trainingStates,
