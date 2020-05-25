@@ -6,7 +6,8 @@ import {
     Co2ClosingStateOrigin,
     MessageToPhPredictionWorker,
     MinPhPredictionRequest,
-    MinPhPredictionResponse
+    MinPhPredictionResponse,
+    PH_PREDICTION_WINDOW_LENGTH
 } from '../service/PhPrediction';
 
 import { parentPort } from 'worker_threads';
@@ -34,21 +35,6 @@ const minPhPredictionModelLoadLocation = asUrl(config.bindOptions) + "/ui/model.
 const minPhPredictionModelPromise: Promise<tf.LayersModel> = parentPort ? loadModelFromFile() : new Promise(() => { });
 
 /**
- * Rescale PH value to a normalized value that is used in TensorFlow network.
- */
-function scalePh(ph: number): number {
-    if (ph > 8) {
-        return 1;
-    }
-
-    if (ph < 6) {
-        return 0;
-    }
-
-    return (ph - 6) / 2.0;
-}
-
-/**
  * Rescale PH difference to a normalized value that is used in TensorFlow network.
  */
 function scalePhOffset(diff: number): number {
@@ -66,6 +52,36 @@ function scalePhOffset(diff: number): number {
 }
 
 /**
+ * Rescale PH value to a normalized value that is used in TensorFlow network.
+ */
+function scalePh(ph: number): number {
+    if (ph > 8) {
+        return 1;
+    }
+
+    if (ph < 6) {
+        return 0;
+    }
+
+    return (ph - 6) / 2.0;
+}
+
+/**
+ * Rescale temperature value to a normalized value that is used in TensorFlow network.
+ */
+function scaleTemperature(temp: number): number {
+    if (temp > 40) {
+        return 1;
+    }
+
+    if (temp < 0) {
+        return 0;
+    }
+
+    return temp / 40;
+}
+
+/**
  * Reverse scalePhOffset operation. Convert from value prepared to NN back to normal PH difference.
  */
 function descalePhOffset(scaledDiff: number): number {
@@ -78,7 +94,7 @@ function descalePhOffset(scaledDiff: number): number {
  * Translates state into features (inputs) and labels (outputs)
  * returns null if data is invalid
  */
-export function createCo2ClosingStateFeaturesAndLabels(state: Co2ClosingState): null | { xs: number[], ys: number[] } {
+export function createCo2ClosingStateFeaturesAndLabels(state: Co2ClosingState): null | { xs: number[][], ys: number[] } {
     // Validate state data
 
     if (!state.closeTime) {
@@ -101,55 +117,63 @@ export function createCo2ClosingStateFeaturesAndLabels(state: Co2ClosingState): 
         return null;
     }
 
-    if (state.ph600OffsetsBeforeClose.length != 21) {
-        logger.error("PhPredict: Strange ph600-offset-before-close", { state });
+    if (state.ph60Offset15sInterval.length != PH_PREDICTION_WINDOW_LENGTH) {
+        logger.error("PhPredict: Strange ph60-array", { state });
         return null;
     }
 
-    if (state.ph60OffsetsBeforeClose.length != 22) {
-        logger.error("PhPredict: Strange ph60-offset-before-close", { state });
+    if (state.temperature15sInterval.length != PH_PREDICTION_WINDOW_LENGTH) {
+        logger.error("PhPredict: Strange temperature array", { state });
         return null;
     }
 
-    for (var i = 0; i < 18; i++) {
-        const ph600Offset = state.ph600OffsetsBeforeClose[i];
-        if (ph600Offset < -4 || ph600Offset > 4 || typeof ph600Offset != "number") {
-            logger.error("PhPredict: Strange value in ph600-offset-before-close", { state });
-            return null;
-        }
+    if (state.dayLightOn15sInterval.length != PH_PREDICTION_WINDOW_LENGTH) {
+        logger.error("PhPredict: Strange day light array", { state });
+        return null;
     }
 
-    for (var i = 0; i < 19; i++) {
-        const ph60Offset = state.ph60OffsetsBeforeClose[i];
-        if (ph60Offset < -4 || ph60Offset > 4 || typeof ph60Offset != "number") {
+    if (state.co2ValveOpen15sInterval.length != PH_PREDICTION_WINDOW_LENGTH) {
+        logger.error("PhPredict: Strange co2 valve open array", { state });
+        return null;
+    }
+
+    // -----------------------------------------------------------------
+
+    const xs: number[][] = [];
+
+    for (var i = 0; i < PH_PREDICTION_WINDOW_LENGTH; i++) {
+        const ph60Offset = state.ph60Offset15sInterval[i];
+        if (ph60Offset < -4 || ph60Offset > 4 || typeof ph60Offset !== "number") {
             logger.error("PhPredict: Strange value in ph60-offset-before-close", { state });
             return null;
         }
+
+        const temp = state.temperature15sInterval[i];
+        if (temp < 10 || temp > 40 || typeof temp !== "number") {
+            logger.error("PhPredict: Strange value in temperatures array", { state });
+            return null;
+        }
+
+        const co2ValveOpen = state.co2ValveOpen15sInterval[i];
+        if (typeof co2ValveOpen !== "boolean") {
+            logger.error("PhPredict: Strange value in co2ValveOpen array", { state });
+            return null;
+        }
+
+        const dayLightOn = state.dayLightOn15sInterval[i];
+        if (typeof dayLightOn !== "boolean") {
+            logger.error("PhPredict: Strange value in dayLightOn array", { state });
+            return null;
+        }
+
+        xs.push([
+            scalePh(state.ph600AtClose),
+            scalePhOffset(ph60Offset),
+            scaleTemperature(temp),
+            dayLightOn ? 1 : 0,
+            co2ValveOpen ? 1 : 0,
+        ]);
     }
-
-    // Add validated state into data array that will be used to create dataset for tensorflow
-    const scaledPh600OffsetBeforeClose = state.ph600OffsetsBeforeClose.map(scalePhOffset);
-    const scaledPh60OffsetBeforeClose = state.ph60OffsetsBeforeClose.map(scalePhOffset);
-
-    // This might affect forecast
-    const closedTimeDate = new Date(state.closeTime * 1000);
-    const scaledMinutesSinceDayStart = (closedTimeDate.getUTCHours() * 60 + closedTimeDate.getUTCMinutes()) / (60.0 * 24.0);
-
-    // Commented out to avoid over-fitting to this particular value
-    // TODO: Re-enable it later when we have larger training set.
-    // var scaledOpenedSecondsAgo = state.openedSecondsAgo / (60 * 60 * 2);
-    // if (scaledOpenedSecondsAgo > 1.0) {
-    //    scaledOpenedSecondsAgo = 1; // long time ago
-    //}
-
-    // XS: "Features" or "Input for neural network"
-    const xs = [
-        ...scaledPh600OffsetBeforeClose,
-        ...scaledPh60OffsetBeforeClose,
-        scalePh(state.ph600AtClose),
-        scaledMinutesSinceDayStart,
-        //scaledOpenedSecondsAgo
-    ];
 
     // YS: "Labels" or "Output for neural network"
     const ys = [scalePhOffset(state.minPh600OffsetAfterClose)];
@@ -182,7 +206,7 @@ function onPhPredictionRequest(request: MinPhPredictionRequest) {
     }
 
     minPhPredictionModelPromise.then(model => {
-        const tfPrediction = model.predict(tf.tensor2d([featuresAndLabels.xs])) as tf.Tensor;
+        const tfPrediction = model.predict(tf.tensor3d([featuresAndLabels.xs])) as tf.Tensor;
 
         tfPrediction.array().then((tfPredictionArray: any) => {
             const predicatedScaledDiff = tfPredictionArray[0][0];

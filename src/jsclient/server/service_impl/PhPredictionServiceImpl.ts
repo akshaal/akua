@@ -14,6 +14,7 @@ import { isPresent } from "server/misc/isPresent";
 import DatabaseService, { Co2ClosingStateType } from "server/service/DatabaseService";
 import config from "server/config";
 import _ from "lodash";
+import TemperatureSensorService from "server/service/TemperatureSensorService";
 
 // TODO: More comments and tests!
 
@@ -25,6 +26,9 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
     // These maps are cleanup up at midnight.
     private _ph600sMap: { [t: number]: number } = {};
     private _ph60sMap: { [t: number]: number } = {};
+    private _temperatureMap: { [t: number]: number } = {};
+    private _co2ValveOpenMap: { [t: number]: boolean } = {};
+    private _dayLightOnMap: { [t: number]: boolean } = {};
 
     // Last known state of CO2-valve switch
     private _co2ValveOpen: boolean = false;
@@ -42,6 +46,7 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
         private readonly _phSensorService: PhSensorService,
         private readonly _avrService: AvrService,
         private readonly _databaseService: DatabaseService,
+        private readonly _temperatureSensorService: TemperatureSensorService,
         @optional() @inject("scheduler") private readonly _scheduler: SchedulerLike
     ) {
         super();
@@ -65,19 +70,30 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
             }
         });
 
+        // We need temperature
+        this._subs.add(
+            this._temperatureSensorService.aquariumTemperature$.subscribe(tempObj => {
+                const temp = tempObj?.value;
+                if (temp) {
+                    const tNow = this._timeService.nowRoundedSeconds();
+                    this._temperatureMap[tNow] = temp;
+                }
+            })
+        );
+
         // We need PH values
         this._subs.add(
             this._phSensorService.ph$.subscribe(ph => {
-                const t = this._timeService.nowRoundedSeconds();
+                const tNow = this._timeService.nowRoundedSeconds();
                 const ph600s = ph?.value600s;
                 const ph60s = ph?.value60s;
 
                 if (ph600s) {
-                    this._ph600sMap[t] = ph600s;
+                    this._ph600sMap[tNow] = ph600s;
                 }
 
                 if (ph60s) {
-                    this._ph60sMap[t] = ph60s;
+                    this._ph60sMap[tNow] = ph60s;
                 }
 
                 if (this._lastCo2ClosingStateForDatabaseSaving && ph600s) {
@@ -88,18 +104,23 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
             })
         );
 
-        // We need CO2 valve switch state
+        // We need CO2 valve switch state and also light state
         // We also use this one to save predictions and stuff
         // TODO: Simplify and move to some other place, tests....
         this._subs.add(
             this._avrService.avrState$.subscribe(avrState => {
+                const tNow = this._timeService.nowRoundedSeconds();
+                this._co2ValveOpenMap[tNow] = avrState.co2ValveOpen;
+                this._dayLightOnMap[tNow] = avrState.light.dayLightOn;
+
+                // Do stuff based upon co2 valve state
                 if (this._co2ValveOpen && !avrState.co2ValveOpen) {
                     // Going from open to closed
                     this._co2ValveOpenT = undefined;
 
                     // Prevent using stale stuff
                     if (this._lastCo2ClosingStateForDatabaseSaving) {
-                        const createdSecondsAgo = this._timeService.nowRoundedSeconds() - this._lastCo2ClosingStateForDatabaseSaving.closeTime;
+                        const createdSecondsAgo = tNow - this._lastCo2ClosingStateForDatabaseSaving.closeTime;
                         if (createdSecondsAgo > 10) {
                             logger.error("Stale lastCo2ClosingStateForDatabaseSaving!", { state: this._lastCo2ClosingStateForDatabaseSaving });
                             this._lastCo2ClosingStateForDatabaseSaving = undefined;
@@ -111,7 +132,7 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
 
                     // Save co2 closing state and its outcome in the database
                     if (this._lastCo2ClosingStateForDatabaseSaving && this._minPhAfterCloseForDatabaseSaving) {
-                        const createdSecondsAgo = this._timeService.nowRoundedSeconds() - this._lastCo2ClosingStateForDatabaseSaving.closeTime;
+                        const createdSecondsAgo = tNow - this._lastCo2ClosingStateForDatabaseSaving.closeTime;
 
                         // TODO: Move to config
                         if (createdSecondsAgo < (7 * 60 * 60)) {
@@ -181,6 +202,9 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
         // because we need the history only at CO2-day time and only for last 15 or so minutes.
         this._ph600sMap = {};
         this._ph60sMap = {};
+        this._temperatureMap = {};
+        this._dayLightOnMap = {};
+        this._co2ValveOpenMap = {};
     }
 
     // Used in unit testing
@@ -211,12 +235,15 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
         const tClose = this._timeService.nowRoundedSeconds();
         const co2ClosingState =
             createCo2ClosingState({
-                tClose,
+                closeTime: tClose,
                 openedSecondsAgo: getElapsedSecondsSince(this._co2ValveOpenT),
                 minPh600: 7, // doesn't matter
                 origin: Co2ClosingStateOrigin.ThisInstance,
                 getPh600: (t: number) => this._ph600sMap[t],
                 getPh60: (t: number) => this._ph60sMap[t],
+                getTemperature: (t: number) => this._temperatureMap[t],
+                isDayLightOn: (t: number) => this._dayLightOnMap[t],
+                isCo2ValveOpen: (t: number) => t == tClose ? false : this._co2ValveOpenMap[t],
             });
 
         this._lastCo2ClosingStateForDatabaseSaving = co2ClosingState;
