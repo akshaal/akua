@@ -8,9 +8,9 @@ mkdir -p temp/db
 
 PH_CLOSING_DB=temp/db/ph-closing-state.db
 
-#rm -f "$PH_CLOSING_DB"
+rm -f "$PH_CLOSING_DB"
 
-#curl http://192.168.1.10:3000/db/ph-closing-state.db -o "$PH_CLOSING_DB"
+curl http://192.168.1.10:3000/db/ph-closing-state.db -o "$PH_CLOSING_DB"
 
 cd src/jsclient
 
