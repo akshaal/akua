@@ -110,6 +110,7 @@ export function createCo2ClosingState(params: {
 
     const ph600AtClose = getPh600(closeTime);
     if (!isPresent(ph600AtClose)) {
+        console.log("XXXXX1");
         return null;
     }
 
@@ -126,14 +127,17 @@ export function createCo2ClosingState(params: {
         const co2ValveOpenAtM = isCo2ValveOpen(m);
 
         if (!isPresent(ph60AtM) || ph60AtM < 5 || ph60AtM > 9) {
+            console.log("XXXXX2");
             return null;
         }
 
         if (!isPresent(tempAtM) || tempAtM < 10 || tempAtM > 40) {
+            console.log("XXXXX3");
             return null;
         }
 
         if (!isPresent(co2ValveOpenAtM) || !isPresent(dayLightOnAtM)) {
+            console.log("XXXXX4");
             return null;
         }
 

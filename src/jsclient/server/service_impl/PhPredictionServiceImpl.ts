@@ -60,6 +60,7 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
         // React on messages from worker thread
         this._worker.on('message', (message: MessageFromPhPredictionWorker) => {
             if (message.type === 'min-ph-prediction-response') {
+                console.log("PPP", message.minPhPrediction, getElapsedSecondsSince(message.requestTimestamp));
                 this.minClosingPhPrediction$.next({
                     predictedMinPh: message.minPhPrediction,
                     secondsUsedOnPrediction: getElapsedSecondsSince(message.requestTimestamp),
@@ -121,6 +122,7 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
                     // Prevent using stale stuff
                     if (this._lastCo2ClosingStateForDatabaseSaving) {
                         const createdSecondsAgo = tNow - this._lastCo2ClosingStateForDatabaseSaving.closeTime;
+
                         if (createdSecondsAgo > 10) {
                             logger.error("Stale lastCo2ClosingStateForDatabaseSaving!", { state: this._lastCo2ClosingStateForDatabaseSaving });
                             this._lastCo2ClosingStateForDatabaseSaving = undefined;
@@ -130,14 +132,20 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
                     // Going from closed to open. Remember this moment
                     this._co2ValveOpenT = this._timeService.nowTimestamp();
 
+                    console.log("YYYY5", this._lastCo2ClosingStateForDatabaseSaving, this._minPhAfterCloseForDatabaseSaving);
+                    
                     // Save co2 closing state and its outcome in the database
                     if (this._lastCo2ClosingStateForDatabaseSaving && this._minPhAfterCloseForDatabaseSaving) {
                         const createdSecondsAgo = tNow - this._lastCo2ClosingStateForDatabaseSaving.closeTime;
+
+                        console.log("YYYY6", createdSecondsAgo);
 
                         // TODO: Move to config
                         if (createdSecondsAgo < (7 * 60 * 60)) {
                             const minPh600OffsetAfterClose =
                                 this._minPhAfterCloseForDatabaseSaving - this._lastCo2ClosingStateForDatabaseSaving.ph600AtClose;
+
+                            console.log("YYYY7", this._lastCo2ClosingStateForDatabaseSaving);
 
                             this._databaseService.insertCo2ClosingState({
                                 ...this._lastCo2ClosingStateForDatabaseSaving,
@@ -200,6 +208,7 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
     private _cleanupHistoryMaps(): void {
         // It's not a problem to just remove everything from the map
         // because we need the history only at CO2-day time and only for last 15 or so minutes.
+        console.log("ZZZZZ");
         this._ph600sMap = {};
         this._ph60sMap = {};
         this._temperatureMap = {};
@@ -231,6 +240,8 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
             return;
         }
 
+        console.log("YYYY1");
+
         // Create CO2 Closing state which will be used by working thread to do prediction
         const tClose = this._timeService.nowRoundedSeconds();
         const co2ClosingState =
@@ -248,6 +259,8 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
 
         this._lastCo2ClosingStateForDatabaseSaving = co2ClosingState;
         this._minPhAfterCloseForDatabaseSaving = this._ph600sMap[tClose];
+
+        console.log("YYYY2", co2ClosingState);
 
         // Just emit previous prediction if we don't have enough information yet
         if (!co2ClosingState) {
