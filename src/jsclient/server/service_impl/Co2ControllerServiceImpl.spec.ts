@@ -5,7 +5,8 @@ import { PhControllerConfig } from "server/config";
 
 const phControllerConfig4Test: PhControllerConfig = {
     phTurnOnOffMargin: 0.1,
-    minSafePh: 6.8,
+    minSafePh600: 6.8,
+    minSafePh60: 6.5,
     dayPrepareHour: 8,
     dayStartHour: 10,
     dayEndHour: 22,

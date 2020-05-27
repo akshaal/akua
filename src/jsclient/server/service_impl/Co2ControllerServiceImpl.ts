@@ -92,7 +92,8 @@ function calcCurrentMinPh(): number | undefined {
 // Decide whether we must turn ph on or not
 function isCo2Required(
     state: {
-        ph?: number | null,
+        ph600?: number | null,
+        ph60?: number | null,
         co2ValveOpen?: boolean | null,
         co2ValveOpenSeconds: number,
         predictedMinPh?: number,
@@ -101,7 +102,7 @@ function isCo2Required(
 ): boolean {
     const phToTurnOff = calcCurrentMinPh();
 
-    if (!isPresent(state.ph) || !isPresent(state.co2ValveOpen) || !isPresent(phToTurnOff)) {
+    if (!isPresent(state.ph600) || !isPresent(state.ph60) || !isPresent(state.co2ValveOpen) || !isPresent(phToTurnOff)) {
         return false;
     }
 
@@ -123,7 +124,12 @@ function isCo2Required(
         }
 
         // Check against safe ph
-        if (state.ph <= config.phController.minSafePh) {
+        if (state.ph600 <= config.phController.minSafePh600) {
+            // Close
+            return false;
+        }
+
+        if (state.ph60 <= config.phController.minSafePh60) {
             // Close
             return false;
         }
@@ -140,12 +146,12 @@ function isCo2Required(
         }
 
         // Keep open if current ph is greater than the configured ph-to-turn-off
-        return state.ph > phToTurnOff;
+        return state.ph600 > phToTurnOff;
     } else {
         // CO2 Valve is currently closed (CO2 is NOT supplied into the tank)
 
         // Open if current ph is greater or equal to the configured ph-to-turn-on
-        return state.ph >= phToTurnOn;
+        return state.ph600 >= phToTurnOn;
     }
 }
 
@@ -188,6 +194,7 @@ export default class Co2ControllerServiceImpl extends Co2ControllerService {
         );
 
         // State changer
+        // TODO: Make a custom pipe or something to avoid this boring repeating pattern!
         this._subs.add(
             combineLatest([
                 this._phSensorService.ph$.pipe(
@@ -195,6 +202,14 @@ export default class Co2ControllerServiceImpl extends Co2ControllerService {
                     timeoutWith(OBS_TIMEOUT_MS, of(undefined), this._scheduler), // protect against stale data
                     repeat(), // resubscribe in case of timeout or error
                     map(ph => ph?.value600s),
+                    distinctUntilChanged(),
+                    startWith(undefined)
+                ),
+                this._phSensorService.ph$.pipe(
+                    skip(1), // to avoid hot value
+                    timeoutWith(OBS_TIMEOUT_MS, of(undefined), this._scheduler), // protect against stale data
+                    repeat(), // resubscribe in case of timeout or error
+                    map(ph => ph?.value60s),
                     distinctUntilChanged(),
                     startWith(undefined)
                 ),
@@ -218,11 +233,12 @@ export default class Co2ControllerServiceImpl extends Co2ControllerService {
                 ),
                 timer(0, SEND_REQUIREMENTS_TO_AVR_EVERY_MS)
             ]).pipe(
-                map(([ph, co2ValveOpen, predictedMinPh]) => {
+                map(([ph600, ph60, co2ValveOpen, predictedMinPh]) => {
                     const co2ValveOpenSeconds = this._co2ValveOpenT ? getElapsedSecondsSince(this._co2ValveOpenT) : 0;
 
                     return isCo2Required({
-                        ph,
+                        ph600,
+                        ph60,
                         co2ValveOpen,
                         co2ValveOpenSeconds,
                         predictedMinPh,

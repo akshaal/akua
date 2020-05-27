@@ -35,7 +35,8 @@ export interface ValueDisplayConfig {
 }
 
 export interface PhControllerConfig {
-    readonly minSafePh: number,
+    readonly minSafePh600: number,
+    readonly minSafePh60: number,
     readonly phTurnOnOffMargin: number,
     readonly dayPrepareHour: number,
     readonly dayStartHour: number,
@@ -157,7 +158,8 @@ const co2Display: ValueDisplayConfig = {
 // TODO: Use data from AVR config! (the same way we do for protocol!)
 const phController: PhControllerConfig = {
     phTurnOnOffMargin: 0.1,
-    minSafePh: 6.8,
+    minSafePh600: 6.8,
+    minSafePh60: 6.6,
     dayPrepareHour: 8,
     dayStartHour: 10,
     dayEndHour: 22,
