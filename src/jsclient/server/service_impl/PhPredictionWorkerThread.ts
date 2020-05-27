@@ -168,8 +168,8 @@ export function createCo2ClosingStateFeaturesAndLabels(state: Co2ClosingState): 
 
         xs.push([
             scalePh(state.ph600AtClose),
-            scalePhOffset(ph60Offset),
-            scaleTemperature(temp),
+            // scalePhOffset(ph60Offset), NOTE: Disabled for now to avoid overfitting while not having enough training data
+            // scaleTemperature(temp), NOTE: Disabled for now to avoid overfitting while not having enough training data
             dayLightOn ? 1 : 0,
             co2ValveOpen ? 1 : 0,
         ]);
@@ -193,7 +193,7 @@ function loadModelFromFile(): Promise<tf.LayersModel> {
 /**
  * Called from onMessageToPhPredictionWorker to handle this kind of messages.
  * Must predict PH and send the PhPredictionResponse o main thread via using parentPort object.
- * 
+ *
  * @param request predication request
  */
 function onPhPredictionRequest(request: MinPhPredictionRequest) {

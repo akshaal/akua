@@ -252,9 +252,10 @@ export async function trainModelFromDataset(
 
     //const learningRate = undefined;
     //const learningRate = 5e-4;
+    const learningRate = 1e-4;
     //const learningRate = 1e-5;
-    const learningRate = 5e-6;
-    //const learningRate = 1e-5;
+    //const learningRate = 5e-5;
+    //const learningRate = 5e-6;
 
     const optimizer = tf.train.adam(learningRate);
 
@@ -269,10 +270,10 @@ export async function trainModelFromDataset(
             layers: [
                 tf.layers.conv1d({
                     kernelSize: 4,
-                    filters: 3,
+                    filters: 4,
                     activation: "selu",
                     kernelInitializer: 'leCunNormal',
-                    inputShape: [PH_PREDICTION_WINDOW_LENGTH, 5],
+                    inputShape: [PH_PREDICTION_WINDOW_LENGTH, 3],
                     strides: 2
                 }),
                 tf.layers.conv1d({
@@ -282,11 +283,8 @@ export async function trainModelFromDataset(
                     kernelInitializer: 'leCunNormal',
                     strides: 2
                 }),
-                tf.layers.gru({
-                    units: 4,
-                    activation: "selu",
-                    kernelInitializer: 'leCunNormal'
-                }),
+                tf.layers.flatten(),
+                tf.layers.dense({ units: 8, activation: "selu", kernelInitializer: 'leCunNormal' }),
                 tf.layers.dense({ units: 3, activation: "selu", kernelInitializer: 'leCunNormal' }),
                 tf.layers.dense({ units: 1, activation: "selu", kernelInitializer: 'leCunNormal' })
             ]
