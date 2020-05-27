@@ -1,6 +1,11 @@
 import { injectable } from "inversify";
 import { Observable } from "rxjs";
 
+export interface PhPredictionDatasetStats {
+    phClosingStateValidationDatasetSize: number;
+    phClosingStateTrainingDatasetSize: number;
+}
+
 export interface MinClosingPhPrediction {
     /**
      * Predicted PH.
@@ -28,4 +33,6 @@ export default abstract class PhPredictionService {
      * Last predicted value is emitted when CO2-value is already turned off.
      */
     readonly abstract minClosingPhPrediction$: Observable<MinClosingPhPrediction>;
+
+    readonly abstract phPredictionDatasetStats$: Observable<PhPredictionDatasetStats>;
 }

@@ -459,6 +459,16 @@ const phToTurnCo2OnGauge = new SimpleGauge({
     help: 'Minimum ph when co2 can be turned on.'
 });
 
+const phClosingStateValidationDatasetSizeGauge = new SimpleGauge({
+    name: 'akua_ph_closing_state_validation_ds_size',
+    help: 'Size of ph closing states validation dataset.'
+});
+
+const phClosingStateTrainingDatasetSizeGauge = new SimpleGauge({
+    name: 'akua_ph_closing_state_training_ds_size',
+    help: 'Size of ph closing states training dataset.'
+});
+
 // ==========================================================================================
 
 const co2ValveOpenGauge = new SimpleGauge({
@@ -551,6 +561,13 @@ export default class MetricsServiceImpl extends MetricsService {
             this._phPredictionService.minClosingPhPrediction$.subscribe(minClosingPhPrediction => {
                 minClosingPhPredictionGauge.setOrRemove(minClosingPhPrediction.predictedMinPh);
                 minClosingPhPredictionSecondsUsedSummary.observe(minClosingPhPrediction.secondsUsedOnPrediction);
+            })
+        );
+
+        this._subs.add(
+            this._phPredictionService.phPredictionDatasetStats$.subscribe(stats => {
+                phClosingStateValidationDatasetSizeGauge.setOrRemove(stats.phClosingStateValidationDatasetSize);
+                phClosingStateTrainingDatasetSizeGauge.setOrRemove(stats.phClosingStateTrainingDatasetSize);
             })
         );
     }

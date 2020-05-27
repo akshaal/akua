@@ -3,7 +3,7 @@ import { Worker } from "worker_threads";
 import { Subscriptions } from "server/misc/Subscriptions";
 import { MessageFromPhPredictionWorker, MinPhPredictionRequest, createCo2ClosingState, Co2ClosingStateOrigin, Co2ClosingState } from "../service/PhPrediction";
 import logger from "server/logger";
-import PhPredictionService, { MinClosingPhPrediction } from "server/service/PhPredictionService";
+import PhPredictionService, { MinClosingPhPrediction, PhPredictionDatasetStats } from "server/service/PhPredictionService";
 import { Subject, SchedulerLike, timer } from "rxjs";
 import { getElapsedSecondsSince } from "server/misc/get-elapsed-seconds-since";
 import PhSensorService from "server/service/PhSensorService";
@@ -20,7 +20,8 @@ import TemperatureSensorService from "server/service/TemperatureSensorService";
 
 @injectable()
 export default class PhPredictionServiceImpl extends PhPredictionService {
-    readonly minClosingPhPrediction$ = new Subject<MinClosingPhPrediction>();;
+    readonly minClosingPhPrediction$ = new Subject<MinClosingPhPrediction>();
+    readonly phPredictionDatasetStats$ = new Subject<PhPredictionDatasetStats>();
 
     // Key is rounded time (Math.round). Value is a PH at the given time.
     // These maps are cleanup up at midnight.
@@ -175,8 +176,25 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
             })
         );
 
+        // Publish dataset statistics.
+        this._subs.add(
+            timer(0, 5_000, this._scheduler).subscribe(() => {
+                this._publishDatasetStats();
+            })
+        );
+
         // Perform maintenance at start / initialization
         this.maintainDataset();
+    }
+
+    private async _publishDatasetStats(): Promise<void> {
+        const phClosingStateValidationDatasetSize = await this._databaseService.countCo2ClosingStates(Co2ClosingStateType.VALIDATION);
+        const phClosingStateTrainingDatasetSize = await this._databaseService.countCo2ClosingStates(Co2ClosingStateType.TRAINING);
+
+        this.phPredictionDatasetStats$.next({
+            phClosingStateValidationDatasetSize,
+            phClosingStateTrainingDatasetSize
+        });
     }
 
     /**
@@ -232,7 +250,7 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
         }
 
         // TODO: Move to some common place
-        function getNearest<T>(map: {[t: number]: T}, t: number, lookBack: number): T | undefined {
+        function getNearest<T>(map: { [t: number]: T }, t: number, lookBack: number): T | undefined {
             const v = map[t];
             if (isPresent(v)) {
                 return v;
