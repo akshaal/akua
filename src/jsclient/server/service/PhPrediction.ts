@@ -132,12 +132,12 @@ export function createCo2ClosingState(params: {
         }
 
         if (!isPresent(tempAtM) || tempAtM < 10 || tempAtM > 40) {
-            console.log("XXXXX3");
+            console.log("XXXXX3", m, tempAtM);
             return null;
         }
 
         if (!isPresent(co2ValveOpenAtM) || !isPresent(dayLightOnAtM)) {
-            console.log("XXXXX4");
+            console.log("XXXXX4", co2ValveOpenAtM, dayLightOnAtM, m);
             return null;
         }
 
