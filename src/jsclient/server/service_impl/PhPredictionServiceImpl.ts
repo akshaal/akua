@@ -75,11 +75,9 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
         this._subs.add(
             this._temperatureSensorService.aquariumTemperature$.subscribe(tempObj => {
                 const temp = tempObj?.value;
-                console.log("TEMP", this._timeService.nowRoundedSeconds(), temp);
                 if (temp) {
                     const tNow = this._timeService.nowRoundedSeconds();
                     this._temperatureMap[tNow] = temp;
-                    console.log("TEMPDBG", this._temperatureMap[tNow]);
                 }
             })
         );
