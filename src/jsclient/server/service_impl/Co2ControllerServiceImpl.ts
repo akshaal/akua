@@ -23,7 +23,7 @@ const SEND_REQUIREMENTS_TO_AVR_EVERY_MS = 60_000;
 const THROTTLE_TIME_MS = 5_000;
 
 // Don't allow it be open for too long to avoid overheating/"over-ventilation" and stuff
-const CO2_MAX_OPEN_MINUTES = 2; // TODO: TEMPORARY!!!!!!!!!!
+const CO2_MAX_OPEN_MINUTES = 30;
 
 // Don't believe in predictions based upon first 30 seconds! It might be plain wrong.
 // (we also have resolutions of 15 seconds based upon data from grafana)
