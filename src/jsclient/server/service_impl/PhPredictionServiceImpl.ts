@@ -244,6 +244,20 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
 
         console.log("YYYY1");
 
+        // TODO: Move to some common place
+        function getNearest<T>(map: {[t: number]: T}, t: number, lookBack: number): T | undefined {
+            const v = map[t];
+            if (isPresent(v)) {
+                return v;
+            }
+
+            if (lookBack > 0) {
+                return getNearest(map, t - 1, lookBack - 1);
+            }
+
+            return v;
+        }
+
         // Create CO2 Closing state which will be used by working thread to do prediction
         const tClose = this._timeService.nowRoundedSeconds();
         const co2ClosingState =
@@ -252,11 +266,11 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
                 openedSecondsAgo: getElapsedSecondsSince(this._co2ValveOpenT),
                 minPh600: 7, // doesn't matter
                 origin: Co2ClosingStateOrigin.ThisInstance,
-                getPh600: (t: number) => this._ph600sMap[t],
-                getPh60: (t: number) => this._ph60sMap[t],
-                getTemperature: (t: number) => this._temperatureMap[t],
-                isDayLightOn: (t: number) => this._dayLightOnMap[t],
-                isCo2ValveOpen: (t: number) => t == tClose ? false : this._co2ValveOpenMap[t],
+                getPh600: (t: number) => getNearest(this._ph600sMap, t, 4),
+                getPh60: (t: number) => getNearest(this._ph60sMap, t, 4),
+                getTemperature: (t: number) => getNearest(this._temperatureMap, t, 4),
+                isDayLightOn: (t: number) => getNearest(this._dayLightOnMap, t, 4),
+                isCo2ValveOpen: (t: number) => t == tClose ? false : getNearest(this._co2ValveOpenMap, t, 4),
             });
 
         this._lastCo2ClosingStateForDatabaseSaving = co2ClosingState;
