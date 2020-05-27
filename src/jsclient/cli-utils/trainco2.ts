@@ -253,8 +253,8 @@ export async function trainModelFromDataset(
     //const learningRate = undefined;
     //const learningRate = 5e-4;
     //const learningRate = 1e-5;
-    const learningRate = 5e-6;
-    //const learningRate = 1e-5;
+    //const learningRate = 5e-6;
+    const learningRate = 5e-5;
 
     const optimizer = tf.train.adam(learningRate);
 
