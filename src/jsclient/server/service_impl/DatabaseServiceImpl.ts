@@ -33,7 +33,7 @@ export default class DatabaseServiceImpl extends DatabaseService {
                 "$closeTime": newState.closeTime,
                 "$origin": newState.origin,
                 "$bson": BSON.serialize(newState),
-                "isValidation": attrs.isValidation
+                "isValidation": attrs.isValidation ? 1 : 0
             }
         );
     }
