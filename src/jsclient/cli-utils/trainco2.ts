@@ -189,6 +189,7 @@ export function prepareData(): Co2ClosingState[] {
     return result;
 }
 
+/*
 export async function prepareDataAsync(): Promise<void> {
     const result = prepareData();
 
@@ -209,7 +210,7 @@ export async function prepareDataAsync(): Promise<void> {
 
     exit(0);
 }
-
+*/
 
 // ---------------------------------------------------------------
 
@@ -359,11 +360,5 @@ async function train() {
 
 // ========================================================================================
 
-const doTrain = true;
-
-if (doTrain) {
-    train();
-} else {
-    prepareDataAsync();
-}
+train();
 

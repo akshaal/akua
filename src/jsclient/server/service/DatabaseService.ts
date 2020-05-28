@@ -9,7 +9,7 @@ export enum Co2ClosingStateType {
 
 @injectable()
 export default abstract class DatabaseService {
-    abstract async insertCo2ClosingState(newState: Co2ClosingState): Promise<void>;
+    abstract async insertCo2ClosingState(newState: Co2ClosingState, attrs: { isValidation: boolean }): Promise<void>;
 
     abstract async markCo2ClosingStatesAsTraining(stateTimes: Readonly<number[]>): Promise<void>;
 

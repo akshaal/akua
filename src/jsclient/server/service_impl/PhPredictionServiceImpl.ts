@@ -15,6 +15,17 @@ import DatabaseService, { Co2ClosingStateType } from "server/service/DatabaseSer
 import config from "server/config";
 import _ from "lodash";
 import TemperatureSensorService from "server/service/TemperatureSensorService";
+import RandomNumberService from "server/service/RandomNumberService";
+
+/**
+ * We assume we can have a bias toward adding items as validation ones.
+ * This is a minimum difference between calculated number of validation
+ * items and real number of validation items. If the difference
+ * is below this number, then we don't promote validation to training.
+ * 
+ * Note that we never promote training to validation!
+ */
+const VALIDATION_TRAINING_SET_ALLOWED_DIFF = 20;
 
 // TODO: More comments and tests!
 
@@ -48,6 +59,7 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
         private readonly _avrService: AvrService,
         private readonly _databaseService: DatabaseService,
         private readonly _temperatureSensorService: TemperatureSensorService,
+        private readonly _randomNumberService: RandomNumberService,
         @optional() @inject("scheduler") private readonly _scheduler: SchedulerLike
     ) {
         super();
@@ -131,24 +143,10 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
                     // Going from closed to open. Remember this moment
                     this._co2ValveOpenT = this._timeService.nowTimestamp();
 
-                    // Save co2 closing state and its outcome in the database
-                    if (this._lastCo2ClosingStateForDatabaseSaving && this._minPhAfterCloseForDatabaseSaving) {
-                        const createdSecondsAgo = tNow - this._lastCo2ClosingStateForDatabaseSaving.closeTime;
-
-                        // TODO: Move to config
-                        if (createdSecondsAgo < (7 * 60 * 60)) {
-                            const minPh600OffsetAfterClose =
-                                this._minPhAfterCloseForDatabaseSaving - this._lastCo2ClosingStateForDatabaseSaving.ph600AtClose;
-
-                            this._databaseService.insertCo2ClosingState({
-                                ...this._lastCo2ClosingStateForDatabaseSaving,
-                                minPh600OffsetAfterClose
-                            }).then(() => {
-                                // Make sure data is split into test data and validation.
-                                this.maintainDataset();
-                            });
-                        }
-                    }
+                    this._addDatasetItemIfValid(
+                        this._lastCo2ClosingStateForDatabaseSaving,
+                        this._minPhAfterCloseForDatabaseSaving
+                    );
 
                     this._minPhAfterCloseForDatabaseSaving = undefined;
                     this._lastCo2ClosingStateForDatabaseSaving = undefined;
@@ -184,7 +182,7 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
         );
 
         // Perform maintenance at start / initialization
-        this.maintainDataset();
+        this._maintainDataset();
     }
 
     private async _publishDatasetStats(): Promise<void> {
@@ -198,16 +196,49 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
     }
 
     /**
+     * Adds new new validation or training dataset based upon results of observations.
+     */
+    private async _addDatasetItemIfValid(
+        closingState?: Co2ClosingState | null,
+        minPhAfterClose?: number
+    ): Promise<void> {
+        const tNow = this._timeService.nowRoundedSeconds();
+
+        // Save co2 closing state and its outcome in the database
+        if (closingState && minPhAfterClose) {
+            const createdSecondsAgo = tNow - closingState.closeTime;
+
+            // TODO: Move to config
+            if (createdSecondsAgo < (7 * 60 * 60)) {
+                const minPh600OffsetAfterClose = minPhAfterClose - closingState.ph600AtClose;
+                const isValidation = this._randomNumberService.next() > config.phClosingPrediction.trainDatasetPercentage;
+
+                await this._databaseService.insertCo2ClosingState(
+                    { ...closingState, minPh600OffsetAfterClose },
+                    { isValidation }
+                );
+
+                // Make sure data is split into test data and validation.
+                await this._maintainDataset();
+            }
+        }
+    }
+
+    /**
      * Maintain database. Make sure we do split data into training and validation/testing dataset.
      * This will make it possible to have a stable way to compare NN-performance / NN-algorithms / etc.
      */
-    private async maintainDataset(): Promise<void> {
+    private async _maintainDataset(): Promise<void> {
         const totalSize = await this._databaseService.countCo2ClosingStates(Co2ClosingStateType.ANY);
         const currentValidationSize = await this._databaseService.countCo2ClosingStates(Co2ClosingStateType.VALIDATION);
         const expectedValidationSize = Math.floor(totalSize * (1 - config.phClosingPrediction.trainDatasetPercentage));
         const numberOfStatesToConvertToTraining = currentValidationSize - expectedValidationSize;
 
-        if (numberOfStatesToConvertToTraining > 0) {
+        // Note that we never promote training to validation! Only other way around!
+
+        if ((numberOfStatesToConvertToTraining - VALIDATION_TRAINING_SET_ALLOWED_DIFF) > 0) {
+            logger.warn(`PhPredictService: Force-promoting ${numberOfStatesToConvertToTraining} validation items to training!`);
+
             const validationStateTimes = await this._databaseService.findCo2ClosingTimes(Co2ClosingStateType.VALIDATION);
             const statesToConvertToTraining = _.take(_.shuffle(validationStateTimes), numberOfStatesToConvertToTraining);
             await this._databaseService.markCo2ClosingStatesAsTraining(statesToConvertToTraining);

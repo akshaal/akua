@@ -23,16 +23,17 @@ export default class DatabaseServiceImpl extends DatabaseService {
             "ALTER TABLE states ADD is_validation INTEGER NOT NULL DEFAULT 1"
         );
 
-    async insertCo2ClosingState(newState: Co2ClosingState): Promise<void> {
+    async insertCo2ClosingState(newState: Co2ClosingState, attrs: { isValidation: boolean }): Promise<void> {
         const co2ClosingStateDb = await this.co2ClosingStateDbPromise;
 
         return run(
             co2ClosingStateDb,
-            "INSERT INTO states (close_time, origin, bson) VALUES ($closeTime, $origin, $bson)",
+            "INSERT INTO states (close_time, origin, bson, is_validation) VALUES ($closeTime, $origin, $bson, $isValidation)",
             {
                 "$closeTime": newState.closeTime,
                 "$origin": newState.origin,
-                "$bson": BSON.serialize(newState)
+                "$bson": BSON.serialize(newState),
+                "isValidation": attrs.isValidation
             }
         );
     }
