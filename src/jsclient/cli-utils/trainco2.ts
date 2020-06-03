@@ -6,7 +6,7 @@ import { createNewContainer } from "server/service_impl/ServerServicesImpl";
 import { Co2ClosingState, createCo2ClosingState, Co2ClosingStateOrigin, PH_PREDICTION_WINDOW_LENGTH } from "server/service/PhPrediction";
 import DatabaseService, { Co2ClosingStateType } from "server/service/DatabaseService";
 import * as tf from 'server/service_impl/tf';
-import { createCo2ClosingStateFeaturesAndLabels } from "server/service_impl/PhPredictionWorkerThread";
+import { createCo2ClosingStateFeaturesAndLabels, akDropTimeseriesLayer } from "server/service_impl/PhPredictionWorkerThread";
 import { writeFileSync } from "fs";
 import { readFileSync } from "fs";
 import { isPresent } from "server/misc/isPresent";
@@ -30,12 +30,6 @@ if (!config.isDev) {
 
 const container = createNewContainer('cli-utils');
 const databaseService = container.get(DatabaseService);
-
-/*function sleep(ms: number) {
-    return new Promise((resolve) => {
-        setTimeout(resolve, ms);
-    });
-}*/
 
 // ========================================================================================
 
@@ -239,6 +233,8 @@ export async function trainModelFromDataset(
         retrain: boolean,
         trainingStates: Readonly<Co2ClosingState[]>,
         validationStates: Readonly<Co2ClosingState[]>
+        learningRate: number | undefined,
+        epochs: number
     }
 ) {
     // Train
@@ -251,13 +247,7 @@ export async function trainModelFromDataset(
     const trainDataset = prepareCo2ClosingStateTfDataset(params.trainingStates).batch(trainBatchSize).prefetch(1);
     const validDataset = prepareCo2ClosingStateTfDataset(params.validationStates).batch(params.validationStates.length).prefetch(1);
 
-    //const learningRate = undefined;
-    //const learningRate = 5e-4;
-    //const learningRate = 1e-5;
-    //const learningRate = 5e-6;
-    const learningRate = 5e-5;
-
-    const optimizer = tf.train.adam(learningRate);
+    const optimizer = tf.train.adam(params.learningRate);
 
     console.log("Optimizer config: ", optimizer.getConfig());
 
@@ -266,33 +256,81 @@ export async function trainModelFromDataset(
     if (params.retrain) {
         logger.info("Doing retrain");
 
-        model = tf.sequential({
-            layers: [
-                tf.layers.conv1d({
-                    kernelSize: 4,
-                    filters: 3,
-                    activation: "selu",
-                    kernelInitializer: 'leCunNormal',
-                    inputShape: [PH_PREDICTION_WINDOW_LENGTH, 5],
-                    strides: 2
-                }),
-                tf.layers.conv1d({
-                    kernelSize: 4,
-                    filters: 6,
-                    activation: "selu",
-                    kernelInitializer: 'leCunNormal',
-                    strides: 2
-                }),
-                tf.layers.gru({
-                    units: 4,
-                    activation: "selu",
-                    kernelInitializer: 'leCunNormal'
-                }),
-                tf.layers.dense({ units: 3, activation: "selu", kernelInitializer: 'leCunNormal' }),
-                tf.layers.dense({ units: 1, activation: "selu", kernelInitializer: 'leCunNormal' })
-            ]
+        const inputLayer = tf.input({
+            name: "Input",
+            shape: [PH_PREDICTION_WINDOW_LENGTH, 4]
         });
 
+        // ---- avg 10 min
+
+        const phCompressLayer = tf.layers.conv1d({
+            name: "InputPhCompression",
+            kernelSize: 1,
+            filters: 1,
+            activation: "selu",
+            kernelInitializer: 'leCunNormal',
+            strides: 1,
+            padding: "valid"
+        }).apply(inputLayer);
+
+        const avg10minLayer = tf.layers.avgPool1d({
+            name: "Avg10Min",
+            poolSize: 10 * 4, // 4 values per minute
+            strides: 4, // every minute
+            padding: "valid"
+        }).apply(phCompressLayer);
+
+        const gru10MinLayer  = tf.layers.gru({
+            name: "Gru10Min",
+            units: 3,
+            activation: "selu",
+            kernelInitializer: 'leCunNormal'
+        }).apply(avg10minLayer);
+
+        // --- features
+
+        const last5MinLayer = akDropTimeseriesLayer({
+            name: "Last5MinLayer",
+            dropHead: 10 * 4 // Drop 10 minutes out of 15 minute (4 samples per minute)
+        }).apply(inputLayer);
+
+        const feature1MinExtractionLayer = tf.layers.conv1d({
+            name: "Feature1MinExtraction",
+            kernelSize: 4, // 1 minute
+            filters: 2,
+            activation: "selu",
+            kernelInitializer: 'leCunNormal',
+            strides: 4, // each minute
+            padding: "valid"
+        }).apply(last5MinLayer);
+
+        const gru1MinLayer  = tf.layers.gru({
+            name: "Gru1Min",
+            units: 3,
+            activation: "selu",
+            kernelInitializer: 'leCunNormal'
+        }).apply(feature1MinExtractionLayer);
+
+        // --- concatenation and output
+
+        const concatLayer = tf.layers.concatenate({
+            name: "Concat",
+        }).apply([gru10MinLayer, gru1MinLayer] as tf.SymbolicTensor[]);
+
+        const outputLayer = tf.layers.dense({
+            name: "Output",
+            units: 1,
+            activation: "selu",
+            kernelInitializer: 'leCunNormal'
+        }).apply(concatLayer);
+
+        // ---- model
+
+        model = tf.model({
+            name: "co2-predict2",
+            inputs: inputLayer,
+            outputs: outputLayer as tf.SymbolicTensor
+        });
     } else {
         logger.info("Training existing model");
         model = await tf.loadLayersModel(minPhPredictionModelLocationForCli + "/model.json");
@@ -310,7 +348,7 @@ export async function trainModelFromDataset(
     }
     */
 
-    const result = await model.fitDataset(trainDataset, { epochs: 20_000, verbose: 1, validationData: validDataset });
+    const result = await model.fitDataset(trainDataset, { epochs: params.epochs, verbose: 1, validationData: validDataset });
 
     await model.save(minPhPredictionModelLocationForCli);
 
@@ -347,12 +385,12 @@ async function train() {
 
     console.log("Training states: " + trainingStates.length + ".  Validation states: " + validationStates.length + ".");
 
-    //await sleep(3000);
-
     await trainModelFromDataset({
         trainingStates,
         validationStates,
-        retrain: false
+        retrain: false,
+        learningRate: undefined,
+        epochs: 20000
     });
 
     exit(0);
