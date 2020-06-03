@@ -3,6 +3,7 @@ import { Worker } from "worker_threads";
 import { MinPhPredictionRequest, createCo2ClosingState, Co2ClosingStateOrigin, MessageFromPhPredictionWorker } from "../service/PhPrediction";
 import { akDropTimeseriesLayer } from "./PhPredictionWorkerThread";
 import * as tf from 'server/service_impl/tf';
+import expect from "expect";
 
 // TODO: Need a way to provide parentPort
 
@@ -48,10 +49,23 @@ describe('AkDropTimeseriesLayer', () => {
                 [[1, 2], [3, 4], [5, 6], [7, 8], [9, 10], [11, 12], [13, 14], [15, 16]],
                 [[10, 20], [30, 40], [50, 60], [70, 80], [90, 100], [110, 120], [130, 140], [150, 160]],
                 [[100, 200], [300, 400], [500, 600], [700, 800], [900, 1000], [1100, 1200], [1300, 1400], [1500, 1600]],
+                [[1000, 2000], [3000, 4000], [5000, 6000], [7000, 8000], [9000, 10000], [11000, 12000], [13000, 14000], [15000, 16000]],
             ]
         );
 
-        const output = l.call(input);
-        console.log(output);
+        const output = l.call(input).arraySync();
+
+        expect(output).toStrictEqual([
+            [[5, 6], [7, 8], [9, 10]],
+            [[50, 60], [70, 80], [90, 100]],
+            [[500, 600], [700, 800], [900, 1000]],
+            [[5000, 6000], [7000, 8000], [9000, 10000]]
+        ]);
+    });
+
+    it('can properly calculate output shape', () => {
+        const l = akDropTimeseriesLayer({ dropHead: 2, dropTail: 3 });
+        const outputShape = l.computeOutputShape([100, 50, 8]);
+        expect(outputShape).toStrictEqual([100, 45, 8]);
     });
 });
