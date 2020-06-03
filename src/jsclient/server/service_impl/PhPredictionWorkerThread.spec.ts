@@ -1,6 +1,8 @@
 import "reflect-metadata";
 import { Worker } from "worker_threads";
 import { MinPhPredictionRequest, createCo2ClosingState, Co2ClosingStateOrigin, MessageFromPhPredictionWorker } from "../service/PhPrediction";
+import { akDropTimeseriesLayer } from "./PhPredictionWorkerThread";
+import * as tf from 'server/service_impl/tf';
 
 // TODO: Need a way to provide parentPort
 
@@ -34,5 +36,22 @@ describe('PhPredictionWorkerThread', () => {
         });
 
         worker.postMessage(request);
+    });
+});
+
+describe('AkDropTimeseriesLayer', () => {
+    it('can properly drop timeseries', () => {
+        const l = akDropTimeseriesLayer({ dropHead: 2, dropTail: 3 });
+
+        const input = tf.tensor3d(
+            [
+                [[1, 2], [3, 4], [5, 6], [7, 8], [9, 10], [11, 12], [13, 14], [15, 16]],
+                [[10, 20], [30, 40], [50, 60], [70, 80], [90, 100], [110, 120], [130, 140], [150, 160]],
+                [[100, 200], [300, 400], [500, 600], [700, 800], [900, 1000], [1100, 1200], [1300, 1400], [1500, 1600]],
+            ]
+        );
+
+        const output = l.call(input);
+        console.log(output);
     });
 });
