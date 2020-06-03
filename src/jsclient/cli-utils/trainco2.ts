@@ -389,7 +389,7 @@ async function train() {
         trainingStates,
         validationStates,
         retrain: false,
-        learningRate: undefined,
+        learningRate: 5e-5,
         epochs: 20000
     });
 
