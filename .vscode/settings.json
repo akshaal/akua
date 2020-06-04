@@ -29,6 +29,7 @@
         "RXEN",
         "TOSC",
         "TXEN",
+        "Timeseries",
         "UART",
         "UCSR",
         "UCSZ",
