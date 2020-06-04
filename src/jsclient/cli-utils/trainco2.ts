@@ -363,9 +363,9 @@ async function train() {
     await trainModelFromDataset({
         trainingStates,
         validationStates,
-        retrain: true,
-        learningRate: undefined,
-        epochs: 2000
+        retrain: false,
+        learningRate: 5e-5,
+        epochs: 20000
     });
 
     exit(0);
