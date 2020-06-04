@@ -6,7 +6,7 @@ import { createNewContainer } from "server/service_impl/ServerServicesImpl";
 import { Co2ClosingState, createCo2ClosingState, Co2ClosingStateOrigin, PH_PREDICTION_WINDOW_LENGTH } from "server/service/PhPrediction";
 import DatabaseService, { Co2ClosingStateType } from "server/service/DatabaseService";
 import * as tf from 'server/service_impl/tf';
-import { createCo2ClosingStateFeaturesAndLabels, akDropTimeseriesLayer } from "server/service_impl/PhPredictionWorkerThread";
+import { createCo2ClosingStateFeaturesAndLabels } from "server/service_impl/PhPredictionWorkerThread";
 import { writeFileSync } from "fs";
 import { readFileSync } from "fs";
 import { isPresent } from "server/misc/isPresent";
@@ -261,68 +261,43 @@ export async function trainModelFromDataset(
             shape: [PH_PREDICTION_WINDOW_LENGTH, 4]
         });
 
-        // ---- avg 10 min
-
-        const phCompressLayer = tf.layers.conv1d({
-            name: "InputPhCompression",
-            kernelSize: 1,
-            filters: 1,
-            activation: "selu",
-            kernelInitializer: 'leCunNormal',
-            strides: 1,
-            padding: "valid"
-        }).apply(inputLayer);
-
-        const avg10minLayer = tf.layers.avgPool1d({
-            name: "Avg10Min",
-            poolSize: 10 * 4, // 4 values per minute
-            strides: 4, // every minute
-            padding: "valid"
-        }).apply(phCompressLayer);
-
-        const gru10MinLayer  = tf.layers.gru({
-            name: "Gru10Min",
-            units: 3,
-            activation: "selu",
-            kernelInitializer: 'leCunNormal'
-        }).apply(avg10minLayer);
-
-        // --- features
-
-        const last5MinLayer = akDropTimeseriesLayer({
-            name: "Last5MinLayer",
-            dropHead: 10 * 4 // Drop 10 minutes out of 15 minute (4 samples per minute)
-        }).apply(inputLayer);
-
         const feature1MinExtractionLayer = tf.layers.conv1d({
             name: "Feature1MinExtraction",
             kernelSize: 4, // 1 minute
-            filters: 2,
+            filters: 4,
             activation: "selu",
             kernelInitializer: 'leCunNormal',
             strides: 4, // each minute
             padding: "valid"
-        }).apply(last5MinLayer);
+        }).apply(inputLayer);
 
-        const gru1MinLayer  = tf.layers.gru({
-            name: "Gru1Min",
-            units: 3,
-            activation: "selu",
-            kernelInitializer: 'leCunNormal'
+        const gru1Layer = tf.layers.bidirectional({
+            name: "Gru1",
+            layer: tf.layers.gru({
+                units: 3,
+                activation: "selu",
+                kernelInitializer: 'leCunNormal',
+                returnSequences: true
+            }) as any
         }).apply(feature1MinExtractionLayer);
 
-        // --- concatenation and output
+        const gru2Layer = tf.layers.bidirectional({
+            name: "Gru2",
+            layer: tf.layers.gru({
+                units: 3,
+                activation: "selu",
+                kernelInitializer: 'leCunNormal'
+            }) as any
+        }).apply(gru1Layer);
 
-        const concatLayer = tf.layers.concatenate({
-            name: "Concat",
-        }).apply([gru10MinLayer, gru1MinLayer] as tf.SymbolicTensor[]);
+        // --- output
 
         const outputLayer = tf.layers.dense({
             name: "Output",
             units: 1,
             activation: "selu",
             kernelInitializer: 'leCunNormal'
-        }).apply(concatLayer);
+        }).apply(gru2Layer);
 
         // ---- model
 
@@ -388,9 +363,9 @@ async function train() {
     await trainModelFromDataset({
         trainingStates,
         validationStates,
-        retrain: false,
-        learningRate: 5e-5,
-        epochs: 20000
+        retrain: true,
+        learningRate: undefined,
+        epochs: 2000
     });
 
     exit(0);
