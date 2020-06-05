@@ -255,6 +255,8 @@ export default class Co2ControllerServiceImpl extends Co2ControllerService {
                 minClosingPhPrediction$.pipe(startWith(undefined)),
                 timer(0, SEND_REQUIREMENTS_TO_AVR_EVERY_MS)
             ]).pipe(
+                throttleTime(THROTTLE_TIME_MS),
+                
                 map(([ph600, ph60, co2ValveOpen, previouslyPredictedMinPh, predictedMinPh]) => {
                     const co2ValveOpenSeconds = this._co2ValveOpenT ? getElapsedSecondsSince(this._co2ValveOpenT) : 0;
 
@@ -269,8 +271,7 @@ export default class Co2ControllerServiceImpl extends Co2ControllerService {
                     });
 
                     return { required, msg, co2ValveOpen };
-                }),
-                throttleTime(THROTTLE_TIME_MS)
+                })
             ).subscribe(decisionInfo => {
                 const { required, msg, co2ValveOpen } = decisionInfo;
 
