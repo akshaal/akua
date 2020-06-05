@@ -15,7 +15,6 @@ import RandomNumberService from "server/service/RandomNumberService";
 import logger from "server/logger";
 
 // TODO: Move constants to config!
-// TODO: Implement safety check on ph60s to limit it to 6.5!
 
 // AVR is expecting that we notify it every minute
 const SEND_REQUIREMENTS_TO_AVR_EVERY_MS = 60_000;
@@ -256,7 +255,7 @@ export default class Co2ControllerServiceImpl extends Co2ControllerService {
                 timer(0, SEND_REQUIREMENTS_TO_AVR_EVERY_MS)
             ]).pipe(
                 throttleTime(THROTTLE_TIME_MS),
-                
+
                 map(([ph600, ph60, co2ValveOpen, previouslyPredictedMinPh, predictedMinPh]) => {
                     const co2ValveOpenSeconds = this._co2ValveOpenT ? getElapsedSecondsSince(this._co2ValveOpenT) : 0;
 
