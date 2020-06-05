@@ -167,7 +167,7 @@ function isCo2Required(
         // CO2 Valve is currently closed (CO2 is NOT supplied into the tank)
 
         // Open if current ph is greater or equal to the configured ph-to-turn-on
-        return [state.ph600 >= phToTurnOn, `ph600=${state.ph600}, phToTurnOff=${phToTurnOn}`];
+        return [state.ph600 >= phToTurnOn, `ph600=${state.ph600}, phToTurnOn=${phToTurnOn}`];
     }
 }
 
