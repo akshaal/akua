@@ -2,7 +2,7 @@ import { injectable, postConstruct, optional, inject } from "inversify";
 import PhSensorService from "server/service/PhSensorService";
 import Co2ControllerService, { PhControlRange } from "server/service/Co2ControllerService";
 import { combineLatest, timer, of, SchedulerLike } from "rxjs";
-import { map, distinctUntilChanged, startWith, throttleTime, skip, timeoutWith, repeat } from "rxjs/operators";
+import { map, distinctUntilChanged, startWith, throttleTime, skip, timeoutWith, repeat, share } from "rxjs/operators";
 import AvrService, { Co2ValveOpenState } from "server/service/AvrService";
 import { isPresent } from "../misc/isPresent";
 import config, { PhControllerConfig } from "server/config";
@@ -12,6 +12,7 @@ import TimeService from "server/service/TimeService";
 import { getElapsedSecondsSince } from "server/misc/get-elapsed-seconds-since";
 import PhPredictionService from "server/service/PhPredictionService";
 import RandomNumberService from "server/service/RandomNumberService";
+import logger from "server/logger";
 
 // TODO: Move constants to config!
 // TODO: Implement safety check on ph60s to limit it to 6.5!
@@ -31,6 +32,9 @@ const CO2_MIN_OPEN_SECONDS_TO_TRUST_PREDICTIONS = 2;
 
 // Timeout for values form upstream observables
 const OBS_TIMEOUT_MS = 60_000;
+
+// Maximum allowed percentage (0...1) of changes relative to controlled margin between predictions to look real. 
+const MAX_PERCENTAGE_OF_CHANGE_BETWEEN_PREDICTIONS = 0.6;
 
 // Solution (a, b, c , d) for the following equations, given f(t1) = ph1, f(t2) = ph2, f(t3) = ph3:
 // Maxima:
@@ -97,13 +101,14 @@ function isCo2Required(
         co2ValveOpen?: boolean | null,
         co2ValveOpenSeconds: number,
         predictedMinPh?: number,
+        previouslyPredictedMinPh?: number,
         co2MaxOpenSecondsForExplorationReason: number
     }
-): boolean {
+): [boolean, string] {
     const phToTurnOff = calcCurrentMinPh();
 
     if (!isPresent(state.ph600) || !isPresent(state.ph60) || !isPresent(state.co2ValveOpen) || !isPresent(phToTurnOff)) {
-        return false;
+        return [false, `Missing required info: ph600=${state.ph600}, ph60=${state.ph60}, co2ValveOpen=${state.co2ValveOpen}, phToTurnOff=${phToTurnOff}`];
     }
 
     const phToTurnOn = phToTurnOff + config.phController.phTurnOnOffMargin;
@@ -113,25 +118,25 @@ function isCo2Required(
 
         // Hard limit on number of seconds
         if (state.co2ValveOpenSeconds > (CO2_MAX_OPEN_MINUTES * 60)) {
-            return false;
+            return [false, `Hard limit on open seconds (${state.co2ValveOpenSeconds} secs). Limit ${CO2_MAX_OPEN_MINUTES} minutes`];
         }
 
         // Give our AI some exploration space.. close the valve at some random times.
         // This helps us have more diverse data. IF we close too soon, it's not a problem
         // because the valve will soon be opened again.
         if (state.co2MaxOpenSecondsForExplorationReason && state.co2ValveOpenSeconds > state.co2MaxOpenSecondsForExplorationReason) {
-            return false;
+            return [false, `Exploration`];
         }
 
         // Check against safe ph
         if (state.ph600 <= config.phController.minSafePh600) {
             // Close
-            return false;
+            return [false, `Ph600 safe ph limit is ${config.phController.minSafePh600}, current ph600 is ${state.ph600}`];
         }
 
         if (state.ph60 <= config.phController.minSafePh60) {
             // Close
-            return false;
+            return [false, `Ph60 safe ph limit is ${config.phController.minSafePh60}, current ph60 is ${state.ph60}`];
         }
 
         // Check predicted ph if present
@@ -141,17 +146,28 @@ function isCo2Required(
                 // Turn of, because we predict that if we turn it off now, then
                 // we will go under the limit or to the min-level-limit anyway, so it is best
                 // to turn the valve off now and not wait until it will be worse
-                return false; // CO2 is no longer required
+                return [false, `PH Predicted to reach ${state.predictedMinPh}, while phToTurnOff=${phToTurnOff}`];
+            }
+        }
+
+        // Check predicted ph change if present
+        if (state.predictedMinPh && state.previouslyPredictedMinPh) {
+            const absPredictionChange = Math.abs(state.previouslyPredictedMinPh - state.predictedMinPh);
+            const changeLimit = config.phController.phTurnOnOffMargin * MAX_PERCENTAGE_OF_CHANGE_BETWEEN_PREDICTIONS;
+
+            // Avoid trusting pessimistic predictions based upon insufficient data
+            if (state.co2ValveOpenSeconds > CO2_MIN_OPEN_SECONDS_TO_TRUST_PREDICTIONS && absPredictionChange >= changeLimit) {
+                return [false, `PH Predicted to reach ${state.predictedMinPh}, previous prediction was ${state.previouslyPredictedMinPh}, absChange=${absPredictionChange}, change limit=${changeLimit}`];
             }
         }
 
         // Keep open if current ph is greater than the configured ph-to-turn-off
-        return state.ph600 > phToTurnOff;
+        return [state.ph600 > phToTurnOff, `ph600=${state.ph600}, phToTurnOff=${phToTurnOff}`];
     } else {
         // CO2 Valve is currently closed (CO2 is NOT supplied into the tank)
 
         // Open if current ph is greater or equal to the configured ph-to-turn-on
-        return state.ph600 >= phToTurnOn;
+        return [state.ph600 >= phToTurnOn, `ph600=${state.ph600}, phToTurnOff=${phToTurnOn}`];
     }
 }
 
@@ -193,7 +209,21 @@ export default class Co2ControllerServiceImpl extends Co2ControllerService {
             })
         );
 
-        // State changer
+        // State changer - - - -  - - - - - - - - - - - -  - - - - - - - - - - - - - - 
+        // TODO: Make a custom pipe or something to avoid this boring repeating pattern!
+
+        const minClosingPhPrediction$ =
+            this._phPredictionService.minClosingPhPrediction$.pipe(
+                skip(1), // to avoid hot value
+                timeoutWith(OBS_TIMEOUT_MS, of(undefined), this._scheduler), // protect against stale data
+                repeat(), // resubscribe in case of timeout or error
+                map(prediction =>
+                    isPresent(prediction) && !prediction.valveIsAlreadyClosed ? prediction.predictedMinPh : undefined
+                ),
+                distinctUntilChanged(),
+                share()
+            );
+
         // TODO: Make a custom pipe or something to avoid this boring repeating pattern!
         this._subs.add(
             combineLatest([
@@ -221,32 +251,33 @@ export default class Co2ControllerServiceImpl extends Co2ControllerService {
                     distinctUntilChanged(),
                     startWith(undefined)
                 ),
-                this._phPredictionService.minClosingPhPrediction$.pipe(
-                    skip(1), // to avoid hot value
-                    timeoutWith(OBS_TIMEOUT_MS, of(undefined), this._scheduler), // protect against stale data
-                    repeat(), // resubscribe in case of timeout or error
-                    map(prediction =>
-                        isPresent(prediction) && !prediction.valveIsAlreadyClosed ? prediction.predictedMinPh : undefined
-                    ),
-                    distinctUntilChanged(),
-                    startWith(undefined)
-                ),
+                minClosingPhPrediction$.pipe(skip(1), startWith(undefined)),
+                minClosingPhPrediction$.pipe(startWith(undefined)),
                 timer(0, SEND_REQUIREMENTS_TO_AVR_EVERY_MS)
             ]).pipe(
-                map(([ph600, ph60, co2ValveOpen, predictedMinPh]) => {
+                map(([ph600, ph60, co2ValveOpen, previouslyPredictedMinPh, predictedMinPh]) => {
                     const co2ValveOpenSeconds = this._co2ValveOpenT ? getElapsedSecondsSince(this._co2ValveOpenT) : 0;
 
-                    return isCo2Required({
+                    const [required, msg] = isCo2Required({
                         ph600,
                         ph60,
                         co2ValveOpen,
                         co2ValveOpenSeconds,
+                        previouslyPredictedMinPh,
                         predictedMinPh,
                         co2MaxOpenSecondsForExplorationReason: this._co2MaxOpenSecondsForExplorationReason
                     });
+
+                    return { required, msg, co2ValveOpen };
                 }),
                 throttleTime(THROTTLE_TIME_MS)
-            ).subscribe(required => {
+            ).subscribe(decisionInfo => {
+                const { required, msg, co2ValveOpen } = decisionInfo;
+
+                if (co2ValveOpen != required) {
+                    logger.info(`Co2Controller: Required=${required}. Msg: ${msg}`);
+                }
+
                 this._avrService.setCo2RequiredValveOpenState(
                     required ? Co2ValveOpenState.Open : Co2ValveOpenState.Closed
                 );
