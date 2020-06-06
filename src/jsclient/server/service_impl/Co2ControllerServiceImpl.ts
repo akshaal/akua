@@ -301,7 +301,7 @@ export default class Co2ControllerServiceImpl extends Co2ControllerService {
                 throttle(([prevCo2Decision, co2Decision]) => {
                     if (prevCo2Decision.required == co2Decision.required) {
                         // Don't throttle if no state change
-                        return of(1); // calls 'next' immediately
+                        return timer(1, this._scheduler);
                     } else {
                         // Ignore consequent state changes after this one.
                         // This way we avoid bouncing decisions while previous decision is not yet actuated
