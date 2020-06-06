@@ -273,7 +273,7 @@ export default class Co2ControllerServiceImpl extends Co2ControllerService {
                 ph600$.pipe(startWith(undefined)),
                 ph60$.pipe(startWith(undefined)),
                 co2ValveOpen$.pipe(startWith(undefined)),
-                minClosingPhPrediction$.pipe(startWith(undefined), pairwise()),
+                minClosingPhPrediction$.pipe(startWith(undefined, undefined), pairwise()),
                 timer(0, SEND_REQUIREMENTS_TO_AVR_EVERY_MS)
             ]).pipe(
                 map(([ph600, ph60, co2ValveOpen, [previouslyPredictedMinPh, predictedMinPh]]) => {
