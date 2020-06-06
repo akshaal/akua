@@ -1,8 +1,8 @@
 import { injectable, postConstruct, optional, inject } from "inversify";
 import PhSensorService from "server/service/PhSensorService";
 import Co2ControllerService, { PhControlRange } from "server/service/Co2ControllerService";
-import { combineLatest, timer, of, SchedulerLike } from "rxjs";
-import { map, distinctUntilChanged, startWith, throttleTime, skip, timeoutWith, repeat, share } from "rxjs/operators";
+import { combineLatest, timer, of, SchedulerLike, pipe, Observable, UnaryFunction, empty } from "rxjs";
+import { map, distinctUntilChanged, startWith, skip, timeoutWith, repeat, share, throttle, pairwise } from "rxjs/operators";
 import AvrService, { Co2ValveOpenState } from "server/service/AvrService";
 import { isPresent } from "../misc/isPresent";
 import config, { PhControllerConfig } from "server/config";
@@ -14,10 +14,11 @@ import PhPredictionService from "server/service/PhPredictionService";
 import RandomNumberService from "server/service/RandomNumberService";
 import logger from "server/logger";
 
+// TODO: Unit tests!
 // TODO: Move constants to config!
 
 // AVR is expecting that we notify it every minute
-const SEND_REQUIREMENTS_TO_AVR_EVERY_MS = 60_000;
+const SEND_REQUIREMENTS_TO_AVR_EVERY_MS = 10_000;
 
 // Give value-actuation a chance.... be unpredictable to avoid patterns.. at least between restarts
 const THROTTLE_TIME_MS = 3_000 + Math.random() * 2_000;
@@ -46,6 +47,11 @@ export interface MinPhEquationParams {
     d: number;
 }
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////////////////////////////////
+
 export function calcMinPhEquationParams(phControllerConfig: PhControllerConfig): MinPhEquationParams {
     // See above for a way to find this in 'Maxima'.
     const t1 = phControllerConfig.dayPrepareHour;
@@ -70,6 +76,11 @@ export function calcMinPhEquationParams(phControllerConfig: PhControllerConfig):
     return { a, b, c, d };
 }
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////////////////////////////////
+
 export function calcMinPh(config: PhControllerConfig, solution: MinPhEquationParams, hour: number): number | undefined {
     // See above (about Maxima stuff)
 
@@ -84,6 +95,11 @@ export function calcMinPh(config: PhControllerConfig, solution: MinPhEquationPar
     return solution.c * Math.exp(hour / 2) + solution.d;
 }
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////////////////////////////////
+
 const minPhEquationSolution = calcMinPhEquationParams(config.phController);
 
 function calcCurrentMinPh(): number | undefined {
@@ -91,6 +107,11 @@ function calcCurrentMinPh(): number | undefined {
     const hour = date.getHours() + date.getMinutes() / 60 + date.getSeconds() / 3600;
     return calcMinPh(config.phController, minPhEquationSolution, hour);
 }
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Decide whether we must turn ph on or not
 function isCo2Required(
@@ -170,6 +191,27 @@ function isCo2Required(
     }
 }
 
+// //////////////////////////////////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////////////////////////////////
+
+function asSourceOfDecision<T, R>(scheduler: SchedulerLike, mapper: (orig?: T) => R): UnaryFunction<Observable<T>, Observable<R>> {
+    return pipe(
+        skip(1), // to avoid hot value
+        timeoutWith(OBS_TIMEOUT_MS, of(undefined), scheduler), // protect against stale data
+        repeat(), // resubscribe in case of timeout or error
+        map(mapper),
+        distinctUntilChanged(),
+        share()
+    );
+}
+
+// //////////////////////////////////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////////////////////////////////
+
 @injectable()
 export default class Co2ControllerServiceImpl extends Co2ControllerService {
     private readonly _subs = new Subscriptions();
@@ -209,54 +251,32 @@ export default class Co2ControllerServiceImpl extends Co2ControllerService {
         );
 
         // State changer - - - -  - - - - - - - - - - - -  - - - - - - - - - - - - - - 
-        // TODO: Make a custom pipe or something to avoid this boring repeating pattern!
 
-        const minClosingPhPrediction$ =
+        const ph600$: Observable<number | undefined | null> =
+            this._phSensorService.ph$.pipe(asSourceOfDecision(this._scheduler, ph => ph?.value600s));
+
+        const ph60$: Observable<number | undefined | null> =
+            this._phSensorService.ph$.pipe(asSourceOfDecision(this._scheduler, ph => ph?.value60s));
+
+        const co2ValveOpen$: Observable<boolean | undefined> =
+            this._avrService.avrState$.pipe(asSourceOfDecision(this._scheduler, avrState => avrState?.co2ValveOpen));
+
+        const minClosingPhPrediction$: Observable<number | undefined> =
             this._phPredictionService.minClosingPhPrediction$.pipe(
-                skip(1), // to avoid hot value
-                timeoutWith(OBS_TIMEOUT_MS, of(undefined), this._scheduler), // protect against stale data
-                repeat(), // resubscribe in case of timeout or error
-                map(prediction =>
+                asSourceOfDecision(this._scheduler, prediction =>
                     isPresent(prediction) && !prediction.valveIsAlreadyClosed ? prediction.predictedMinPh : undefined
-                ),
-                distinctUntilChanged(),
-                share()
+                )
             );
 
-        // TODO: Make a custom pipe or something to avoid this boring repeating pattern!
-        this._subs.add(
+        const co2Decision$: Observable<{ required: boolean, msg: string, co2ValveOpen: boolean | undefined }> =
             combineLatest([
-                this._phSensorService.ph$.pipe(
-                    skip(1), // to avoid hot value
-                    timeoutWith(OBS_TIMEOUT_MS, of(undefined), this._scheduler), // protect against stale data
-                    repeat(), // resubscribe in case of timeout or error
-                    map(ph => ph?.value600s),
-                    distinctUntilChanged(),
-                    startWith(undefined)
-                ),
-                this._phSensorService.ph$.pipe(
-                    skip(1), // to avoid hot value
-                    timeoutWith(OBS_TIMEOUT_MS, of(undefined), this._scheduler), // protect against stale data
-                    repeat(), // resubscribe in case of timeout or error
-                    map(ph => ph?.value60s),
-                    distinctUntilChanged(),
-                    startWith(undefined)
-                ),
-                this._avrService.avrState$.pipe(
-                    skip(1), // to avoid hot value
-                    timeoutWith(OBS_TIMEOUT_MS, of(undefined), this._scheduler), // protect against stale data
-                    repeat(), // resubscribe in case of timeout or error
-                    map(avrState => avrState?.co2ValveOpen),
-                    distinctUntilChanged(),
-                    startWith(undefined)
-                ),
-                minClosingPhPrediction$.pipe(skip(1), startWith(undefined)),
-                minClosingPhPrediction$.pipe(startWith(undefined)),
+                ph600$.pipe(startWith(undefined)),
+                ph60$.pipe(startWith(undefined)),
+                co2ValveOpen$.pipe(startWith(undefined)),
+                minClosingPhPrediction$.pipe(startWith(undefined), pairwise()),
                 timer(0, SEND_REQUIREMENTS_TO_AVR_EVERY_MS)
             ]).pipe(
-                throttleTime(THROTTLE_TIME_MS),
-
-                map(([ph600, ph60, co2ValveOpen, previouslyPredictedMinPh, predictedMinPh]) => {
+                map(([ph600, ph60, co2ValveOpen, [previouslyPredictedMinPh, predictedMinPh]]) => {
                     const co2ValveOpenSeconds = this._co2ValveOpenT ? getElapsedSecondsSince(this._co2ValveOpenT) : 0;
 
                     const [required, msg] = isCo2Required({
@@ -270,9 +290,25 @@ export default class Co2ControllerServiceImpl extends Co2ControllerService {
                     });
 
                     return { required, msg, co2ValveOpen };
+                }),
+                share()
+            );
+
+        this._subs.add(
+            co2Decision$.pipe(
+                pairwise(),
+                throttle(([prevCo2Decision, co2Decision]) => {
+                    if (prevCo2Decision.required == co2Decision.required) {
+                        // Don't throttle if no state change
+                        return empty(this._scheduler);
+                    } else {
+                        // Ignore consequent state changes after this one.
+                        // This way we avoid bouncing decisions while previous decision is not yet actuated
+                        return timer(THROTTLE_TIME_MS, undefined, this._scheduler);
+                    }
                 })
-            ).subscribe(decisionInfo => {
-                const { required, msg, co2ValveOpen } = decisionInfo;
+            ).subscribe(([_, co2Decision]) => {
+                const { required, msg, co2ValveOpen } = co2Decision;
 
                 if (co2ValveOpen && !required) {
                     logger.info(`Co2Controller: Decided to turn off CO2: ${msg}`);
