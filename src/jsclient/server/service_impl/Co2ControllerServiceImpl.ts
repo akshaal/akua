@@ -34,7 +34,7 @@ const CO2_MIN_OPEN_SECONDS_TO_TRUST_PREDICTIONS = 2;
 const OBS_TIMEOUT_MS = 60_000;
 
 // Maximum allowed percentage (0...1) of changes relative to controlled margin between predictions to look real. 
-const MAX_PERCENTAGE_OF_CHANGE_BETWEEN_PREDICTIONS = 0.4;
+const MAX_PERCENTAGE_OF_CHANGE_BETWEEN_PREDICTIONS = 0.5;
 
 // Solution (a, b, c , d) for the following equations, given f(t1) = ph1, f(t2) = ph2, f(t3) = ph3:
 // Maxima:
