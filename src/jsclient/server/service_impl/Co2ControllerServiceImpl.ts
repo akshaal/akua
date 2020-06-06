@@ -2,7 +2,7 @@ import { injectable, postConstruct, optional, inject } from "inversify";
 import PhSensorService from "server/service/PhSensorService";
 import Co2ControllerService, { PhControlRange } from "server/service/Co2ControllerService";
 import { combineLatest, timer, of, SchedulerLike, pipe, Observable, UnaryFunction, empty } from "rxjs";
-import { map, distinctUntilChanged, startWith, skip, timeoutWith, repeat, share, throttle, pairwise } from "rxjs/operators";
+import { map, distinctUntilChanged, startWith, skip, timeoutWith, repeat, share, throttle, pairwise, tap } from "rxjs/operators";
 import AvrService, { Co2ValveOpenState } from "server/service/AvrService";
 import { isPresent } from "../misc/isPresent";
 import config, { PhControllerConfig } from "server/config";
@@ -297,6 +297,7 @@ export default class Co2ControllerServiceImpl extends Co2ControllerService {
         this._subs.add(
             co2Decision$.pipe(
                 pairwise(),
+                tap(f => console.log("before throttle", f)),
                 throttle(([prevCo2Decision, co2Decision]) => {
                     if (prevCo2Decision.required == co2Decision.required) {
                         // Don't throttle if no state change
@@ -304,9 +305,10 @@ export default class Co2ControllerServiceImpl extends Co2ControllerService {
                     } else {
                         // Ignore consequent state changes after this one.
                         // This way we avoid bouncing decisions while previous decision is not yet actuated
-                        return timer(THROTTLE_TIME_MS, undefined, this._scheduler);
+                        return timer(THROTTLE_TIME_MS, this._scheduler);
                     }
-                })
+                }),
+                tap(f => console.log("after throttle", f))
             ).subscribe(([_, co2Decision]) => {
                 const { required, msg, co2ValveOpen } = co2Decision;
 
