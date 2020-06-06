@@ -274,8 +274,8 @@ export default class Co2ControllerServiceImpl extends Co2ControllerService {
             ).subscribe(decisionInfo => {
                 const { required, msg, co2ValveOpen } = decisionInfo;
 
-                if (co2ValveOpen != required) {
-                    logger.info(`Co2Controller: Required=${required}. Msg: ${msg}`);
+                if (co2ValveOpen && !required) {
+                    logger.info(`Co2Controller: Decided to turn off CO2: ${msg}`);
                 }
 
                 this._avrService.setCo2RequiredValveOpenState(
