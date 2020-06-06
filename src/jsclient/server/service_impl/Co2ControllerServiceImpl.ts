@@ -2,7 +2,7 @@ import { injectable, postConstruct, optional, inject } from "inversify";
 import PhSensorService from "server/service/PhSensorService";
 import Co2ControllerService, { PhControlRange } from "server/service/Co2ControllerService";
 import { combineLatest, timer, of, SchedulerLike, pipe, Observable, UnaryFunction } from "rxjs";
-import { map, distinctUntilChanged, startWith, skip, timeoutWith, repeat, share, throttle, pairwise, tap } from "rxjs/operators";
+import { map, distinctUntilChanged, startWith, skip, timeoutWith, repeat, share, throttle, pairwise } from "rxjs/operators";
 import AvrService, { Co2ValveOpenState } from "server/service/AvrService";
 import { isPresent } from "../misc/isPresent";
 import config, { PhControllerConfig } from "server/config";
