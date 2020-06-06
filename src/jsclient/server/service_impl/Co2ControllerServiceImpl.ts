@@ -297,7 +297,6 @@ export default class Co2ControllerServiceImpl extends Co2ControllerService {
         this._subs.add(
             co2Decision$.pipe(
                 pairwise(),
-                tap(f => console.log("before throttle", f)),
                 throttle(([prevCo2Decision, co2Decision]) => {
                     if (prevCo2Decision.required == co2Decision.required) {
                         // Don't throttle if no state change
@@ -307,8 +306,7 @@ export default class Co2ControllerServiceImpl extends Co2ControllerService {
                         // This way we avoid bouncing decisions while previous decision is not yet actuated
                         return timer(THROTTLE_TIME_MS, this._scheduler);
                     }
-                }),
-                tap(f => console.log("after throttle", f))
+                })
             ).subscribe(([_, co2Decision]) => {
                 const { required, msg, co2ValveOpen } = co2Decision;
 
