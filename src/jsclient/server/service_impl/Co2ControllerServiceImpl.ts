@@ -1,7 +1,7 @@
 import { injectable, postConstruct, optional, inject } from "inversify";
 import PhSensorService from "server/service/PhSensorService";
 import Co2ControllerService, { PhControlRange } from "server/service/Co2ControllerService";
-import { combineLatest, timer, of, SchedulerLike, pipe, Observable, UnaryFunction, empty } from "rxjs";
+import { combineLatest, timer, of, SchedulerLike, pipe, Observable, UnaryFunction } from "rxjs";
 import { map, distinctUntilChanged, startWith, skip, timeoutWith, repeat, share, throttle, pairwise, tap } from "rxjs/operators";
 import AvrService, { Co2ValveOpenState } from "server/service/AvrService";
 import { isPresent } from "../misc/isPresent";
@@ -301,7 +301,7 @@ export default class Co2ControllerServiceImpl extends Co2ControllerService {
                 throttle(([prevCo2Decision, co2Decision]) => {
                     if (prevCo2Decision.required == co2Decision.required) {
                         // Don't throttle if no state change
-                        return empty(this._scheduler);
+                        return of(1); // calls 'next' immediately
                     } else {
                         // Ignore consequent state changes after this one.
                         // This way we avoid bouncing decisions while previous decision is not yet actuated
