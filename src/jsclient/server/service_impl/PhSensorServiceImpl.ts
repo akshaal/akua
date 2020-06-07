@@ -3,7 +3,7 @@ import PhSensorService, { Ph } from "server/service/PhSensorService";
 import AvrService, { AvrPhState } from "server/service/AvrService";
 import { AveragingWindow } from "../misc/AveragingWindow";
 import { Observable, BehaviorSubject } from "rxjs";
-import { calcCo2FromPh } from "server/misc/calcCo2FromPh";
+import { calcCo2DivKhFromPh } from "server/misc/calcCo2DivKhFromPh";
 import config from "server/config";
 
 // How many measurements per second our AVR performs
@@ -96,7 +96,7 @@ class SensorProcessor {
                             value60sSamples: this._voltage60sWindow.getCount(),
                             value600s: phValue600s,
                             value600sSamples: this._voltage600sWindow.getCount(),
-                            phBasedCo2: phValue600s ? calcCo2FromPh(config.aquaEnv, phValue600s) : null,
+                            phBasedCo2: phValue600s ? (calcCo2DivKhFromPh(phValue600s) * config.aquaEnv.kh) : null,
                             lastSensorState: pendingAvrPhState
                         });
                     }
