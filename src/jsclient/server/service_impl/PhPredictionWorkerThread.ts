@@ -13,6 +13,7 @@ import {
 import { parentPort } from 'worker_threads';
 import { newTimestamp } from 'server/misc/new-timestamp';
 import config, { asUrl } from 'server/config';
+import { calcCo2FromPh } from 'server/misc/calcCo2FromPh';
 
 // TODO: Move to config.... and some other place, not ui!
 const minPhPredictionModelLoadLocation = asUrl(config.bindOptions) + "/ui/model.dump";
@@ -64,6 +65,21 @@ function scalePh(ph: number): number {
     }
 
     return (ph - 6) / 2.0;
+}
+
+/**
+ * Rescale OC2 value to a normalized value that is used in TensorFlow network.
+ */
+function scaleCo2(co2: number): number {
+    if (co2 > 50) {
+        return 1;
+    }
+
+    if (co2 < 0) {
+        return 0;
+    }
+
+    return co2 / 50.0;
 }
 
 /**
@@ -244,6 +260,7 @@ export function createCo2ClosingStateFeaturesAndLabels(state: Co2ClosingState): 
         xs.push([
             scalePh(state.ph600AtClose),
             scalePhOffset(ph60Offset),
+            scaleCo2(calcCo2FromPh(config.aquaEnv, state.ph600AtClose + ph60Offset)),
             //scaleTemperature(temp), to avoid over-fitting
             dayLightOn ? 1 : 0,
             co2ValveOpen ? 1 : 0,

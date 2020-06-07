@@ -258,7 +258,7 @@ export async function trainModelFromDataset(
 
         const inputLayer = tf.input({
             name: "Input",
-            shape: [PH_PREDICTION_WINDOW_LENGTH, 4]
+            shape: [PH_PREDICTION_WINDOW_LENGTH, 5]
         });
 
         const feature1MinExtractionLayer = tf.layers.conv1d({
@@ -364,8 +364,8 @@ async function train() {
         trainingStates,
         validationStates,
         retrain: false,
-        learningRate: 5e-5,
-        epochs: 20000
+        learningRate: undefined,
+        epochs: 20_000
     });
 
     exit(0);
