@@ -57,6 +57,10 @@ export interface DatabaseConfig {
     readonly phClosingStateDbFileName: string;
 }
 
+export interface AquaEnvConfig {
+    readonly kh: number;
+}
+
 export interface Config {
     readonly version: string;
     readonly isProd: boolean;
@@ -73,6 +77,7 @@ export interface Config {
     readonly co2Display: ValueDisplayConfig;
     readonly database: DatabaseConfig;
     readonly phClosingPrediction: PhClosingPredictionConfig;
+    readonly aquaEnv: AquaEnvConfig;
 }
 
 // ================================================================================================
@@ -171,6 +176,10 @@ const phClosingPrediction: PhClosingPredictionConfig = {
     trainDatasetPercentage: 0.95,
 };
 
+const aquaEnv: AquaEnvConfig = {
+    kh: 4
+};
+
 const database: DatabaseConfig = {
     baseDirectory: isDev ? "../../temp/db" : "/var/akua/db",
     phClosingStateDbFileName: "ph-closing-state.db"
@@ -191,7 +200,8 @@ export const config: Config = {
     co2Display,
     phController,
     phClosingPrediction,
-    database
+    database,
+    aquaEnv
 };
 
 // ================================================================================================

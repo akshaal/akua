@@ -3,15 +3,14 @@ import PhSensorService, { Ph } from "server/service/PhSensorService";
 import AvrService, { AvrPhState } from "server/service/AvrService";
 import { AveragingWindow } from "../misc/AveragingWindow";
 import { Observable, BehaviorSubject } from "rxjs";
+import { calcCo2FromPh } from "server/misc/calcCo2FromPh";
+import config from "server/config";
 
 // How many measurements per second our AVR performs
 const PH_SAMPLE_FREQUENCY = 7;
 
 // How many adjacent measurements to skip before and after the one marked as 'bad' (with noise in it).
 const PH_BAD_VALUE_ADJ_SKIPS = 20;
-
-// TODO: Move to config
-const KH = 4;
 
 interface Solution {
     a: number;
@@ -97,7 +96,7 @@ class SensorProcessor {
                             value60sSamples: this._voltage60sWindow.getCount(),
                             value600s: phValue600s,
                             value600sSamples: this._voltage600sWindow.getCount(),
-                            phBasedCo2: phValue600s ? (3.0 * KH * (10 ** (7.00 - phValue600s))) : null,
+                            phBasedCo2: phValue600s ? calcCo2FromPh(config.aquaEnv, phValue600s) : null,
                             lastSensorState: pendingAvrPhState
                         });
                     }
