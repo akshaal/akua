@@ -241,10 +241,14 @@ export function createCo2ClosingStateFeaturesAndLabels(state: Co2ClosingState): 
             return null;
         }
 
+        // When there is enough data, other stuff that might improve predictions:
+        //   scaled temperature
+        //   scaled co2FromPhDivKh
+        //   scaled time-until-light-turn-on (if < 15min)
+
         xs.push([
             scalePh(state.ph600AtClose),
             scalePhOffset(ph60Offset),
-            //scaleTemperature(temp), to avoid over-fitting
             dayLightOn ? 1 : 0,
             co2ValveOpen ? 1 : 0,
         ]);
@@ -268,7 +272,7 @@ function loadModelFromFile(): Promise<tf.LayersModel> {
 /**
  * Called from onMessageToPhPredictionWorker to handle this kind of messages.
  * Must predict PH and send the PhPredictionResponse o main thread via using parentPort object.
- * 
+ *
  * @param request predication request
  */
 function onPhPredictionRequest(request: MinPhPredictionRequest) {
