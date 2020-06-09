@@ -242,8 +242,7 @@ export function createCo2ClosingStateFeaturesAndLabels(state: Co2ClosingState): 
         }
 
         xs.push([
-            scalePh(state.ph600AtClose),
-            scalePhOffset(ph60Offset),
+            scalePh(state.ph600AtClose + ph60Offset),
             //scaleTemperature(temp), to avoid over-fitting
             dayLightOn ? 1 : 0,
             co2ValveOpen ? 1 : 0,
