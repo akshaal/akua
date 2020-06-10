@@ -258,13 +258,13 @@ export async function trainModelFromDataset(
 
         const inputLayer = tf.input({
             name: "Input",
-            shape: [PH_PREDICTION_WINDOW_LENGTH, 4]
+            shape: [PH_PREDICTION_WINDOW_LENGTH, 3]
         });
 
         const gru1Layer = tf.layers.bidirectional({
             name: "Gru1",
             layer: tf.layers.gru({
-                units: 3,
+                units: 4,
                 activation: "selu",
                 kernelInitializer: 'leCunNormal',
                 returnSequences: true
@@ -274,20 +274,42 @@ export async function trainModelFromDataset(
         const gru2Layer = tf.layers.bidirectional({
             name: "Gru2",
             layer: tf.layers.gru({
-                units: 3,
+                units: 4,
+                activation: "selu",
+                kernelInitializer: 'leCunNormal',
+                returnSequences: true
+            }) as any
+        }).apply(gru1Layer);
+
+        const gru1n2Layer = tf.layers.add({
+            name: "AddGrus"
+        }).apply([gru1Layer, gru2Layer] as tf.SymbolicTensor[]);
+
+        const gru3Layer = tf.layers.bidirectional({
+            name: "Gru3",
+            layer: tf.layers.gru({
+                units: 4,
                 activation: "selu",
                 kernelInitializer: 'leCunNormal'
             }) as any
-        }).apply(gru1Layer);
+        }).apply(gru1n2Layer);
+
+        // --- FC
+
+        const fc1Layer = tf.layers.dense({
+            name: "FullyConnected1",
+            units: 3,
+            activation: "selu",
+            kernelInitializer: 'leCunNormal'
+        }).apply(gru3Layer);
 
         // --- output
 
         const outputLayer = tf.layers.dense({
             name: "Output",
             units: 1,
-            activation: "selu",
-            kernelInitializer: 'leCunNormal'
-        }).apply(gru2Layer);
+            activation: "relu",
+        }).apply(fc1Layer);
 
         // ---- model
 
@@ -355,7 +377,7 @@ async function train() {
         validationStates,
         retrain: false,
         learningRate: 5e-5,
-        epochs: 3600
+        epochs: 2200
     });
 
     exit(0);
