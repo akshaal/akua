@@ -261,16 +261,6 @@ export async function trainModelFromDataset(
             shape: [PH_PREDICTION_WINDOW_LENGTH, 4]
         });
 
-        const feature1MinExtractionLayer = tf.layers.conv1d({
-            name: "Feature1MinExtraction",
-            kernelSize: 4, // 1 minute
-            filters: 4,
-            activation: "selu",
-            kernelInitializer: 'leCunNormal',
-            strides: 4, // each minute
-            padding: "valid"
-        }).apply(inputLayer);
-
         const gru1Layer = tf.layers.bidirectional({
             name: "Gru1",
             layer: tf.layers.gru({
@@ -279,7 +269,7 @@ export async function trainModelFromDataset(
                 kernelInitializer: 'leCunNormal',
                 returnSequences: true
             }) as any
-        }).apply(feature1MinExtractionLayer);
+        }).apply(inputLayer);
 
         const gru2Layer = tf.layers.bidirectional({
             name: "Gru2",
@@ -365,7 +355,7 @@ async function train() {
         validationStates,
         retrain: false,
         learningRate: 5e-5,
-        epochs: 20000
+        epochs: 3600
     });
 
     exit(0);
