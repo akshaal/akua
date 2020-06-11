@@ -245,11 +245,11 @@ export function createCo2ClosingStateFeaturesAndLabels(state: Co2ClosingState): 
         //   scaled temperature
         //   scaled co2FromPhDivKh
         //   scaled time-until-light-turn-on (if < 15min)
-        //   dayLightOn ? 1 : 0,
 
         xs.push([
             scalePh(state.ph600AtClose),
             scalePhOffset(ph60Offset),
+            dayLightOn ? 1 : 0,
             co2ValveOpen ? 1 : 0,
         ]);
     }
