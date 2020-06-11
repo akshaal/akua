@@ -24,7 +24,7 @@ const SEND_REQUIREMENTS_TO_AVR_EVERY_MS = 10_000;
 const THROTTLE_TIME_MS = 3_000 + Math.random() * 2_000;
 
 // Don't allow it be open for too long to avoid overheating/"over-ventilation" and stuff
-const CO2_MAX_OPEN_MINUTES = 30;
+const CO2_MAX_OPEN_MINUTES = 4; // TODO: Temporary
 
 // Don't believe in predictions based upon first 30 seconds! It might be plain wrong.
 // (we also have resolutions of 15 seconds based upon data from grafana)
@@ -34,7 +34,7 @@ const CO2_MIN_OPEN_SECONDS_TO_TRUST_PREDICTIONS = 2;
 const OBS_TIMEOUT_MS = 60_000;
 
 // Maximum allowed percentage (0...1) of changes relative to controlled margin between predictions to look real. 
-const MAX_PERCENTAGE_OF_CHANGE_BETWEEN_PREDICTIONS = 0.5;
+const MAX_PERCENTAGE_OF_CHANGE_BETWEEN_PREDICTIONS = 0.4;
 
 // Solution (a, b, c , d) for the following equations, given f(t1) = ph1, f(t2) = ph2, f(t3) = ph3:
 // Maxima:
