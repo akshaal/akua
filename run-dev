@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Use to run akua in dev environment
+
 export AKUA_VERSION=$(git describe --tags --always)
 
 cd `dirname "$0"`

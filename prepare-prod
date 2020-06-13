@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Called by ansible during installation
+
 cd `dirname "$0"`
 
 ./prepare "$@" && cp .git-tag .prepared-git-tag

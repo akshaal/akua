@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Run unit tests
+
 export AKUA_VERSION=$(git describe --tags --always)
 
 cd `dirname "$0"`

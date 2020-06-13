@@ -1,5 +1,6 @@
 #!/bin/sh
 
+# Called in prod environment to start the application
 # Note that this file is copied into the container,
 
 cd `dirname "$0"`

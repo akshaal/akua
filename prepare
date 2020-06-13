@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Call to prepare akua dev environment
+
 cd `dirname "$0"`
 cd src/jsclient
 
