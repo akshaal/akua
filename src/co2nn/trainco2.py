@@ -20,60 +20,39 @@ def create_model(unroll_rrn: bool):
         shape=[PH_PREDICTION_WINDOW_LENGTH, PH_PREDICTION_FEATURES]
     )
 
-    rrn1_layer = tf.keras.layers.Bidirectional(
-        name="Rrn1",
-        layer=tf.keras.layers.LSTM(
-            units=2,
-            activation="selu",
-            kernel_initializer='lecun_normal',
-            return_sequences=True,
-            unroll=unroll_rrn
-        )
+    conv1_layer = tf.keras.layers.Conv1D(
+        name="Conv1",
+        kernel_size=4,
+        strides=4,
+        filters=4,
+        activation="selu",
+        kernel_initializer='lecun_normal',
     )(input_layer)
 
-    rrn2_layer = tf.keras.layers.Bidirectional(
-        name="Rrn2",
-        layer=tf.keras.layers.LSTM(
-            units=2,
-            activation=None,
-            kernel_initializer='lecun_normal',
-            return_sequences=True,
-            unroll=unroll_rrn
-        )
-    )(rrn1_layer)
+    conv2_layer = tf.keras.layers.Conv1D(
+        name="Conv2",
+        kernel_size=3,
+        strides=3,
+        filters=4,
+        activation="selu",
+        kernel_initializer='lecun_normal',
+    )(conv1_layer)
 
-    rrn1n2_layer = tf.keras.layers.Add(
-        name="Rrn1n2"
-    )([rrn1_layer, rrn2_layer])
-
-    rrn1n2_act_layer = tf.keras.layers.Activation(
-        name="Rrn1n2Act",
-        activation="selu"
-    )(rrn1n2_layer)
-
-    # ---- rrn3 ----
-
-    rrn3_layer = tf.keras.layers.Bidirectional(
-        name="Rrn3",
-        layer=tf.keras.layers.LSTM(
-            units=2,
-            activation="selu",
-            kernel_initializer='lecun_normal',
-            unroll=unroll_rrn
-        )
-    )(rrn1n2_act_layer)
+    flatten_layer = tf.keras.layers.Flatten(
+        name="Flatten"
+    )(conv2_layer)
 
     fc1_layer = tf.keras.layers.Dense(
         name="FullyConnected1",
-        units=3,
+        units=8,
         activation="selu",
         kernel_initializer='lecun_normal'
-    )(rrn3_layer)
+    )(flatten_layer)
 
     output_layer = tf.keras.layers.Dense(
         name="Output",
         units=1,
-        activation="relu",
+        activation="selu",
         kernel_initializer='lecun_normal'
     )(fc1_layer)
 
@@ -158,6 +137,6 @@ if __name__ == '__main__':
         retrain=False,
         learning_rate=1e-4,
         unroll_rrn=True,
-        epochs=5000,
-        validation_freq=20
+        epochs=40000,
+        validation_freq=40
     )
