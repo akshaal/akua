@@ -10,11 +10,24 @@ mkdir -p temp/db
 
 PH_CLOSING_DB=temp/db/ph-closing-state.db
 
-rm -f "$PH_CLOSING_DB"
+if false; then
+    rm -f "$PH_CLOSING_DB"
 
-curl http://192.168.1.10:3000/db/ph-closing-state.db -o "$PH_CLOSING_DB"
+    curl http://192.168.1.10:3000/db/ph-closing-state.db -o "$PH_CLOSING_DB" || exit 23
 
-cd src/jsclient
+    cd src/jsclient || exit 10
 
-npm run build
-npm run trainco2
+    npm run build || exit 12
+
+    # TODO: Better name!
+    npm run trainco2 || exit 55
+
+    cd ../../ || exit 9
+fi
+
+. ./source-me-to-activate-python-venv || exit 11
+
+# Disable GPU because it's SLOW in our tiny network case (or small dataset)
+export CUDA_VISIBLE_DEVICES=-1
+
+python3 ./src/co2nn/trainco2.py || exit 5

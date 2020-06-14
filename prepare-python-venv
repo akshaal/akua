@@ -1,0 +1,17 @@
+#!/bin/sh
+
+cd `dirname "$0"`
+
+if test ! -e .python_venv; then
+    echo "Creating python venv"
+    python3 -m venv .python_venv || exit 10
+fi
+
+. ./source-me-to-activate-python-venv || exit 11
+
+# TODO: Use explicit versions here!
+
+pip3 install -U tensorflow
+pip3 install -U pylint
+pip3 install -U autopep8
+pip3 install -U rope

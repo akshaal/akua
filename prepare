@@ -37,5 +37,9 @@ echo "USING $tf_backend (@tensorflow/$tf_module) AS BACKEND FOR TENSORFLOW."
 echo ""
 
 #######################################################################
+# NPM
+
+echo "Preparing npm"
 
 npm install
+
