@@ -20,14 +20,23 @@ def create_model(unroll_rrn: bool):
         shape=[PH_PREDICTION_WINDOW_LENGTH, PH_PREDICTION_FEATURES]
     )
 
+    conv0_layer = tf.keras.layers.Conv1D(
+        name="Conv0",
+        kernel_size=1,
+        strides=1,
+        filters=2,
+        activation="selu",
+        kernel_initializer='lecun_normal',
+    )(input_layer)
+
     conv1_layer = tf.keras.layers.Conv1D(
         name="Conv1",
         kernel_size=4,
         strides=4,
-        filters=4,
+        filters=3,
         activation="selu",
         kernel_initializer='lecun_normal',
-    )(input_layer)
+    )(conv0_layer)
 
     conv2_layer = tf.keras.layers.Conv1D(
         name="Conv2",
@@ -44,7 +53,7 @@ def create_model(unroll_rrn: bool):
 
     fc1_layer = tf.keras.layers.Dense(
         name="FullyConnected1",
-        units=8,
+        units=2,
         activation="selu",
         kernel_initializer='lecun_normal'
     )(flatten_layer)
@@ -135,7 +144,7 @@ def train(retrain: bool,
 if __name__ == '__main__':
     train(
         retrain=False,
-        learning_rate=1e-4,
+        learning_rate=5e-5,
         unroll_rrn=True,
         epochs=40000,
         validation_freq=40
