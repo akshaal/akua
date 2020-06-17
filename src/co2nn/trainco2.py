@@ -146,6 +146,6 @@ if __name__ == '__main__':
         retrain=False,
         learning_rate=1e-5,
         unroll_rrn=True,
-        epochs=40000,
+        epochs=300000,
         validation_freq=40
     )

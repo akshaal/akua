@@ -187,7 +187,7 @@ export function createCo2ClosingStateFeaturesAndLabels(state: Co2ClosingState): 
         return null;
     }
 
-    if (state.ph600AtClose > 8 || state.ph600AtClose < 4) {
+    if (state.ph600AtClose > 9 || state.ph600AtClose < 3) {
         logger.error("PhPredict: Strange ph-600-at-close", { state });
         return null;
     }
