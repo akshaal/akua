@@ -29,7 +29,7 @@ fi
 
 echo "export * from '@tensorflow/$tf_module';" > server/service_impl/tf.ts
 
-cat package.json | sed -r "s/^(.*\")@tensorflow.*(\":.*)$/\\1@tensorflow\\/$tf_module\\2/g" > package.json-new || exit 2
+cat package.json | sed -r "/tfjs-converter/ ! s/^(.*\")@tensorflow.*(\":.*)$/\\1@tensorflow\\/$tf_module\\2/g" > package.json-new || exit 2
 mv package.json-new package.json
 
 echo ""

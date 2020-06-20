@@ -32,7 +32,7 @@ const minPhPredictionModelLoadLocation = asUrl(config.bindOptions) + "/ui/model.
  * In tests we need to call loadModelFromFIle to load the model from file obviously.
  * If this file is opened as a worker thread, then the call is done automatically.
  */
-const minPhPredictionModelPromise: Promise<tf.LayersModel> = parentPort ? loadModelFromFile() : new Promise(() => { });
+const minPhPredictionModelPromise: Promise<tf.GraphModel> = parentPort ? loadModelFromFile() : new Promise(() => { });
 
 /**
  * Rescale PH difference to a normalized value that is used in TensorFlow network.
@@ -262,9 +262,9 @@ export function createCo2ClosingStateFeaturesAndLabels(state: Co2ClosingState): 
 
 // ================================================================
 
-function loadModelFromFile(): Promise<tf.LayersModel> {
+function loadModelFromFile(): Promise<tf.GraphModel> {
     logger.info("PhPredict: Loading min-PH prediction model from " + minPhPredictionModelLoadLocation);
-    return tf.loadLayersModel(minPhPredictionModelLoadLocation + "/model.json");
+    return tf.loadGraphModel(minPhPredictionModelLoadLocation + "/model.json");
 }
 
 // ================================================================

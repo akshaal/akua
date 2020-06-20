@@ -12,6 +12,7 @@ fi
 # TODO: Use explicit versions here!
 
 pip3 install -U tensorflow
+pip3 install -U tensorflowjs
 pip3 install -U pylint
 pip3 install -U autopep8
 pip3 install -U rope

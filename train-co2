@@ -31,3 +31,8 @@ fi
 export CUDA_VISIBLE_DEVICES=-1
 
 python3 ./src/co2nn/trainco2.py || exit 5
+
+tensorflowjs_converter --input_format=keras \
+                       --output_format=tfjs_graph_model \
+                       data/co2-model.h5 \
+                       src/jsclient/server/static-ui/model.dump || exit 6
