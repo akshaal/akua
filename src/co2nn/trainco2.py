@@ -33,7 +33,7 @@ def create_model(unroll_rrn: bool):
         name="Conv1",
         kernel_size=4,
         strides=4,
-        filters=3,
+        filters=4,
         activation="selu",
         kernel_initializer='lecun_normal',
     )(conv0_layer)
