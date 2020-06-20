@@ -44,6 +44,7 @@
         "bson",
         "camelcase",
         "deciseconds",
+        "dumpco",
         "fname",
         "gargs",
         "keras",
@@ -61,6 +62,7 @@
         "tensorflow",
         "tfjs",
         "trainco",
+        "traindata",
         "ubrr",
         "vals",
         "vect"

@@ -19,8 +19,7 @@ if true; then
 
     npm run build || exit 12
 
-    # TODO: Better name!
-    npm run trainco2 || exit 55
+    npm run dumpco2traindata || exit 55
 
     cd ../../ || exit 9
 fi

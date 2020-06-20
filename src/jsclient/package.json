@@ -7,7 +7,7 @@
     "dev": "concurrently \"tsc --preserveWatchOutput -w --project tsconfig.json\" \"NODE_ENV=development NODE_PATH=./dist nodemon -w ./dist ./dist/server/index.js\"",
     "build": "NODE_ENV=production tsc --project tsconfig.json",
     "start": "NODE_ENV=production NODE_PATH=./dist node ./dist/server/index.js",
-    "trainco2": "NODE_PATH=./dist node ./dist/cli-utils/trainco2.js",
+    "dumpco2traindata": "NODE_PATH=./dist node ./dist/cli-utils/dumpco2traindata.js",
     "clean": "rimraf dist",
     "test": "NODE_PATH=./dist ts-mocha --paths -p ./tsconfig.json **/*.spec.ts"
   },
