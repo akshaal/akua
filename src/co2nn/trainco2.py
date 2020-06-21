@@ -60,7 +60,7 @@ def create_model(unroll_rrn: bool):
         name="Conv3",
         kernel_size=3,
         strides=3,
-        filters=4,
+        filters=10,
         activation="selu",
         kernel_initializer='lecun_normal',
     )(act2n1_layer)
@@ -68,7 +68,7 @@ def create_model(unroll_rrn: bool):
     # (AlphaDropout works strange for some strange reason)
     drop3_layer = tf.keras.layers.Dropout(
         name="Dropout3",
-        rate=0.5
+        rate=0.8
     )(conv3_layer)
 
     flatten_layer = tf.keras.layers.Flatten(
@@ -76,8 +76,8 @@ def create_model(unroll_rrn: bool):
     )(drop3_layer)
 
     fc1_layer = tf.keras.layers.Dense(
-        name="FullyConnected1",
-        units=2,
+        name="FC1",
+        units=4,
         activation="selu",
         kernel_initializer='lecun_normal'
     )(flatten_layer)
@@ -156,14 +156,20 @@ def train(retrain: bool,
     def loss(y_true, y_pred):
         return tf.keras.backend.mean(
             tf.keras.backend.switch(
-                y_pred > y_true,
-                tf.math.squared_difference(y_pred, y_true) * 3, # penalty for optimistic prediction!
+                tf.math.greater(y_pred, y_true),
+                # penalty for optimistic prediction!
+                tf.math.squared_difference(y_pred, y_true) * 3,
                 tf.math.squared_difference(y_pred, y_true)
             ),
             axis=-1
         )
 
-    model.compile(loss=loss, optimizer=optimizer)
+    model.compile(
+        loss=loss,
+        optimizer=optimizer,
+        metrics=['mse']
+    )
+
     model.summary()
 
     model.fit(
@@ -185,7 +191,7 @@ def train(retrain: bool,
 if __name__ == '__main__':
     train(
         retrain=False,
-        learning_rate=5e-5,
+        learning_rate=1e-5,
         unroll_rrn=True,
         epochs=300_000,
         validation_freq=40
