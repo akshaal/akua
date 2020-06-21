@@ -40,16 +40,34 @@ def create_model(unroll_rrn: bool):
 
     conv2_layer = tf.keras.layers.Conv1D(
         name="Conv2",
-        kernel_size=3,
-        strides=3,
+        kernel_size=1,
+        strides=1,
         filters=4,
         activation="selu",
         kernel_initializer='lecun_normal',
     )(conv1_layer)
 
+    conv2n1_layer = tf.keras.layers.Add(
+        name="Add2n1"
+    )([conv2_layer, conv1_layer])
+
+    act2n1_layer = tf.keras.layers.Activation(
+        name='Act2n1',
+        activation="selu"
+    )(conv2n1_layer)
+
+    conv3_layer = tf.keras.layers.Conv1D(
+        name="Conv3",
+        kernel_size=3,
+        strides=3,
+        filters=4,
+        activation="selu",
+        kernel_initializer='lecun_normal',
+    )(act2n1_layer)
+
     flatten_layer = tf.keras.layers.Flatten(
         name="Flatten"
-    )(conv2_layer)
+    )(conv3_layer)
 
     fc1_layer = tf.keras.layers.Dense(
         name="FullyConnected1",
@@ -58,12 +76,19 @@ def create_model(unroll_rrn: bool):
         kernel_initializer='lecun_normal'
     )(flatten_layer)
 
+    preoutput_layer = tf.keras.layers.Dense(
+        name="PreOutput",
+        units=1,
+        activation="selu",
+        kernel_initializer='lecun_normal'
+    )(fc1_layer)
+
     output_layer = tf.keras.layers.Dense(
         name="Output",
         units=1,
         activation="selu",
         kernel_initializer='lecun_normal'
-    )(fc1_layer)
+    )(preoutput_layer)
 
     model = tf.keras.Model(
         name="co2-predict2",
@@ -144,8 +169,8 @@ def train(retrain: bool,
 if __name__ == '__main__':
     train(
         retrain=False,
-        learning_rate=1e-5,
+        learning_rate=1e-4,
         unroll_rrn=True,
-        epochs=300000,
+        epochs=50_000,
         validation_freq=40
     )
