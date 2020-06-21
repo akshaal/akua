@@ -144,7 +144,7 @@ def train(retrain: bool,
 if __name__ == '__main__':
     train(
         retrain=False,
-        learning_rate=1e-5,
+        learning_rate=5e-5,
         unroll_rrn=True,
         epochs=300000,
         validation_freq=40
