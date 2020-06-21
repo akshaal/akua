@@ -65,9 +65,15 @@ def create_model(unroll_rrn: bool):
         kernel_initializer='lecun_normal',
     )(act2n1_layer)
 
+    # (AlphaDropout works strange for some strange reason)
+    drop3_layer = tf.keras.layers.Dropout(
+        name="Dropout3",
+        rate=0.5
+    )(conv3_layer)
+
     flatten_layer = tf.keras.layers.Flatten(
         name="Flatten"
-    )(conv3_layer)
+    )(drop3_layer)
 
     fc1_layer = tf.keras.layers.Dense(
         name="FullyConnected1",
@@ -147,7 +153,17 @@ def train(retrain: bool,
 
     optimizer = tf.keras.optimizers.Adam(learning_rate)
 
-    model.compile(loss="mean_squared_error", optimizer=optimizer)
+    def loss(y_true, y_pred):
+        return tf.keras.backend.mean(
+            tf.keras.backend.switch(
+                y_pred > y_true,
+                tf.math.squared_difference(y_pred, y_true) * 3, # penalty for optimistic prediction!
+                tf.math.squared_difference(y_pred, y_true)
+            ),
+            axis=-1
+        )
+
+    model.compile(loss=loss, optimizer=optimizer)
     model.summary()
 
     model.fit(
@@ -169,8 +185,8 @@ def train(retrain: bool,
 if __name__ == '__main__':
     train(
         retrain=False,
-        learning_rate=1e-4,
+        learning_rate=5e-5,
         unroll_rrn=True,
-        epochs=50_000,
+        epochs=300_000,
         validation_freq=40
     )
