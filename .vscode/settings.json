@@ -59,6 +59,7 @@
         "selu",
         "sourcecode",
         "sqls",
+        "strftime",
         "tensorflow",
         "tfjs",
         "trainco",

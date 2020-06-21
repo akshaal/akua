@@ -1,6 +1,8 @@
 import tensorflow as tf
 import json
 
+from datetime import datetime
+
 # tf.debugging.set_log_device_placement(True)
 
 PH_PREDICTION_WINDOW_LENGTH = 60
@@ -137,7 +139,8 @@ def train(retrain: bool,
           learning_rate: float,
           unroll_rrn: bool,
           epochs: int,
-          validation_freq: int):
+          validation_freq: int,
+          tensorboard: bool):
     with open('temp/co2-train-data.json') as f:
         train_data = dataset_from_json(json.load(f))
 
@@ -172,11 +175,24 @@ def train(retrain: bool,
 
     model.summary()
 
+    callbacks = []
+    if tensorboard:
+        print("ENABLING TENSORBOARD MAKES TRAINING SLOWER!!!!!!!!!")
+        logdir = "temp/logs/co2-fit/" + datetime.now().strftime("%Y%m%d-%H%M%S")
+        callbacks.append(
+            tf.keras.callbacks.TensorBoard(
+                log_dir=logdir,
+                write_images=True,
+                write_graph=True,
+            )
+        )
+
     model.fit(
         x=train_data,
         validation_data=valid_data,
         epochs=epochs,
         validation_freq=validation_freq,
+        callbacks=callbacks
     )
 
     model.save(MODEL_FNAME, save_format='h5')
@@ -194,5 +210,6 @@ if __name__ == '__main__':
         learning_rate=1e-5,
         unroll_rrn=True,
         epochs=300_000,
-        validation_freq=40
+        validation_freq=100,
+        tensorboard=False
     )
