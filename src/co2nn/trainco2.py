@@ -190,7 +190,13 @@ def train(retrain: bool,
         alpha=0.5
     )
 
-    weight_decay = tf.Variable(0.0, name='weight_decay', trainable=False)
+    weight_decay = tf.Variable(
+        0.0,
+        name='weight_decay',
+        trainable=False,
+        dtype="float32",
+        shape=()
+    )
 
     optimizer = tfa.optimizers.AdamW(
         learning_rate=lr_scheduler,
@@ -278,7 +284,7 @@ def train(retrain: bool,
         callbacks=callbacks
     )
 
-    model.save(MODEL_FNAME, save_format='h5')
+    model.save(MODEL_FNAME, save_format='h5', include_optimizer=False)
 
 
 # ###############################################################################

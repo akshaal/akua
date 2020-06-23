@@ -44,6 +44,7 @@
         "bson",
         "camelcase",
         "deciseconds",
+        "dtype",
         "dumpco",
         "fname",
         "gargs",
