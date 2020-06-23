@@ -165,10 +165,11 @@ def dataset_from_json(json):
 def train(retrain: bool,
           learning_rate: float,
           epochs: int,
+          first_decay_epochs: int,
           validation_freq: int,
           tensorboard: bool,
           early_stop_epoch_patience: float,
-          weight_decay: float):
+          weight_decay_lr_multiplier: float):
     with open('temp/co2-train-data.json') as f:
         train_data = dataset_from_json(json.load(f))
 
@@ -182,19 +183,36 @@ def train(retrain: bool,
         print("##### LOADING EXISTING NETWORK")
         model = tf.keras.models.load_model(MODEL_FNAME, compile=False)
 
+    # scheduler for learning rate
+    lr_scheduler = tf.keras.experimental.CosineDecayRestarts(
+        initial_learning_rate=learning_rate,
+        first_decay_steps=first_decay_epochs,
+        alpha=0.5
+    )
+
+    weight_decay = tf.Variable(0.0, name='weight_decay', trainable=False)
+
     optimizer = tfa.optimizers.AdamW(
-        learning_rate=learning_rate,
-        weight_decay=weight_decay
+        learning_rate=lr_scheduler,
+        weight_decay=lambda: weight_decay
     )
 
     model.compile(
         loss=tf.keras.losses.mean_squared_error,
-        optimizer=optimizer,
+        optimizer=optimizer
     )
 
     model.summary()
 
-    callbacks = []
+    def on_epoch_begin(epoch, logs):
+        current_lr = lr_scheduler(epoch)
+        weight_decay.assign(weight_decay_lr_multiplier * current_lr)
+        print("LR=%0.4e, WD=%0.4e" %
+              (current_lr.numpy(), weight_decay.numpy()))
+
+    callbacks = [
+        tf.keras.callbacks.LambdaCallback(on_epoch_begin=on_epoch_begin)
+    ]
 
     if tensorboard:
         print("ENABLING TENSORBOARD MAKES TRAINING SLOWER!!!!!!!!!")
@@ -209,6 +227,10 @@ def train(retrain: bool,
 
     if early_stop_epoch_patience > 0:
         patience = int(early_stop_epoch_patience / validation_freq)
+
+        # Best weights are the initial ones
+        initial_best = model.evaluate(x=valid_data)
+        initial_best_weights = model.get_weights()
 
         # Custom class to avoid having errors because validation_freq
         class CustomEarlyStopping(tf.keras.callbacks.EarlyStopping):
@@ -228,6 +250,11 @@ def train(retrain: bool,
                       str(self.wait*validation_freq) + "/" + str(early_stop_epoch_patience))
                 return monitor_value
 
+            def on_train_begin(self, logs):
+                super().on_train_begin(logs)
+                self.best = initial_best
+                self.best_weights = initial_best_weights
+
             def on_train_end(self, logs=None):
                 super().on_train_end()
                 if self.stopped_epoch == 0 and self.best_weights:
@@ -235,15 +262,13 @@ def train(retrain: bool,
                         'AK: Not early stop. But still restoring model weights from the end of the best validation-epoch.')
                     self.model.set_weights(self.best_weights)
 
-        callbacks.append(
-            CustomEarlyStopping(
-                monitor='val_loss',
-                # Because we only use validation loss which appears 1 / validation_freq cases
-                patience=patience,
-                restore_best_weights=True,
-                verbose=1
-            )
-        )
+        callbacks.append(CustomEarlyStopping(
+            monitor='val_loss',
+            # Because we only use validation loss which appears 1 / validation_freq cases
+            patience=patience,
+            restore_best_weights=True,
+            verbose=1
+        ))
 
     model.fit(
         x=train_data,
@@ -264,11 +289,12 @@ def train(retrain: bool,
 
 if __name__ == '__main__':
     train(
-        retrain=True,
-        learning_rate=1e-2,
-        weight_decay=1e-4,
+        retrain=False,
+        learning_rate=1e-4,
+        weight_decay_lr_multiplier=0.1,
         epochs=600_000,
-        validation_freq=25,
+        first_decay_epochs=30_000,
+        validation_freq=20,
         tensorboard=False,
-        early_stop_epoch_patience=100_000
+        early_stop_epoch_patience=200_000
     )

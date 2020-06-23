@@ -52,6 +52,7 @@
         "lstm",
         "maxsize",
         "mockito",
+        "numpy",
         "pify",
         "prefetch",
         "printf",
