@@ -103,7 +103,7 @@ def create_model():
         input_layer=conv1_layer,
         kernel_size=3,
         strides=1,
-        filters=4,
+        filters=6,
         maxpool_size=3,
         maxpool_strides=3,
     )
@@ -112,12 +112,18 @@ def create_model():
         name="Flatten"
     )(conv2_layer)
 
+    fc1 = mk_fc_layers(
+        name="L3",
+        input_layer=flatten_layer,
+        units=4,
+    )
+
     output_layer = tf.keras.layers.Dense(
         name="Output",
         units=1,
         activation="selu",
         kernel_initializer='lecun_normal'
-    )(flatten_layer)
+    )(fc1)
 
     model = tf.keras.Model(
         name="co2-predict2",
@@ -218,13 +224,15 @@ def train(retrain: bool,
                         self.__error_given = True
                         return super().get_monitor_value(logs)
                     return None
-                print((",  epochs since the best valid_loss (%0.4e" % (self.best,)) +"): " + str(self.wait*validation_freq) + "/" + str(early_stop_epoch_patience))
+                print((",  epochs since the best valid_loss (%0.4e" % (self.best,)) + "): " +
+                      str(self.wait*validation_freq) + "/" + str(early_stop_epoch_patience))
                 return monitor_value
 
             def on_train_end(self, logs=None):
                 super().on_train_end()
                 if self.stopped_epoch == 0 and self.best_weights:
-                    print('AK: Not early stop. But still restoring model weights from the end of the best validation-epoch.')
+                    print(
+                        'AK: Not early stop. But still restoring model weights from the end of the best validation-epoch.')
                     self.model.set_weights(self.best_weights)
 
         callbacks.append(
@@ -256,11 +264,11 @@ def train(retrain: bool,
 
 if __name__ == '__main__':
     train(
-        retrain=False,
-        learning_rate=5e-5,
+        retrain=True,
+        learning_rate=1e-2,
         weight_decay=0,
         epochs=600_000,
         validation_freq=25,
         tensorboard=False,
-        early_stop_epoch_patience=200_000
+        early_stop_epoch_patience=100_000
     )
