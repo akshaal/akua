@@ -266,7 +266,7 @@ if __name__ == '__main__':
     train(
         retrain=True,
         learning_rate=1e-2,
-        weight_decay=0,
+        weight_decay=1e-4,
         epochs=600_000,
         validation_freq=25,
         tensorboard=False,
