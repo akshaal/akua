@@ -295,8 +295,8 @@ def train(retrain: bool,
 
 if __name__ == '__main__':
     train(
-        retrain=True,
-        learning_rate=1e-2,
+        retrain=False,
+        learning_rate=1e-4,
         weight_decay_lr_multiplier=0.1 * np.random.random(),
         epochs=600_000,
         first_decay_epochs=30_000,
