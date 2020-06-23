@@ -28,6 +28,7 @@
         "RXCIE",
         "RXDI",
         "RXEN",
+        "SGDW",
         "TOSC",
         "TXEN",
         "Timeseries",

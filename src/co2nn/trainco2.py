@@ -4,6 +4,7 @@ import json
 import numpy as np
 
 from datetime import datetime
+from typing import Literal
 
 # tf.debugging.set_log_device_placement(True)
 
@@ -170,7 +171,8 @@ def train(retrain: bool,
           validation_freq: int,
           tensorboard: bool,
           early_stop_epoch_patience: float,
-          weight_decay_lr_multiplier: float):
+          weight_decay_lr_multiplier: float,
+          opt: Literal["adam", "sgd"]):
     with open('temp/co2-train-data.json') as f:
         train_data = dataset_from_json(json.load(f))
 
@@ -188,6 +190,7 @@ def train(retrain: bool,
     lr_scheduler = tf.keras.experimental.CosineDecayRestarts(
         initial_learning_rate=learning_rate,
         first_decay_steps=first_decay_epochs,
+        alpha=0.05
     )
 
     weight_decay = tf.Variable(
@@ -198,10 +201,18 @@ def train(retrain: bool,
         shape=()
     )
 
-    optimizer = tfa.optimizers.AdamW(
-        learning_rate=lr_scheduler,
-        weight_decay=lambda: weight_decay
-    )
+    if opt == "sgd":
+        print("Using SGDW Optimizer")
+        optimizer = tfa.optimizers.SGDW(
+            learning_rate=lr_scheduler,
+            weight_decay=lambda: weight_decay
+        )
+    else:
+        print("Using AdamW Optimizer")
+        optimizer = tfa.optimizers.AdamW(
+            learning_rate=lr_scheduler,
+            weight_decay=lambda: weight_decay
+        )
 
     model.compile(
         loss=tf.keras.losses.mean_squared_error,
@@ -302,5 +313,6 @@ if __name__ == '__main__':
         first_decay_epochs=30_000,
         validation_freq=20,
         tensorboard=False,
-        early_stop_epoch_patience=100_000
+        early_stop_epoch_patience=100_000,
+        opt="sgd"
     )
