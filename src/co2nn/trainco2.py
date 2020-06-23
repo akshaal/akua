@@ -1,6 +1,7 @@
 import tensorflow as tf
 import tensorflow_addons as tfa
 import json
+import numpy as np
 
 from datetime import datetime
 
@@ -296,8 +297,8 @@ def train(retrain: bool,
 if __name__ == '__main__':
     train(
         retrain=False,
-        learning_rate=1e-4,
-        weight_decay_lr_multiplier=0.1,
+        learning_rate=1e-2,
+        weight_decay_lr_multiplier=0.1 * np.random.random(),
         epochs=600_000,
         first_decay_epochs=30_000,
         validation_freq=20,
