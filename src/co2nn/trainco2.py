@@ -94,7 +94,7 @@ def create_model():
         input_layer=conv0_layer,
         kernel_size=4,
         strides=1,
-        filters=4,
+        filters=10,
         maxpool_size=4,
         maxpool_strides=2
     )
@@ -104,7 +104,7 @@ def create_model():
         input_layer=conv1_layer,
         kernel_size=3,
         strides=1,
-        filters=6,
+        filters=20,
         maxpool_size=3,
         maxpool_strides=3,
     )
@@ -188,7 +188,6 @@ def train(retrain: bool,
     lr_scheduler = tf.keras.experimental.CosineDecayRestarts(
         initial_learning_rate=learning_rate,
         first_decay_steps=first_decay_epochs,
-        alpha=0.5
     )
 
     weight_decay = tf.Variable(
@@ -296,12 +295,12 @@ def train(retrain: bool,
 
 if __name__ == '__main__':
     train(
-        retrain=False,
+        retrain=True,
         learning_rate=1e-2,
         weight_decay_lr_multiplier=0.1 * np.random.random(),
         epochs=600_000,
         first_decay_epochs=30_000,
         validation_freq=20,
         tensorboard=False,
-        early_stop_epoch_patience=200_000
+        early_stop_epoch_patience=100_000
     )
