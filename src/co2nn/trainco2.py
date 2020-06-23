@@ -1,4 +1,5 @@
 import tensorflow as tf
+import tensorflow_addons as tfa
 import json
 
 from datetime import datetime
@@ -93,7 +94,6 @@ def create_model():
         kernel_size=4,
         strides=1,
         filters=4,
-        dropout=0.75,
         maxpool_size=4,
         maxpool_strides=2
     )
@@ -103,8 +103,7 @@ def create_model():
         input_layer=conv1_layer,
         kernel_size=3,
         strides=1,
-        filters=6,
-        dropout=0.75,
+        filters=4,
         maxpool_size=3,
         maxpool_strides=3,
     )
@@ -162,7 +161,8 @@ def train(retrain: bool,
           epochs: int,
           validation_freq: int,
           tensorboard: bool,
-          early_stop_epoch_patience: float):
+          early_stop_epoch_patience: float,
+          weight_decay: float):
     with open('temp/co2-train-data.json') as f:
         train_data = dataset_from_json(json.load(f))
 
@@ -176,23 +176,14 @@ def train(retrain: bool,
         print("##### LOADING EXISTING NETWORK")
         model = tf.keras.models.load_model(MODEL_FNAME, compile=False)
 
-    optimizer = tf.keras.optimizers.Adam(learning_rate)
-
-    def loss(y_true, y_pred):
-        return tf.keras.backend.mean(
-            tf.keras.backend.switch(
-                tf.math.greater(y_pred, y_true),
-                # penalty for optimistic prediction!
-                tf.math.squared_difference(y_pred, y_true) * 3,
-                tf.math.squared_difference(y_pred, y_true)
-            ),
-            axis=-1
-        )
+    optimizer = tfa.optimizers.AdamW(
+        learning_rate=learning_rate,
+        weight_decay=weight_decay
+    )
 
     model.compile(
-        loss=loss,
+        loss=tf.keras.losses.mean_squared_error,
         optimizer=optimizer,
-        metrics=['mse']
     )
 
     model.summary()
@@ -211,6 +202,8 @@ def train(retrain: bool,
         )
 
     if early_stop_epoch_patience > 0:
+        patience = int(early_stop_epoch_patience / validation_freq)
+
         # Custom class to avoid having errors because validation_freq
         class CustomEarlyStopping(tf.keras.callbacks.EarlyStopping):
             def __init__(self, *args, **kwargs):
@@ -225,14 +218,22 @@ def train(retrain: bool,
                         self.__error_given = True
                         return super().get_monitor_value(logs)
                     return None
+                print((",  epochs since the best valid_loss (%0.4e" % (self.best,)) +"): " + str(self.wait*validation_freq) + "/" + str(early_stop_epoch_patience))
                 return monitor_value
+
+            def on_train_end(self, logs=None):
+                super().on_train_end()
+                if self.stopped_epoch == 0 and self.best_weights:
+                    print('AK: Not early stop. But still restoring model weights from the end of the best validation-epoch.')
+                    self.model.set_weights(self.best_weights)
 
         callbacks.append(
             CustomEarlyStopping(
                 monitor='val_loss',
-                patience=early_stop_epoch_patience,
+                # Because we only use validation loss which appears 1 / validation_freq cases
+                patience=patience,
                 restore_best_weights=True,
-                verbose=True
+                verbose=1
             )
         )
 
@@ -255,10 +256,11 @@ def train(retrain: bool,
 
 if __name__ == '__main__':
     train(
-        retrain=True,
-        learning_rate=1e-2,
-        epochs=300_000,
-        validation_freq=100,
+        retrain=False,
+        learning_rate=5e-5,
+        weight_decay=0,
+        epochs=600_000,
+        validation_freq=25,
         tensorboard=False,
-        early_stop_epoch_patience=30_000
+        early_stop_epoch_patience=200_000
     )
