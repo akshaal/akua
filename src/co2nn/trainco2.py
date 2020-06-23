@@ -296,11 +296,11 @@ def train(retrain: bool,
 if __name__ == '__main__':
     train(
         retrain=False,
-        learning_rate=1e-4,
-        weight_decay_lr_multiplier=0.1,
+        learning_rate=1e-2,
+        weight_decay_lr_multiplier=0,
         epochs=600_000,
         first_decay_epochs=30_000,
         validation_freq=20,
         tensorboard=False,
-        early_stop_epoch_patience=200_000
+        early_stop_epoch_patience=100_000
     )
