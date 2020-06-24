@@ -17,3 +17,4 @@ pip3 install -U tensorflow-addons
 pip3 install -U pylint
 pip3 install -U autopep8
 pip3 install -U rope
+pip3 install -U numpy
