@@ -212,7 +212,10 @@ def train(retrain: bool,
         print("Using AdamW Optimizer")
         optimizer = tfa.optimizers.AdamW(
             learning_rate=lr_scheduler,
-            weight_decay=lambda: weight_decay
+            weight_decay=lambda: weight_decay,
+            # Taken from PDF for SELU activation function
+            epsilon=0.01,
+            beta_2=0.99
         )
 
     model.compile(
