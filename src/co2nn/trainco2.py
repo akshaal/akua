@@ -309,20 +309,13 @@ def train(retrain: bool,
 # MAIN
 
 if __name__ == '__main__':
-    opt = "sgd"
-    if np.random.random() < 0.5:
-        opt = "adam"
-
-    lr = 1e-2
-    if np.random.random() < 0.5:
-        opt = 1e-3
-    elif np.random.random() < 0.1:
-        opt = 1e-4
+    opt = np.random.choice(["adam", "sgd"])
+    lr = float(np.random.choice([1e-2, 1e-3, 1e-4, 1e-5, 1e-6]))
 
     train(
         retrain=False,
         learning_rate=lr,
-        weight_decay_lr_multiplier=0.02 * np.random.random(),
+        weight_decay_lr_multiplier=float(0.02 * np.random.random()),
         epochs=600_000,
         first_decay_epochs=30_000,
         validation_freq=20,
