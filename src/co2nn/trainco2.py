@@ -291,6 +291,9 @@ def train(retrain: bool,
             verbose=1
         ))
 
+    #w = model.get_weights()
+    #print(w)
+
     model.fit(
         x=train_data,
         validation_data=valid_data,
