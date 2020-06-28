@@ -313,7 +313,7 @@ def train(retrain: bool,
 
 if __name__ == '__main__':
     opt = np.random.choice(["adam", "sgd"])
-    lr = float(np.random.choice([1e-2, 1e-3, 1e-4, 1e-5, 1e-6]))
+    lr = float(np.random.choice([1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6])) * float(np.random.random())
 
     train(
         retrain=False,
