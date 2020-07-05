@@ -29,14 +29,16 @@ def create_model():
                          avgpool_size: int = 0,
                          maxpool_strides: int = 0,
                          maxpool_size: int = 0,
-                         dropout: float = 0):
+                         dropout: float = 0,
+                         kernel_constraint = None):
         layer = tf.keras.layers.Conv1D(
             name=name + "Conv",
             kernel_size=kernel_size,
             strides=strides,
             filters=filters,
             activation="selu",
-            kernel_initializer='lecun_normal'
+            kernel_initializer='lecun_normal',
+            kernel_constraint=kernel_constraint
         )(input_layer)
 
         if dropout > 0:
@@ -61,12 +63,17 @@ def create_model():
 
         return layer
 
-    def mk_fc_layers(input_layer, units: int, name: str, dropout: float = 0):
+    def mk_fc_layers(input_layer,
+                     units: int,
+                     name: str,
+                     dropout: float = 0,
+                     kernel_constraint = None):
         layer = tf.keras.layers.Dense(
             name=name + "FC",
             units=units,
             activation="selu",
-            kernel_initializer='lecun_normal'
+            kernel_initializer='lecun_normal',
+            kernel_constraint=kernel_constraint
         )(input_layer)
 
         if dropout > 0:
@@ -88,36 +95,43 @@ def create_model():
         kernel_size=1,
         strides=1,
         filters=2,
+        kernel_constraint=tf.keras.constraints.max_norm(3)
     )
 
     conv1_layer = mk_conv1d_layers(
         name="L1",
         input_layer=conv0_layer,
         kernel_size=4,
-        strides=1,
+        strides=4,
         filters=10,
-        maxpool_size=4,
-        maxpool_strides=2
+        kernel_constraint=tf.keras.constraints.max_norm(3)
     )
 
     conv2_layer = mk_conv1d_layers(
         name="L2",
         input_layer=conv1_layer,
         kernel_size=3,
-        strides=1,
+        strides=3,
         filters=20,
-        maxpool_size=3,
-        maxpool_strides=3,
+        kernel_constraint=tf.keras.constraints.max_norm(3)
     )
 
     flatten_layer = tf.keras.layers.Flatten(
         name="Flatten"
     )(conv2_layer)
 
-    fc1 = mk_fc_layers(
+    fc1_layer = mk_fc_layers(
         name="L3",
         input_layer=flatten_layer,
+        units=8,
+        kernel_constraint=tf.keras.constraints.max_norm(3)
+    )
+
+    fc2_layer = mk_fc_layers(
+        name="L4",
+        input_layer=fc1_layer,
         units=4,
+        kernel_constraint=tf.keras.constraints.max_norm(3)
     )
 
     output_layer = tf.keras.layers.Dense(
@@ -125,7 +139,7 @@ def create_model():
         units=1,
         activation="selu",
         kernel_initializer='lecun_normal'
-    )(fc1)
+    )(fc2_layer)
 
     model = tf.keras.Model(
         name="co2-predict2",
@@ -323,6 +337,6 @@ if __name__ == '__main__':
         first_decay_epochs=30_000,
         validation_freq=1,
         tensorboard=False,
-        early_stop_epoch_patience=5_000,
+        early_stop_epoch_patience=1_000,
         opt=opt
     )
