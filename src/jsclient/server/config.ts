@@ -173,7 +173,7 @@ const phController: PhControllerConfig = {
 };
 
 const phClosingPrediction: PhClosingPredictionConfig = {
-    trainDatasetPercentage: 0.95,
+    trainDatasetPercentage: 0.90,
 };
 
 const aquaEnv: AquaEnvConfig = {
