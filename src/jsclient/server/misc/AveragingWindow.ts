@@ -5,6 +5,10 @@ import { newTimestamp } from "./new-timestamp";
 const MIN_PERCENT = 50;
 const FORCE_FILTER_EVERY_SECS = 0.3;
 
+// TODO: More effecient implementation needed:
+// TODO:  use cyclic buffer with two index: first and last...
+// TODO:  double buffer size if not enough space
+
 interface Record {
     readonly t: Timestamp;
     readonly v: number;
