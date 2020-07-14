@@ -332,12 +332,12 @@ if __name__ == '__main__':
     train(
         retrain=False,
         learning_rate=lr,
-        weight_decay_lr_multiplier=float(0.02 * np.random.random()),
-        epochs=600_000,
-        first_decay_epochs=30_000,
+        weight_decay_lr_multiplier=float(0.0001 * np.random.random()),
+        epochs=1_000_000,
+        first_decay_epochs=20_000,
         validation_freq=1,
         tensorboard=False,
-        early_stop_epoch_patience=1_000,
+        early_stop_epoch_patience=100_000,
         opt=opt
     )
 
