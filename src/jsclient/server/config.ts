@@ -45,6 +45,28 @@ export interface PhControllerConfig {
     readonly dayEndPh: number,
 }
 
+export interface PhSensorCalibrationConfig {
+    /**
+     * Calibration point 1: ph. Usually 4.01.
+     */
+    readonly ph1: number;
+
+    /**
+     * Voltage for calibration PH defined in ph1.
+     */
+    readonly v1: number;
+
+    /**
+     * Calibration point 2: ph. Usually 6.86.
+     */
+    readonly ph2: number;
+
+    /**
+     * Voltage for calibration PH defined in ph2.
+     */
+    readonly v2: number;
+}
+
 export interface PhClosingPredictionConfig {
     /**
      * Defines how we split dataset into training and test (validation).
@@ -74,6 +96,7 @@ export interface Config {
     readonly aquaTemperatureDisplay: ValueDisplayConfig;
     readonly phDisplay: ValueDisplayConfig;
     readonly phController: PhControllerConfig;
+    readonly phSensorCalibration: PhSensorCalibrationConfig;
     readonly co2Display: ValueDisplayConfig;
     readonly database: DatabaseConfig;
     readonly phClosingPrediction: PhClosingPredictionConfig;
@@ -97,6 +120,18 @@ export function asUrl(options: ProtoHostPort): string {
 // ================================================================================================
 
 const instanceName = process.env.AKUA_INSTANCE || "unknown";
+
+if (instanceName !== "aqua1" && instanceName !== "aqua2") {
+    console.log("::ERROR:: UNKNOWN INSTANCE: " + instanceName);
+}
+
+function aquaX<T>(configs: { aqua1: T, aqua2: T }): T {
+    if (instanceName === "aqua1") {
+        return configs.aqua1;
+    } else {
+        return configs.aqua2;
+    }
+}
 
 const version = process.env.AKUA_VERSION || "unknown";
 const bindOptions: ProtoHostPort = {
@@ -176,6 +211,25 @@ const phClosingPrediction: PhClosingPredictionConfig = {
     trainDatasetPercentage: 0.90,
 };
 
+const phSensorCalibration: PhSensorCalibrationConfig = aquaX({
+    // 2020.03.26: 4.01=3.08v,                6.86=2.575
+    // 2020.05.17: 4.01=3.09559736896566v,    6.86=2.5856278083541535
+    aqua1: {
+        ph1: 4.01,
+        v1: 3.09559736896566,
+        ph2: 6.86,
+        v2: 2.5856278083541535
+    },
+
+    // 2020.07.28: 4.01=3.0807776310782327,   6.86=2.616606056118044
+    aqua2: {
+        ph1: 4.01,
+        v1: 3.0807776310782327,
+        ph2: 6.86,
+        v2: 2.616606056118044
+    },
+});
+
 const aquaEnv: AquaEnvConfig = {
     kh: 4
 };
@@ -196,6 +250,7 @@ export const config: Config = {
     avr,
     caseTemperatureDisplay,
     aquaTemperatureDisplay,
+    phSensorCalibration,
     phDisplay,
     co2Display,
     phController,

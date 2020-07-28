@@ -4,7 +4,7 @@ import AvrService, { AvrPhState } from "server/service/AvrService";
 import { AveragingWindow } from "../misc/AveragingWindow";
 import { Observable, BehaviorSubject } from "rxjs";
 import { calcCo2DivKhFromPh } from "server/misc/calcCo2DivKhFromPh";
-import config from "server/config";
+import config, { PhSensorCalibrationConfig } from "server/config";
 
 // How many measurements per second our AVR performs
 const PH_SAMPLE_FREQUENCY = 7;
@@ -17,27 +17,7 @@ interface Solution {
     b: number;
 }
 
-interface Calibration {
-    v1: number;
-    ph1: number;
-    v2: number;
-    ph2: number;
-}
-
-// TODO: Move to config
-// 2020.03.26: 4.01=3.08v,             6.86=2.575
-// 2020.05.17: 4.01=3.09559736896566v, 6.86=2.5856278083541535
-const aqua1Calibration: Calibration = {
-    ph1: 4.01,
-    v1: 3.09559736896566,
-    ph2: 6.86,
-    v2: 2.5856278083541535
-};
-
-// Depends on configuration (environment).
-const calibration = aqua1Calibration;
-
-function findSolution(c: Calibration): Solution {
+function findSolution(c: PhSensorCalibrationConfig): Solution {
     // (%i2) solve ([a*v1 + b = ph1, a*v2 + b = ph2], [a, b]);
     //                          ph1 - ph2      ph2 v1 - ph1 v2
     // (%o2)               [[a = ---------, b = ---------------]]
@@ -49,7 +29,7 @@ function findSolution(c: Calibration): Solution {
     return { a, b };
 }
 
-const solution = findSolution(calibration);
+const solution = findSolution(config.phSensorCalibration);
 
 function calcPhFromVoltage(voltage: number): number {
     return solution.a * voltage + solution.b;
