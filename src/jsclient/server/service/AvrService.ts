@@ -19,6 +19,7 @@ export interface AvrLightState {
     readonly nightLightOn: boolean;
     readonly nightLightForced: boolean;
     readonly lightForcesSinceProtectionStatReset: number;
+    readonly alternativeDayEnabled: boolean;
 }
 
 export interface AvrPhState {

@@ -375,13 +375,20 @@ static AKAT_UNUSED AKAT_PURE u8 akat_x_tm1637_encode_digit(u8 const digit, u8 co
 #include <avr/io.h>
 
 // Day interval. Affects day-light and night light modes.
-#define AK_DAY_START_HOUR 10
-#define AK_DAY_DURATION_HOURS 12
-#define AK_DAY_END_HOUR (AK_DAY_START_HOUR + AK_DAY_DURATION_HOURS)
+#define AK_NORM_DAY_START_HOUR 10
+#define AK_NORM_DAY_DURATION_HOURS 11
+#define AK_NORM_DAY_END_HOUR (AK_NORM_DAY_START_HOUR + AK_NORM_DAY_DURATION_HOURS)
+
+// Alternative Day interval. Affects day-light and night light modes.
+#define AK_ALT_DAY_START_HOUR AK_NORM_DAY_START_HOUR
+#define AK_ALT_DAY_DURATION_HOURS 8
+#define AK_ALT_DAY_END_HOUR (AK_ALT_DAY_START_HOUR + AK_ALT_DAY_DURATION_HOURS)
+#define AK_ALT_DAY_NAP_START_HOUR 12
+#define AK_ALT_DAY_NAP_DURATION_HOURS 1
+#define AK_ALT_DAY_NAP_END_HOUR (AK_ALT_DAY_NAP_START_HOUR + AK_ALT_DAY_NAP_DURATION_HOURS)
 
 // CO2-Day interval. Interval when it's allowed to feed CO2 to aquarium
-#define AK_CO2_DAY_START_HOUR (AK_DAY_START_HOUR - 2)
-#define AK_CO2_DAY_END_HOUR (AK_DAY_END_HOUR - 0)
+#define AK_CO2_DAY_PRE_START_HOURS 2
 
 // Minimum minutes when CO2 can be turned again after it was turned off
 #define AK_CO2_OFF_MINUTES_BEFORE_UNLOCKED 15
@@ -17642,6 +17649,7 @@ static u8 received_clock1 = 0;
 static u8 received_clock2 = 255;
 static u24 co2_deciseconds_until_can_turn_on = AK_CO2_OFF_MINUTES_BEFORE_UNLOCKED * 60L * 10L;
 static u8 co2_calculated_day = 0;
+static u8 alternative_day_enabled = 0;
 
 //Clock used to calculate state
 ;
@@ -17663,6 +17671,9 @@ static u8 co2_calculated_day = 0;
 ;
 
 //Whether it's day or not as calculated by AVR's internal algorithm and interval
+;
+
+//Current day-mode (either normal or alternative).
 ;
 ;
 
@@ -18100,6 +18111,26 @@ static void update_co2_switch_state(const u8 new_state) {
 
 
 
+// Called from uart-command-receiver if set-alt-day command is received from raspberry-pi
+// We use force light protection to avoid misuse or bugs
+static void set_alt_day(const u8 enabled) {
+    if (enabled == alternative_day_enabled) {
+        return;
+    }
+
+    if (light_forces_since_protection_stat_reset >= AK_MAX_LIGHT_FORCES_WITHIN_ONE_HOUR) {
+        return;
+    }
+
+    alternative_day_enabled = enabled ? AKAT_ONE : 0;
+    light_forces_since_protection_stat_reset += 1;
+}
+
+;
+
+
+
+
 // - - - - - - - - - - - -  - - - - - - - ---- - - -- - - - -  - - - -
 // - - - - - - - - - - - -  - - - - - - - ---- - - -- - - - -  - - - -
 // - - - - - - - - - - - -  - - - - - - - ---- - - -- - - - -  - - - -
@@ -18114,7 +18145,15 @@ static u8 is_day(const u24 deciseconds_since_midnight) {
         return 0;
     }
 
-    return (deciseconds_since_midnight >= (AK_DAY_START_HOUR * 60L * 60L * 10L)) && (deciseconds_since_midnight < (AK_DAY_END_HOUR * 60L * 60L * 10L));
+    if (alternative_day_enabled) {//Is nap time withing alternative day?
+        if ((deciseconds_since_midnight >= (AK_ALT_DAY_NAP_START_HOUR * 60L * 60L * 10L)) && (deciseconds_since_midnight < (AK_ALT_DAY_NAP_END_HOUR * 60L * 60L * 10L))) {
+            return 0;
+        }
+
+        return (deciseconds_since_midnight >= (AK_ALT_DAY_START_HOUR * 60L * 60L * 10L)) && (deciseconds_since_midnight < (AK_ALT_DAY_END_HOUR * 60L * 60L * 10L));
+    } else {
+        return (deciseconds_since_midnight >= (AK_NORM_DAY_START_HOUR * 60L * 60L * 10L)) && (deciseconds_since_midnight < (AK_NORM_DAY_END_HOUR * 60L * 60L * 10L));
+    }
 }
 
 ;
@@ -18161,10 +18200,17 @@ static AKAT_FORCE_INLINE void controller_tick() {
     //- - - - - - - - - - - - - - - -  CO2 - - - - - -
     //New CO2 state if by default OFF
     u8 new_co2_state = 0;
+
     //Calculate day so it can be used also used for debugging
-    co2_calculated_day =
-        (clock_deciseconds_since_midnight >= (AK_CO2_DAY_START_HOUR * 60L * 60L * 10L))
-        && (clock_deciseconds_since_midnight < (AK_CO2_DAY_END_HOUR * 60L * 60L * 10L));
+    if (alternative_day_enabled) {
+        co2_calculated_day =
+            (clock_deciseconds_since_midnight >= ((AK_ALT_DAY_START_HOUR - AK_CO2_DAY_PRE_START_HOURS) * 60L * 60L * 10L))
+            && (clock_deciseconds_since_midnight < (AK_ALT_DAY_END_HOUR * 60L * 60L * 10L));
+    } else {
+        co2_calculated_day =
+            (clock_deciseconds_since_midnight >= ((AK_NORM_DAY_START_HOUR - AK_CO2_DAY_PRE_START_HOURS) * 60L * 60L * 10L))
+            && (clock_deciseconds_since_midnight < (AK_NORM_DAY_END_HOUR * 60L * 60L * 10L));
+    }
 
     if (co2_deciseconds_until_can_turn_on) {//We can't feed CO2, because we can't yet... (it was turned off recently)
         co2_deciseconds_until_can_turn_on -= 1;
@@ -18175,12 +18221,17 @@ static AKAT_FORCE_INLINE void controller_tick() {
     }//- - - - - - - - - - - - - - - -  STATE CHANGING - - - - - -
 
     //Light
-    if (new_calculated_day_light_state) {
+    if (new_calculated_day_light_state) {//DAY
         day_light_switch.set(AKAT_ONE);
         night_light_switch.set(0);
-    } else {
+    } else {//NIGHT
         day_light_switch.set(0);
-        night_light_switch.set(AKAT_ONE);
+
+        if (alternative_day_enabled) {//No night light during night when alternative mode is enabled
+            night_light_switch.set(0);
+        } else {//Enable night light because it's night
+            night_light_switch.set(AKAT_ONE);
+        }
     }//CO2
 
     if (co2_switch.is_set() && !new_co2_state) {//We are turning CO2 off...
@@ -20100,6 +20151,12 @@ static AKAT_FORCE_INLINE void usart0_writer() {
 
     case 77:
         goto akat_coroutine_l_77;
+
+    case 78:
+        goto akat_coroutine_l_78;
+
+    case 79:
+        goto akat_coroutine_l_79;
     }
 
 akat_coroutine_l_start:
@@ -21032,6 +21089,35 @@ akat_coroutine_l_64:
             } while (0);
 
             ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 65;
+akat_coroutine_l_65:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
+              COMMPROTO: E6: Light: u8 alternative_day_enabled
+              TS_PROTO_TYPE: "u8 alternative_day_enabled": number,
+              TS_PROTO_ASSIGN: "u8 alternative_day_enabled": vals["E6"],
+            */
+            u8_to_format_and_send = alternative_day_enabled;
+
+            do {
+                akat_coroutine_state = 66;
+akat_coroutine_l_66:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
             ;
             //Special handling for ph meter ADC result.
             //Remember values before writing and then set current accum values to zero
@@ -21048,8 +21134,8 @@ akat_coroutine_l_64:
             byte_to_send = ' ';
 
             do {
-                akat_coroutine_state = 65;
-akat_coroutine_l_65:
+                akat_coroutine_state = 67;
+akat_coroutine_l_67:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21060,8 +21146,8 @@ akat_coroutine_l_65:
             byte_to_send = 'F';
 
             do {
-                akat_coroutine_state = 66;
-akat_coroutine_l_66:
+                akat_coroutine_state = 68;
+akat_coroutine_l_68:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21077,39 +21163,10 @@ akat_coroutine_l_66:
             u32_to_format_and_send = __ph_adc_accum;
 
             do {
-                akat_coroutine_state = 67;
-akat_coroutine_l_67:
-
-                if (format_and_send_u32() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            byte_to_send = ',';
-
-            do {
-                akat_coroutine_state = 68;
-akat_coroutine_l_68:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            /*
-              COMMPROTO: F2: PH Voltage: u16 __ph_adc_accum_samples
-              TS_PROTO_TYPE: "u16 __ph_adc_accum_samples": number,
-              TS_PROTO_ASSIGN: "u16 __ph_adc_accum_samples": vals["F2"],
-            */
-            u16_to_format_and_send = __ph_adc_accum_samples;
-
-            do {
                 akat_coroutine_state = 69;
 akat_coroutine_l_69:
 
-                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
+                if (format_and_send_u32() != AKAT_COROUTINE_S_START) {
                     return ;
                 }
             } while (0);
@@ -21128,6 +21185,35 @@ akat_coroutine_l_70:
 
             ;
             /*
+              COMMPROTO: F2: PH Voltage: u16 __ph_adc_accum_samples
+              TS_PROTO_TYPE: "u16 __ph_adc_accum_samples": number,
+              TS_PROTO_ASSIGN: "u16 __ph_adc_accum_samples": vals["F2"],
+            */
+            u16_to_format_and_send = __ph_adc_accum_samples;
+
+            do {
+                akat_coroutine_state = 71;
+akat_coroutine_l_71:
+
+                if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = ',';
+
+            do {
+                akat_coroutine_state = 72;
+akat_coroutine_l_72:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            /*
               COMMPROTO: F3: PH Voltage: u16 __ph_adc_bad_samples
               TS_PROTO_TYPE: "u16 __ph_adc_bad_samples": number,
               TS_PROTO_ASSIGN: "u16 __ph_adc_bad_samples": vals["F3"],
@@ -21135,8 +21221,8 @@ akat_coroutine_l_70:
             u16_to_format_and_send = __ph_adc_bad_samples;
 
             do {
-                akat_coroutine_state = 71;
-akat_coroutine_l_71:
+                akat_coroutine_state = 73;
+akat_coroutine_l_73:
 
                 if (format_and_send_u16() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21149,31 +21235,6 @@ akat_coroutine_l_71:
             byte_to_send = ' ';
 
             do {
-                akat_coroutine_state = 72;
-akat_coroutine_l_72:
-
-                if (send_byte() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            u8_to_format_and_send = 0x21;
-
-            do {
-                akat_coroutine_state = 73;
-akat_coroutine_l_73:
-
-                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
-                    return ;
-                }
-            } while (0);
-
-            ;
-            //Done writing status, send: CRC\r\n
-            byte_to_send = ' ';
-
-            do {
                 akat_coroutine_state = 74;
 akat_coroutine_l_74:
 
@@ -21183,7 +21244,7 @@ akat_coroutine_l_74:
             } while (0);
 
             ;
-            u8_to_format_and_send = crc;
+            u8_to_format_and_send = 0xa8;
 
             do {
                 akat_coroutine_state = 75;
@@ -21195,8 +21256,8 @@ akat_coroutine_l_75:
             } while (0);
 
             ;
-            //Newline
-            byte_to_send = '\r';
+            //Done writing status, send: CRC\r\n
+            byte_to_send = ' ';
 
             do {
                 akat_coroutine_state = 76;
@@ -21208,11 +21269,36 @@ akat_coroutine_l_76:
             } while (0);
 
             ;
-            byte_to_send = '\n';
+            u8_to_format_and_send = crc;
 
             do {
                 akat_coroutine_state = 77;
 akat_coroutine_l_77:
+
+                if (format_and_send_u8() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            //Newline
+            byte_to_send = '\r';
+
+            do {
+                akat_coroutine_state = 78;
+akat_coroutine_l_78:
+
+                if (send_byte() != AKAT_COROUTINE_S_START) {
+                    return ;
+                }
+            } while (0);
+
+            ;
+            byte_to_send = '\n';
+
+            do {
+                akat_coroutine_state = 79;
+akat_coroutine_l_79:
 
                 if (send_byte() != AKAT_COROUTINE_S_START) {
                     return ;
@@ -21613,6 +21699,10 @@ akat_coroutine_l_2:
 
             case 'L':
                 force_light(command_arg);
+                break;
+
+            case 'D':
+                set_alt_day(command_arg);
                 break;
 
             case 'A':

@@ -52,11 +52,13 @@ export interface MinPhEquationParams {
 // //////////////////////////////////////////////////////////////////////////////////////////////////
 // //////////////////////////////////////////////////////////////////////////////////////////////////
 
-export function calcMinPhEquationParams(phControllerConfig: PhControllerConfig): MinPhEquationParams {
+export function calcMinPhEquationParams(params: { phControllerConfig: PhControllerConfig, altDay: boolean }): MinPhEquationParams {
+    const { altDay, phControllerConfig } = params;
+
     // See above for a way to find this in 'Maxima'.
-    const t1 = phControllerConfig.dayPrepareHour;
-    const t2 = phControllerConfig.dayStartHour;
-    const t3 = phControllerConfig.dayEndHour;
+    const t1 = altDay ? phControllerConfig.altDayPrepareHour : phControllerConfig.normDayPrepareHour;
+    const t2 = altDay ? phControllerConfig.altDayStartHour : phControllerConfig.normDayStartHour;
+    const t3 = altDay ? phControllerConfig.altDayEndHour : phControllerConfig.normDayEndHour;
     const ph1 = phControllerConfig.dayEndPh;
     const ph2 = phControllerConfig.dayStartPh;
     const ph3 = phControllerConfig.dayEndPh;
@@ -81,14 +83,20 @@ export function calcMinPhEquationParams(phControllerConfig: PhControllerConfig):
 // //////////////////////////////////////////////////////////////////////////////////////////////////
 // //////////////////////////////////////////////////////////////////////////////////////////////////
 
-export function calcMinPh(config: PhControllerConfig, solution: MinPhEquationParams, hour: number): number | undefined {
+export function calcMinPh(params: { config: PhControllerConfig, solution: MinPhEquationParams, hour: number, altDay: boolean }): number | undefined {
+    const { config, solution, hour, altDay } = params;
+
     // See above (about Maxima stuff)
 
-    if (hour < config.dayPrepareHour || hour > config.dayEndHour) {
+    const dayPrepareHour = altDay ? config.altDayPrepareHour : config.normDayPrepareHour;
+    const dayStartHour = altDay ? config.altDayStartHour : config.normDayStartHour;
+    const dayEndHour = altDay ? config.altDayEndHour : config.normDayEndHour;
+
+    if (hour < dayPrepareHour || hour > dayEndHour) {
         return undefined;
     }
 
-    if (hour < config.dayStartHour) {
+    if (hour < dayStartHour) {
         return solution.a * Math.exp(100 / hour) + solution.b;
     }
 
@@ -100,12 +108,29 @@ export function calcMinPh(config: PhControllerConfig, solution: MinPhEquationPar
 // //////////////////////////////////////////////////////////////////////////////////////////////////
 // //////////////////////////////////////////////////////////////////////////////////////////////////
 
-const minPhEquationSolution = calcMinPhEquationParams(config.phController);
+const minPhEquationSolutionForNormDay = calcMinPhEquationParams({
+    phControllerConfig: config.phController,
+    altDay: false
+});
 
-function calcCurrentMinPh(): number | undefined {
+const minPhEquationSolutionForAltDay = calcMinPhEquationParams({
+    phControllerConfig: config.phController,
+    altDay: true
+});
+
+function calcCurrentMinPh(params: { altDay: boolean }): number | undefined {
+    const { altDay } = params;
+
     const date = new Date();
     const hour = date.getHours() + date.getMinutes() / 60 + date.getSeconds() / 3600;
-    return calcMinPh(config.phController, minPhEquationSolution, hour);
+    const solution = altDay ? minPhEquationSolutionForAltDay : minPhEquationSolutionForNormDay;
+
+    return calcMinPh({
+        config: config.phController,
+        solution,
+        hour,
+        altDay
+    });
 }
 
 // //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -125,7 +150,7 @@ function isCo2Required(
         co2MaxOpenSecondsForExplorationReason: number
     }
 ): [boolean, string] {
-    const phToTurnOff = calcCurrentMinPh();
+    const phToTurnOff = calcCurrentMinPh({ altDay: config.aquaEnv.alternativeDay });
 
     if (!isPresent(state.ph600) || !isPresent(state.ph60) || !isPresent(state.co2ValveOpen) || !isPresent(phToTurnOff)) {
         return [false, `Missing required info: ph600=${state.ph600}, ph60=${state.ph60}, co2ValveOpen=${state.co2ValveOpen}, phToTurnOff=${phToTurnOff}`];
@@ -322,7 +347,7 @@ export default class Co2ControllerServiceImpl extends Co2ControllerService {
     }
 
     getPhControlRange(): PhControlRange {
-        const minPh = calcCurrentMinPh();
+        const minPh = calcCurrentMinPh({ altDay: config.aquaEnv.alternativeDay });
         return {
             phToTurnOff: minPh,
             phToTurnOn: isPresent(minPh) ? (minPh + config.phController.phTurnOnOffMargin) : undefined

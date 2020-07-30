@@ -7,16 +7,19 @@ const phControllerConfig4Test: PhControllerConfig = {
     phTurnOnOffMargin: 0.1,
     minSafePh600: 6.8,
     minSafePh60: 6.5,
-    dayPrepareHour: 8,
-    dayStartHour: 10,
-    dayEndHour: 22,
+    normDayPrepareHour: 8,
+    normDayStartHour: 10,
+    normDayEndHour: 22,
+    altDayPrepareHour: 8,
+    altDayStartHour: 10,
+    altDayEndHour: 18,
     dayStartPh: 6.8,
     dayEndPh: 7.2,
 };
 
 describe('Co2ControllerServiceImpl.calcMinPhEquationParams', () => {
     it('must calculate equation parameters', () => {
-        const params = calcMinPhEquationParams(phControllerConfig4Test);
+        const params = calcMinPhEquationParams({ phControllerConfig: phControllerConfig4Test, altDay: false });
         expect(params).toStrictEqual({
             a: 0.0000016239643829730753,
             b: 6.76422980406646,
@@ -28,13 +31,13 @@ describe('Co2ControllerServiceImpl.calcMinPhEquationParams', () => {
 
 describe('Co2ControllerServiceImpl.calcMinPh', () => {
     it('must calculate min allowed ph', () => {
-        const params = calcMinPhEquationParams(phControllerConfig4Test);
+        const solution = calcMinPhEquationParams({ phControllerConfig: phControllerConfig4Test, altDay: false });
 
-        const ph0 = calcMinPh(phControllerConfig4Test, params, phControllerConfig4Test.dayPrepareHour - 1);
-        const ph1 = calcMinPh(phControllerConfig4Test, params, phControllerConfig4Test.dayPrepareHour);
-        const ph2 = calcMinPh(phControllerConfig4Test, params, phControllerConfig4Test.dayStartHour);
-        const ph3 = calcMinPh(phControllerConfig4Test, params, phControllerConfig4Test.dayEndHour);
-        const ph4 = calcMinPh(phControllerConfig4Test, params, phControllerConfig4Test.dayEndHour + 1);
+        const ph0 = calcMinPh({config: phControllerConfig4Test, solution, hour: phControllerConfig4Test.normDayPrepareHour - 1, altDay: false});
+        const ph1 = calcMinPh({config: phControllerConfig4Test, solution, hour: phControllerConfig4Test.normDayPrepareHour, altDay: false});
+        const ph2 = calcMinPh({config: phControllerConfig4Test, solution, hour: phControllerConfig4Test.normDayStartHour, altDay: false});
+        const ph3 = calcMinPh({config: phControllerConfig4Test, solution, hour: phControllerConfig4Test.normDayEndHour, altDay: false});
+        const ph4 = calcMinPh({config: phControllerConfig4Test, solution, hour: phControllerConfig4Test.normDayEndHour + 1, altDay: false});
 
         function r(x: number | undefined): number | undefined {
             if (typeof x === 'undefined') {

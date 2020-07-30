@@ -2,13 +2,20 @@
 #include <avr/io.h>
 
 // Day interval. Affects day-light and night light modes.
-#define AK_DAY_START_HOUR 10
-#define AK_DAY_DURATION_HOURS 12
-#define AK_DAY_END_HOUR (AK_DAY_START_HOUR + AK_DAY_DURATION_HOURS)
+#define AK_NORM_DAY_START_HOUR 10
+#define AK_NORM_DAY_DURATION_HOURS 11
+#define AK_NORM_DAY_END_HOUR (AK_NORM_DAY_START_HOUR + AK_NORM_DAY_DURATION_HOURS)
+
+// Alternative Day interval. Affects day-light and night light modes.
+#define AK_ALT_DAY_START_HOUR AK_NORM_DAY_START_HOUR
+#define AK_ALT_DAY_DURATION_HOURS 8
+#define AK_ALT_DAY_END_HOUR (AK_ALT_DAY_START_HOUR + AK_ALT_DAY_DURATION_HOURS)
+#define AK_ALT_DAY_NAP_START_HOUR 12
+#define AK_ALT_DAY_NAP_DURATION_HOURS 1
+#define AK_ALT_DAY_NAP_END_HOUR (AK_ALT_DAY_NAP_START_HOUR + AK_ALT_DAY_NAP_DURATION_HOURS)
 
 // CO2-Day interval. Interval when it's allowed to feed CO2 to aquarium
-#define AK_CO2_DAY_START_HOUR (AK_DAY_START_HOUR - 2)
-#define AK_CO2_DAY_END_HOUR (AK_DAY_END_HOUR - 0)
+#define AK_CO2_DAY_PRE_START_HOURS 2
 
 // Minimum minutes when CO2 can be turned again after it was turned off
 #define AK_CO2_OFF_MINUTES_BEFORE_UNLOCKED 15
@@ -281,6 +288,9 @@ GLOBAL$() {
 
     // Whether it's day or not as calculated by AVR's internal algorithm and interval
     STATIC_VAR$(u8 co2_calculated_day, initial = 0);
+
+    // Current day-mode (either normal or alternative).
+    STATIC_VAR$(u8 alternative_day_enabled, initial = 0);
 }
 
 // State that raspberry pi CO2-controlling algorithm wants to set.
@@ -328,6 +338,21 @@ FUNCTION$(void update_co2_switch_state(const u8 new_state)) {
     required_co2_switch_state.set(new_state);
 }
 
+// Called from uart-command-receiver if set-alt-day command is received from raspberry-pi
+// We use force light protection to avoid misuse or bugs
+FUNCTION$(void set_alt_day(const u8 enabled)) {
+    if (enabled == alternative_day_enabled) {
+        return;
+    }
+
+    if (light_forces_since_protection_stat_reset >= AK_MAX_LIGHT_FORCES_WITHIN_ONE_HOUR) {
+        return;
+    }
+
+    alternative_day_enabled = enabled ? AKAT_ONE : 0;
+    light_forces_since_protection_stat_reset += 1;
+}
+
 // - - - - - - - - - - - -  - - - - - - - ---- - - -- - - - -  - - - -
 // - - - - - - - - - - - -  - - - - - - - ---- - - -- - - - -  - - - -
 // - - - - - - - - - - - -  - - - - - - - ---- - - -- - - - -  - - - -
@@ -342,7 +367,16 @@ FUNCTION$(u8 is_day(const u24 deciseconds_since_midnight)) {
         return 0;
     }
 
-    return (deciseconds_since_midnight >= (AK_DAY_START_HOUR * 60L * 60L * 10L)) && (deciseconds_since_midnight < (AK_DAY_END_HOUR * 60L * 60L * 10L));
+    if (alternative_day_enabled) {
+        // Is nap time withing alternative day?
+        if ((deciseconds_since_midnight >= (AK_ALT_DAY_NAP_START_HOUR * 60L * 60L * 10L)) && (deciseconds_since_midnight < (AK_ALT_DAY_NAP_END_HOUR * 60L * 60L * 10L))) {
+            return 0;
+        }
+
+        return (deciseconds_since_midnight >= (AK_ALT_DAY_START_HOUR * 60L * 60L * 10L)) && (deciseconds_since_midnight < (AK_ALT_DAY_END_HOUR * 60L * 60L * 10L));
+    } else {
+        return (deciseconds_since_midnight >= (AK_NORM_DAY_START_HOUR * 60L * 60L * 10L)) && (deciseconds_since_midnight < (AK_NORM_DAY_END_HOUR * 60L * 60L * 10L));
+    }
 }
 
 X_EVERY_DECISECOND$(controller_tick) {
@@ -390,9 +424,15 @@ X_EVERY_DECISECOND$(controller_tick) {
     u8 new_co2_state = 0;
 
     // Calculate day so it can be used also used for debugging
-    co2_calculated_day =
-        (clock_deciseconds_since_midnight >= (AK_CO2_DAY_START_HOUR * 60L * 60L * 10L))
-            && (clock_deciseconds_since_midnight < (AK_CO2_DAY_END_HOUR * 60L * 60L * 10L));
+    if (alternative_day_enabled) {
+        co2_calculated_day =
+            (clock_deciseconds_since_midnight >= ((AK_ALT_DAY_START_HOUR - AK_CO2_DAY_PRE_START_HOURS) * 60L * 60L * 10L))
+                && (clock_deciseconds_since_midnight < (AK_ALT_DAY_END_HOUR * 60L * 60L * 10L));
+    } else {
+        co2_calculated_day =
+            (clock_deciseconds_since_midnight >= ((AK_NORM_DAY_START_HOUR - AK_CO2_DAY_PRE_START_HOURS) * 60L * 60L * 10L))
+                && (clock_deciseconds_since_midnight < (AK_NORM_DAY_END_HOUR * 60L * 60L * 10L));
+    }
 
     if (co2_deciseconds_until_can_turn_on) {
         // We can't feed CO2, because we can't yet... (it was turned off recently)
@@ -408,11 +448,20 @@ X_EVERY_DECISECOND$(controller_tick) {
 
     // Light
     if (new_calculated_day_light_state) {
+        // DAY
         day_light_switch.set(AKAT_ONE);
         night_light_switch.set(0);
     } else {
+        // NIGHT
         day_light_switch.set(0);
-        night_light_switch.set(AKAT_ONE);
+
+        if (alternative_day_enabled) {
+            // No night light during night when alternative mode is enabled
+            night_light_switch.set(0);
+        } else {
+            // Enable night light because it's night
+            night_light_switch.set(AKAT_ONE);
+        }
     }
 
     // CO2
@@ -734,7 +783,8 @@ THREAD$(usart0_writer, state_type = u8) {
                       u8 night_light_switch.is_set() ? 1 : 0,
                       u8 day_light_forced.is_set() ? 1 : 0,
                       u8 night_light_forced.is_set() ? 1 : 0,
-                      u8 light_forces_since_protection_stat_reset);
+                      u8 light_forces_since_protection_stat_reset,
+                      u8 alternative_day_enabled);
 
         // Special handling for ph meter ADC result.
         // Remember values before writing and then set current accum values to zero
@@ -869,6 +919,10 @@ THREAD$(usart0_reader) {
 
         case 'L':
             force_light(command_arg);
+            break;
+
+        case 'D':
+            set_alt_day(command_arg);
             break;
 
         case 'A':

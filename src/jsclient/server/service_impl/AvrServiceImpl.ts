@@ -47,7 +47,8 @@ function asAvrState(avrData: AvrData): AvrState {
         nightLightOn: !!avrData["u8 night_light_switch.is_set() ? 1 : 0"],
         dayLightForced: !!avrData["u8 day_light_forced.is_set() ? 1 : 0"],
         nightLightForced: !!avrData["u8 night_light_forced.is_set() ? 1 : 0"],
-        lightForcesSinceProtectionStatReset: avrData["u8 light_forces_since_protection_stat_reset"]
+        lightForcesSinceProtectionStatReset: avrData["u8 light_forces_since_protection_stat_reset"],
+        alternativeDayEnabled: !!avrData["u8 alternative_day_enabled"],
     };
 
     let clockDriftSeconds = avrData["u32 ((u32)last_drift_of_clock_deciseconds_since_midnight)"];
@@ -106,10 +107,11 @@ function serializeCommands(commands: {
     newCo2ValveOpenState?: Co2ValveOpenState,
     co2ForceOff?: boolean,
     sendClock: boolean,
+    altDayEnabled: boolean
 }): string {
     var result = "";
 
-    function addValue(id: 'L' | 'A' | 'B' | 'C' | 'G' | 'F', v?: number): void {
+    function addValue(id: 'L' | 'A' | 'B' | 'C' | 'D' | 'G' | 'F', v?: number): void {
         if (typeof v === "undefined") {
             return;
         }
@@ -127,6 +129,7 @@ function serializeCommands(commands: {
     addValue('L', commands.lightForceMode);
     addValue('G', commands.newCo2ValveOpenState);
     addValue('F', commands.co2ForceOff === true ? 1 : undefined);
+    addValue('D', commands.altDayEnabled ? 1 : undefined);
 
     if (commands.sendClock) {
         // Order of commands is important!
@@ -208,7 +211,8 @@ export default class AvrServiceImpl extends AvrService {
             lightForceMode: this._lightForceMode,
             sendClock: this._sendClockReq,
             newCo2ValveOpenState: this._newCo2RequiredValveOpenState,
-            co2ForceOff: this._forceCo2Off
+            co2ForceOff: this._forceCo2Off,
+            altDayEnabled: config.aquaEnv.alternativeDay
         });
 
         // Don't try to write if there is nothing to write

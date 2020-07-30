@@ -506,6 +506,11 @@ const nightLightOnGauge = new SimpleGauge({
     help: '1 means on, 0 means off.'
 });
 
+const altDayEnabledGauge = new SimpleGauge({
+    name: 'akua_alt_day_enabled',
+    help: '1 means alternative day enabled, 0 means normal day is enabled.'
+});
+
 const dayLightForcedGauge = new SimpleGauge({
     name: 'akua_day_light_forced',
     help: '1 means forced, 0 means not-forced.'
@@ -641,6 +646,7 @@ export default class MetricsServiceImpl extends MetricsService {
         nightLightOnGauge.setOrRemove(light?.nightLightOn);
         dayLightForcedGauge.setOrRemove(light?.dayLightForced);
         nightLightForcedGauge.setOrRemove(light?.nightLightForced);
+        altDayEnabledGauge.setOrRemove(light?.alternativeDayEnabled);
         lightForcesSinceProtectionStatResetGauge.setOrRemove(light?.lightForcesSinceProtectionStatReset);
 
         // Ph - - - - - - - - - -

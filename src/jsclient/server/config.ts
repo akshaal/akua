@@ -38,9 +38,12 @@ export interface PhControllerConfig {
     readonly minSafePh600: number,
     readonly minSafePh60: number,
     readonly phTurnOnOffMargin: number,
-    readonly dayPrepareHour: number,
-    readonly dayStartHour: number,
-    readonly dayEndHour: number,
+    readonly normDayPrepareHour: number,
+    readonly normDayStartHour: number,
+    readonly normDayEndHour: number,
+    readonly altDayPrepareHour: number,
+    readonly altDayStartHour: number,
+    readonly altDayEndHour: number,
     readonly dayStartPh: number,
     readonly dayEndPh: number,
 }
@@ -81,6 +84,12 @@ export interface DatabaseConfig {
 
 export interface AquaEnvConfig {
     readonly kh: number;
+
+    /**
+     * Depends on stuff in AVR firmware but intended to mean shorter day with
+     * a nap time in the middle of the day to fight algae.
+     */
+    readonly alternativeDay: boolean;
 }
 
 export interface Config {
@@ -195,16 +204,20 @@ const co2Display: ValueDisplayConfig = {
     highRgbPcts: [100, 0, 0],
 };
 
-// TODO: Use data from AVR config! (the same way we do for protocol!)
 const phController: PhControllerConfig = {
     phTurnOnOffMargin: 0.1,
     minSafePh600: 6.8,
     minSafePh60: 6.6,
-    dayPrepareHour: 8,
-    dayStartHour: 10,
-    dayEndHour: 22,
     dayStartPh: 6.8,
     dayEndPh: 7.2,
+
+    // These parameters must be in harmony with the values in the firmware!
+    normDayPrepareHour: 8,
+    normDayStartHour: 10,
+    normDayEndHour: 22,
+    altDayPrepareHour: 8,
+    altDayStartHour: 10,
+    altDayEndHour: 18,
 };
 
 const phClosingPrediction: PhClosingPredictionConfig = {
@@ -231,7 +244,8 @@ const phSensorCalibration: PhSensorCalibrationConfig = aquaX({
 });
 
 const aquaEnv: AquaEnvConfig = {
-    kh: 4
+    kh: 4,
+    alternativeDay: aquaX({ aqua1: false, aqua2: true })
 };
 
 const database: DatabaseConfig = {
