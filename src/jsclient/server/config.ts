@@ -214,7 +214,7 @@ const phController: PhControllerConfig = {
     // These parameters must be in harmony with the values in the firmware!
     normDayPrepareHour: 8,
     normDayStartHour: 10,
-    normDayEndHour: 22,
+    normDayEndHour: 21,
     altDayPrepareHour: 8,
     altDayStartHour: 10,
     altDayEndHour: 18,
