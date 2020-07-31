@@ -371,33 +371,44 @@ static AKAT_UNUSED AKAT_PURE u8 akat_x_tm1637_encode_digit(u8 const digit, u8 co
     return pgm_read_byte(akat_x_tm1637_digits_map + digit) | (colon ? AKAT_X_TM1637_COLON_MASK : 0);
 }
 
-
 #include <avr/io.h>
 
+// - - - - - - - - - - - -  - - -
 // Day interval. Affects day-light and night light modes.
-#define AK_NORM_DAY_START_HOUR 10
-#define AK_NORM_DAY_DURATION_HOURS 11
-#define AK_NORM_DAY_END_HOUR (AK_NORM_DAY_START_HOUR + AK_NORM_DAY_DURATION_HOURS)
+#define AK_NORM_DAY_START_HOUR  10
+#define AK_NORM_DAY_DURATION_HOURS  11
+#define AK_NORM_DAY_END_HOUR  (AK_NORM_DAY_START_HOUR + AK_NORM_DAY_DURATION_HOURS)
 
+// - - - - - - - - - - - -  - - -
 // Alternative Day interval. Affects day-light and night light modes.
-#define AK_ALT_DAY_START_HOUR AK_NORM_DAY_START_HOUR
-#define AK_ALT_DAY_DURATION_HOURS 8
-#define AK_ALT_DAY_END_HOUR (AK_ALT_DAY_START_HOUR + AK_ALT_DAY_DURATION_HOURS)
-#define AK_ALT_DAY_NAP_START_HOUR 14
-#define AK_ALT_DAY_NAP_DURATION_HOURS 1
-#define AK_ALT_DAY_NAP_END_HOUR (AK_ALT_DAY_NAP_START_HOUR + AK_ALT_DAY_NAP_DURATION_HOURS)
+#define AK_ALT_DAY_START_HOUR  AK_NORM_DAY_START_HOUR
+#define AK_ALT_DAY_DURATION_HOURS  8
+#define AK_ALT_DAY_END_HOUR  (AK_ALT_DAY_START_HOUR + AK_ALT_DAY_DURATION_HOURS)
 
+// Usual alt-day nap definition
+// #define AK_ALT_DAY_NAP_START_HOUR  14
+// #define AK_ALT_DAY_NAP_DURATION_HOURS  1
+
+// Blackout alt-day nap definition (we still supply co2 though)
+#define AK_ALT_DAY_NAP_START_HOUR  AK_ALT_DAY_START_HOUR
+#define AK_ALT_DAY_NAP_DURATION_HOURS  AK_ALT_DAY_DURATION_HOURS
+
+#define AK_ALT_DAY_NAP_END_HOUR  (AK_ALT_DAY_NAP_START_HOUR + AK_ALT_DAY_NAP_DURATION_HOURS)
+
+// - - - - - - - - - - - -  - - -
 // CO2-Day interval. Interval when it's allowed to feed CO2 to aquarium
-#define AK_CO2_DAY_PRE_START_HOURS 2
+#define AK_CO2_DAY_PRE_START_HOURS  2
 
 // Minimum minutes when CO2 can be turned again after it was turned off
-#define AK_CO2_OFF_MINUTES_BEFORE_UNLOCKED 15
+#define AK_CO2_OFF_MINUTES_BEFORE_UNLOCKED  15
 
+// - - - - - - - - - - - -  - - -
 // Possible interval for PH sensor voltages (1..4 volts).
 // Everything outside of the interval is impulse-noise ('bad values').
-#define AK_PH_SENSOR_MIN_ADC 204
-#define AK_PH_SENSOR_MAX_ADC 820
+#define AK_PH_SENSOR_MIN_ADC  204
+#define AK_PH_SENSOR_MAX_ADC  820
 
+// - - - - - - - - - - - -  - - -
 // Here is what we are going to use for communication using USB/serial port
 // Frame format is 8N1 (8 bits, no parity, 1 stop bit)
 #define AK_USART0_BAUD_RATE     9600
@@ -409,25 +420,32 @@ static AKAT_UNUSED AKAT_PURE u8 akat_x_tm1637_encode_digit(u8 const digit, u8 co
 // Must be power of 2!
 #define AK_USART0_RX_BUF_SIZE  128
 
+// - - - - - - - - - - - -  - - -
 // Number of debug bytes (data is written with '>' prefix into USART0)
 #define AK_DEBUG_BUF_SIZE     64
 
+// - - - - - - - - - - - -  - - -
+// Protection
+
 // Maximum number of light forces within one hour
-#define AK_MAX_LIGHT_FORCES_WITHIN_ONE_HOUR 10
+#define AK_MAX_LIGHT_FORCES_WITHIN_ONE_HOUR  10
 
 // Maximum number of clock corrections within one hour
-#define AK_MAX_CLOCK_CORRECTIONS_WITHIN_ONE_HOUR 10
+#define AK_MAX_CLOCK_CORRECTIONS_WITHIN_ONE_HOUR  10
 
 // Maximum allowed clock drift before it's corrected
-#define AK_MAX_CLOCK_DRIFT_DECISECONDS 5
+#define AK_MAX_CLOCK_DRIFT_DECISECONDS  5
 
 // Maximum allowed delaying of clock correction (see above).
 // This will be used if it's detected that correction
 // will cause light changes... so we delay it until it doesn't cause it
-#define AK_MAX_HARDLIMIT_CLOCK_DRIFT_DECISECONDS 20
+#define AK_MAX_HARDLIMIT_CLOCK_DRIFT_DECISECONDS  20
+
+// - - - - - - - - - - - -  - - -
+// Misc
 
 // Number of deciseconds in a day
-#define AK_NUMBER_DECISECONDS_IN_DAY (24L * 60L * 60L * 10L)
+#define AK_NUMBER_DECISECONDS_IN_DAY  (24L * 60L * 60L * 10L)
 
 // Default time controller starts with.
 // This is used to avoid situation when reset happens
@@ -438,7 +456,7 @@ static AKAT_UNUSED AKAT_PURE u8 akat_x_tm1637_encode_digit(u8 const digit, u8 co
 // noisy switches (220v daylight contactor switching).
 // This also helps to indicate that AVR has started (it will start with night light).
 // So all this means that the default time is 3 hours after midnight.
-#define AK_NUMBER_OF_CLOCK_DECISECONDS_AT_STARTUP (3L * 60L * 60L * 10L)
+#define AK_NUMBER_OF_CLOCK_DECISECONDS_AT_STARTUP  (3L * 60L * 60L * 10L)
 
 // 16Mhz, that's external oscillator on Mega 2560.
 // This doesn't configure it here, it just tells to our build system
