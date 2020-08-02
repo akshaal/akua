@@ -3,6 +3,7 @@ import TemperatureSensorService, { Temperature } from "server/service/Temperatur
 import AvrService, { AvrTemperatureSensorState } from "server/service/AvrService";
 import { AveragingWindow } from "../misc/AveragingWindow";
 import { Observable, BehaviorSubject } from "rxjs";
+import TimeService from "server/service/TimeService";
 
 const TEMPERATURE_WINDOW_SPAN_SECONDS = 15;
 const TEMPERATURE_SAMPLE_FREQUENCY = 1; // How many measurements per second our AVR performs
@@ -11,7 +12,14 @@ const TEMPERATURE_SAMPLE_FREQUENCY = 1; // How many measurements per second our 
 
 class SensorProcessor {
     readonly values$ = new BehaviorSubject<Temperature | null>(null);
-    private _avgWindow = new AveragingWindow(TEMPERATURE_WINDOW_SPAN_SECONDS, TEMPERATURE_SAMPLE_FREQUENCY);
+
+    private readonly _avgWindow = new AveragingWindow({
+        windowSpanSeconds: TEMPERATURE_WINDOW_SPAN_SECONDS,
+        sampleFrequency: TEMPERATURE_SAMPLE_FREQUENCY,
+        timeService: this._timeService
+    });
+
+    constructor(private _timeService: TimeService) {}
 
     onNewAvrState(newState: AvrTemperatureSensorState) {
         const prevState = this.get()?.lastSensorState;
@@ -36,10 +44,10 @@ class SensorProcessor {
 
 @injectable()
 export default class TemperatureSensorServiceImpl extends TemperatureSensorService {
-    private _aquariumSensorProcessor = new SensorProcessor();
-    private _caseSensorProcessor = new SensorProcessor();
+    private _aquariumSensorProcessor = new SensorProcessor(this._timeService);
+    private _caseSensorProcessor = new SensorProcessor(this._timeService);
 
-    constructor(_avrService: AvrService) {
+    constructor(_avrService: AvrService, private _timeService: TimeService) {
         super();
         _avrService.avrState$.subscribe(avrState => {
             this._aquariumSensorProcessor.onNewAvrState(avrState.aquariumTemperatureSensor);

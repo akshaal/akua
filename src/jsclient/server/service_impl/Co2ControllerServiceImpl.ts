@@ -302,7 +302,8 @@ export default class Co2ControllerServiceImpl extends Co2ControllerService {
                 timer(0, SEND_REQUIREMENTS_TO_AVR_EVERY_MS)
             ]).pipe(
                 map(([ph600, ph60, co2ValveOpen, [previouslyPredictedMinPh, predictedMinPh]]) => {
-                    const co2ValveOpenSeconds = this._co2ValveOpenT ? getElapsedSecondsSince(this._co2ValveOpenT) : 0;
+                    const now = this._timeService.nowTimestamp();
+                    const co2ValveOpenSeconds = this._co2ValveOpenT ? getElapsedSecondsSince({now, since: this._co2ValveOpenT}) : 0;
 
                     const [required, msg] = isCo2Required({
                         ph600,

@@ -5,6 +5,7 @@ import { AveragingWindow } from "../misc/AveragingWindow";
 import { Observable, BehaviorSubject } from "rxjs";
 import { calcCo2DivKhFromPh } from "server/misc/calcCo2DivKhFromPh";
 import config, { PhSensorCalibrationConfig } from "server/config";
+import TimeService from "server/service/TimeService";
 
 // How many measurements per second our AVR performs
 const PH_SAMPLE_FREQUENCY = 7;
@@ -39,10 +40,22 @@ function calcPhFromVoltage(voltage: number): number {
 
 class SensorProcessor {
     readonly values$ = new BehaviorSubject<Ph | null>(null);
-    private _voltage60sWindow = new AveragingWindow(60, PH_SAMPLE_FREQUENCY);
-    private _voltage600sWindow = new AveragingWindow(600, PH_SAMPLE_FREQUENCY);
     private _pendingAvrPhStates: AvrPhState[] = [];
     private _numberOfStatesToSkip: number = 0;
+
+    private readonly _voltage60sWindow = new AveragingWindow({
+        windowSpanSeconds: 60,
+        sampleFrequency: PH_SAMPLE_FREQUENCY,
+        timeService: this._timeService
+    });
+
+    private readonly _voltage600sWindow = new AveragingWindow({
+        windowSpanSeconds: 600,
+        sampleFrequency: PH_SAMPLE_FREQUENCY,
+        timeService: this._timeService
+    });
+
+    constructor(private _timeService: TimeService) {}
 
     // TODO: We also must skip next sample if the current one is a bad one!
 
@@ -100,9 +113,9 @@ class SensorProcessor {
 
 @injectable()
 export default class PhSensorServiceImpl extends PhSensorService {
-    private _phProcessor = new SensorProcessor();
+    private readonly _phProcessor = new SensorProcessor(this._timeService);
 
-    constructor(_avrService: AvrService) {
+    constructor(_avrService: AvrService, private _timeService: TimeService) {
         super();
         _avrService.avrState$.subscribe(avrState => {
             this._phProcessor.onNewAvrState(avrState.ph);

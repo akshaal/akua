@@ -73,9 +73,10 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
         // React on messages from worker thread
         this._worker.on('message', (message: MessageFromPhPredictionWorker) => {
             if (message.type === 'min-ph-prediction-response') {
+                const now = this._timeService.nowTimestamp();
                 this.minClosingPhPrediction$.next({
                     predictedMinPh: message.minPhPrediction,
-                    secondsUsedOnPrediction: getElapsedSecondsSince(message.requestTimestamp),
+                    secondsUsedOnPrediction: getElapsedSecondsSince({ now, since: message.requestTimestamp }),
                     valveIsAlreadyClosed: false
                 });
             } else {
@@ -296,10 +297,11 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
 
         // Create CO2 Closing state which will be used by working thread to do prediction
         const tClose = this._timeService.nowRoundedSeconds();
+        const now = this._timeService.nowTimestamp();
         const co2ClosingState =
             createCo2ClosingState({
                 closeTime: tClose,
-                openedSecondsAgo: getElapsedSecondsSince(this._co2ValveOpenT),
+                openedSecondsAgo: getElapsedSecondsSince({ now, since: this._co2ValveOpenT }),
                 minPh600: 7, // doesn't matter
                 origin: Co2ClosingStateOrigin.ThisInstance,
                 getPh600: (t: number) => getNearest(this._ph600sMap, t, 4),
