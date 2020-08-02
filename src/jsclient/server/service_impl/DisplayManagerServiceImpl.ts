@@ -250,7 +250,7 @@ export default class DisplayManagerServiceImpl extends DisplayManagerService {
                         this._avrService.forceLight(LightForceMode.NotForced);
                     } else if (avrState.light.dayLightOn) {
                         this._avrService.forceLight(LightForceMode.Night);
-                    } else if (avrState.light.nightLightOn) {
+                    } else {
                         this._avrService.forceLight(LightForceMode.Day);
                     }
                 }
