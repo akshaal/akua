@@ -326,18 +326,18 @@ def train(retrain: bool,
 # MAIN
 
 if __name__ == '__main__':
-    opt = np.random.choice(["adam", "sgd"])
+    opt = "adam"
     lr = float(np.random.choice([1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6])) * float(np.random.random())
 
     train(
         retrain=False,
         learning_rate=lr,
-        weight_decay_lr_multiplier=float(0.0001 * np.random.random()),
+        weight_decay_lr_multiplier=float(0.001 * np.random.random()),
         epochs=1_000_000,
-        first_decay_epochs=20_000,
+        first_decay_epochs=30_000,
         validation_freq=1,
         tensorboard=False,
-        early_stop_epoch_patience=100_000,
+        early_stop_epoch_patience=40_000,
         opt=opt
     )
 
