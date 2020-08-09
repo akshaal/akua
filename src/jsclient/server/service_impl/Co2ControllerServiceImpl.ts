@@ -5,7 +5,6 @@ import { combineLatest, timer, of, SchedulerLike, pipe, Observable, UnaryFunctio
 import { map, distinctUntilChanged, startWith, skip, timeoutWith, repeat, share, throttle, pairwise } from "rxjs/operators";
 import AvrService, { Co2ValveOpenState } from "server/service/AvrService";
 import { isPresent } from "../misc/isPresent";
-import config, { PhControllerConfig } from "server/config";
 import { Timestamp } from "server/misc/Timestamp";
 import { Subscriptions } from "server/misc/Subscriptions";
 import TimeService from "server/service/TimeService";
@@ -13,6 +12,7 @@ import { getElapsedSecondsSince } from "server/misc/get-elapsed-seconds-since";
 import PhPredictionService from "server/service/PhPredictionService";
 import RandomNumberService from "server/service/RandomNumberService";
 import logger from "server/logger";
+import ConfigService, { PhControllerConfig } from "server/service/ConfigService";
 
 // TODO: Unit tests!
 // TODO: Move constants to config!
@@ -83,7 +83,14 @@ export function calcMinPhEquationParams(params: { phControllerConfig: PhControll
 // //////////////////////////////////////////////////////////////////////////////////////////////////
 // //////////////////////////////////////////////////////////////////////////////////////////////////
 
-export function calcMinPh(params: { config: PhControllerConfig, solution: MinPhEquationParams, hour: number, altDay: boolean }): number | undefined {
+// (exported in order to test)
+
+export function calcMinPh(params: {
+    config: PhControllerConfig,
+    solution: MinPhEquationParams,
+    hour: number,
+    altDay: boolean
+}): number | undefined {
     const { config, solution, hour, altDay } = params;
 
     // See above (about Maxima stuff)
@@ -108,114 +115,6 @@ export function calcMinPh(params: { config: PhControllerConfig, solution: MinPhE
 // //////////////////////////////////////////////////////////////////////////////////////////////////
 // //////////////////////////////////////////////////////////////////////////////////////////////////
 
-const minPhEquationSolutionForNormDay = calcMinPhEquationParams({
-    phControllerConfig: config.phController,
-    altDay: false
-});
-
-const minPhEquationSolutionForAltDay = calcMinPhEquationParams({
-    phControllerConfig: config.phController,
-    altDay: true
-});
-
-function calcCurrentMinPh(params: { altDay: boolean }): number | undefined {
-    const { altDay } = params;
-
-    const date = new Date();
-    const hour = date.getHours() + date.getMinutes() / 60 + date.getSeconds() / 3600;
-    const solution = altDay ? minPhEquationSolutionForAltDay : minPhEquationSolutionForNormDay;
-
-    return calcMinPh({
-        config: config.phController,
-        solution,
-        hour,
-        altDay
-    });
-}
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////
-
-// Decide whether we must turn ph on or not
-function isCo2Required(
-    state: {
-        ph600?: number | null,
-        ph60?: number | null,
-        co2ValveOpen?: boolean | null,
-        co2ValveOpenSeconds: number,
-        predictedMinPh?: number,
-        previouslyPredictedMinPh?: number,
-        co2MaxOpenSecondsForExplorationReason: number
-    }
-): [boolean, string] {
-    const phToTurnOff = calcCurrentMinPh({ altDay: config.aquaEnv.alternativeDay });
-
-    if (!isPresent(state.ph600) || !isPresent(state.ph60) || !isPresent(state.co2ValveOpen) || !isPresent(phToTurnOff)) {
-        return [false, `Missing required info: ph600=${state.ph600}, ph60=${state.ph60}, co2ValveOpen=${state.co2ValveOpen}, phToTurnOff=${phToTurnOff}`];
-    }
-
-    const phToTurnOn = phToTurnOff + config.phController.phTurnOnOffMargin;
-
-    if (state.co2ValveOpen) {
-        // CO2 Valve is currently open (CO2 is supplied into the tank)
-
-        // Hard limit on number of seconds
-        if (state.co2ValveOpenSeconds > (CO2_MAX_OPEN_MINUTES * 60)) {
-            return [false, `Hard limit on open seconds (${state.co2ValveOpenSeconds} secs). Limit ${CO2_MAX_OPEN_MINUTES} minutes`];
-        }
-
-        // Give our AI some exploration space.. close the valve at some random times.
-        // This helps us have more diverse data. IF we close too soon, it's not a problem
-        // because the valve will soon be opened again.
-        if (state.co2MaxOpenSecondsForExplorationReason && state.co2ValveOpenSeconds > state.co2MaxOpenSecondsForExplorationReason) {
-            return [false, `Exploration`];
-        }
-
-        // Check against safe ph
-        if (state.ph600 <= config.phController.minSafePh600) {
-            // Close
-            return [false, `Ph600 safe ph limit is ${config.phController.minSafePh600}, current ph600 is ${state.ph600}`];
-        }
-
-        if (state.ph60 <= config.phController.minSafePh60) {
-            // Close
-            return [false, `Ph60 safe ph limit is ${config.phController.minSafePh60}, current ph60 is ${state.ph60}`];
-        }
-
-        // Check predicted ph if present
-        if (state.predictedMinPh && state.predictedMinPh <= phToTurnOff) {
-            // Avoid trusting pessimistic predictions based upon insufficient data
-            if (state.co2ValveOpenSeconds > CO2_MIN_OPEN_SECONDS_TO_TRUST_PREDICTIONS) {
-                // Turn of, because we predict that if we turn it off now, then
-                // we will go under the limit or to the min-level-limit anyway, so it is best
-                // to turn the valve off now and not wait until it will be worse
-                return [false, `PH Predicted to reach ${state.predictedMinPh}, while phToTurnOff=${phToTurnOff}`];
-            }
-        }
-
-        // Check predicted ph change if present
-        if (state.predictedMinPh && state.previouslyPredictedMinPh) {
-            const absPredictionChange = Math.abs(state.previouslyPredictedMinPh - state.predictedMinPh);
-            const changeLimit = config.phController.phTurnOnOffMargin * MAX_PERCENTAGE_OF_CHANGE_BETWEEN_PREDICTIONS;
-
-            // Avoid trusting pessimistic predictions based upon insufficient data
-            if (state.co2ValveOpenSeconds > CO2_MIN_OPEN_SECONDS_TO_TRUST_PREDICTIONS && absPredictionChange >= changeLimit) {
-                return [false, `PH Predicted to reach ${state.predictedMinPh}, previous prediction was ${state.previouslyPredictedMinPh}, absChange=${absPredictionChange}, change limit=${changeLimit}`];
-            }
-        }
-
-        // Keep open if current ph is greater than the configured ph-to-turn-off
-        return [state.ph600 > phToTurnOff, `ph600=${state.ph600}, phToTurnOff=${phToTurnOff}`];
-    } else {
-        // CO2 Valve is currently closed (CO2 is NOT supplied into the tank)
-
-        // Open if current ph is greater or equal to the configured ph-to-turn-on
-        return [state.ph600 >= phToTurnOn, `ph600=${state.ph600}, phToTurnOn=${phToTurnOn}`];
-    }
-}
-
 // //////////////////////////////////////////////////////////////////////////////////////////////////
 // //////////////////////////////////////////////////////////////////////////////////////////////////
 // //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -239,6 +138,16 @@ function asSourceOfDecision<T, R>(scheduler: SchedulerLike, mapper: (orig?: T) =
 
 @injectable()
 export default class Co2ControllerServiceImpl extends Co2ControllerService {
+    private readonly _minPhEquationSolutionForNormDay = calcMinPhEquationParams({
+        phControllerConfig: this._configService.config.phController,
+        altDay: false
+    });
+    
+    private readonly _minPhEquationSolutionForAltDay = calcMinPhEquationParams({
+        phControllerConfig: this._configService.config.phController,
+        altDay: true
+    });
+        
     private readonly _subs = new Subscriptions();
     private _co2ValveOpenT?: Timestamp;
 
@@ -252,6 +161,7 @@ export default class Co2ControllerServiceImpl extends Co2ControllerService {
         private readonly _timeService: TimeService,
         private readonly _randomNumberService: RandomNumberService,
         private readonly _phPredictionService: PhPredictionService,
+        private readonly _configService: ConfigService,
         @optional() @inject("scheduler") private readonly _scheduler: SchedulerLike
     ) {
         super();
@@ -303,9 +213,9 @@ export default class Co2ControllerServiceImpl extends Co2ControllerService {
             ]).pipe(
                 map(([ph600, ph60, co2ValveOpen, [previouslyPredictedMinPh, predictedMinPh]]) => {
                     const now = this._timeService.nowTimestamp();
-                    const co2ValveOpenSeconds = this._co2ValveOpenT ? getElapsedSecondsSince({now, since: this._co2ValveOpenT}) : 0;
+                    const co2ValveOpenSeconds = this._co2ValveOpenT ? getElapsedSecondsSince({ now, since: this._co2ValveOpenT }) : 0;
 
-                    const [required, msg] = isCo2Required({
+                    const [required, msg] = this._isCo2Required({
                         ph600,
                         ph60,
                         co2ValveOpen,
@@ -348,15 +258,108 @@ export default class Co2ControllerServiceImpl extends Co2ControllerService {
     }
 
     getPhControlRange(): PhControlRange {
-        const minPh = calcCurrentMinPh({ altDay: config.aquaEnv.alternativeDay });
+        const minPh = this._calcCurrentMinPh();
         return {
             phToTurnOff: minPh,
-            phToTurnOn: isPresent(minPh) ? (minPh + config.phController.phTurnOnOffMargin) : undefined
+            phToTurnOn: isPresent(minPh) ? (minPh + this._configService.config.phController.phTurnOnOffMargin) : undefined
         };
     }
 
     // Used in unit testing
     _destroy(): void {
         this._subs.unsubscribeAll();
+    }
+
+    // Decide whether we must turn ph on or not
+    private _isCo2Required(
+        state: {
+            ph600?: number | null,
+            ph60?: number | null,
+            co2ValveOpen?: boolean | null,
+            co2ValveOpenSeconds: number,
+            predictedMinPh?: number,
+            previouslyPredictedMinPh?: number,
+            co2MaxOpenSecondsForExplorationReason: number
+        }
+    ): [boolean, string] {
+        const phToTurnOff = this._calcCurrentMinPh();
+
+        if (!isPresent(state.ph600) || !isPresent(state.ph60) || !isPresent(state.co2ValveOpen) || !isPresent(phToTurnOff)) {
+            return [false, `Missing required info: ph600=${state.ph600}, ph60=${state.ph60}, co2ValveOpen=${state.co2ValveOpen}, phToTurnOff=${phToTurnOff}`];
+        }
+
+        const phToTurnOn = phToTurnOff + this._configService.config.phController.phTurnOnOffMargin;
+
+        if (state.co2ValveOpen) {
+            // CO2 Valve is currently open (CO2 is supplied into the tank)
+
+            // Hard limit on number of seconds
+            if (state.co2ValveOpenSeconds > (CO2_MAX_OPEN_MINUTES * 60)) {
+                return [false, `Hard limit on open seconds (${state.co2ValveOpenSeconds} secs). Limit ${CO2_MAX_OPEN_MINUTES} minutes`];
+            }
+
+            // Give our AI some exploration space.. close the valve at some random times.
+            // This helps us have more diverse data. IF we close too soon, it's not a problem
+            // because the valve will soon be opened again.
+            if (state.co2MaxOpenSecondsForExplorationReason && state.co2ValveOpenSeconds > state.co2MaxOpenSecondsForExplorationReason) {
+                return [false, `Exploration`];
+            }
+
+            // Check against safe ph
+            if (state.ph600 <= this._configService.config.phController.minSafePh600) {
+                // Close
+                return [false, `Ph600 safe ph limit is ${this._configService.config.phController.minSafePh600}, current ph600 is ${state.ph600}`];
+            }
+
+            if (state.ph60 <= this._configService.config.phController.minSafePh60) {
+                // Close
+                return [false, `Ph60 safe ph limit is ${this._configService.config.phController.minSafePh60}, current ph60 is ${state.ph60}`];
+            }
+
+            // Check predicted ph if present
+            if (state.predictedMinPh && state.predictedMinPh <= phToTurnOff) {
+                // Avoid trusting pessimistic predictions based upon insufficient data
+                if (state.co2ValveOpenSeconds > CO2_MIN_OPEN_SECONDS_TO_TRUST_PREDICTIONS) {
+                    // Turn of, because we predict that if we turn it off now, then
+                    // we will go under the limit or to the min-level-limit anyway, so it is best
+                    // to turn the valve off now and not wait until it will be worse
+                    return [false, `PH Predicted to reach ${state.predictedMinPh}, while phToTurnOff=${phToTurnOff}`];
+                }
+            }
+
+            // Check predicted ph change if present
+            if (state.predictedMinPh && state.previouslyPredictedMinPh) {
+                const absPredictionChange = Math.abs(state.previouslyPredictedMinPh - state.predictedMinPh);
+                const changeLimit = this._configService.config.phController.phTurnOnOffMargin * MAX_PERCENTAGE_OF_CHANGE_BETWEEN_PREDICTIONS;
+
+                // Avoid trusting pessimistic predictions based upon insufficient data
+                if (state.co2ValveOpenSeconds > CO2_MIN_OPEN_SECONDS_TO_TRUST_PREDICTIONS && absPredictionChange >= changeLimit) {
+                    return [false, `PH Predicted to reach ${state.predictedMinPh}, previous prediction was ${state.previouslyPredictedMinPh}, absChange=${absPredictionChange}, change limit=${changeLimit}`];
+                }
+            }
+
+            // Keep open if current ph is greater than the configured ph-to-turn-off
+            return [state.ph600 > phToTurnOff, `ph600=${state.ph600}, phToTurnOff=${phToTurnOff}`];
+        } else {
+            // CO2 Valve is currently closed (CO2 is NOT supplied into the tank)
+
+            // Open if current ph is greater or equal to the configured ph-to-turn-on
+            return [state.ph600 >= phToTurnOn, `ph600=${state.ph600}, phToTurnOn=${phToTurnOn}`];
+        }
+    }
+
+    private _calcCurrentMinPh(): number | undefined {
+        const altDay = this._configService.config.aquaEnv.alternativeDay;
+
+        const date = new Date();
+        const hour = date.getHours() + date.getMinutes() / 60 + date.getSeconds() / 3600;
+        const solution = altDay ? this._minPhEquationSolutionForAltDay : this._minPhEquationSolutionForNormDay;
+
+        return calcMinPh({
+            config: this._configService.config.phController,
+            solution,
+            hour,
+            altDay
+        });
     }
 }

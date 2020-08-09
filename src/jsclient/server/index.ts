@@ -1,6 +1,5 @@
 import "reflect-metadata";
 import logger from "./logger";
-import config, { asUrl } from "./config";
 import process from "process";
 import express, { NextFunction } from "express";
 import http from "http";
@@ -11,10 +10,20 @@ import onFinished from "on-finished";
 import { LightForceMode } from "./service/AvrService";
 import { createNewContainer } from "./service_impl/ServerServicesImpl";
 import ServerServices from "./service/ServerServices";
+import ConfigService from "./service/ConfigService";
+import { realEnv } from "./env";
+import { asUrl } from "./misc/asUrl";
+
+// Create an instance of server services
+const container = createNewContainer('express-server', realEnv);
+
+// TODO: Convert everything below this comment into a service and test it!
+const serverServices = container.get(ServerServices);
+const config = container.get(ConfigService).config;
 
 logger.info("============================================================================");
 logger.info("============================================================================");
-logger.info(`Starting version ${config.version} in ${config.isProd ? 'production' : 'development'} mode on instance ${config.instanceName}.`);
+logger.info(`Starting version ${config.version} in ${config.isDev ? 'development' : 'production'} mode on instance ${config.instanceName}.`);
 
 if (config.isDev) {
     logger.debug("Obtained configuration:", config);
@@ -25,9 +34,6 @@ logger.debug("next.js app is prepared");
 // Create instance of express server
 const expressServer = express();
 expressServer.set('trust proxy', true);
-
-// Create an instance of server services
-const serverServices = createNewContainer('express-server').get(ServerServices);
 
 // Our custom middleware to measure requests in express.
 function measure(target: string) {

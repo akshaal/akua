@@ -1,12 +1,12 @@
 import { injectable, postConstruct } from "inversify";
 import DisplayService from "server/service/DisplayManagerService";
 import logger from "server/logger";
-import { config } from "server/config";
 import { openNextionPort } from "server/nextion";
 import type { Nextion } from "server/nextion/nextion";
 import { recurrent } from "../misc/recurrent";
 import { DisplayTextElement, DisplayPicElement, DisplayPic, TouchEvent } from "server/service/DisplayService";
 import { Subject } from "rxjs";
+import ConfigService from "server/service/ConfigService";
 
 // We do attempt to reopen the port every this number of milliseconds.
 const AUTO_REOPEN_MILLIS = 1000;
@@ -33,8 +33,6 @@ function pct2clrComp(pct: number, bits: number): number {
 
 // ==========================================================================================
 
-const port = config.nextion.port;
-
 @injectable()
 export default class DisplayServiceImpl extends DisplayService {
     private _nextion?: Nextion;
@@ -49,8 +47,13 @@ export default class DisplayServiceImpl extends DisplayService {
 
     readonly touchEvents$ = new Subject<TouchEvent>();
 
+    constructor(private readonly _configService: ConfigService) {
+        super();
+    }
+
     @postConstruct()
     _init(): void {
+        const port = this._configService.config.nextion.port;
         let opening = false;
 
         // Reopen port is needed

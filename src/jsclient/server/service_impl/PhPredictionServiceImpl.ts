@@ -12,10 +12,10 @@ import TimeService from "server/service/TimeService";
 import { Timestamp } from "server/misc/Timestamp";
 import { isPresent } from "server/misc/isPresent";
 import DatabaseService, { Co2ClosingStateType } from "server/service/DatabaseService";
-import config from "server/config";
 import _ from "lodash";
 import TemperatureSensorService from "server/service/TemperatureSensorService";
 import RandomNumberService from "server/service/RandomNumberService";
+import ConfigService from "server/service/ConfigService";
 
 /**
  * We assume we can have a bias toward adding items as validation ones.
@@ -60,6 +60,7 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
         private readonly _databaseService: DatabaseService,
         private readonly _temperatureSensorService: TemperatureSensorService,
         private readonly _randomNumberService: RandomNumberService,
+        private readonly _configService: ConfigService,
         @optional() @inject("scheduler") private readonly _scheduler: SchedulerLike
     ) {
         super();
@@ -68,7 +69,9 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
     @postConstruct()
     _init(): void {
         // Create worker thread that will actually perform predictions
-        this._worker = new Worker("./dist/server/service_impl/PhPredictionWorkerThread.js");
+        this._worker = new Worker("./dist/server/service_impl/PhPredictionWorkerThread.js", {
+            workerData: this._configService.config
+        });
 
         // React on messages from worker thread
         this._worker.on('message', (message: MessageFromPhPredictionWorker) => {
@@ -212,7 +215,7 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
             // TODO: Move to config
             if (createdSecondsAgo < (7 * 60 * 60)) {
                 const minPh600OffsetAfterClose = minPhAfterClose - closingState.ph600AtClose;
-                const isValidation = this._randomNumberService.next() > config.phClosingPrediction.trainDatasetPercentage;
+                const isValidation = this._randomNumberService.next() > this._configService.config.phClosingPrediction.trainDatasetPercentage;
 
                 await this._databaseService.insertCo2ClosingState(
                     { ...closingState, minPh600OffsetAfterClose },
@@ -232,7 +235,7 @@ export default class PhPredictionServiceImpl extends PhPredictionService {
     private async _maintainDataset(): Promise<void> {
         const totalSize = await this._databaseService.countCo2ClosingStates(Co2ClosingStateType.ANY);
         const currentValidationSize = await this._databaseService.countCo2ClosingStates(Co2ClosingStateType.VALIDATION);
-        const expectedValidationSize = Math.floor(totalSize * (1 - config.phClosingPrediction.trainDatasetPercentage));
+        const expectedValidationSize = Math.floor(totalSize * (1 - this._configService.config.phClosingPrediction.trainDatasetPercentage));
         const numberOfStatesToConvertToTraining = currentValidationSize - expectedValidationSize;
 
         // Note that we never promote training to validation! Only other way around!

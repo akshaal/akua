@@ -7,6 +7,11 @@ import { mock, when, instance, anyString } from "ts-mockito";
 import { TestScheduler } from "rxjs/testing";
 import expect from "expect";
 import AvrService, { AvrState } from "server/service/AvrService";
+import ConfigService from "server/service/ConfigService";
+import ConfigServiceImpl from "./ConfigServiceImpl";
+import { realEnv } from "server/env";
+
+const configService = new ConfigServiceImpl(realEnv);
 
 interface TestCaseSpec {
     readonly aquariumTemperatureSpec: string;
@@ -32,6 +37,7 @@ class TestCase {
     readonly temperatureSensorServiceMock: TemperatureSensorService = mock<TemperatureSensorService>(4);
     readonly phSensorServiceMock: PhSensorService = mock<PhSensorService>();
     readonly avrServiceMock: AvrService = mock<AvrService>();
+    readonly configService: ConfigService = configService;
 
     readonly clocks: string[] = [];
     readonly phs: string[] = [];
@@ -91,6 +97,7 @@ class TestCase {
                 instance(this.displayServiceMock),
                 instance(this.phSensorServiceMock),
                 instance(this.avrServiceMock),
+                this.configService,
                 this.testScheduler
             );
 

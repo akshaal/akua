@@ -1,23 +1,23 @@
 import "reflect-metadata";
 import logger from "server/logger";
-import config from "server/config";
 import { exit } from "process";
 import { createNewContainer } from "server/service_impl/ServerServicesImpl";
 import { Co2ClosingState } from "server/service/PhPrediction";
 import DatabaseService, { Co2ClosingStateType } from "server/service/DatabaseService";
 import { createCo2ClosingStateFeaturesAndLabels } from "server/service_impl/PhPredictionWorkerThread";
 import { writeFileSync } from "fs";
+import { realEnv } from "server/env";
 
 logger.info("============================================================================");
 logger.info("============================================================================");
 logger.info(`Performing dumping of training data of PH prediction by co2-closing state`);
 
-if (!config.isDev) {
+if (!realEnv.isDev) {
     logger.error("This script must not be started in production mode!");
     exit(-2);
 }
 
-const container = createNewContainer('cli-utils');
+const container = createNewContainer('cli-utils', realEnv);
 const databaseService = container.get(DatabaseService);
 
 async function dump() {

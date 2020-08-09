@@ -10,12 +10,11 @@ import {
     PH_PREDICTION_WINDOW_LENGTH
 } from '../service/PhPrediction';
 
-import { parentPort } from 'worker_threads';
+import { parentPort, workerData } from 'worker_threads';
 import { newTimestamp } from 'server/misc/new-timestamp';
-import config, { asUrl } from 'server/config';
+import { asUrl } from 'server/misc/asUrl';
 
-// TODO: Move to config.... and some other place, not ui!
-const minPhPredictionModelLoadLocation = asUrl(config.bindOptions) + "/ui/model.dump";
+const config = workerData;
 
 // TODO: !!! Export training set to be able to draw it and see what NN
 // TODO: !!! actually see and decide what info it needs to import quality of prediction
@@ -263,6 +262,9 @@ export function createCo2ClosingStateFeaturesAndLabels(state: Co2ClosingState): 
 // ================================================================
 
 function loadModelFromFile(): Promise<tf.GraphModel> {
+    // TODO: Move to config.... and some other place, not ui!
+    const minPhPredictionModelLoadLocation = asUrl(config.bindOptions) + "/ui/model.dump";
+
     logger.info("PhPredict: Loading min-PH prediction model from " + minPhPredictionModelLoadLocation);
     return tf.loadGraphModel(minPhPredictionModelLoadLocation + "/model.json");
 }

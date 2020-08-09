@@ -3,16 +3,16 @@ import DatabaseService, { Co2ClosingStateType } from "server/service/DatabaseSer
 import { Co2ClosingState } from "server/service/PhPrediction";
 
 import * as sqlite3 from "sqlite3";
-import config from "server/config";
 import logger from "server/logger";
 import * as BSON from "bson";
 import _ from "lodash";
+import ConfigService from "server/service/ConfigService";
 
 @injectable()
 export default class DatabaseServiceImpl extends DatabaseService {
     private readonly co2ClosingStateDbPromise =
-        initDb(
-            config.database.phClosingStateDbFileName,
+        this._initDb(
+            this._configService.config.database.phClosingStateDbFileName,
             `
                 CREATE TABLE IF NOT EXISTS states (
                     close_time INTEGER NOT NULL PRIMARY KEY,
@@ -22,6 +22,10 @@ export default class DatabaseServiceImpl extends DatabaseService {
             `,
             "ALTER TABLE states ADD is_validation INTEGER NOT NULL DEFAULT 1"
         );
+
+    constructor(private readonly _configService: ConfigService) {
+        super();
+    }
 
     async insertCo2ClosingState(newState: Co2ClosingState, attrs: { isValidation: boolean }): Promise<void> {
         const co2ClosingStateDb = await this.co2ClosingStateDbPromise;
@@ -70,7 +74,48 @@ export default class DatabaseServiceImpl extends DatabaseService {
         const row = await get(co2ClosingStateDb, "SELECT count(*) AS cnt FROM states " + asCo2ClosingStateWhereClause(type), {});
         return row.cnt;
     }
+
+    private _connectToDatabase(fileName: string): Promise<sqlite3.Database> {
+        const configService = this._configService;
+
+        return new Promise(function (resolve, reject) {
+            const db = new sqlite3.Database(
+                configService.config.database.baseDirectory + "/" + fileName,
+                (err) => {
+                    if (err) {
+                        logger.error(`Unable to connect to ${fileName} database.`, { err })
+                        reject(err);
+                    } else {
+                        logger.info(`Connected to the ${fileName} database.`);
+                        resolve(db);
+                    }
+                }
+            )
+        });
+    }
+
+    private async _initDb(fileName: string, ...sqls: string[]): Promise<sqlite3.Database> {
+        const db = await this._connectToDatabase(fileName);
+
+        const dbVersion = (await get(db, "PRAGMA user_version", {})).user_version;
+
+        var v = 0;
+
+        for (var sql of sqls) {
+            v += 1;
+
+            if (v > dbVersion) {
+                logger.info(`Performing upgrade of database ${fileName} to version ${v}`);
+                await run(db, sql, {});
+                await run(db, `PRAGMA user_version = ${v}`, {});
+            }
+        }
+
+        return db;
+    }
 }
+
+// ///////////////////////////////////////////////////////////////////////////////////////////////
 
 function asCo2ClosingStateWhereClause(type: Co2ClosingStateType): string {
     switch (type) {
@@ -78,43 +123,6 @@ function asCo2ClosingStateWhereClause(type: Co2ClosingStateType): string {
         case Co2ClosingStateType.TRAINING: return "WHERE is_validation = 0";
         case Co2ClosingStateType.VALIDATION: return "WHERE is_validation = 1";
     };
-}
-
-async function initDb(fileName: string, ...sqls: string[]): Promise<sqlite3.Database> {
-    const db = await connectToDatabase(fileName);
-
-    const dbVersion = (await get(db, "PRAGMA user_version", {})).user_version;
-
-    var v = 0;
-
-    for (var sql of sqls) {
-        v += 1;
-
-        if (v > dbVersion) {
-            logger.info(`Performing upgrade of database ${fileName} to version ${v}`);
-            await run(db, sql, {});
-            await run(db, `PRAGMA user_version = ${v}`, {});
-        }
-    }
-
-    return db;
-}
-
-function connectToDatabase(fileName: string): Promise<sqlite3.Database> {
-    return new Promise(function (resolve, reject) {
-        const db = new sqlite3.Database(
-            config.database.baseDirectory + "/" + fileName,
-            (err) => {
-                if (err) {
-                    logger.error(`Unable to connect to ${fileName} database.`, { err })
-                    reject(err);
-                } else {
-                    logger.info(`Connected to the ${fileName} database.`);
-                    resolve(db);
-                }
-            }
-        )
-    });
 }
 
 function run(db: sqlite3.Database, sql: string, params: any): Promise<void> {

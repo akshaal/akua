@@ -4,8 +4,8 @@ import AvrService, { AvrPhState } from "server/service/AvrService";
 import { AveragingWindow } from "../misc/AveragingWindow";
 import { Observable, BehaviorSubject } from "rxjs";
 import { calcCo2DivKhFromPh } from "server/misc/calcCo2DivKhFromPh";
-import config, { PhSensorCalibrationConfig } from "server/config";
 import TimeService from "server/service/TimeService";
+import ConfigService, { PhSensorCalibrationConfig } from "server/service/ConfigService";
 
 // How many measurements per second our AVR performs
 const PH_SAMPLE_FREQUENCY = 7;
@@ -30,15 +30,15 @@ function findSolution(c: PhSensorCalibrationConfig): Solution {
     return { a, b };
 }
 
-const solution = findSolution(config.phSensorCalibration);
-
-function calcPhFromVoltage(voltage: number): number {
+function calcPhFromVoltage(solution: Solution, voltage: number): number {
     return solution.a * voltage + solution.b;
 }
 
 // ==========================================================================================
 
 class SensorProcessor {
+    private readonly _solution: Solution = findSolution(this._configService.config.phSensorCalibration);
+
     readonly values$ = new BehaviorSubject<Ph | null>(null);
     private _pendingAvrPhStates: AvrPhState[] = [];
     private _numberOfStatesToSkip: number = 0;
@@ -55,7 +55,7 @@ class SensorProcessor {
         timeService: this._timeService
     });
 
-    constructor(private _timeService: TimeService) {}
+    constructor(private _timeService: TimeService, private _configService: ConfigService) { }
 
     // TODO: We also must skip next sample if the current one is a bad one!
 
@@ -80,16 +80,16 @@ class SensorProcessor {
                         const voltage60s = this._voltage60sWindow.get();
                         const voltage600s = this._voltage600sWindow.get();
 
-                        const phValue600s = voltage600s ? Math.round(calcPhFromVoltage(voltage600s) * 1000) / 1000.0 : voltage600s;
+                        const phValue600s = voltage600s ? Math.round(calcPhFromVoltage(this._solution, voltage600s) * 1000) / 1000.0 : voltage600s;
 
                         this.values$.next({
                             voltage60s: voltage60s,
                             voltage60sSamples: this._voltage60sWindow.getCount(),
-                            value60s: voltage60s ? Math.round(calcPhFromVoltage(voltage60s) * 1000) / 1000.0 : voltage60s,
+                            value60s: voltage60s ? Math.round(calcPhFromVoltage(this._solution, voltage60s) * 1000) / 1000.0 : voltage60s,
                             value60sSamples: this._voltage60sWindow.getCount(),
                             value600s: phValue600s,
                             value600sSamples: this._voltage600sWindow.getCount(),
-                            phBasedCo2: phValue600s ? (calcCo2DivKhFromPh(phValue600s) * config.aquaEnv.kh) : null,
+                            phBasedCo2: phValue600s ? (calcCo2DivKhFromPh(phValue600s) * this._configService.config.aquaEnv.kh) : null,
                             lastSensorState: pendingAvrPhState
                         });
                     }
@@ -113,9 +113,13 @@ class SensorProcessor {
 
 @injectable()
 export default class PhSensorServiceImpl extends PhSensorService {
-    private readonly _phProcessor = new SensorProcessor(this._timeService);
+    private readonly _phProcessor = new SensorProcessor(this._timeService, this._configService);
 
-    constructor(_avrService: AvrService, private _timeService: TimeService) {
+    constructor(
+        readonly _avrService: AvrService,
+        private readonly _timeService: TimeService,
+        private readonly _configService: ConfigService
+    ) {
         super();
         _avrService.avrState$.subscribe(avrState => {
             this._phProcessor.onNewAvrState(avrState.ph);

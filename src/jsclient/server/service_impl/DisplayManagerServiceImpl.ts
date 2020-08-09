@@ -8,7 +8,7 @@ import { isPresent } from "../misc/isPresent";
 import TemperatureSensorService from "server/service/TemperatureSensorService";
 import { Subscriptions } from "../misc/Subscriptions";
 import AvrService, { AvrState, AvrServiceState, LightForceMode } from "server/service/AvrService";
-import config, { ValueDisplayConfig } from "server/config";
+import ConfigService, { ValueDisplayConfig } from "server/service/ConfigService";
 
 // Symbols compiled into "Aqua*" fonts: " .0123456789:⇡⇣"
 
@@ -110,6 +110,7 @@ export default class DisplayManagerServiceImpl extends DisplayManagerService {
         private readonly _displayService: DisplayService,
         private readonly _phSensorService: PhSensorService,
         private readonly _avrService: AvrService,
+        private readonly _configService: ConfigService,
         @optional() @inject("scheduler") private readonly _scheduler: SchedulerLike
     ) {
         super();
@@ -130,7 +131,7 @@ export default class DisplayManagerServiceImpl extends DisplayManagerService {
             decimals: 1,
             minDiff: 0.15,
             diffOffsetHours: 1,
-            valueDisplayConfig: config.aquaTemperatureDisplay,
+            valueDisplayConfig: this._configService.config.aquaTemperatureDisplay,
             getValue: t => t?.value
         });
 
@@ -141,7 +142,7 @@ export default class DisplayManagerServiceImpl extends DisplayManagerService {
             decimals: 1,
             minDiff: 0.1,
             diffOffsetHours: 1,
-            valueDisplayConfig: config.caseTemperatureDisplay,
+            valueDisplayConfig: this._configService.config.caseTemperatureDisplay,
             getValue: t => t?.value
         });
 
@@ -152,7 +153,7 @@ export default class DisplayManagerServiceImpl extends DisplayManagerService {
             decimals: 2,
             minDiff: 0.03,
             diffOffsetHours: 0.25, // 15 minutes
-            valueDisplayConfig: config.phDisplay,
+            valueDisplayConfig: this._configService.config.phDisplay,
             getValue: ph => ph?.value600s
         });
 
@@ -163,7 +164,7 @@ export default class DisplayManagerServiceImpl extends DisplayManagerService {
             decimals: 0,
             minDiff: 1,
             diffOffsetHours: 0.25, // 15 minutes
-            valueDisplayConfig: config.co2Display,
+            valueDisplayConfig: this._configService.config.co2Display,
             getValue: ph => ph?.phBasedCo2
         });
 

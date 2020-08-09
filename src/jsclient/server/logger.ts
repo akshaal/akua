@@ -1,9 +1,9 @@
 import util from "util";
 import winston from "winston";
 import process from "process";
-import config from "./config";
 import Transport from 'winston-transport';
 import { LEVEL } from "triple-beam";
+import { realEnv } from "./env";
 
 var infos = 0;
 var warnings = 0;
@@ -70,7 +70,7 @@ const logger: winston.Logger = winston.createLogger({
     exitOnError: false,
 });
 
-if (config.isDev) {
+if (realEnv.isDev) {
     logger.add(
         new winston.transports.File({
             level: 'debug',

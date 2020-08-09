@@ -1,12 +1,12 @@
 import { injectable, postConstruct } from "inversify";
 import AvrService, { AvrServiceState, AvrState, AvrTemperatureSensorState, LightForceMode, AvrLightState, Co2ValveOpenState, AvrPhState } from "server/service/AvrService";
 import SerialPort from "serialport";
-import config from "server/config";
 import logger from "server/logger";
 import { SerialportReadlineParser } from "./ReadlineParser";
 import { avrProtocolVersion, asAvrData, AvrData } from "server/avr/protocol";
 import { Subject } from "rxjs";
 import { recurrent } from "../misc/recurrent";
+import ConfigService from "server/service/ConfigService";
 
 // We do attempt to reopen the port every this number of milliseconds.
 const AUTO_REOPEN_MILLIS = 1000;
@@ -159,7 +159,7 @@ const serialPortOptions: SerialPort.OpenOptions = {
 export default class AvrServiceImpl extends AvrService {
     readonly avrState$ = new Subject<AvrState>();
 
-    private _serialPort = new SerialPort(config.avr.port, serialPortOptions);
+    private _serialPort = new SerialPort(this._configService.config.avr.port, serialPortOptions);
     private _serialPortErrorCount = 0;
     private _serialPortOpenAttemptCount = 0;
     private _outgoingMessages = 0;
@@ -173,6 +173,10 @@ export default class AvrServiceImpl extends AvrService {
     private _sendClockReq: boolean = false;
     private _newCo2RequiredValveOpenState?: Co2ValveOpenState;
     private _forceCo2Off?: boolean;
+
+    constructor(private readonly _configService: ConfigService) {
+        super();
+    }
 
     @postConstruct()
     _init(): void {
@@ -212,7 +216,7 @@ export default class AvrServiceImpl extends AvrService {
             sendClock: this._sendClockReq,
             newCo2ValveOpenState: this._newCo2RequiredValveOpenState,
             co2ForceOff: this._forceCo2Off,
-            altDayEnabled: config.aquaEnv.alternativeDay
+            altDayEnabled: this._configService.config.aquaEnv.alternativeDay
         });
 
         // Don't try to write if there is nothing to write

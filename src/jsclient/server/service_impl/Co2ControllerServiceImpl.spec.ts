@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { calcMinPhEquationParams, calcMinPh } from "./Co2ControllerServiceImpl";
 import expect from "expect";
-import { PhControllerConfig } from "server/config";
+import { PhControllerConfig } from "server/service/ConfigService";
 
 const phControllerConfig4Test: PhControllerConfig = {
     phTurnOnOffMargin: 0.1,

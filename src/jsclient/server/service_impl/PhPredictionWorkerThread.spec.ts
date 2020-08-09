@@ -4,12 +4,20 @@ import { MinPhPredictionRequest, createCo2ClosingState, Co2ClosingStateOrigin, M
 import { akDropTimeseriesLayer } from "./PhPredictionWorkerThread";
 import * as tf from 'server/service_impl/tf';
 import expect from "expect";
+import ConfigServiceImpl from "./ConfigServiceImpl";
+import { realEnv } from "server/env";
 
 // TODO: Need a way to provide parentPort
+// TODO: cleanup!
+
+const config = new ConfigServiceImpl(realEnv).config;
 
 describe('PhPredictionWorkerThread', () => {
     it('can start as worker and predict min-ph', (done) => {
-        const worker = new Worker("./dist/server/service_impl/PhPredictionWorkerThread.js");
+        const worker = new Worker("./dist/server/service_impl/PhPredictionWorkerThread.js", {
+            workerData: config
+        });
+
         const now = 22341;
         const request: MinPhPredictionRequest = {
             type: 'min-ph-prediction-request',

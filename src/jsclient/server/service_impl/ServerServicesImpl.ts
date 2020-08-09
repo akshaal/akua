@@ -24,15 +24,20 @@ import DatabaseServiceImpl from "./DatabaseServiceImpl";
 import logger from "server/logger";
 import RandomNumberService from "server/service/RandomNumberService";
 import RandomNumberServiceImpl from "./RandomNumberServiceImpl";
+import { Env, ENV_IOC_TOKEN } from "server/env";
+import ConfigServiceImpl from "./ConfigServiceImpl";
+import ConfigService from "server/service/ConfigService";
 
 type ContainerMode = 'cli-utils' | 'express-server';
 
-export function createNewContainer(mode: ContainerMode): Container {
+export function createNewContainer(mode: ContainerMode, env: Env): Container {
     const container = new Container();
 
+    container.bind(ENV_IOC_TOKEN).toConstantValue(env);
     container.bind(TimeService).to(TimeServiceImpl).inSingletonScope();
     container.bind(RandomNumberService).to(RandomNumberServiceImpl).inSingletonScope();
     container.bind(DatabaseService).to(DatabaseServiceImpl).inSingletonScope();
+    container.bind(ConfigService).to(ConfigServiceImpl).inSingletonScope();
 
     logger.info("Injection container created in '" + mode + "' mode.");
 

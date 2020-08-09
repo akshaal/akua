@@ -1,7 +1,6 @@
 import { injectable, postConstruct } from "inversify";
 import { Gauge, register, Summary, Counter } from 'prom-client';
 import perfHooks from 'perf_hooks';
-import config from "server/config";
 import { getInfoCount, getErrorCount, getWarningCount } from "server/logger";
 import MetricsService from "server/service/MetricsService";
 import AvrService from "server/service/AvrService";
@@ -10,6 +9,7 @@ import PhSensorService from "server/service/PhSensorService";
 import PhPredictionService from "server/service/PhPredictionService";
 import { Subscriptions } from "server/misc/Subscriptions";
 import Co2ControllerService from "server/service/Co2ControllerService";
+import ConfigService from "server/service/ConfigService";
 
 // Use constants for labels to avoid typos and to be consistent about names.
 const L_GC_TYPE = 'gc_type';
@@ -91,26 +91,6 @@ const eventLoopSummary = new Summary({
     ageBuckets: 5,
     percentiles: [0.1, 0.25, 0.5, 0.75, 0.9, 0.99, 0.999]
 });
-
-function reportEventloopLag(start: [number, number]) {
-    const delta = process.hrtime(start);
-    const nanoseconds = delta[0] * 1e9 + delta[1];
-    const seconds = nanoseconds / 1e9;
-
-    eventLoopSummary.observe(seconds);
-
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    scheduleEventloopReporting();
-}
-
-function scheduleEventloopReporting(): void {
-    setTimeout(() => {
-        const start = process.hrtime();
-        setImmediate(reportEventloopLag, start);
-    }, config.metrics.eventLoopMonitoringResolutionMs);
-}
-
-scheduleEventloopReporting();
 
 // ==========================================================================================
 
@@ -239,10 +219,6 @@ const versionGauge = new Gauge({
     help: 'Info on startup.',
     labelNames: [L_VERSION]
 });
-
-// For Grafana... it needs value as time in milliseconds to enable de-duplication of annotation.
-const startupTimeMs = new Date().getTime();
-versionGauge.set({ version: config.version }, startupTimeMs, new Date);
 
 // ==========================================================================================
 
@@ -537,13 +513,20 @@ export default class MetricsServiceImpl extends MetricsService {
         private readonly _temperatureSensorService: TemperatureSensorService,
         private readonly _phSensorService: PhSensorService,
         private readonly _phPredictionService: PhPredictionService,
-        private readonly _co2ControllerService: Co2ControllerService
+        private readonly _co2ControllerService: Co2ControllerService,
+        private readonly _configService: ConfigService
     ) {
         super();
     }
 
     @postConstruct()
     _init() {
+        const configService = this._configService;
+
+        // For Grafana... it needs value as time in milliseconds to enable de-duplication of annotation.
+        const startupTimeMs = new Date().getTime();
+        versionGauge.set({ version: this._configService.config.version }, startupTimeMs, new Date);
+
         // Start with no value here!
         minClosingPhPredictionGauge.remove();
 
@@ -575,6 +558,29 @@ export default class MetricsServiceImpl extends MetricsService {
                 phClosingStateTrainingDatasetSizeGauge.setOrRemove(stats.phClosingStateTrainingDatasetSize);
             })
         );
+
+        // ----------------------------------------------------------------------------
+        // TODO: This scheduler must pay attention to where we alive or not!
+
+        function reportEventloopLag(start: [number, number]) {
+            const delta = process.hrtime(start);
+            const nanoseconds = delta[0] * 1e9 + delta[1];
+            const seconds = nanoseconds / 1e9;
+        
+            eventLoopSummary.observe(seconds);
+        
+            // eslint-disable-next-line @typescript-eslint/no-use-before-define
+            scheduleEventloopReporting();
+        }
+        
+        function scheduleEventloopReporting(): void {
+            setTimeout(() => {
+                const start = process.hrtime();
+                setImmediate(reportEventloopLag, start);
+            }, configService.config.metrics.eventLoopMonitoringResolutionMs);
+        }
+        
+        scheduleEventloopReporting();        
     }
 
     // Used in unit testing
