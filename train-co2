@@ -4,16 +4,20 @@
 
 cd `dirname "$0"`
 
-mkdir -p temp/db
+mkdir -p temp/db-aqua1
+mkdir -p temp/db-aqua2
 
 # TODO: Add menu or something...
 
-PH_CLOSING_DB=temp/db/ph-closing-state.db
+AQUA1_PH_CLOSING_DB=temp/db-aqua1/ph-closing-state.db
+AQUA2_PH_CLOSING_DB=temp/db-aqua2/ph-closing-state.db
 
 if true; then
-    rm -f "$PH_CLOSING_DB"
+    rm -f "$AQUA1_PH_CLOSING_DB"
+    rm -f "$AQUA2_PH_CLOSING_DB"
 
-    curl http://192.168.1.10:3000/db/ph-closing-state.db -o "$PH_CLOSING_DB" || exit 23
+    curl http://192.168.1.10:3000/db/ph-closing-state.db -o "$AQUA1_PH_CLOSING_DB" || exit 23
+    curl http://192.168.1.11:3000/db/ph-closing-state.db -o "$AQUA2_PH_CLOSING_DB" || exit 24
 
     cd src/jsclient || exit 10
 

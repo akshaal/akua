@@ -13,8 +13,9 @@ import {
 import { parentPort, workerData } from 'worker_threads';
 import { newTimestamp } from 'server/misc/new-timestamp';
 import { asUrl } from 'server/misc/asUrl';
+import { Config } from 'server/service/ConfigService';
 
-const config = workerData;
+const workerConfig = workerData;
 
 // TODO: !!! Export training set to be able to draw it and see what NN
 // TODO: !!! actually see and decide what info it needs to import quality of prediction
@@ -168,7 +169,7 @@ export function akDropTimeseriesLayer(args: AkDropTimeseriesLayerArgs): AkDropTi
  * Translates state into features (inputs) and labels (outputs)
  * returns null if data is invalid
  */
-export function createCo2ClosingStateFeaturesAndLabels(state: Co2ClosingState): null | { xs: number[][], ys: number[] } {
+export function createCo2ClosingStateFeaturesAndLabels(state: Co2ClosingState, config: Config): null | { xs: number[][], ys: number[] } {
     // Validate state data
 
     if (!state.closeTime) {
@@ -250,6 +251,7 @@ export function createCo2ClosingStateFeaturesAndLabels(state: Co2ClosingState): 
             scalePhOffset(ph60Offset),
             dayLightOn ? 1 : 0,
             co2ValveOpen ? 1 : 0,
+            config.instanceId === 1 ? 1 : 0,
         ]);
     }
 
@@ -263,7 +265,7 @@ export function createCo2ClosingStateFeaturesAndLabels(state: Co2ClosingState): 
 
 function loadModelFromFile(): Promise<tf.GraphModel> {
     // TODO: Move to config.... and some other place, not ui!
-    const minPhPredictionModelLoadLocation = asUrl(config.bindOptions) + "/ui/model.dump";
+    const minPhPredictionModelLoadLocation = asUrl(workerConfig.bindOptions) + "/ui/model.dump";
 
     logger.info("PhPredict: Loading min-PH prediction model from " + minPhPredictionModelLoadLocation);
     return tf.loadGraphModel(minPhPredictionModelLoadLocation + "/model.json");
@@ -280,7 +282,7 @@ function loadModelFromFile(): Promise<tf.GraphModel> {
 function onPhPredictionRequest(request: MinPhPredictionRequest) {
     const requestTimestamp = newTimestamp();
 
-    const featuresAndLabels = createCo2ClosingStateFeaturesAndLabels(request.co2ClosingState);
+    const featuresAndLabels = createCo2ClosingStateFeaturesAndLabels(request.co2ClosingState, workerConfig);
     if (!featuresAndLabels) {
         logger.error("PhPredict: Wrong request co2closingSTate", { request });
         return;

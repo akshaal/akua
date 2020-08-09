@@ -7,6 +7,10 @@ import DatabaseService, { Co2ClosingStateType } from "server/service/DatabaseSer
 import { createCo2ClosingStateFeaturesAndLabels } from "server/service_impl/PhPredictionWorkerThread";
 import { writeFileSync } from "fs";
 import { realEnv } from "server/env";
+import ConfigService from "server/service/ConfigService";
+
+// TODO: Simplify code and make it more convenient... and less boilerplate
+// TODO: This code is VERY boilerplate...
 
 logger.info("============================================================================");
 logger.info("============================================================================");
@@ -17,31 +21,47 @@ if (!realEnv.isDev) {
     exit(-2);
 }
 
-const container = createNewContainer('cli-utils', realEnv);
-const databaseService = container.get(DatabaseService);
+const aqua1Container = createNewContainer('cli-utils', { ...realEnv, instanceName: "aqua1" });
+const aqua1DatabaseService = aqua1Container.get(DatabaseService);
+const aqua1Config = aqua1Container.get(ConfigService).config;
+
+const aqua2Container = createNewContainer('cli-utils', { ...realEnv, instanceName: "aqua2" });
+const aqua2DatabaseService = aqua2Container.get(DatabaseService);
+const aqua2Config = aqua2Container.get(ConfigService).config;
 
 async function dump() {
-    const trainingStates = await databaseService.findCo2ClosingStates(Co2ClosingStateType.TRAINING);
-    const validationStates = await databaseService.findCo2ClosingStates(Co2ClosingStateType.VALIDATION);
+    function dumpStates(
+        name: string,
+        fname: string,
+        aqua1States: Readonly<Co2ClosingState[]>,
+        aqua2States: Readonly<Co2ClosingState[]>
+    ) {
+        const statesTotal = aqua1States.length + aqua2States.length;
 
-    function dumpStates(name: string, fname: string, states: Readonly<Co2ClosingState[]>) {
-        console.log("\n==============================================================");
-        console.log(name + "\n");
+        console.log(`${name}: aqua1: ${aqua1States.length}, aqua2: ${aqua2States.length}, total: ${statesTotal}\n`);
 
         const featuresAndLabels = [];
 
-        for (var state of states) {
-            const date = new Date(state.closeTime * 1000).toLocaleString("nb");
-            console.log(date + ": Offset after close: " + state.minPh600OffsetAfterClose + "  (i.e. " + (state.minPh600OffsetAfterClose + state.ph600AtClose) + ")");
+        for (let state of aqua1States) {
+            featuresAndLabels.push(createCo2ClosingStateFeaturesAndLabels(state, aqua1Config));
+        }
 
-            featuresAndLabels.push(createCo2ClosingStateFeaturesAndLabels(state));
+        for (let state of aqua2States) {
+            featuresAndLabels.push(createCo2ClosingStateFeaturesAndLabels(state, aqua2Config));
         }
 
         writeFileSync("../../temp/" + fname, JSON.stringify(featuresAndLabels));
     }
 
-    dumpStates("Training states", "co2-train-data.json", trainingStates);
-    dumpStates("Validation states", "co2-valid-data.json", validationStates);
+    const aqua1TrainingStates = await aqua1DatabaseService.findCo2ClosingStates(Co2ClosingStateType.TRAINING);
+    const aqua1ValidationStates = await aqua1DatabaseService.findCo2ClosingStates(Co2ClosingStateType.VALIDATION);
+
+    const aqua2TrainingStates = await aqua2DatabaseService.findCo2ClosingStates(Co2ClosingStateType.TRAINING);
+    const aqua2ValidationStates = await aqua2DatabaseService.findCo2ClosingStates(Co2ClosingStateType.VALIDATION);
+
+    console.log("\n==============================================================");
+    dumpStates("Training states", "co2-train-data.json", aqua1TrainingStates, aqua2TrainingStates);
+    dumpStates("Validation states", "co2-valid-data.json", aqua1ValidationStates, aqua2ValidationStates);
 
     exit(0);
 }

@@ -23,7 +23,7 @@ const config = container.get(ConfigService).config;
 
 logger.info("============================================================================");
 logger.info("============================================================================");
-logger.info(`Starting version ${config.version} in ${config.isDev ? 'development' : 'production'} mode on instance ${config.instanceName}.`);
+logger.info(`Starting version ${config.version} in ${config.isDev ? 'development' : 'production'} mode on instance ${config.instanceName} with instance-id ${config.instanceId}.`);
 
 if (config.isDev) {
     logger.debug("Obtained configuration:", config);

@@ -12,7 +12,7 @@ export default class ConfigServiceImpl extends ConfigService {
         } else {
             return configs.aqua2;
         }
-    }    
+    }
 
     private readonly _aquaTemperatureDisplay: ValueDisplayConfig = {
         lowComfort: 23.6,
@@ -34,11 +34,15 @@ export default class ConfigServiceImpl extends ConfigService {
         highRgbPcts: [100, 0, 0],
     };
 
+    private readonly _instanceName = this._env.instanceName || "unknown";
+
     // Top-level config value
     readonly config: Config = {
         isDev: this._env.isDev,
         version: this._env.version || "unknown",
-        instanceName: this._env.instanceName || "unknown",
+        instanceName: this._instanceName,
+
+        instanceId: this._aquaX({ aqua1: 1, aqua2: 2 }),
 
         bindOptions: {
             port: 3000,
@@ -130,7 +134,7 @@ export default class ConfigServiceImpl extends ConfigService {
         },
 
         database: {
-            baseDirectory: this._env.isDev ? "../../temp/db" : "/var/akua/db",
+            baseDirectory: this._env.isDev ? ("../../temp/db-" + this._instanceName) : "/var/akua/db",
             phClosingStateDbFileName: "ph-closing-state.db"
         },
 
@@ -147,8 +151,8 @@ export default class ConfigServiceImpl extends ConfigService {
 
         if (this.config.instanceName !== "aqua1" && this.config.instanceName !== "aqua2") {
             console.log("::ERROR:: UNKNOWN INSTANCE: " + this.config.instanceName);
-        }    
-    
+        }
+
         if (this.config.avr.port === this.config.nextion.port) {
             console.log("::ERROR:: AVR and NEXTION ports configured to the same value: " + this.config.avr.port);
             errorsDetected = true;

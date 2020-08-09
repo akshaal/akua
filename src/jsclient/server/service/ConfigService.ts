@@ -94,6 +94,7 @@ export interface Config {
     readonly version: string;
     readonly isDev: boolean;
     readonly instanceName: string;
+    readonly instanceId: 1 | 2;
     readonly bindOptions: ProtoHostPort;
     readonly metrics: MetricsConfig;
     readonly nextion: NextionConfig;

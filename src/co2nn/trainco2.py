@@ -9,7 +9,7 @@ from typing import Literal
 # tf.debugging.set_log_device_placement(True)
 
 PH_PREDICTION_WINDOW_LENGTH = 60
-PH_PREDICTION_FEATURES = 4
+PH_PREDICTION_FEATURES = 5
 MODEL_FNAME = "data/co2-model.h5"
 
 # ###############################################################################
@@ -94,7 +94,7 @@ def create_model():
         input_layer=input_layer,
         kernel_size=1,
         strides=1,
-        filters=2,
+        filters=3,
         kernel_constraint=tf.keras.constraints.max_norm(3)
     )
 
@@ -103,7 +103,7 @@ def create_model():
         input_layer=conv0_layer,
         kernel_size=4,
         strides=4,
-        filters=10,
+        filters=12,
         kernel_constraint=tf.keras.constraints.max_norm(3)
     )
 
@@ -112,7 +112,7 @@ def create_model():
         input_layer=conv1_layer,
         kernel_size=3,
         strides=3,
-        filters=20,
+        filters=24,
         kernel_constraint=tf.keras.constraints.max_norm(3)
     )
 
@@ -327,17 +327,22 @@ def train(retrain: bool,
 
 if __name__ == '__main__':
     opt = "adam"
-    lr = float(np.random.choice([1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6])) * float(np.random.random())
+
+    #lr = float(np.random.choice([1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6])) * float(np.random.random())
+    #wdm = float(0.001 * np.random.random())
+
+    lr = 0.01
+    wdm = 0.0001
 
     train(
-        retrain=False,
+        retrain=True,
         learning_rate=lr,
-        weight_decay_lr_multiplier=float(0.001 * np.random.random()),
-        epochs=1_000_000,
-        first_decay_epochs=30_000,
+        weight_decay_lr_multiplier=wdm,
+        epochs=100_000_000,
+        first_decay_epochs=5_000_000,
         validation_freq=1,
         tensorboard=False,
-        early_stop_epoch_patience=40_000,
+        early_stop_epoch_patience=5_000_000,
         opt=opt
     )
 
