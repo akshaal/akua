@@ -89,21 +89,39 @@ def create_model():
         shape=[PH_PREDICTION_WINDOW_LENGTH, PH_PREDICTION_FEATURES]
     )
 
-    conv0_layer = mk_conv1d_layers(
-        name="L0",
+    conv0a_layer = mk_conv1d_layers(
+        name="L0a",
         input_layer=input_layer,
         kernel_size=1,
         strides=1,
-        filters=3,
+        filters=6,
+        kernel_constraint=tf.keras.constraints.max_norm(3)
+    )
+
+    conv0b_layer = mk_conv1d_layers(
+        name="L0b",
+        input_layer=conv0a_layer,
+        kernel_size=1,
+        strides=1,
+        filters=6,
+        kernel_constraint=tf.keras.constraints.max_norm(3)
+    )
+
+    conv0c_layer = mk_conv1d_layers(
+        name="L0c",
+        input_layer=conv0b_layer,
+        kernel_size=1,
+        strides=1,
+        filters=2,
         kernel_constraint=tf.keras.constraints.max_norm(3)
     )
 
     conv1_layer = mk_conv1d_layers(
         name="L1",
-        input_layer=conv0_layer,
+        input_layer=conv0c_layer,
         kernel_size=4,
         strides=4,
-        filters=12,
+        filters=15,
         kernel_constraint=tf.keras.constraints.max_norm(3)
     )
 
@@ -112,7 +130,7 @@ def create_model():
         input_layer=conv1_layer,
         kernel_size=3,
         strides=3,
-        filters=24,
+        filters=30,
         kernel_constraint=tf.keras.constraints.max_norm(3)
     )
 
@@ -123,7 +141,7 @@ def create_model():
     fc1_layer = mk_fc_layers(
         name="L3",
         input_layer=flatten_layer,
-        units=8,
+        units=15,
         kernel_constraint=tf.keras.constraints.max_norm(3)
     )
 
@@ -328,21 +346,21 @@ def train(retrain: bool,
 if __name__ == '__main__':
     opt = "adam"
 
-    #lr = float(np.random.choice([1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6])) * float(np.random.random())
-    #wdm = float(0.001 * np.random.random())
+    lr = float(np.random.choice([1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6])) * float(np.random.random())
+    wdm = float(np.random.choice([1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6])) * float(np.random.random())
 
-    lr = 0.01
-    wdm = 0.0001
+    #lr = 0.01
+    #wdm = 0.001
 
     train(
-        retrain=True,
+        retrain=False,
         learning_rate=lr,
         weight_decay_lr_multiplier=wdm,
-        epochs=100_000_000,
-        first_decay_epochs=5_000_000,
+        epochs=10_000_000,
+        first_decay_epochs=500_000,
         validation_freq=1,
         tensorboard=False,
-        early_stop_epoch_patience=5_000_000,
+        early_stop_epoch_patience=100_000,
         opt=opt
     )
 
