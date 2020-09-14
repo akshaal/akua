@@ -140,7 +140,7 @@ export default class ConfigServiceImpl extends ConfigService {
 
         aquaEnv: {
             kh: 4,
-            alternativeDay: this._aquaX({ aqua1: false, aqua2: true })
+            alternativeDay: this._aquaX({ aqua1: false, aqua2: false })
         }
     };
 
