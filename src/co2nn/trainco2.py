@@ -357,10 +357,10 @@ if __name__ == '__main__':
         learning_rate=lr,
         weight_decay_lr_multiplier=wdm,
         epochs=10_000_000,
-        first_decay_epochs=500_000,
-        validation_freq=1,
+        first_decay_epochs=200_000,
+        validation_freq=20,
         tensorboard=False,
-        early_stop_epoch_patience=100_000,
+        early_stop_epoch_patience=30_000,
         opt=opt
     )
 
