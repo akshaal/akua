@@ -360,7 +360,7 @@ if __name__ == '__main__':
         first_decay_epochs=200_000,
         validation_freq=20,
         tensorboard=False,
-        early_stop_epoch_patience=100_000,
+        early_stop_epoch_patience=500_000,
         opt=opt
     )
 
