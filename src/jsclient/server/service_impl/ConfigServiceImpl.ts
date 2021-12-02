@@ -75,6 +75,8 @@ export default class ConfigServiceImpl extends ConfigService {
         }),
 
         phSensorCalibration: this._aquaX({
+            // USE akua_ph60s_voltage metric to find out voltage
+
             // 2020.03.26: 4.01=3.08v,                6.86=2.575
             // 2020.05.17: 4.01=3.09559736896566v,    6.86=2.5856278083541535
             // 2021.08.25: 4.01=3.109889539510251v    6.86=2.5899703130372185v
@@ -86,11 +88,12 @@ export default class ConfigServiceImpl extends ConfigService {
             },
 
             // 2020.07.28: 4.01=3.0807776310782327,   6.86=2.616606056118044
+            // 2021.12.02: 4.01=3.0509069803017206,   6.86=2.5927038457935496
             aqua2: {
                 ph1: 4.01,
-                v1: 3.0807776310782327,
+                v1: 3.0509069803017206,
                 ph2: 6.86,
-                v2: 2.616606056118044
+                v2: 2.5927038457935496
             },
         }),
 
