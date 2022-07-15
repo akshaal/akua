@@ -13,6 +13,10 @@ import ServerServices from "./service/ServerServices";
 import ConfigService from "./service/ConfigService";
 import { realEnv } from "./env";
 import { asUrl } from "./misc/asUrl";
+import { timer } from "rxjs";
+import { getElapsedSecondsSince } from "./misc/get-elapsed-seconds-since";
+
+const DIE_IF_NO_AVR_LIVE_LAST_THIS_MINUTES = 30;
 
 // Create an instance of server services
 const container = createNewContainer('express-server', realEnv);
@@ -65,6 +69,27 @@ expressServer.use("/metrics", measure("/metrics"));
 expressServer.get("/metrics", (_, res) => {
     res.set('Content-Type', metricsService.getContentType());
     res.end(metricsService.getMetrics());
+});
+
+// -------------------------------------
+// Shitty watchdog, pi has problems.. sometimes it stops reading from ports until you reopen the port...
+
+let lastAvrReadHrTime = process.hrtime();
+serverServices.avrService.avrState$.subscribe(() => {
+    lastAvrReadHrTime = process.hrtime();
+});
+
+timer(1000, 1000).subscribe(() => {
+    const elapsedSecs = getElapsedSecondsSince({
+        now: process.hrtime(),
+        since: lastAvrReadHrTime,
+    });
+    const elapsedMinutes = elapsedSecs / 60.0;
+
+    if (elapsedMinutes >= DIE_IF_NO_AVR_LIVE_LAST_THIS_MINUTES) {
+        logger.error(`No data from AVR in ${DIE_IF_NO_AVR_LIVE_LAST_THIS_MINUTES} minutes! Dying..`);
+        process.exit(200);
+    }
 });
 
 // -------------------------------------
