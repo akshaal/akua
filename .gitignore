@@ -10,3 +10,5 @@ temp
 .python_venv
 .git-tag
 .prepared-git-tag
+.history
+**/__pycache__/
