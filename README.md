@@ -1,1 +1,4 @@
-Akshaal's Klipper Interface (AkKI).
+# Akua
+
+Aquarium controller.
+

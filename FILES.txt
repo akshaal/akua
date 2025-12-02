@@ -1,0 +1,114 @@
+flash-avr-firmware: Build+flash script; runs make in src/avr, uploads firmware.hex to ATmega2560 via avrdude.
+flash-avr-fuses: Fuse config script; sets ATmega2560 fuses via avrdude for clock/debug/bootloader/EEPROM settings; one-time MCU initialization.
+npm-upgrade: Wrapper script; runs npm-upgrade tool in jsclient for interactive dependency updates.
+prepare: Setup script; detects CPU features to auto-select optimal TensorFlow backend, configures files, runs npm install.
+prepare-prod: Prod deployment wrapper; runs prepare, tracks deploy state via .prepared-git-tag marker; called by ansible.
+prepare-python-venv: Setup script; creates Python venv, installs TensorFlow/ML libs & dev tools; isolates project deps for reproducible ML training.
+README.md: Project doc.
+run-dev: Dev runner script; sets up env vars, creates temp dirs, starts dev server via npm; for local development w/ hardware.
+serial-protocol.txt: Auto-gen AVR↔server serial protocol spec; extracted via maintain-protocol from firmware; gen TS types, ensures protocol sync.
+source-me-to-activate-python-venv: Venv activation wrapper; sources .python_venv/bin/activate; provides self-documenting name.
+start: Prod startup script; sets AKUA_VERSION from git tags, builds TS via npm, starts server in prod mode.
+test: Test runner script; sets AKUA_VERSION from git tags, runs npm test in jsclient for TS unit tests.
+train-co2: ML training orchestrator; downloads multi-instance DBs, exports training data, trains TF pH model, converts to TF.js for deployment.
+.gitignore: Git ignore patterns; excludes build artifacts/dependencies/env files/editor temps from version control.
+.vscode/settings.json: VS Code config; disables C++ errors from AKATPP syntax, spell-check dict for tech terms, test/TS/Python paths.
+src/avr/.clang-format: ClangFormat config for AVR C code; Google style w/ 4-space indent; auto-formats via IDE/clang-format tool.
+src/avr/.gitignore: Git ignore patterns; excludes AVR build artifacts/IDE files/temp files from version control.
+src/avr/main.c: Aquarium controller firmware main source file.
+src/avr/maintain-protocol: Extracts protocol from firmware.tmp.c, gen TS types/version, syncs AVR ↔ ts-server.
+src/avr/Makefile: Build for AVR firmware; AKATPP preprocesses sources, maintain-protocol syncs protocol, compiles w/ -O3, gen hex/asm/profiling.
+src/avr/tuning.c: Perf tuning; USE_REG$ allocs vars to AVR regs, WRITE_CFLAGS$ gen -ffixed flags; separated optimization from logic.
+src/avr/firmware.cflags: Auto-gen by WRITE_CFLAGS$ in tuning.c via AKATPP; -ffixed flags for GCC; bridges USE_REG$ allocs to build, enables RAM-free reg access.
+src/avr/firmware.hex: Compiled firmware in Intel HEX format; gen by objcopy from firmware.avr; for flashing to MCU.
+src/avr/firmware.tmp.c: Auto-gen by AKATPP from tuning.c/AKAT_SRCS/main.c; preprocessed C w/ expanded macros; intermediate for GCC compilation.
+src/jsclient/cli-utils/dumpco2traindata.ts: Exports CO2 closing states from multi-instance DBs as ML features/labels JSON for Python NN training.
+src/jsclient/custom-types/README: Guide for custom TS type decls; module-name/index.d.ts structure for untyped npm packages.
+src/jsclient/.eslintrc.json: ESLint config for TS; TS parser, recommended rules, custom rule overrides; IDE/CLI linting.
+src/jsclient/package.json: NPM manifest; runtime/dev deps, npm scripts (dev/build/start/test/...).
+src/jsclient/tsconfig.json: TS compiler config; strict type checks, decorator support, module resolution, custom typeRoots; by tsc/ts-mocha/ESLint/IDEs.
+src/jsclient/server/avr/protocol.ts: Auto-gen by maintain-protocol from firmware; AVR protocol version, AvrData interface, asAvrData() parser; ensures AVR↔TS sync.
+src/jsclient/server/env.ts: Env interface, realEnv object, ENV_IOC_TOKEN for DI; centralizes process.env access for testability.
+src/jsclient/server/index.ts: Server entry point; creates DI container, sets up Express w/ endpoints/middleware/static files, starts HTTP server, AVR watchdog.
+src/jsclient/server/logger.ts: Winston logger + count getters (info/warn/error) for metrics; centralizes logging.
+src/jsclient/server/misc/asUrl.ts: asUrl() converts ProtoHostPort config to URL string; omits default ports (80/443) for clean URLs.
+src/jsclient/server/misc/AveragingWindow.ts: Time-based sliding window avg; auto-expires old samples, caches results.
+src/jsclient/server/misc/AveragingWindow.spec.ts: Tests AveragingWindow; time-based expiration, caching, sample frequencies, edge cases.
+src/jsclient/server/misc/calcCo2DivKhFromPh.ts: calcCo2DivKhFromPh() computes CO2/KH ratio from pH; carbonate equilibrium formula.
+src/jsclient/server/misc/get-elapsed-seconds-since.ts: getElapsedSecondsSince() calculates elapsed seconds between Timestamps; nanosecond-precision time math.
+src/jsclient/server/misc/isPresent.ts: isPresent() type guard checks not null/undefined; narrows types to T for type-safe filtering.
+src/jsclient/server/misc/new-timestamp.ts: newTimestamp() wraps process.hrtime() for nanosec timestamps; legacy, use TimeService instead.
+src/jsclient/server/misc/recurrent.ts: recurrent() runs func immediately then repeats at interval.
+src/jsclient/server/misc/sliding-window.ts: slidingWindow() creates overlapping subarrays; for moving window analysis.
+src/jsclient/server/misc/Subscriptions.ts: Subscriptions class collects RxJS subs for bulk cleanup; prevents leaks.
+src/jsclient/server/misc/Timestamp.ts: Timestamp type wraps hrtime() tuple; nanosec-precision w/ immutability.
+src/jsclient/server/nextion/codes.js: Nextion protocol code Maps; hex→name for event/response identification & parsing.
+src/jsclient/server/nextion/index.ts: openNextionPort() creates Nextion from port; handles UART setup & init internally.
+src/jsclient/server/nextion/nextion.js: Nextion class wraps UART; setValue/getValue methods, event emitter, system commands.
+src/jsclient/server/nextion/protocol.js: read() parses Nextion buffers to EventResult/ResponseResult w/ named codes; wraps bin-protocol, strips 0xFF delimiter.
+src/jsclient/server/nextion/README: Attribution doc; nextion module from boneskull/nextion repo w/ TS-friendly mods & bug fixes.
+src/jsclient/server/nextion/system.js: System class for Nextion sys commands; sys vars (sys0-sys2), random gen, sleep/wake, touch timer.
+src/jsclient/server/nextion/uart.js: UART wraps SerialPort for Nextion; handles 0xFF-delimited protocol, async setValue/getValue/request w/ timeout, event parsing.
+src/jsclient/server/nextion/util.js: Nextion helpers; toHex() hex fmt, isValidPort() duck-type check, isUnsignedInteger() validates w/ MAX_INT limit.
+src/jsclient/server/service/AvrService.ts: Abstract AVR service; state types, avrState$ Observable, control methods; DI interface for MCU comms.
+src/jsclient/server/service/Co2ControllerService.ts: Abstract CO2 controller; PhControlRange type, getPhControlRange() method; DI interface for pH-based CO2 valve control.
+src/jsclient/server/service/ConfigService.ts: Abstract config service; config interfaces (ProtoHostPort, MetricsConfig, PhControllerConfig, etc.), Config type.
+src/jsclient/server/service/DatabaseService.ts: Abstract database service; CO2ClosingState CRUD methods, Co2ClosingStateType enum; DI interface for ML training data persistence.
+src/jsclient/server/service/DisplayManagerService.ts: Abstract display manager; DI interface for coordinating sensor data to Nextion display updates.
+src/jsclient/server/service/DisplayService.ts: Abstract display service; element enums, setText/setColor/setPic methods, touchEvents$; DI interface for Nextion control.
+src/jsclient/server/service/MetricsService.ts: Abstract metrics service; observeSimpleMeasurement/getContentType/getMetrics methods; DI interface for time-based measurement collection & metrics export.
+src/jsclient/server/service/PhPrediction.ts: Co2ClosingState type, Co2ClosingStateOrigin enum, worker msg types, PH_PREDICTION_WINDOW_* consts, createCo2ClosingState() factory; shared types & utils for main↔worker thread pH prediction comms & ML data prep.
+src/jsclient/server/service/PhPredictionService.ts: Abstract pH prediction service; MinClosingPhPrediction/PhPredictionDatasetStats types, minClosingPhPrediction$/phPredictionDatasetStats$ Observables; DI interface for ML-based pH forecasting & training dataset stats.
+src/jsclient/server/service/PhSensorService.ts: Abstract pH sensor service; Ph interface w/ dual windows/CO2, ph/ph$ properties; DI interface for pH sensor data access.
+src/jsclient/server/service/TemperatureSensorService.ts: Abstract temp sensor service; Temperature interface, aquarium/case props w/ sync & Observable$ access; DI interface for dual-sensor monitoring.
+src/jsclient/server/service/TimeService.ts: Abstract time service; nowTimestamp/nowRoundedSeconds methods; DI interface for mockable time access instead of process.hrtime/Date.now.
+src/jsclient/server/service/RandomNumberService.ts: Abstract random number service; next() method; DI interface for testable randomness instead of Math.random().
+src/jsclient/server/service/ServerServices.ts: Service aggregator class; bundles core services for single-injection DI instead of multiple separate injections.
+src/jsclient/server/service_impl/AvrServiceImpl.ts: Implements AvrService; serial comms w/ AVR, CRC/protocol validation, hex→state parsing, cmd serialization, auto-reconnect.
+src/jsclient/server/service_impl/Co2ControllerServiceImpl.spec.ts: Tests calcMinPhEquationParams & calcMinPh; exponential equation solving, pH calculation at boundary hours, day config respect.
+src/jsclient/server/service_impl/Co2ControllerServiceImpl.ts: Implements Co2ControllerService; RxJS pH-based valve control, time-varying exponential pH curves, NN predictions, safety limits, ML exploration.
+src/jsclient/server/service_impl/ConfigServiceImpl.ts: Implements ConfigService; merges env vars w/ defaults, multi-instance selector (aqua1/aqua2), startup config validation w/ fatal errors.
+src/jsclient/server/service_impl/DatabaseServiceImpl.ts: Implements DatabaseService; SQLite3 CO2ClosingState persistence for ML dataset w/ BSON, versioned migrations, type-based splits.
+src/jsclient/server/service_impl/DisplayManagerServiceImpl.spec.ts: Tests DisplayManagerServiceImpl; RxJS marble testing w/ TestScheduler, ts-mockito mocks, timeouts, display fmt.
+src/jsclient/server/service_impl/DisplayManagerServiceImpl.ts: Implements DisplayManagerService; RxJS sensor→Nextion coordination, formats w/ trends (⇡⇣), comfort-zone colors, clock/icons, touch events, timeouts.
+src/jsclient/server/service_impl/DisplayServiceImpl.ts: Implements DisplayService; Nextion serial comms, queued writes w/ change detection, auto-reconnect, touchEvents$ Observable.
+src/jsclient/server/service_impl/MetricsServiceImpl.ts: Implements MetricsService; prom-client Prometheus export, subscribes to services, monitors Node.js perf (GC/eventloop/CPU/mem).
+src/jsclient/server/service_impl/PhPredictionServiceImpl.ts: Implements PhPredictionService; worker-thread NN for min-pH prediction, 15s data collection (pH/temp/valve/light), DB persistence for ML datasets, RxJS observables.
+src/jsclient/server/service_impl/PhPredictionServiceImpl.spec.ts: Placeholder test skeleton for PhPredictionServiceImpl; empty test w/ commented instantiation code, awaiting implementation.
+src/jsclient/server/service_impl/PhPredictionWorkerThread.ts: Worker thread for TF pH predictions; loads model, handles messages; exports AkDropTimeseriesLayer & createCo2ClosingStateFeaturesAndLabels for testing/CLI.
+src/jsclient/server/service_impl/PhPredictionWorkerThread.spec.ts: Tests PhPredictionWorkerThread; worker thread lifecycle (start/message/predict/response/terminate), AkDropTimeseriesLayer tensor slicing & shape calculation.
+src/jsclient/server/service_impl/PhSensorServiceImpl.ts: Implements PhSensorService; voltage→pH w/ 2-point calibration, dual averaging windows (60s/600s), noise filtering, pH-based CO2 calc.
+src/jsclient/server/service_impl/RandomNumberServiceImpl.ts: Implements RandomNumberService; wraps Math.random() for testable randomness in ML exploration & dataset splitting.
+src/jsclient/server/service_impl/ReadlineParser.js: Workaround; re-exports @serialport/parser-readline for TS; bypasses missing type defs.
+src/jsclient/server/service_impl/ServerServicesImpl.ts: createNewContainer() DI factory w/ mode bindings; cli-utils (DB/cfg only).
+src/jsclient/server/service_impl/TemperatureSensorServiceImpl.ts: Implements TemperatureSensorService; AVR sensor subscription, updateId dedup, range/freshness checks, 15s sliding window.
+src/jsclient/server/service_impl/TimeServiceImpl.ts: Implements TimeService; wraps process.hrtime() & Date.now() for mockable time access in tests.
+src/jsclient/server/static-ui/model.dump/model.json: TF.js model topology JSON; auto-gen by tensorflowjs_converter from co2-model.h5 via train-co2; graph def for pH prediction NN.
+src/jsclient/server/static-ui/model.dump/group1-shard1of1.bin: TF.js model weights; auto-gen by tensorflowjs_converter from co2-model.h5 via train-co2; NN weights for pH prediction.
+src/co2nn/model_builder.py: ModelBuilder class; factory for TF layers w/ consistent naming/defaults.
+src/co2nn/print_utils.py: Logging utils; color-coded print funcs (info/error/sep), ff() strips float trailing zeros; auto-detects terminal for colors/dimensions.
+src/co2nn/train.py: train() performs single training cycle.
+src/co2nn/train_loop.py: train_loop() infinite retraining.
+src/co2nn/trainco2.py: Training script for CO2 prediction NN; defines conv1d+FC model arch, loads data from JSON, uses train_loop for iterative training.
+src/co2nn/training_settings.py: Training config; TrainingSettings dataclass w/ hyperparams, factories for new model (fixed) & retraining (random search) scenarios.
+data/co2-model.h5: Keras H5 model (binary); trained NN for min-pH prediction after CO2 close; gen by trainco2.py via train-co2; converted to TF.js.
+nextion/akua.HMI: Nextion HMI project (binary); aquarium display UI w/ sensor/icon elements; compiles to akua.tft.
+nextion/akua.tft: Compiled Nextion firmware; gen by Nextion Editor from akua.HMI; for uploading to display.
+nextion/Aqua32.zi: Nextion 32px font (binary); UTF-8 encoding; referenced by akua.HMI, embedded in akua.tft for display text.
+nextion/Aqua40.zi: Nextion 40px font (binary); UTF-8 encoding; referenced by akua.HMI, embedded in akua.tft for display text.
+nextion/Aqua48.zi: Nextion 48px font (binary); UTF-8 encoding; referenced by akua.HMI, embedded in akua.tft for display text.
+nextion/Aqua56.zi: Nextion 56px font (binary); UTF-8 encoding; referenced by akua.HMI, embedded in akua.tft for display text.
+nextion/Aqua64.zi: Nextion 64px font (binary); UTF-8 encoding; referenced by akua.HMI, embedded in akua.tft for display text.
+nextion/Aqua96.zi: Nextion 96px font (binary); UTF-8 encoding; referenced by akua.HMI, embedded in akua.tft for display text.
+nextion/Aqua112.zi: Nextion 112px font (binary); UTF-8 encoding; referenced by akua.HMI, embedded in akua.tft for display text.
+nextion/Aqua128.zi: Nextion 128px font (binary); UTF-8 encoding; referenced by akua.HMI, embedded in akua.tft for display text.
+nextion/Aqua144.zi: Nextion 144px font (binary); UTF-8 encoding; referenced by akua.HMI, embedded in akua.tft for display text.
+nextion/back.png: Display background (480x320 PNG); exported from back.xcf; embedded in akua.tft via akua.HMI.
+nextion/back.xcf: GIMP source for display background (480x320 XCF); layered editable format; exports to back.png.
+nextion/icon-blank.png: Blank icon (40x32 PNG) for clearing display icon slots; referenced by akua.HMI, embedded in akua.tft.
+nextion/icon-co2-on.png: CO2 active icon (40x32 PNG) for CO2 valve open status; referenced by akua.HMI, embedded in akua.tft.
+nextion/icon-co2-wait.png: CO2 cooldown icon (40x32 PNG) for cooldown status; referenced by akua.HMI, embedded in akua.tft.
+nextion/icon-day.png: Day light icon (40x32 PNG) for day light active status; referenced by akua.HMI, embedded in akua.tft.
+nextion/icon-error.png: Error icon (40x32 PNG) for system error status; referenced by akua.HMI, embedded in akua.tft.
+nextion/icon-force.png: Force mode icon (40x32 PNG) for manual light override; referenced by akua.HMI, embedded in akua.tft.
+nextion/icon-night.png: Night light icon (40x32 PNG) for night light active status; referenced by akua.HMI, embedded in akua.tft.
